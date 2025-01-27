@@ -1,0 +1,319 @@
+<?php
+
+/**
+ * Ядро - модель
+ * Class Model
+ */
+class Model
+{
+    /** @var CDatabase $DB */
+    protected $DB;
+    protected int $dayInYear = 360;
+
+    protected array $filtersForGetListDefault = [
+        'having' => "1 ", //Затычка, что бы не было пустого HAVING в SQL запросе
+        'limit' => "",
+        'order' => "id DESC", // Запрос к БД ORDER BY 'order' Задается значение по умолчанию
+        'idWhichFilter' => '>0',
+        'dateStart' => "'0000-00-00'",
+        'dateEnd' => "'  2222-12-12'"
+    ];
+
+
+    /**
+     * @param $str
+     * @return string
+     */
+    protected function quoteStr($str)
+    {
+        return "'{$str}'";
+    }
+
+
+    /**
+     * Получает список имен полей таблицы БД
+     * @param $tableName - название таблицы БД
+     * @return array
+     */
+    protected function getColumnsByTable($tableName)
+    {
+        $dbName = $this->DB->DBName;
+
+        $sql = $this->DB->Query(
+            "SELECT `COLUMN_NAME` 
+                FROM `INFORMATION_SCHEMA`.`COLUMNS` 
+                WHERE `TABLE_SCHEMA`='{$dbName}' AND `TABLE_NAME`='{$tableName}'");
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+            $result[] = $row['COLUMN_NAME'];
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * @param $table
+     * @param $data
+     * @return array
+     */
+    protected function prepearTableData($table, $data)
+    {
+        $columns = $this->getColumnsByTable($table);
+
+        $sqlData = [];
+
+        foreach ($columns as $column) {
+            if ( $column == 'id' ) {
+                continue;
+            }
+            if (isset($data[$column])) {
+                $sqlData[$column] = $this->quoteStr($this->DB->ForSql(trim(strip_tags($data[$column]))));
+            }
+        }
+
+        return $sqlData;
+    }
+
+
+    public function __construct()
+    {
+        global $DB;
+        $this->DB = $DB;
+    }
+
+
+    /**
+     * @param $path
+     * @param $fileName
+     * @return string
+     */
+    public function getBase64EncodeFile($path, $fileName)
+    {
+        $file = file_get_contents($path . $fileName);
+
+        return base64_encode($file);
+    }
+
+
+    /**
+     * @note получает имена файлов из директории
+     * @param string $dir
+     * @param array $skip
+     * @return array
+     */
+    public function getFilesFromDir(string $dir, array $skip = [])
+    {
+        $result = [];
+
+        $files = scandir($dir);
+        $skipAll = array_merge($skip, ['.', '..']);
+        foreach ($files as $file) {
+            if (!in_array($file, $skipAll)) {
+                $result[] = $file;
+            }
+        }
+
+        return $result;
+    }
+
+    public function insertToSQL(array $data, string $nameTable = null, $userID = ""): int
+    {
+        if ($nameTable == null) {
+            $nameTable = array_key_first($data);
+            $dataAdd = $data[$nameTable];
+        } else $dataAdd = $data;
+
+
+        if ($userID) {
+            $dataAdd['global_assigned'] = $userID;
+        } else {
+            $dataAdd['global_assigned'] = $_SESSION['SESS_AUTH']['USER_ID'];
+        }
+
+        $dataAdd['global_entry_date'] = date("Y-m-d H:i:s");
+        $this->checkAndAddGlobal($nameTable, $dataAdd);
+
+        foreach ($dataAdd as $key => $item) {
+            if (is_string($item)) {
+                $dataAdd[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
+            }
+        }
+        return $this->DB->Insert($nameTable, $dataAdd);
+    }
+
+    private function checkAndAddGlobal(string $nameTable): void
+    {
+        $globalName = ['global_assigned' => 'int(11)', 'global_entry_date' => 'datetime'];
+
+        $columnsName = $this->getColumnsNameFromSQL($nameTable);
+
+        foreach ($globalName as $key => $item) {
+            if (!in_array($key, $columnsName)) {
+                $this->DB->Query("ALTER TABLE $nameTable
+                                    ADD $key $item NOT NULL;");
+            }
+        }
+    }
+
+    private function getColumnsNameFromSQL(string $nameTable): array
+    {
+        $dbName = $this->DB->DBName;
+        $requestColumnsName = "
+                SELECT COLUMN_NAME 
+                FROM INFORMATION_SCHEMA.COLUMNS 
+                WHERE TABLE_SCHEMA= '{$dbName}' AND TABLE_NAME='{$nameTable}'
+                ";
+        $columnsName = $this->requestFromSQL($requestColumnsName);
+
+        for ($i = 0; $i < count($columnsName); $i++) {
+            $columnsName[$i] = $columnsName[$i]['COLUMN_NAME'];
+        }
+        return $columnsName;
+    }
+
+    private function checkAndAddGlobalV2(string $nameTable): void
+    {
+        $columnsName = $this->getColumnsNameFromSQL($nameTable);
+
+        foreach ($this->globalNameV2 as $key => $item) {
+            if (!in_array($key, $columnsName)) {
+                $this->DB->Query("ALTER TABLE $nameTable
+                                    ADD $key $item NOT NULL;");
+            }
+        }
+    }
+
+    private array $oldColumns = ['global_assigned' => 'int(11)', 'global_entry_date' => 'datetime', 'id' => 'int(11)'];
+    private string $tableNameAdForHistory = '_history';
+    private string $columnNameAdForHistory = '_old';
+
+    public function saveFile($dir, $fileName, $tmpName)
+    {
+
+        if ( !is_dir($dir) ) {
+            $mkdirResult = mkdir($dir, 0766, true);
+
+            if ( !$mkdirResult ) {
+                return [
+                    'success' => false,
+                    'error' => "Ошибка! Не удалось создать папку. {$dir}",
+                ];
+            }
+        }
+
+        $uploadfile = $dir."/".$fileName;
+
+        if (!move_uploaded_file($tmpName, $uploadfile) ) {
+            return [
+                'success' => false,
+                'error' => "Ошибка! Не удалось загрузить файл на сервер! tpmName: {$tmpName}, uploadfile: {$uploadfile}",
+            ];
+        } else {
+            return [
+                'success' => true,
+                'data' => $fileName,
+                'upload' => $uploadfile
+            ];
+        }
+    }
+
+    public function checkTypeFile($file, $types)
+	{
+		if (!in_array($file, $types)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public function byteFileToServer($byteFile, $localPath)
+    {
+        $bin = base64_decode($byteFile, true);
+        file_put_contents($_SERVER["DOCUMENT_ROOT"] . $localPath, $bin);
+    }
+
+	/**
+	 * @param $text
+	 * @param bool $exit
+	 */
+	public function pre($text, $exit = true) {
+		if ($_SESSION['SESS_AUTH']['USER_ID'] == 1) {
+			echo '<pre>';
+			print_r($text);
+			if ($exit) {
+				exit();
+			}
+		}
+	}
+
+    protected function requestFromSQL(string $request): array
+    {
+        if ($request == "") {
+            throw new InvalidArgumentException("Запрос к БД не может быть пустым");
+        }
+        $response = [];
+        $requestFromSQL = $this->DB->Query($request);
+        while ($row = $requestFromSQL->Fetch()) {
+            $response[] = $row;
+        }
+        return $response;
+    }
+
+    protected function transformFilter(array $filter, string $typeTransform): array
+    {
+        $transformedFilter = [];
+        if ($typeTransform == "having" || $typeTransform == "havingDateId") {
+            if (!empty($filter['search'])) {
+                foreach ($filter['search'] as $key => $item) {
+                    $transformedFilter['having'] = "1 "; //Затычка, что бы не было пустого HAVING в SQL запросе
+                    $transformedFilter['having'] .= "AND $key LIKE '%$item%'";
+
+                }
+            }
+            if ($typeTransform == "havingDateId") {
+
+                $transformedFilter['dateStart'] = "'{$filter['dateStart']}-01' ";
+                $transformedFilter['dateEnd'] = "LAST_DAY('{$filter['dateEnd']}-01') ";
+
+                if ($filter['idWhichFilter'] == -1) {
+                    $transformedFilter['idWhichFilter'] = '>0';
+                } elseif ($filter['idWhichFilter'] > -1) {
+                    $transformedFilter['idWhichFilter'] = '="' . $filter['idWhichFilter'] . '"';
+                } else {
+                    throw new InvalidArgumentException("Неизвестный аргумент idWhichFilter {$filter['idWhichFilter']} в функции transformFilter");
+                }
+            }
+        } elseif ($typeTransform == "orderLimit") {
+            if (!empty($filter['order'])) {
+                $filter['order']['by'] = $this->changeNameForFormat($filter['order']['by']);
+                $transformedFilter['order'] = "{$filter['order']['by']} {$filter['order']['dir']} ";
+            }
+            if ($filter['paginate']['length'] == -1) {
+                $transformedFilter['limit'] = "";
+            } else {
+                $transformedFilter['limit'] = "LIMIT {$filter['paginate']['start']}, {$filter['paginate']['length']}";
+            }
+        } else {
+            throw new InvalidArgumentException("Неизвестный аргумент $typeTransform в функции transformFilter");
+        }
+        return $transformedFilter;
+    }
+
+    protected function changeNameForFormat(string $data): string
+    {
+        $settings = ["dateformat"];
+        $arrayData = explode("_", $data);
+
+        if (end($arrayData) == $settings[0]) {
+            $deleted = array_pop($arrayData);
+            $data = implode("_", $arrayData);
+        }
+
+        return $data;
+    }
+
+
+}

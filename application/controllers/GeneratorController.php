@@ -1,0 +1,134 @@
+<?php
+
+/**
+ * @desc Формирование документов
+ * Class GeneratorController
+ */
+class GeneratorController extends Controller
+{
+    /**
+     * @desc Формирует коммерческое предложение
+     * @param $dealID
+     */
+	public function	CommercialOffer($dealID)
+	{
+		global $APPLICATION;
+
+		$APPLICATION->RestartBuffer();
+
+		/** @var DocumentGenerator $generator */
+		$generator = $this->model('DocumentGenerator');
+
+		$generator->commercialOffer($dealID);
+
+		$this->showSuccessMessage("Коммерческое предложение сформировано");
+	}
+
+
+    /**
+     * @desc Формирует прил. к договору (ТЗ)
+     * @param $dealID
+     */
+    public function TechnicalSpecification($dealID)
+    {
+		global $APPLICATION;
+
+		$APPLICATION->RestartBuffer();
+
+        /** @var DocumentGenerator $generator */
+        $generator = $this->model('DocumentGenerator');
+
+        $generator->technicalSpecification($dealID);
+
+        $this->showSuccessMessage("Техническое задание сформировано");
+    }
+
+
+    /**
+     * @desc Формирует протокол
+     * @param $protocolID
+     */
+    public function ProtocolDocument($protocolID)
+    {	global $APPLICATION;
+
+		$APPLICATION->RestartBuffer();
+
+        /** @var DocumentGenerator $generator */
+        $generator = $this->model('DocumentGenerator');
+
+        $generator->protocolGenerator($protocolID);
+
+        $this->showSuccessMessage("Протокол сформирован");
+    }
+
+
+    /**
+     * @desc Заключение Специализированная контрольно-аналитическая лаборатория Дорожной инспекции
+     * @param $protocolId
+     */
+    public function conclusionDocument($protocolId)
+    {	global $APPLICATION;
+
+		$APPLICATION->RestartBuffer();
+
+        /** @var DocumentGenerator $generator */
+        $generatorModel = $this->model('DocumentGenerator');
+
+        $generatorModel->conclusionDocument($protocolId);
+
+        $this->showSuccessMessage("Протокол сформирован");
+    }
+
+
+
+	/**
+     * @desc Формирует Акт приема проб
+     * @param $protocolID
+	 */
+	public function actSampleDocument($dealID)
+	{	global $APPLICATION;
+
+		$APPLICATION->RestartBuffer();
+
+		/** @var DocumentGenerator $generator */
+		$generator = $this->model('DocumentGenerator');
+
+		if ($dealID < DEAL_NEW_TZ && $dealID != 9735) {
+			$generator->actSampleGenerator($dealID);
+		} else {
+			$generator->actSampleGeneratorNew($dealID);
+		}
+
+		$this->showSuccessMessage("Акт приема проб сформирован");
+	}
+
+
+    /**
+     * @desc Формирует Счет-оферта
+     * @param $dealID
+     */
+	public function invoiceOfferDocument($dealID)
+	{	global $APPLICATION;
+
+		$APPLICATION->RestartBuffer();
+
+		/** @var DocumentGenerator $generator */
+		$generator = $this->model('DocumentGenerator');
+
+			$generator->invoiceOfferGenerator($dealID);
+
+		$this->showSuccessMessage("Счет-оферта сформирован");
+	}
+
+
+//    /**
+//     *
+//     */
+//	public function getContentDocx()
+//	{
+//		/** @var DocumentGenerator $generator */
+//		$generator = $this->model('DocumentGenerator');
+//
+//		$generator->getContent();
+//	}
+}

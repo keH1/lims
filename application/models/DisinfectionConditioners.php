@@ -1,0 +1,143 @@
+<?php
+
+/**
+ * Журнал учета работ по очистки и дезинфекции кондиционеров
+ * Class DisinfectionConditioners
+ */
+class DisinfectionConditioners extends Model
+{
+    public string $location = '/disinfectionConditioners/list/';
+
+    public function getList($filter = []): array
+    {
+        $filters = [
+            'having' => "",
+            'limit' => "",
+            'order' => "",
+        ];
+
+        $tableColumnForFilter = [
+            'date',
+            'NUMBER',
+            'conditioner',
+            'disinfectant',
+            'global_assigned_name',
+        ];
+        function addHaving($filter, $item): string
+        {
+            $filterUsed = $filter['search'][$item];
+
+
+            if (isset($filterUsed)) {
+                return "$item LIKE '%$filterUsed%' AND ";
+            }
+            return '';
+        }
+
+        if (!empty($filter)) {
+            foreach ($tableColumnForFilter as $item) {
+                $filters['having'] .= addHaving($filter, $item);
+            }
+
+            if (isset($filter['paginate'])) {
+                $offset = 0;
+                // количество строк на страницу
+                if (isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0) {
+                    $length = $filter['paginate']['length'];
+
+                    if (isset($filter['paginate']['start']) && $filter['paginate']['start'] > 0) {
+                        $offset = $filter['paginate']['start'];
+                    }
+                    $filters['limit'] = "LIMIT $offset, $length";
+                }
+            }
+        }
+
+        $orderFilter = [
+            'by' => $tableColumnForFilter[0],
+            'dir' => 'DESC'
+        ];
+
+        if (!empty($filter['order'])) {
+            $orderFilter['dir'] = $filter['order']['dir'];
+            $orderFilter['by'] = $filter['order']['by'];
+        }
+
+        $filters['order'] = "{$orderFilter['by']} {$orderFilter['dir']} ";
+
+        //Затычка, что бы не было пустого WHERE в SQL запросе
+        $filters['having'] .= "1 ";
+        $result = $this->getFromSQL('getList', $filters);
+
+        $dataTotal = count($this->getFromSQL('allRecord'));
+        $dataFiltered = count($result);
+
+        $result['recordsTotal'] = $dataTotal;
+        $result['recordsFiltered'] = $dataFiltered;
+
+        return $result;
+    }
+
+    public function addToSQL(array $data, string $type = null): int
+    {
+        $namesTable = [
+            'disinfection_conditioners'
+        ];
+
+        if ($type == null) {
+            $name = array_key_first($data);
+            if (!in_array($name, $namesTable)) {
+                return 0;
+            }
+            $dataAdd = $data[$name];
+        }
+
+        return $this->insertToSQL($dataAdd, $name, $_SESSION['SESS_AUTH']['USER_ID']);
+    }
+
+    public function getFromSQL(
+        string $name,
+        array  $filters = null
+    ): array
+    {
+        $namesTable = [
+            'allRecord' => 'disinfection_conditioners'
+        ];
+        $response = [];
+        if (isset($namesTable[$name])) {
+            $requestFromSQL = $this->DB->Query("SELECT * from {$namesTable[$name]}");
+        }
+
+        if ($name == 'getList') {
+            $requestFromSQL = $this->DB->Query(
+                "SELECT DATE_FORMAT(date,'%d.%m.%Y')                 AS date_dateformat, 
+                        date,
+                        room_id,
+                        conditioner,
+                        disinfectant,
+                        DATE_FORMAT(date_sol,'%d.%m.%Y')                 AS date_sol_dateformat, 
+                        date_sol,
+                        user_id, 
+                        ROOMS.NUMBER,
+                        CONCAT (IFNULL(b_user.LAST_NAME,'-'),' ',IFNULL(b_user.NAME,'')) as global_assigned_name
+                FROM disinfection_conditioners
+                JOIN ROOMS ON disinfection_conditioners.room_id = ROOMS.ID
+                left JOIN b_user ON disinfection_conditioners.global_assigned = b_user.ID
+                HAVING {$filters['having']}
+                ORDER BY {$filters['order']}
+                {$filters['limit']}
+        "
+            );
+        }
+
+
+        while ($row = $requestFromSQL->Fetch()) {
+            $row['date'] = date('d.m.Y', strtotime($row['date']));
+            $row['date_sol'] = date('d.m.Y', strtotime($row['date_sol']));
+            $response[] = $row;
+        }
+
+        return $response;
+    }
+}
+

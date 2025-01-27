@@ -1,0 +1,88 @@
+$(function () {
+    let $journal = $('#journal_gost')
+
+    /*journal requests*/
+    let journalDataTable = $journal.DataTable({
+        bAutoWidth: false,
+        autoWidth: false,
+        fixedColumns: false,
+        processing: true,
+        serverSide: true,
+        bSortCellsTop: true,
+        scrollX: true,
+        fixedHeader: false,
+        colReorder: false,
+        ajax: {
+            type : 'POST',
+            data: function ( d ) {
+            },
+            url : '/ulab/normDocGost/getJournalAjax/',
+            dataSrc: function (json) {
+                return json.data
+            }
+        },
+        columns: [
+            {
+                data: 'stage',
+                orderable: false,
+                render: function (data, type, item) {
+                    if ( item.is_confirm == 1 ) {
+                        return `<span class="text-green" title="Методика подтверждена"><i class="fa-regular fa-circle-check"></i></span>`
+                    } else {
+                        return `<span class="text-red" title="Методика не подтверждена"><i class="fa-regular fa-circle-xmark"></i></span>`
+                    }
+                }
+            },
+            {
+                data: 'reg_doc',
+                render: function (data, type, item) {
+                    return `<a href="/ulab/normDocGost/edit/${item.gost_id}">${item.reg_doc}</a>`
+                }
+            },
+            {
+                data: 'description',
+                render: $.fn.dataTable.render.ellipsis(32, true)
+            },
+            {
+                data: 'year',
+            },
+            {
+                data: 'materials',
+                render: $.fn.dataTable.render.ellipsis(32, true)
+            },
+            {
+                data: 'name',
+                render: function (data, type, item) {
+                    if ( item.method_id === null ) {
+                        return `Методик не добавлено`
+                    }
+
+                    return `<a href="/ulab/normDocGost/method/${item.method_id}">${item.name}</a>`
+                }
+            },
+            {
+                data: 'clause'
+            },
+        ],
+        language: dataTablesSettings.language,
+        lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
+        pageLength: 25,
+        order: [[ 1, "desc" ]],
+        dom: 'frtB<"bottom"lip>',
+        buttons: dataTablesSettings.buttons,
+    });
+
+    journalDataTable.columns().every( function () {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
+            journalDataTable
+                .column( $(this).parent().index() )
+                .search( this.value )
+                .draw();
+        })
+    })
+
+    $('.filter').on('change', function () {
+        journalDataTable.ajax.reload()
+        journalDataTable.draw()
+    })
+})
