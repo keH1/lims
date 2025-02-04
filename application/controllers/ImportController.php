@@ -4,7 +4,7 @@ use Bitrix\Im\Integration\Intranet\Department;
 
 
 /**
- * @desc Профиль лаборатории
+ * @desc Профиль организации
  * Class ImportController
  * @order 199
  */
@@ -22,6 +22,7 @@ class ImportController extends Controller
     {
         $this->redirect('/import/list/');
     }
+
 
     /**
      * route /import/
