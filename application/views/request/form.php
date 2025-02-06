@@ -41,7 +41,7 @@
             <div class="form-group row">
                 <label for="company" class="col-sm-2 col-form-label">Клиент <span class="redStars">*</span></label>
                 <div class="col-sm-8">
-                    <input id="company" class="form-control" list="company_list" type="text" name="company" value="<?= htmlentities($this->data['request']['company']['TITLE']?? $this->data['request']['company']?? '') ?>" autocomplete="off" required>
+                    <input id="company" class="form-control" list="company_list" type="text" name="company" value="<?=$this->data['request']['company']['TITLE']?? $this->data['request']['company']?? '' ?>" autocomplete="off" required>
                     <input type="hidden" name="company_id" id="company-hidden" value="<?=$this->data['request']['company']['ID']?? $this->data['request']['company_id']?? ''?>">
                     <datalist id="company_list">
                         <?php if (isset($this->data['companies'])): ?>
@@ -65,7 +65,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Полное наименование компании</label>
                 <div class="col-sm-8">
-                    <input type="text" name="CompanyFullName" class="form-control clearable" value="<?= htmlentities($this->data['request']['CompanyFullName'] ?? '') ?>">
+                    <input type="text" name="CompanyFullName" class="form-control clearable" value="<?= $this->data['request']['CompanyFullName'] ?? '' ?>">
                 </div>
                 <div class="col-sm-2"></div>
             </div>

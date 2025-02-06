@@ -511,7 +511,7 @@ class Result extends Model
             return $response;
         }
 
-        $result = $this->DB->Query("SELECT * FROM `ulab_material_to_request` WHERE `protocol_id` = {$protocolId}");
+        $result = $this->DB->Query("SELECT umtr.* FROM `ulab_material_to_request` as umtr, `ulab_gost_to_probe` as ugtp WHERE ugtp.material_to_request_id = umtr.id and (umtr.`protocol_id` = {$protocolId} or ugtp.`protocol_id` = {$protocolId})");
 
         while ($row = $result->Fetch()) {
             $response[] = $row;

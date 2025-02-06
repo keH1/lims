@@ -1268,6 +1268,10 @@ class Oborud extends Model {
 
         $certificateName = unserialize($res['name_f']);
 
+        if ( empty($certificateName) ) {
+            $certificateName = [];
+        }
+
         return end($certificateName);
     }
 
