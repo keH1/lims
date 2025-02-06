@@ -440,7 +440,7 @@ class Requirement extends Model
                     INNER JOIN DOGOVOR d ON d_c.ID_CONTRACT=d.ID 
                     WHERE d_c.ID_DEAL = {$dealId}")->Fetch();
 
-        if (count($contract) > 0) {
+        if (count($contract?? []) > 0) {
             $contract['DATE'] = date("d.m.Y", strtotime($contract['DATE']));
             $result = $contract;
         }
@@ -1715,7 +1715,7 @@ class Requirement extends Model
             "SELECT *, COUNT(id) counts FROM probe_to_materials WHERE material_request_id = {$materialToRequestId}"
         )->Fetch();
 
-        if (count($probeToMaterials) > 0) {
+        if (count($probeToMaterials?? []) > 0) {
             $result = $probeToMaterials;
         }
 
@@ -2006,7 +2006,7 @@ class Requirement extends Model
 
         $request = $this->getTzByTzId($takenTzId);
 
-        if (count($request) > 0) {
+        if (count($request?? []) > 0) {
             $request['DATE_CREATE'] = !empty($request['DATE_CREATE']) && $request['DATE_CREATE'] !== '' ?
                 StringHelper::dateRu($request['DATE_CREATE']) : '';
 
