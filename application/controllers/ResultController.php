@@ -1321,6 +1321,8 @@ class ResultController extends Controller
             $this->redirect('/request/list/');
         }
 
+        $this->redirect("/result/card_oati/{$dealId}");
+
         $this->data['title'] = 'Результаты испытаний';
 
         $noOA = [];
