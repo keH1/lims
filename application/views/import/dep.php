@@ -40,3 +40,20 @@
         </table>
     </div>
 </div>
+
+<form id="popup_form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/import/labImportUpdate" method="post">
+    <div class="title mb-3 h-2">
+        Данные лаборатории
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <input type="hidden" id="form_entity_id" name="lab_id" value="">
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_name">Название *</label>
+        <input type="text" class="form-control" id="form_entity_name" name="form[name]" value="" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
