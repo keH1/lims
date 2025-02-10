@@ -17,7 +17,7 @@ $(function ($) {
             data: function ( d ) {
 
             },
-            url : '/ulab/import/getOrganisationJournalAjax/',
+            url : '/ulab/import/getOrganizationJournalAjax/',
             dataSrc: function (json) {
                 return json.data
             }

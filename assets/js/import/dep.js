@@ -19,7 +19,6 @@ $(function ($) {
             },
             url : '/ulab/import/getLabJournalAjax/',
             dataSrc: function (json) {
-                console.log(json)
                 return json.data
             }
         },
