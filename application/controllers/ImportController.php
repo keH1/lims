@@ -74,9 +74,9 @@ class ImportController extends Controller
             $this->redirect('/request/list/');
         }
 
-        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-            $orgModel = new Organization();
+        $orgModel = new Organization();
 
+        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
             $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
 
             if (empty($data['org_id'])) {
@@ -84,7 +84,11 @@ class ImportController extends Controller
             }
         }
 
+        $orgId = (int) $id;
+
         $this->data['title'] = 'Профиль организации';
+
+        $this->data['info'] = $orgModel->getDepInfo($orgId);
 
         $this->addJs("/assets/js/import/organisation.js?v=" . rand());
 
@@ -102,9 +106,9 @@ class ImportController extends Controller
             $this->redirect('/request/list/');
         }
 
-        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-            $orgModel = new Organization();
+        $orgModel = new Organization();
 
+        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
             $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
 
             if (empty($data['org_id'])) {
@@ -112,7 +116,11 @@ class ImportController extends Controller
             }
         }
 
+        $branchId = (int) $id;
+
         $this->data['title'] = 'Профиль департамента';
+
+        $this->data['info'] = $orgModel->getDepInfo($branchId);
 
         $this->addJs("/assets/js/import/branch.js?v=" . rand());
 
@@ -122,7 +130,7 @@ class ImportController extends Controller
 
     /**
      * @desc Перенаправляет пользователя на страницу «Профиль отдела»
-     * @param $id - ид департамента
+     * @param $id - ид отдела
      */
     public function dep($id)
     {
@@ -130,9 +138,9 @@ class ImportController extends Controller
             $this->redirect('/request/list/');
         }
 
-        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-            $orgModel = new Organization();
+        $orgModel = new Organization();
 
+        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
             $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
 
             if (empty($data['org_id'])) {
@@ -140,11 +148,129 @@ class ImportController extends Controller
             }
         }
 
+        $depId = (int) $id;
+
         $this->data['title'] = 'Профиль отдела';
+
+        $this->data['info'] = $orgModel->getDepInfo($depId);
 
         $this->addJs("/assets/js/import/dep.js?v=" . rand());
 
         $this->view('dep', '', 'template_journal');
+    }
+
+
+    /**
+     * @desc обновляет информацию об организации
+     */
+    public function orgUpdate()
+    {
+        $orgModel = new Organization();
+
+        $id = (int)$_POST['org_id'];
+
+        $orgModel->setOrgInfo($id, $_POST['form']);
+
+        $this->showSuccessMessage("Данные организации обновлены");
+
+        $this->redirect("/import/organisation/{$id}");
+    }
+
+
+    /**
+     * @desc обновляет информацию о департаменте
+     */
+    public function branchUpdate()
+    {
+        $orgModel = new Organization();
+
+        $id = (int)$_POST['branch_id'];
+
+        $orgModel->setBranchInfo($id, $_POST['form']);
+
+        $this->showSuccessMessage("Данные департамента обновлены");
+
+        $this->redirect("/import/organisation/{$id}");
+    }
+
+
+    /**
+     * @desc обновляет информацию об отделе
+     */
+    public function depUpdate()
+    {
+        $orgModel = new Organization();
+
+        $id = (int)$_POST['dep_id'];
+
+        $orgModel->setDepInfo($id, $_POST['form']);
+
+        $this->showSuccessMessage("Данные отдела обновлены");
+
+        $this->redirect("/import/organisation/{$id}");
+    }
+
+
+    /**
+     * @desc добавляет/обновляет информацию об организации
+     */
+    public function orgImportUpdate()
+    {
+        $orgModel = new Organization();
+
+        if ( empty($_POST['org_id']) ) {
+            $orgModel->addOrgInfo($_POST['form']);
+        } else {
+            $id = (int)$_POST['org_id'];
+
+            $orgModel->setOrgInfo($id, $_POST['form']);
+        }
+
+        $this->showSuccessMessage("Данные успешно добавлены/обновлены");
+
+        $this->redirect("/import/organisationList/");
+    }
+
+
+    /**
+     * @desc добавляет/обновляет информацию о департаменте
+     */
+    public function branchImportUpdate()
+    {
+        $orgModel = new Organization();
+
+        if ( empty($_POST['branch_id']) ) {
+            $orgModel->addBranchInfo($_POST['form']);
+        } else {
+            $id = (int)$_POST['branch_id'];
+
+            $orgModel->setBranchInfo($id, $_POST['form']);
+        }
+
+        $this->showSuccessMessage("Данные успешно добавлены/обновлены");
+
+        $this->redirect("/import/organisation/{$_POST['org_id']}");
+    }
+
+
+    /**
+     * @desc добавляет/обновляет информацию об отделе
+     */
+    public function depImportUpdate()
+    {
+        $orgModel = new Organization();
+
+        if ( empty($_POST['dep_id']) ) {
+            $orgModel->addDepInfo($_POST['form']);
+        } else {
+            $id = (int)$_POST['dep_id'];
+
+            $orgModel->setDepInfo($id, $_POST['form']);
+        }
+
+        $this->showSuccessMessage("Данные успешно добавлены/обновлены");
+
+        $this->redirect("/import/dep/{$_POST['branch_id']}");
     }
 
 

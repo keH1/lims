@@ -16,7 +16,16 @@
         <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
     </header>
     <div class="panel-body">
+        <form action="/ulab/import/branchUpdate" method="post">
+            <input type="hidden" name="branch_id" value="<?=$this->data['info']['id']?>">
 
+            <div class="mb-3">
+                <label class="form-label" for="form_entity_name">Название *</label>
+                <input type="text" class="form-control" id="form_entity_name" name="form[name]" value="<?=$this->data['info']['name']?>" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
     </div>
 </div>
 
