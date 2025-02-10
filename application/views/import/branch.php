@@ -1,14 +1,14 @@
-<!--<header class="header-requirement mb-3">-->
-<!--    <nav class="header-menu">-->
-<!--        <ul class="nav">-->
-<!--            <li class="nav-item me-2">-->
-<!--                <a class="nav-link" href="" title="Добавить">-->
-<!--                    Добавить-->
-<!--                </a>-->
-<!--            </li>-->
-<!--        </ul>-->
-<!--    </nav>-->
-<!--</header>-->
+<header class="header-requirement mb-3">
+    <nav class="header-menu">
+        <ul class="nav">
+            <li class="nav-item me-2">
+                <a class="nav-link" href="<?=URI?>/import/organization/<?=$this->data['info']['organization_id']?>" title="Вернуться к организации">
+                    <i class="fa-solid fa-arrow-left-long"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
 
 <div class="panel panel-default">
     <header class="panel-heading">

@@ -1,5 +1,5 @@
 $(function ($) {
-    let $journal = $('#journal_branch')
+    let $journal = $('#journal_org')
 
     /*journal requests*/
     let journalDataTable = $journal.DataTable({
@@ -17,7 +17,7 @@ $(function ($) {
             data: function ( d ) {
 
             },
-            url : '/ulab/import/getBranchJournalAjax/',
+            url : '/ulab/import/getOrganisationJournalAjax/',
             dataSrc: function (json) {
                 return json.data
             }
@@ -26,14 +26,14 @@ $(function ($) {
             {
                 data: 'name',
                 render: function (data, type, item) {
-                    return `<a href="/ulab/import/branch/${item.id}">${item.name}</a>`
+                    return `<a href="/ulab/import/organisation/${item.id}">${item.name}</a>`
                 }
             },
             {
                 data: 'control',
                 width: '150px',
                 render: function (data, type, item) {
-                    return 'Редактировать'
+                    return '<a href="#" class="edit_btn">Редактировать</a>'
                 }
             },
         ],

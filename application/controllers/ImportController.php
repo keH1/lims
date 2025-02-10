@@ -22,7 +22,7 @@ class ImportController extends Controller
     {
         // если админ, то перенаправляем в журнал организации
         if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-            $this->redirect('/import/organisationList/');
+            $this->redirect('/import/organizationList/');
         }
 
         $orgModel = new Organization();
@@ -31,7 +31,7 @@ class ImportController extends Controller
 
         // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
         if ( !empty($data['org_id']) ) {
-            $this->redirect("/import/organisation/{$data['org_id']}");
+            $this->redirect("/import/organization/{$data['org_id']}");
         }
 
         $this->redirect('/request/list/');
@@ -41,7 +41,7 @@ class ImportController extends Controller
     /**
      * @desc Перенаправляет пользователя на страницу «Журнал организаций»
      */
-    public function organisationList()
+    public function organizationList()
     {
         if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
             $orgModel = new Organization();
@@ -50,7 +50,7 @@ class ImportController extends Controller
 
             // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
             if ( !empty($data['org_id']) ) {
-                $this->redirect("/import/organisation/{$data['org_id']}");
+                $this->redirect("/import/organization/{$data['org_id']}");
             } else {
                 $this->redirect('/request/list/');
             }
@@ -58,9 +58,9 @@ class ImportController extends Controller
 
         $this->data['title'] = 'Журнал организаций';
 
-        $this->addJs("/assets/js/import/organisation_list.js?v=" . rand());
+        $this->addJs("/assets/js/import/organization_list.js?v=" . rand());
 
-        $this->view('organisation_list', '', 'template_journal');
+        $this->view('organization_list', '', 'template_journal');
     }
 
 
@@ -68,7 +68,7 @@ class ImportController extends Controller
      * @desc Перенаправляет пользователя на страницу «Профиль организации»
      * @param $id - ид организации
      */
-    public function organisation($id)
+    public function organization($id)
     {
         if ( empty($id) ) {
             $this->redirect('/request/list/');
@@ -90,9 +90,9 @@ class ImportController extends Controller
 
         $this->data['info'] = $orgModel->getOrgInfo($orgId);
 
-        $this->addJs("/assets/js/import/organisation.js?v=" . rand());
+        $this->addJs("/assets/js/import/organization.js?v=" . rand());
 
-        $this->view('organisation', '', 'template_journal');
+        $this->view('organization', '', 'template_journal');
     }
 
 
@@ -173,7 +173,7 @@ class ImportController extends Controller
 
         $this->showSuccessMessage("Данные организации обновлены");
 
-        $this->redirect("/import/organisation/{$id}");
+        $this->redirect("/import/organization/{$id}");
     }
 
 
@@ -190,7 +190,7 @@ class ImportController extends Controller
 
         $this->showSuccessMessage("Данные департамента обновлены");
 
-        $this->redirect("/import/organisation/{$id}");
+        $this->redirect("/import/branch/{$id}");
     }
 
 
@@ -207,7 +207,7 @@ class ImportController extends Controller
 
         $this->showSuccessMessage("Данные отдела обновлены");
 
-        $this->redirect("/import/organisation/{$id}");
+        $this->redirect("/import/dep/{$id}");
     }
 
 
@@ -228,7 +228,7 @@ class ImportController extends Controller
 
         $this->showSuccessMessage("Данные успешно добавлены/обновлены");
 
-        $this->redirect("/import/organisationList/");
+        $this->redirect("/import/organizationList/");
     }
 
 
@@ -249,7 +249,7 @@ class ImportController extends Controller
 
         $this->showSuccessMessage("Данные успешно добавлены/обновлены");
 
-        $this->redirect("/import/organisation/{$_POST['org_id']}");
+        $this->redirect("/import/organization/{$_POST['org_id']}");
     }
 
 
@@ -2377,7 +2377,7 @@ class ImportController extends Controller
     /**
      * @desc Получает журнал организаций
      */
-    public function getOrganisationJournalAjax()
+    public function getorganizationJournalAjax()
     {
         global $APPLICATION;
 

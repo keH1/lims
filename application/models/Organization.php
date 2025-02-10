@@ -262,20 +262,20 @@ class Organization extends Model
 
         $data = $this->DB->Query(
             "SELECT *
-            FROM ulab_department
+            FROM ulab_branch
             WHERE {$where}
             ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
             "SELECT id
-            FROM ulab_department
+            FROM ulab_branch
             WHERE 1"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
             "SELECT id
-            FROM ulab_department
+            FROM ulab_branch
             WHERE {$where}"
         )->SelectedRowsCount();
 
