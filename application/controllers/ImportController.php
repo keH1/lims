@@ -88,7 +88,7 @@ class ImportController extends Controller
 
         $this->data['title'] = 'Профиль организации';
 
-        $this->data['info'] = $orgModel->getDepInfo($orgId);
+        $this->data['info'] = $orgModel->getOrgInfo($orgId);
 
         $this->addJs("/assets/js/import/organisation.js?v=" . rand());
 
@@ -120,7 +120,7 @@ class ImportController extends Controller
 
         $this->data['title'] = 'Профиль департамента';
 
-        $this->data['info'] = $orgModel->getDepInfo($branchId);
+        $this->data['info'] = $orgModel->getBranchInfo($branchId);
 
         $this->addJs("/assets/js/import/branch.js?v=" . rand());
 
