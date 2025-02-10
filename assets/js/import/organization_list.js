@@ -64,4 +64,28 @@ $(function ($) {
         journalDataTable.ajax.reload()
         journalDataTable.draw()
     })
+
+    journalDataTable.on('click', '.edit_btn', function () {
+        let $form = $('#popup_form')
+        let data = journalDataTable.row($(this).closest('tr')).data()
+
+        $.magnificPopup.open({
+            items: {
+                src: '#popup_form',
+            },
+            type: 'inline',
+            closeBtnInside: true,
+            fixedContentPos: false,
+            callbacks: {
+                beforeOpen: function() {
+                    $form.find('#form_entity_name').val(data.name)
+                    $form.find('#form_entity_id').val(data.id)
+                },
+                afterClose: function() {
+                    $form.find('#form_entity_name').val('')
+                    $form.find('#form_entity_id').val('')
+                }
+            }
+        })
+    })
 })

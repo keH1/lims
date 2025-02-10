@@ -35,7 +35,7 @@
         <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
     </header>
     <div class="panel-body">
-        <a href="#" class="btn btn-success mb-2">Добавить</a>
+        <a href="#popup_form" class="popup-with-form btn btn-success mb-2">Добавить</a>
 
         <table id="journal_dep" class="table table-striped journal">
             <thead>
