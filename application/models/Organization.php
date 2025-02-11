@@ -42,6 +42,43 @@ class Organization extends Model
 
 
     /**
+     * @desc добавляет/обновляет информацию о принадлежности пользователя организации, департаменту, отделу или лаборатории
+     * @param int $userId
+     * @param array $data
+     * @return false|mixed
+     */
+    public function setAffiliationUserInfo(int $userId, array &$data)
+    {
+        if ( empty($userId) ) {
+            return false;
+        }
+
+        if ( !empty($data['lab_id']) ) {
+            $data['dep_id'] = $this->getDepIdByLab($data['lab_id']);
+            $data['branch_id'] = $this->getBranchIdByDep($data['dep_id']);
+            $data['org_id'] = $this->getOrgIdByBranch($data['branch_id']);
+        } else if ( !empty($data['dep_id']) ) {
+            $data['branch_id'] = $this->getBranchIdByDep($data['dep_id']);
+            $data['org_id'] = $this->getOrgIdByBranch($data['branch_id']);
+        } else if ( !empty($data['branch_id']) ) {
+            $data['org_id'] = $this->getOrgIdByBranch($data['branch_id']);
+        }
+
+        $sqlData = $this->prepearTableData('ulab_user_affiliation', $data);
+
+        $current = $this->DB->Query("select * from ulab_user_affiliation where user_id = {$userId}")->Fetch();
+
+        if ( !empty($current['user_id']) ) {
+            return $this->DB->Update("ulab_user_affiliation", $sqlData, "where user_id = {$userId}");
+        } else {
+            $sqlData['user_id'] = $userId;
+
+            return $this->DB->Insert("ulab_user_affiliation", $sqlData);
+        }
+    }
+
+
+    /**
      * @desc получает ид отдела из ид лаборатории
      * @param int $labId
      * @return false|int
@@ -54,11 +91,53 @@ class Organization extends Model
 
         $sql = $this->DB->Query("select dep_id from ba_laba where ID = {$labId}")->Fetch();
 
-        if ( empty($sql['div_id']) ) {
+        if ( empty($sql['dep_id']) ) {
             return false;
         }
 
-        return (int) $sql['div_id'];
+        return (int) $sql['dep_id'];
+    }
+
+
+    /**
+     * @desc получает ид департамента из ид отдела
+     * @param int $depId
+     * @return false|int
+     */
+    public function getBranchIdByDep(int $depId)
+    {
+        if ( empty($depId) ) {
+            return false;
+        }
+
+        $sql = $this->DB->Query("select branch_id from ulab_department where id = {$depId}")->Fetch();
+
+        if ( empty($sql['branch_id']) ) {
+            return false;
+        }
+
+        return (int) $sql['branch_id'];
+    }
+
+
+    /**
+     * @desc получает ид организации из ид департамента
+     * @param int $branchId
+     * @return false|int
+     */
+    public function getOrgIdByBranch(int $branchId)
+    {
+        if ( empty($depId) ) {
+            return false;
+        }
+
+        $sql = $this->DB->Query("select organization_id from ulab_branch where id = {$branchId}")->Fetch();
+
+        if ( empty($sql['organization_id']) ) {
+            return false;
+        }
+
+        return (int) $sql['organization_id'];
     }
 
 
@@ -75,14 +154,19 @@ class Organization extends Model
 
     /**
      * @desc Обновляет данные об организации
-     * @param $orgId
+     * @param int $orgId
      * @param $data
+     * @return mixed|false
      */
-    public function setOrgInfo($orgId, $data)
+    public function setOrgInfo(int $orgId, $data)
     {
+        if ( empty($orgId) ) {
+            return false;
+        }
+
         $sqlData = $this->prepearTableData('ulab_organization', $data);
 
-        $this->DB->Update("ulab_organization", $sqlData, "where id = {$orgId}");
+        return $this->DB->Update("ulab_organization", $sqlData, "where id = {$orgId}");
     }
 
 
@@ -126,7 +210,15 @@ class Organization extends Model
 
         // работа с сортировкой
         if (!empty($filter['order'])) {
+            if ($filter['order']['dir'] === 'asc') {
+                $order['dir'] = 'ASC';
+            }
 
+            switch ($filter['order']['by']) {
+                case 'name':
+                    $order['by'] = "`name`";
+                    break;
+            }
         }
 
         // работа с пагинацией
@@ -241,7 +333,15 @@ class Organization extends Model
 
         // работа с сортировкой
         if (!empty($filter['order'])) {
+            if ($filter['order']['dir'] === 'asc') {
+                $order['dir'] = 'ASC';
+            }
 
+            switch ($filter['order']['by']) {
+                case 'name':
+                    $order['by'] = "`name`";
+                    break;
+            }
         }
 
         // работа с пагинацией
@@ -356,7 +456,15 @@ class Organization extends Model
 
         // работа с сортировкой
         if (!empty($filter['order'])) {
+            if ($filter['order']['dir'] === 'asc') {
+                $order['dir'] = 'ASC';
+            }
 
+            switch ($filter['order']['by']) {
+                case 'name':
+                    $order['by'] = "`name`";
+                    break;
+            }
         }
 
         // работа с пагинацией

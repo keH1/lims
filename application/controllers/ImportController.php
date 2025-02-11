@@ -82,6 +82,10 @@ class ImportController extends Controller
             if (empty($data['org_id'])) {
                 $this->redirect('/request/list/');
             }
+
+            $this->data['is_show_btn'] = false;
+        } else {
+            $this->data['is_show_btn'] = true;
         }
 
         $orgId = (int) $id;
@@ -121,6 +125,7 @@ class ImportController extends Controller
         $this->data['title'] = 'Профиль департамента';
 
         $this->data['info'] = $orgModel->getBranchInfo($branchId);
+        $this->data['org_info'] = $orgModel->getOrgInfo($this->data['info']['organization_id']);
 
         $this->addJs("/assets/js/import/branch.js?v=" . rand());
 
@@ -153,6 +158,8 @@ class ImportController extends Controller
         $this->data['title'] = 'Профиль отдела';
 
         $this->data['info'] = $orgModel->getDepInfo($depId);
+        $this->data['branch_info'] = $orgModel->getBranchInfo($this->data['info']['branch_id']);
+        $this->data['org_info'] = $orgModel->getOrgInfo($this->data['branch_info']['organization_id']);
 
         $this->addJs("/assets/js/import/dep.js?v=" . rand());
 
@@ -249,7 +256,7 @@ class ImportController extends Controller
 
         $this->showSuccessMessage("Данные успешно добавлены/обновлены");
 
-        $this->redirect("/import/organization/{$_POST['org_id']}");
+        $this->redirect("/import/organization/{$_POST['form']['organization_id']}");
     }
 
 
@@ -270,7 +277,7 @@ class ImportController extends Controller
 
         $this->showSuccessMessage("Данные успешно добавлены/обновлены");
 
-        $this->redirect("/import/dep/{$_POST['branch_id']}");
+        $this->redirect("/import/branch/{$_POST['form']['branch_id']}");
     }
 
 

@@ -26,12 +26,13 @@ $(function ($) {
             {
                 data: 'name',
                 render: function (data, type, item) {
-                    return `<a href="/ulab/import/organisation/${item.id}">${item.name}</a>`
+                    return `<a href="/ulab/import/organization/${item.id}">${item.name}</a>`
                 }
             },
             {
                 data: 'control',
                 width: '150px',
+                orderable: false,
                 render: function (data, type, item) {
                     return '<a href="#" class="edit_btn">Редактировать</a>'
                 }

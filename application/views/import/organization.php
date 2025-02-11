@@ -1,14 +1,16 @@
-<!--<header class="header-requirement mb-3">-->
-<!--    <nav class="header-menu">-->
-<!--        <ul class="nav">-->
-<!--            <li class="nav-item me-2">-->
-<!--                <a class="nav-link" href="" title="Добавить">-->
-<!--                    Добавить-->
-<!--                </a>-->
-<!--            </li>-->
-<!--        </ul>-->
-<!--    </nav>-->
-<!--</header>-->
+<?php if ( $this->data['is_show_btn'] ): ?>
+    <header class="header-requirement mb-3">
+        <nav class="header-menu">
+            <ul class="nav">
+                <li class="nav-item me-2">
+                    <a class="nav-link" href="<?=URI?>/import/organizationList/" title="Вернуться к журналу организаций">
+                        <i class="fa-solid fa-arrow-left-long"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+<?php endif; ?>
 
 <div class="panel panel-default">
     <header class="panel-heading">
@@ -16,12 +18,15 @@
         <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
     </header>
     <div class="panel-body">
-        <form action="/ulab/import/orgUpdate" method="post">
+        <form action="/ulab/import/orgUpdate" method="post" class="form-horizontal">
             <input type="hidden" name="org_id" value="<?=$this->data['info']['id']?>">
 
-            <div class="mb-3">
-                <label class="form-label" for="form_entity_name">Название *</label>
-                <input type="text" class="form-control" id="form_entity_name" name="form[name]" value="<?=$this->data['info']['name']?>" required>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="form_entity_name">Название *</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="form_entity_name" name="form[name]" value="<?=$this->data['info']['name']?>" required>
+                </div>
+                <div class="col-sm-2"></div>
             </div>
 
             <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -58,7 +63,7 @@
     <div class="line-dashed-small"></div>
 
     <input type="hidden" id="form_entity_id" name="branch_id" value="">
-    <input type="hidden" name="org_id" value="<?=$this->data['info']['id']?>">
+    <input type="hidden" name="form[organization_id]" value="<?=$this->data['info']['id']?>">
 
     <div class="mb-3">
         <label class="form-label" for="form_entity_name">Название *</label>
