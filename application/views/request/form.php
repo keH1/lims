@@ -364,7 +364,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Главный Ответственный <span class="redStars">*</span></label>
                 <div class="col-sm-8">
-                    <input
+                    <!-- <input
                             id="assigned0"
                             class="form-control"
                             type="text"
@@ -374,22 +374,34 @@
                             value="<?=$this->data['request']['assign'][0]['user_name'] ?? ''?>"
                             autocomplete="off"
                             required
+                    > -->
+                    <select class="form-control assigned-select"
+                            id="assigned0"
+                            required
+                            name="ASSIGNED[]"
                     >
+                        <option value="" <?= empty($this->data['request']['assign'][0]['user_id']) ? "selected" : "" ?> disabled>Выберите главного ответственного</option>
+                        <?php foreach ($this->data['clients_main'] as $client): ?>
+                            <option value="<?=$client['ID']?>" <?= ((int)$this->data['request']['assign'][0]['user_id'] == (int)$client['ID']) ? "selected" : ""?>>
+                                <?=$client['LAST_NAME']?> <?=$client['NAME']?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                     <input name="id_assign[]" id="assigned0-hidden" type="hidden" class="assigned_id" value="<?=$this->data['request']['assign'][0]['user_id'] ?? ''?>">
-                    <datalist id="assigneds_main">
+                    <!-- <datalist id="assigneds_main">
                         <?php if (isset($this->data['clients_main'])): ?>
                             <?php foreach ($this->data['clients_main'] as $client): ?>
                                 <option data-value="<?=$client['ID']?>"><?=$client['LAST_NAME']?> <?=$client['NAME']?></option>
                             <?php endforeach; ?>
                         <?php endif; ?>
-                    </datalist>
-                    <datalist id="assigneds">
+                    </datalist> -->
+                    <!-- <datalist id="assigneds">
                         <?php if (isset($this->data['clients'])): ?>
                             <?php foreach ($this->data['clients'] as $client): ?>
                                 <option data-value="<?=$client['ID']?>"><?=$client['LAST_NAME']?> <?=$client['NAME']?></option>
                             <?php endforeach; ?>
                         <?php endif; ?>
-                    </datalist>
+                    </datalist> -->
                 </div>
                 <div class="col-sm-2">
                     <button class="btn btn-primary add_assigned btn-add-del" type="button">
@@ -403,7 +415,7 @@
                     <div class="form-group row added_assigned">
                         <label class="col-sm-2 col-form-label">Ответственный</label>
                         <div class="col-sm-8">
-                            <input
+                            <!-- <input
                                     id="assigned<?=$i?>"
                                     class="form-control"
                                     type="text"
@@ -412,7 +424,19 @@
                                     size="20"
                                     value="<?=$this->data['request']['assign'][$i]['user_name']?>"
                                     required
+                            > -->
+                            <select class="form-control assigned-select"
+                                    id="assigned<?=$i?>"
+                                    required
+                                    name="ASSIGNED[]"
                             >
+                                <option value="" <?= empty($this->data['request']['assign'][$i]['user_id']) ? "selected" : "" ?> disabled>Выберите ответственного</option>
+                                <?php foreach ($this->data['clients'] as $client): ?>
+                                    <option value="<?=$client['ID']?>" <?= ((int)$this->data['request']['assign'][$i]['user_id'] == (int)$client['ID']) ? "selected" : ""?>>
+                                        <?=$client['LAST_NAME']?> <?=$client['NAME']?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                             <input name="id_assign[]" id="assigned<?=$i?>-hidden" class="assigned_id" type="hidden" value="<?=$this->data['request']['assign'][$i]['user_id']?>">
                         </div>
                         <div class="col-sm-2">

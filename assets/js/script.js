@@ -87,8 +87,9 @@ escapeHtml = function (text) {
     return false;
 }
 
-$(function ($) {
 
+
+$(function ($) {
     $('.popup-help').magnificPopup({
         type: 'iframe',
         mainClass: 'white-popup'
@@ -221,18 +222,46 @@ $(function ($) {
         let $formGroupContainer = $(this).parents('.form-group')
         let countAddedAssigned = $('.added_assigned').length + 1
 
-        $formGroupContainer.after(
-            `<div class="form-group row">
-                <label class="col-sm-2 col-form-label">Ответственный</label>
-                <div class="col-sm-8">
-                    <input id="assigned${countAddedAssigned}" class="form-control" type="text" list="assigneds" name="ASSIGNED[]" size="20" required>
-                    <input id="assigned${countAddedAssigned}-hidden" name="id_assign[]" type="hidden" value="">
-                </div>
-                <div class="col-sm-2">
-                    <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
-                </div>
-            </div>`
-        )
+        $.ajax({
+            method: 'POST',
+            url: '/ulab/request/getAssignedUserListAjax/',
+            success: function(data) {
+                users = JSON.parse(data)
+
+                let option = '<option value="" disabled selected>Выберите ответственного</option>'
+                users.forEach((user) => {
+                    option += `<option value="${user.ID}">${user.LAST_NAME + " " + user.NAME}</option>`
+                })
+
+                $formGroupContainer.after(
+                    `<div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Ответственный</label>
+                        <div class="col-sm-8">
+                            <select id="assigned${countAddedAssigned}" class="form-control assigned-select" name="ASSIGNED[]" required>
+                                ${option}
+                            </select>
+                            <input id="assigned${countAddedAssigned}-hidden" name="id_assign[]" type="hidden" value="">
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
+                        </div>
+                    </div>`
+                )
+            }
+        })
+
+        // $formGroupContainer.after(
+        //     `<div class="form-group row">
+        //         <label class="col-sm-2 col-form-label">Ответственный</label>
+        //         <div class="col-sm-8">
+        //             <input id="assigned${countAddedAssigned}" class="form-control" type="text" list="assigneds" name="ASSIGNED[]" size="20" required>
+        //             <input id="assigned${countAddedAssigned}-hidden" name="id_assign[]" type="hidden" value="">
+        //         </div>
+        //         <div class="col-sm-2">
+        //             <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
+        //         </div>
+        //     </div>`
+        // )
     })
 
     $body.on("click", ".form-group button.remove_this", function () {
@@ -259,6 +288,13 @@ $(function ($) {
         }
     })
 
+    $body.on('change', '.assigned-select', function(e) {
+        let $select = $(e.target),
+            $hiddenInput = $('#' + $select.attr('id') + '-hidden')
+
+        $hiddenInput.val($($select).val())
+    })
+
     let companyId = $('input[name="company_id"]').val()
     if ( companyId !== '' ) {
         $('#company').val($(`#company_list option[data-value="${companyId}"]`).text())
@@ -279,20 +315,20 @@ $(function ($) {
         }
     })
 
-    let $inputAssigned = $('input[name^="id_assign"]')
-    $inputAssigned.each(function (i, item) {
-        let $item = $(item)
-        let assignedId = $item.val()
+    // let $inputAssigned = $('input[name^="id_assign"]')
+    // $inputAssigned.each(function (i, item) {
+    //     let $item = $(item)
+    //     let assignedId = $item.val()
 
-        if (assignedId !== '') {
-            let reg = /\d+/
-            let inputId = $item.attr('id').match(reg)
+    //     if (assignedId !== '') {
+    //         let reg = /\d+/
+    //         let inputId = $item.attr('id').match(reg)
 
-            if (inputId !== null) {
-                $(`#assigned${inputId[0]}`).val($(`#assigneds option[data-value="${assignedId}"]`).text())
-            }
-        }
-    })
+    //         if (inputId !== null) {
+    //             $(`#assigned${inputId[0]}`).val($(`#assigneds option[data-value="${assignedId}"]`).text())
+    //         }
+    //     }
+    // })
 
     $('#company').on('change', function () {
         // clear form
