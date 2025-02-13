@@ -8,57 +8,42 @@
 class FireSafetyController extends Controller
 {
     /**
+     * @desc Перенаправляет пользователя на страницу журнала пожарной безопасности
+     * route /fireSafety/
+     */
+    public function index(): void
+    {
+        $this->redirect('/fireSafety/list/');
+    }
+
+    /**
      * @desc Страница журнала пожарной безопасности
      */
-    public function list()
+    public function list(): void
     {
         $this->data['title'] = 'Журнал пожарной безопасности';
 
         /** @var  User $userModel*/
         $userModel = $this->model('User');
 
-        if (!empty($_SESSION['post'])) {
-            $this->data['form'] = $_SESSION['post']['form'];
-            unset($_SESSION['post']);
-        }
-
         $this->data['date_start'] = date('Y-m-d', strtotime('-1 year'));
         $this->data['date_end'] = date('Y-m-d');
 
         $this->data['users'] = $userModel->getUsers();
 
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
-        $r = rand();
-        $this->addJs("/assets/js/fire-safety/list.js?v={$r}");
+        $this->addJs("/assets/js/fire-safety/list.js?v=" . rand());
 
-        $this->view('list');
+        $this->view('list', '', 'template_journal');
     }
 
     /**
      * @desc Получает данные для журнала пожарной безопасности
      */
-    public function getFireSafetyLogAjax()
+    public function getFireSafetyLogAjax(): void
     {
         global $APPLICATION;
 
@@ -92,10 +77,6 @@ class FireSafetyController extends Controller
             $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
         }
 
-        if (!empty($_POST['room'])) {
-            $filter['search']['room'] = $_POST['room'];
-        }
-
 
         $data = $fireSafetyModel->getFireSafetyLog($filter);
 
@@ -118,7 +99,7 @@ class FireSafetyController extends Controller
     /**
      * @desc Сохраняет данные для журнала пожарной безопасности
      */
-    public function insert()
+    public function insert(): void
     {
         /** @var FireSafety $fireSafetyModel */
         $fireSafetyModel = $this->model('FireSafety');
@@ -126,20 +107,16 @@ class FireSafetyController extends Controller
         $location = "/fireSafety/list/";
 
         $data = $_POST['form'] ?? [];
-        $data['created_by'] = (int)$_SESSION['SESS_AUTH']['USER_ID'];
-
-        $_SESSION['post'] = $_POST;
 
         // Валидация
         $this->validate($data);
 
-        $result = $fireSafetyModel->addFireSafetyLog($_POST['form']);
+        $result = $fireSafetyModel->addFireSafetyLog($data);
 
         if (empty($result)) {
             $this->showErrorMessage('Не удалось сохранить данные пожарной безопасности');
         } else {
             $this->showSuccessMessage('Данные пожарной безопасности сохранены успешно');
-            unset($_SESSION['post']);
         }
 
         $this->redirect($location);
@@ -148,7 +125,7 @@ class FireSafetyController extends Controller
     /**
      * @desc Валидация данных по пожарной безопасности
      */
-    private function validate($data)
+    private function validate(array $data): void
     {
         $location = "/fireSafety/list/";
 
