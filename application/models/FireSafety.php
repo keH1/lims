@@ -7,9 +7,14 @@
  */
 class FireSafety extends Model
 {
+    /**
+     * @param array $data
+     * @return int
+     */
     public function addFireSafetyLog(array $data): int
     {
         $sqlData = $this->prepearTableData('fire_safety_log', $data);
+        $sqlData['created_by'] = (int)$_SESSION['SESS_AUTH']['USER_ID'];
 
         if (!isset($data['practice_date']) || $data['practice_date'] === '' || $data['practice_date'] === null) {
             $sqlData['practice_date'] = 'NULL';
