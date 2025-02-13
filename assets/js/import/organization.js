@@ -20,7 +20,7 @@ $(function ($) {
         ajax: {
             type : 'POST',
             data: function ( d ) {
-
+                d.id = $('#org_id').val()
             },
             url : '/ulab/import/getBranchJournalAjax/',
             dataSrc: function (json) {

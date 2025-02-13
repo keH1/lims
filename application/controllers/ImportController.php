@@ -2432,7 +2432,7 @@ class ImportController extends Controller
     /**
      * @desc Получает журнал организаций
      */
-    public function getorganizationJournalAjax()
+    public function getOrganizationJournalAjax()
     {
         global $APPLICATION;
 
@@ -2510,7 +2510,7 @@ class ImportController extends Controller
             $filter['order']['dir'] = $_POST['order'][0]['dir'];
         }
 
-        $data = $orgModel->getBranchJournal($filter);
+        $data = $orgModel->getBranchJournal((int) $_POST['id'], $filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -2560,7 +2560,7 @@ class ImportController extends Controller
             $filter['order']['dir'] = $_POST['order'][0]['dir'];
         }
 
-        $data = $orgModel->getDepJournal($filter);
+        $data = $orgModel->getDepJournal((int) $_POST['id'], $filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];

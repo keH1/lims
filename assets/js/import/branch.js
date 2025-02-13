@@ -20,7 +20,7 @@ $(function ($) {
         ajax: {
             type : 'POST',
             data: function ( d ) {
-
+                d.id = $('#branch_id').val()
             },
             url : '/ulab/import/getDepJournalAjax/',
             dataSrc: function (json) {

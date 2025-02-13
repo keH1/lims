@@ -308,10 +308,11 @@ class Organization extends Model
 
     /**
      * @desc Получает данные о департаменте для журнала
-     * @param $filter
+     * @param int $orgId
+     * @param array $filter
      * @return array
      */
-    public function getBranchJournal($filter)
+    public function getBranchJournal(int $orgId, array $filter)
     {
         $where = "";
         $limit = "";
@@ -364,20 +365,20 @@ class Organization extends Model
         $data = $this->DB->Query(
             "SELECT *
             FROM ulab_branch
-            WHERE {$where}
+            WHERE organization_id = {$orgId} and {$where}
             ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
             "SELECT id
             FROM ulab_branch
-            WHERE 1"
+            WHERE organization_id = {$orgId} and 1"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
             "SELECT id
             FROM ulab_branch
-            WHERE {$where}"
+            WHERE organization_id = {$orgId} and {$where}"
         )->SelectedRowsCount();
 
         $result = [];
@@ -431,10 +432,11 @@ class Organization extends Model
 
     /**
      * @desc Получает данные об отделе для журнала
+     * @param int $branchId
      * @param $filter
      * @return array
      */
-    public function getDepJournal($filter)
+    public function getDepJournal(int $branchId, $filter)
     {
         $where = "";
         $limit = "";
@@ -487,20 +489,20 @@ class Organization extends Model
         $data = $this->DB->Query(
             "SELECT *
             FROM ulab_department
-            WHERE {$where}
+            WHERE branch_id = {$branchId} and {$where}
             ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
             "SELECT id
             FROM ulab_department
-            WHERE 1"
+            WHERE branch_id = {$branchId} and 1"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
             "SELECT id
             FROM ulab_department
-            WHERE {$where}"
+            WHERE branch_id = {$branchId} and {$where}"
         )->SelectedRowsCount();
 
         $result = [];
