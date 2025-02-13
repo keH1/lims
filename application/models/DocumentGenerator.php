@@ -8,7 +8,6 @@ use PhpOffice\PhpWord\Element\Field;
 use NcJoes\OfficeConverter\OfficeConverter;
 use \Bitrix\Main\Loader;
 
-
 class DocumentGenerator extends Model
 {
     public function __construct()
