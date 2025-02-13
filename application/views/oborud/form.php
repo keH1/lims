@@ -1200,7 +1200,7 @@
                         <?php endforeach; ?>
                         <?php
                             if ( !empty($this->data['oborud']['ASSIGNED'])
-                                && !in_array($this->data['oborud']['ASSIGNED'], array_column($this->data['users'], "ID"))
+                                && !in_array($this->data['oborud']['ASSIGNED'], array_column($this->data['users'] ?? [], "ID"))
                             ):
                         ?>
                             <option value="<?=$user['id']?>" data-color="#F00" selected>Неизвестный пользователь</option>

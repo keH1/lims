@@ -445,9 +445,9 @@ class Protocol extends Model
             $dates[] = strtotime($row['date']);
         }
 
-        if(in_array('start', $result) || in_array(null, $result)) {
+        if (empty($dates) || in_array('start', $result) || in_array(null, $result)) {
             return '--';
-        }else {
+        } else {
             return date('d.m.Y', max($dates));
         }
     }
