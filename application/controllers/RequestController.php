@@ -149,7 +149,7 @@ class RequestController extends Controller
 
             $this->data['request']['DOGOVOR_NUM']       = $baTz['DOGOVOR_NUM'];
             $this->data['request']['check_ip']          = $baTz['CHECK_IP'];
-            $this->data['request']['order_type']          = $baTz['order_type'];
+            $this->data['request']['order_type']          = (int)$baTz['order_type'];
             $this->data['request']['PositionGenitive']  = htmlentities($baTz['POSIT_LEADS']);
 
             $this->data['request']['addEmail']          = $baTz['addMail'];
@@ -499,7 +499,7 @@ class RequestController extends Controller
             'DOGOVOR_NUM' => "'{$_POST['NUM_DOGOVOR']}'",
             'DOGOVOR_TABLE' => "'{$orderName}'",
             'POSIT_LEADS' => "'{$_POST['PositionGenitive']}'",
-            'order_type' => $_POST['order_type']
+            'order_type' => (int)$_POST['order_type']
         ];
 
 

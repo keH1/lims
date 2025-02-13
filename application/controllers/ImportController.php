@@ -4,7 +4,7 @@ use Bitrix\Im\Integration\Intranet\Department;
 
 
 /**
- * @desc Профиль лаборатории
+ * @desc Профиль организации
  * Class ImportController
  * @order 199
  */
@@ -20,8 +20,315 @@ class ImportController extends Controller
      */
     public function index()
     {
-        $this->redirect('/import/list/');
+        // если админ, то перенаправляем в журнал организации
+        if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+            $this->redirect('/import/organizationList/');
+        }
+
+        $orgModel = new Organization();
+
+        $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+
+        // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
+        if ( !empty($data['org_id']) ) {
+            $this->redirect("/import/organization/{$data['org_id']}");
+        }
+
+        $this->redirect('/request/list/');
     }
+
+
+    /**
+     * @desc Перенаправляет пользователя на страницу «Журнал организаций»
+     */
+    public function organizationList()
+    {
+        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+            $orgModel = new Organization();
+
+            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+
+            // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
+            if ( !empty($data['org_id']) ) {
+                $this->redirect("/import/organization/{$data['org_id']}");
+            } else {
+                $this->redirect('/request/list/');
+            }
+        }
+
+        $userModel = new User();
+
+        $this->data['title'] = 'Журнал организаций';
+
+        $this->data['users'] = $userModel->getUsers();
+
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
+
+        $this->addJs("/assets/js/import/organization_list.js?v=" . rand());
+
+        $this->view('organization_list', '', 'template_journal');
+    }
+
+
+    /**
+     * @desc Перенаправляет пользователя на страницу «Профиль организации»
+     * @param $id - ид организации
+     */
+    public function organization($id)
+    {
+        if ( empty($id) ) {
+            $this->redirect('/request/list/');
+        }
+
+        $orgModel = new Organization();
+        $userModel = new User();
+
+        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+
+            if (empty($data['org_id'])) {
+                $this->redirect('/request/list/');
+            }
+
+            $this->data['is_show_btn'] = false;
+        } else {
+            $this->data['is_show_btn'] = true;
+        }
+
+        $orgId = (int) $id;
+
+        $this->data['title'] = 'Профиль организации';
+
+        $this->data['users'] = $userModel->getUsers();
+        $this->data['info'] = $orgModel->getOrgInfo($orgId);
+
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
+
+        $this->addJs("/assets/js/import/organization.js?v=" . rand());
+
+        $this->view('organization', '', 'template_journal');
+    }
+
+
+    /**
+     * @desc Перенаправляет пользователя на страницу «Профиль департамента»
+     * @param $id - ид департамента
+     */
+    public function branch($id)
+    {
+        if ( empty($id) ) {
+            $this->redirect('/request/list/');
+        }
+
+        $orgModel = new Organization();
+        $userModel = new User();
+
+        // TODO: пока убираю ограничения, надо лучше продумать
+//        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+//            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+//
+//            if (empty($data['org_id'])) {
+//                $this->redirect('/request/list/');
+//            }
+//        }
+
+        $branchId = (int) $id;
+
+        $this->data['title'] = 'Профиль департамента';
+
+        $this->data['users'] = $userModel->getUsers();
+        $this->data['info'] = $orgModel->getBranchInfo($branchId);
+        $this->data['org_info'] = $orgModel->getOrgInfo($this->data['info']['organization_id']);
+
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
+
+        $this->addJs("/assets/js/import/branch.js?v=" . rand());
+
+        $this->view('branch', '', 'template_journal');
+    }
+
+
+    /**
+     * @desc Перенаправляет пользователя на страницу «Профиль отдела»
+     * @param $id - ид отдела
+     */
+    public function dep($id)
+    {
+        if ( empty($id) ) {
+            $this->redirect('/request/list/');
+        }
+
+        $orgModel = new Organization();
+        $userModel = new User();
+
+        // TODO: пока убираю ограничения, надо лучше продумать
+//        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+//            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+//
+//            if (empty($data['org_id'])) {
+//                $this->redirect('/request/list/');
+//            }
+//        }
+
+        $depId = (int) $id;
+
+        $this->data['title'] = 'Профиль отдела';
+
+        $this->data['users'] = $userModel->getUsers();
+        $this->data['info'] = $orgModel->getDepInfo($depId);
+        $this->data['branch_info'] = $orgModel->getBranchInfo($this->data['info']['branch_id']);
+        $this->data['org_info'] = $orgModel->getOrgInfo($this->data['branch_info']['organization_id']);
+
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
+
+        $this->addJs("/assets/js/import/dep.js?v=" . rand());
+
+        $this->view('dep', '', 'template_journal');
+    }
+
+
+    /**
+     * @desc обновляет информацию об организации
+     */
+    public function orgUpdate()
+    {
+        $orgModel = new Organization();
+
+        $id = (int)$_POST['org_id'];
+
+        $orgModel->setOrgInfo($id, $_POST['form']);
+
+        if ( !empty($_POST['form']['head_user_id']) ) {
+            $data = ['org_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['head_user_id'], $data);
+        }
+
+        $this->showSuccessMessage("Данные организации обновлены");
+
+        $this->redirect("/import/organization/{$id}");
+    }
+
+
+    /**
+     * @desc обновляет информацию о департаменте
+     */
+    public function branchUpdate()
+    {
+        $orgModel = new Organization();
+
+        $id = (int)$_POST['branch_id'];
+
+        $orgModel->setBranchInfo($id, $_POST['form']);
+
+        if ( !empty($_POST['form']['head_user_id']) ) {
+            $data = ['branch_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['head_user_id'], $data);
+        }
+
+        $this->showSuccessMessage("Данные департамента обновлены");
+
+        $this->redirect("/import/branch/{$id}");
+    }
+
+
+    /**
+     * @desc обновляет информацию об отделе
+     */
+    public function depUpdate()
+    {
+        $orgModel = new Organization();
+
+        $id = (int)$_POST['dep_id'];
+
+        $orgModel->setDepInfo($id, $_POST['form']);
+
+        if ( !empty($_POST['form']['head_user_id']) ) {
+            $data = ['dep_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['head_user_id'], $data);
+        }
+
+        $this->showSuccessMessage("Данные отдела обновлены");
+
+        $this->redirect("/import/dep/{$id}");
+    }
+
+
+    /**
+     * @desc добавляет/обновляет информацию об организации
+     */
+    public function orgInsertUpdate()
+    {
+        $orgModel = new Organization();
+
+        if ( empty($_POST['org_id']) ) {
+            $id = $orgModel->addOrgInfo($_POST['form']);
+        } else {
+            $id = (int)$_POST['org_id'];
+
+            $orgModel->setOrgInfo($id, $_POST['form']);
+        }
+
+        if ( !empty($_POST['form']['head_user_id']) ) {
+            $data = ['org_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['head_user_id'], $data);
+        }
+
+        $this->showSuccessMessage("Данные успешно добавлены/обновлены");
+
+        $this->redirect("/import/organizationList/");
+    }
+
+
+    /**
+     * @desc добавляет/обновляет информацию о департаменте
+     */
+    public function branchInsertUpdate()
+    {
+        $orgModel = new Organization();
+
+        if ( empty($_POST['branch_id']) ) {
+            $orgModel->addBranchInfo($_POST['form']);
+        } else {
+            $id = (int)$_POST['branch_id'];
+
+            $orgModel->setBranchInfo($id, $_POST['form']);
+        }
+
+        $this->showSuccessMessage("Данные успешно добавлены/обновлены");
+
+        $this->redirect("/import/organization/{$_POST['form']['organization_id']}");
+    }
+
+
+    /**
+     * @desc добавляет/обновляет информацию об отделе
+     */
+    public function depInsertUpdate()
+    {
+        $orgModel = new Organization();
+
+        if ( empty($_POST['dep_id']) ) {
+            $orgModel->addDepInfo($_POST['form']);
+        } else {
+            $id = (int)$_POST['dep_id'];
+
+            $orgModel->setDepInfo($id, $_POST['form']);
+        }
+
+        $this->showSuccessMessage("Данные успешно добавлены/обновлены");
+
+        $this->redirect("/import/branch/{$_POST['form']['branch_id']}");
+    }
+
+
 
     /**
      * route /import/
@@ -2119,5 +2426,155 @@ class ImportController extends Controller
         }
 
         return $result;
+    }
+
+
+    /**
+     * @desc Получает журнал организаций
+     */
+    public function getorganizationJournalAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        $orgModel = new Organization();
+
+        $filter = [
+            'paginate' => [
+                'length'    => $_POST['length'],  // кол-во строк на страницу
+                'start'     => $_POST['start'],  // текущая страница
+            ],
+            'search' => [],
+            'order' => []
+        ];
+
+        foreach ($_POST['columns'] as $column) {
+            if ( $column['search']['value'] !== '' ) {
+                $filter['search'][$column['data']] = $column['search']['value'];
+            }
+        }
+
+        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
+            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
+            $filter['order']['dir'] = $_POST['order'][0]['dir'];
+        }
+
+        $data = $orgModel->getOrgJournal($filter);
+
+        $recordsTotal = $data['recordsTotal'];
+        $recordsFiltered = $data['recordsFiltered'];
+
+        unset($data['recordsTotal']);
+        unset($data['recordsFiltered']);
+
+        $jsonData = [
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+        ];
+
+        echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
+    }
+
+
+    /**
+     * @desc Получает журнал департамента
+     */
+    public function getBranchJournalAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        $orgModel = new Organization();
+
+        $filter = [
+            'paginate' => [
+                'length'    => $_POST['length'],  // кол-во строк на страницу
+                'start'     => $_POST['start'],  // текущая страница
+            ],
+            'search' => [],
+            'order' => []
+        ];
+
+        foreach ($_POST['columns'] as $column) {
+            if ( $column['search']['value'] !== '' ) {
+                $filter['search'][$column['data']] = $column['search']['value'];
+            }
+        }
+
+        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
+            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
+            $filter['order']['dir'] = $_POST['order'][0]['dir'];
+        }
+
+        $data = $orgModel->getBranchJournal($filter);
+
+        $recordsTotal = $data['recordsTotal'];
+        $recordsFiltered = $data['recordsFiltered'];
+
+        unset($data['recordsTotal']);
+        unset($data['recordsFiltered']);
+
+        $jsonData = [
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+        ];
+
+        echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
+    }
+
+
+    /**
+     * @desc Получает журнал отделов
+     */
+    public function getDepJournalAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        $orgModel = new Organization();
+
+        $filter = [
+            'paginate' => [
+                'length'    => $_POST['length'],  // кол-во строк на страницу
+                'start'     => $_POST['start'],  // текущая страница
+            ],
+            'search' => [],
+            'order' => []
+        ];
+
+        foreach ($_POST['columns'] as $column) {
+            if ( $column['search']['value'] !== '' ) {
+                $filter['search'][$column['data']] = $column['search']['value'];
+            }
+        }
+
+        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
+            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
+            $filter['order']['dir'] = $_POST['order'][0]['dir'];
+        }
+
+        $data = $orgModel->getDepJournal($filter);
+
+        $recordsTotal = $data['recordsTotal'];
+        $recordsFiltered = $data['recordsFiltered'];
+
+        unset($data['recordsTotal']);
+        unset($data['recordsFiltered']);
+
+        $jsonData = [
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+        ];
+
+        echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
     }
 }

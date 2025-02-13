@@ -75,8 +75,8 @@ class Controller
             $this->messageWarning = $_SESSION['message_warning'];
         }
 
-        if ( file_exists(APP_PATH . "views/template_view.php") ) {
-            require(APP_PATH . "views/template_view.php");
+        if ( file_exists(APP_PATH . "views/{$template}.php") ) {
+            require(APP_PATH . "views/{$template}.php");
         } else {
             include APP_PATH.'views/'.$this->contentView;
         }

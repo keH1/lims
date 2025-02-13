@@ -499,6 +499,7 @@ class Result extends Model
         return $response;
     }
 
+
     /**
      * @param int $protocolId
      * @return array
@@ -519,6 +520,7 @@ class Result extends Model
 
         return $response;
     }
+
 
     /**
      * @param int $umtr_id - id ulab_material_to_request
