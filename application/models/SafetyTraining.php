@@ -7,6 +7,10 @@
  */
 class SafetyTraining extends Model
 {
+    /**
+     * @param array $data
+     * @return int
+     */
     public function addSafetyTrainingLog(array $data): int
     {
         $sqlData = $this->prepearTableData('safety_training_log', $data);

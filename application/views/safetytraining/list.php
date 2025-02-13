@@ -74,7 +74,7 @@
                     <input type="text" class="form-control" id="name" name="form[name]" required>
                 </div>
                 <div class="col-12">
-                    <label for="secondNamec" class="form-label">Отчество <span class="text-danger">*</span></label>
+                    <label for="secondName" class="form-label">Отчество <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="secondName" name="form[second_name]" required>
                 </div>
 
