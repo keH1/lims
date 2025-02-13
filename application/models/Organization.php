@@ -86,13 +86,13 @@ class Organization extends Model
     public function getDepIdByLab(int $labId)
     {
         if ( empty($labId) ) {
-            return false;
+            return 0;
         }
 
         $sql = $this->DB->Query("select dep_id from ba_laba where ID = {$labId}")->Fetch();
 
         if ( empty($sql['dep_id']) ) {
-            return false;
+            return 0;
         }
 
         return (int) $sql['dep_id'];
@@ -107,13 +107,13 @@ class Organization extends Model
     public function getBranchIdByDep(int $depId)
     {
         if ( empty($depId) ) {
-            return false;
+            return 0;
         }
 
         $sql = $this->DB->Query("select branch_id from ulab_department where id = {$depId}")->Fetch();
 
         if ( empty($sql['branch_id']) ) {
-            return false;
+            return 0;
         }
 
         return (int) $sql['branch_id'];
@@ -127,14 +127,14 @@ class Organization extends Model
      */
     public function getOrgIdByBranch(int $branchId)
     {
-        if ( empty($depId) ) {
-            return false;
+        if ( empty($branchId) ) {
+            return 0;
         }
 
         $sql = $this->DB->Query("select organization_id from ulab_branch where id = {$branchId}")->Fetch();
 
         if ( empty($sql['organization_id']) ) {
-            return false;
+            return 0;
         }
 
         return (int) $sql['organization_id'];
@@ -173,12 +173,13 @@ class Organization extends Model
     /**
      * @desc Добавляет данные об организации
      * @param $data
+     * @return mixed|int
      */
     public function addOrgInfo($data)
     {
         $sqlData = $this->prepearTableData('ulab_organization', $data);
 
-        $this->DB->Insert('ulab_organization', $sqlData);
+        return $this->DB->Insert('ulab_organization', $sqlData);
     }
 
 

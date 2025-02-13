@@ -20,7 +20,7 @@
             <input type="hidden" name="dep_id" value="<?=$this->data['info']['id']?>">
 
             <div class="form-group row">
-                <label class="col-sm-2 col-form-label" >Организация</label>
+                <label class="col-sm-2 col-form-label">Организация</label>
                 <div class="col-sm-8">
                     <label class="col-form-label"><?=$this->data['org_info']['name']?></label>
                 </div>
@@ -28,7 +28,7 @@
             </div>
 
             <div class="form-group row">
-                <label class="col-sm-2 col-form-label" >Департамент</label>
+                <label class="col-sm-2 col-form-label">Департамент</label>
                 <div class="col-sm-8">
                     <label class="col-form-label"><?=$this->data['branch_info']['name']?></label>
                 </div>
@@ -36,9 +36,22 @@
             </div>
 
             <div class="form-group row">
-                <label class="col-sm-2 col-form-label" for="form_entity_name">Название *</label>
+                <label class="col-sm-2 col-form-label">Наименование *</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="form_entity_name" name="form[name]" value="<?=$this->data['info']['name']?>" required>
+                    <input type="text" class="form-control" name="form[name]" value="<?=$this->data['info']['name']?>" required>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Руководитель</label>
+                <div class="col-sm-8">
+                    <select class="form-control select2" name="form[head_user_id]">
+                        <option value="">Не выбран</option>
+                        <?php foreach ($this->data['users'] as $user): ?>
+                            <option value="<?=$user['ID']?>" <?=$this->data['info']['head_user_id'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <div class="col-sm-2"></div>
             </div>
@@ -80,7 +93,7 @@
     <input type="hidden" name="form[dep_id]" value="<?=$this->data['info']['id']?>">
 
     <div class="mb-3">
-        <label class="form-label" for="form_entity_name">Название *</label>
+        <label class="form-label" for="form_entity_name">Наименование *</label>
         <input type="text" class="form-control" id="form_entity_name" name="form[name]" value="" required>
     </div>
 

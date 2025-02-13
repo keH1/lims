@@ -56,7 +56,15 @@ class ImportController extends Controller
             }
         }
 
+        $userModel = new User();
+
         $this->data['title'] = 'Журнал организаций';
+
+        $this->data['users'] = $userModel->getUsers();
+
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
         $this->addJs("/assets/js/import/organization_list.js?v=" . rand());
 
@@ -75,6 +83,7 @@ class ImportController extends Controller
         }
 
         $orgModel = new Organization();
+        $userModel = new User();
 
         if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
             $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
@@ -92,7 +101,12 @@ class ImportController extends Controller
 
         $this->data['title'] = 'Профиль организации';
 
+        $this->data['users'] = $userModel->getUsers();
         $this->data['info'] = $orgModel->getOrgInfo($orgId);
+
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
         $this->addJs("/assets/js/import/organization.js?v=" . rand());
 
@@ -111,21 +125,28 @@ class ImportController extends Controller
         }
 
         $orgModel = new Organization();
+        $userModel = new User();
 
-        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
-
-            if (empty($data['org_id'])) {
-                $this->redirect('/request/list/');
-            }
-        }
+        // TODO: пока убираю ограничения, надо лучше продумать
+//        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+//            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+//
+//            if (empty($data['org_id'])) {
+//                $this->redirect('/request/list/');
+//            }
+//        }
 
         $branchId = (int) $id;
 
         $this->data['title'] = 'Профиль департамента';
 
+        $this->data['users'] = $userModel->getUsers();
         $this->data['info'] = $orgModel->getBranchInfo($branchId);
         $this->data['org_info'] = $orgModel->getOrgInfo($this->data['info']['organization_id']);
+
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
         $this->addJs("/assets/js/import/branch.js?v=" . rand());
 
@@ -144,22 +165,29 @@ class ImportController extends Controller
         }
 
         $orgModel = new Organization();
+        $userModel = new User();
 
-        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
-
-            if (empty($data['org_id'])) {
-                $this->redirect('/request/list/');
-            }
-        }
+        // TODO: пока убираю ограничения, надо лучше продумать
+//        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+//            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+//
+//            if (empty($data['org_id'])) {
+//                $this->redirect('/request/list/');
+//            }
+//        }
 
         $depId = (int) $id;
 
         $this->data['title'] = 'Профиль отдела';
 
+        $this->data['users'] = $userModel->getUsers();
         $this->data['info'] = $orgModel->getDepInfo($depId);
         $this->data['branch_info'] = $orgModel->getBranchInfo($this->data['info']['branch_id']);
         $this->data['org_info'] = $orgModel->getOrgInfo($this->data['branch_info']['organization_id']);
+
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
         $this->addJs("/assets/js/import/dep.js?v=" . rand());
 
@@ -178,6 +206,11 @@ class ImportController extends Controller
 
         $orgModel->setOrgInfo($id, $_POST['form']);
 
+        if ( !empty($_POST['form']['head_user_id']) ) {
+            $data = ['org_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['head_user_id'], $data);
+        }
+
         $this->showSuccessMessage("Данные организации обновлены");
 
         $this->redirect("/import/organization/{$id}");
@@ -194,6 +227,11 @@ class ImportController extends Controller
         $id = (int)$_POST['branch_id'];
 
         $orgModel->setBranchInfo($id, $_POST['form']);
+
+        if ( !empty($_POST['form']['head_user_id']) ) {
+            $data = ['branch_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['head_user_id'], $data);
+        }
 
         $this->showSuccessMessage("Данные департамента обновлены");
 
@@ -212,6 +250,11 @@ class ImportController extends Controller
 
         $orgModel->setDepInfo($id, $_POST['form']);
 
+        if ( !empty($_POST['form']['head_user_id']) ) {
+            $data = ['dep_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['head_user_id'], $data);
+        }
+
         $this->showSuccessMessage("Данные отдела обновлены");
 
         $this->redirect("/import/dep/{$id}");
@@ -221,16 +264,21 @@ class ImportController extends Controller
     /**
      * @desc добавляет/обновляет информацию об организации
      */
-    public function orgImportUpdate()
+    public function orgInsertUpdate()
     {
         $orgModel = new Organization();
 
         if ( empty($_POST['org_id']) ) {
-            $orgModel->addOrgInfo($_POST['form']);
+            $id = $orgModel->addOrgInfo($_POST['form']);
         } else {
             $id = (int)$_POST['org_id'];
 
             $orgModel->setOrgInfo($id, $_POST['form']);
+        }
+
+        if ( !empty($_POST['form']['head_user_id']) ) {
+            $data = ['org_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['head_user_id'], $data);
         }
 
         $this->showSuccessMessage("Данные успешно добавлены/обновлены");
@@ -242,7 +290,7 @@ class ImportController extends Controller
     /**
      * @desc добавляет/обновляет информацию о департаменте
      */
-    public function branchImportUpdate()
+    public function branchInsertUpdate()
     {
         $orgModel = new Organization();
 
@@ -263,7 +311,7 @@ class ImportController extends Controller
     /**
      * @desc добавляет/обновляет информацию об отделе
      */
-    public function depImportUpdate()
+    public function depInsertUpdate()
     {
         $orgModel = new Organization();
 
