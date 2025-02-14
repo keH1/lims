@@ -20,6 +20,7 @@
                 <option value="5">Вне ОА</option>
                 <option value="1">Актуальные</option>
                 <option value="7">Не актуальные</option>
+                <option value="8">Незаполненные</option>
             </select>
         </div>
 
