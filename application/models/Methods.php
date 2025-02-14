@@ -529,7 +529,7 @@ class Methods extends Model
                 }
 
                 // Статус
-                if ( isset($filter['search']['stage']) ) {
+                if ( isset($filter['search']['stage']) ) { // || stage = 9 (Все госты)
                     if ( $filter['search']['stage'] == 1 ) { // Актуальные
                         $where .= "m.is_actual = 1 AND ";
                     }
@@ -544,6 +544,9 @@ class Methods extends Model
                     }
                     if ( $filter['search']['stage'] == 7 ) { // Не актуальные
                         $where .= "m.is_actual = 0 AND ";
+                    }
+                    if ( $filter['search']['stage'] == 8 ) { // Незаполненные
+                        $where .= "m.gost_id IS NULL AND ";
                     }
                 } else {
                     $where .= "m.is_actual = 1 AND ";
@@ -624,8 +627,8 @@ class Methods extends Model
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
                     WHERE {$where}
-                    ORDER BY  {$order['by']} {$order['dir']} {$limit}"
-        );
+                    ORDER BY {$order['by']} {$order['dir']} {$limit}
+        ");
 
         $dataTotal = $this->DB->Query(
             "SELECT distinct *
@@ -638,6 +641,7 @@ class Methods extends Model
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
                     WHERE m.is_actual = 1"
         )->SelectedRowsCount();
+
         $dataFiltered = $this->DB->Query(
             "SELECT distinct *
                     FROM ulab_gost g

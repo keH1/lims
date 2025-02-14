@@ -15,11 +15,13 @@
     <div class="row">
         <div class="col">
             <select id="selectStage" class="form-control filter filter-stage">
+                <option value="9">Все госты</option>
                 <option value="2">В ОА</option>
                 <option value="3">РОА</option>
                 <option value="5">Вне ОА</option>
                 <option value="1">Актуальные</option>
                 <option value="7">Не актуальные</option>
+                <option value="8">Незаполненные</option>
             </select>
         </div>
 
