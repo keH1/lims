@@ -2867,6 +2867,103 @@ class DocumentGenerator extends Model
 
 	}
 
+    /**
+     * @param $year
+     * @param $type
+     * @param null $oa
+     * @param null $month
+     */
+    public function VerificationGraph($year, $type, $oa = null, $month = null)
+    {
+        $oborudModel = new Oborud();
+
+
+        switch ($type) {
+            case '1':
+                $type_control = 'POVERKA';
+                $type_oborud = 'SI';
+                $doc_name = "План графика поверки, калибровки СИ за {$year} год.docx";
+                $pathDoc = $_SERVER['DOCUMENT_ROOT'] . '/poverkaSINew.docx';
+                $fileDoc = $_SERVER['DOCUMENT_ROOT'] . '/poverkaSINewTest.docx';
+                break;
+            case '2':
+                $type_control = 'TECH_CHAR';
+                $type_oborud = 'VO';
+                $doc_name = "План графика проверки ВО за {$year}.docx";
+                $pathDoc = $_SERVER['DOCUMENT_ROOT'] . '/poverkaVONew.docx';
+                $fileDoc = $_SERVER['DOCUMENT_ROOT'] . '/poverkaVONewTest.docx';
+                break;
+            case '3':
+                $type_control = 'ATTESTATION';
+                $type_oborud = 'IO';
+                $doc_name = "План графика атестации ИО за {$year}.docx";
+                $pathDoc = $_SERVER['DOCUMENT_ROOT'] . '/attestatIONew.docx';
+                $fileDoc = $_SERVER['DOCUMENT_ROOT'] . '/attestatIONewTest.docx';
+                break;
+            case '4':
+                $type_control = 'TECH_CHAR';
+                $type_oborud = 'TS';
+                $doc_name = 'Проведения измерений значений нормированных параметров технических средств (вспомогательное оборудование)';
+                break;
+        }
+
+        $where = '';
+
+        if ($oa) {
+            $where .= "bo.IN_AREA = 1 and ";
+        }
+
+        if ($month) {
+            $where .= "(boc.date_end - interval 2 month) <= NOW() and ";
+        }
+
+        $where .= 1;
+
+        $newTemplate = new \PhpOffice\PhpWord\TemplateProcessor($pathDoc);
+
+        $result = [];
+        $k = 1;
+
+        $res = $this->DB->Query("SELECT bo.*, r.NAME as rName, r.Number as rNumber,
+       						boc.date_end as pLast, boc.date_start as pNow FROM `ba_oborud` as bo
+							left join ROOMS as r on bo.roomnumber = r.ID
+							left join ba_oborud_certificate as boc on boc.oborud_id = bo.ID and boc.is_actual = 1
+							where `IDENT`='{$type_oborud}' AND `METR_CONTROL`='{$type_control}'
+                            AND `roomnumber` != '9' AND `roomnumber` != '10' AND `roomnumber` != '11'
+                            AND LONG_STORAGE = 0 AND is_decommissioned = 0 and NO_METR_CONTROL != 1
+                            and year(boc.date_end) = {$year}
+							and {$where}
+							order by boc.date_end");
+
+        while ($row = $res->fetch()) {
+            $result[] = [
+                'num' => $k,
+                'object' => $row['OBJECT'],
+                'type_oborud' => $row['TYPE_OBORUD'],
+                'gosreestr' => $row['GOSREESTR'],
+                'reg_num' => $row['REG_NUM'],
+                'factory_number' => $row['FACTORY_NUMBER'],
+                'year' => $row['YEAR'],
+                'class' => $row['сlass_precision_and_accuracy'],
+                'measuring_range' => $row['measuring_range'],
+                'mc_interval' => $row['MC_INTERVAL'],
+                'poverka_last' => date('d.m.Y', strtotime($row['pNow'])),
+                'poverka_place' => $row['POVERKA_PLACE'],
+                'poverka' => date("d.m.Y", strtotime($row['pLast'])),
+                'place' => "{$row['rName']} {$row['rNumber']}"
+            ];
+            $k++;
+        }
+
+        $newTemplate->cloneRowAndSetValues('num', $result);
+        $newTemplate->setValue('year_graph', $year);
+        $newTemplate->saveAs($fileDoc);
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Disposition: attachment; filename="' . $doc_name . '"');
+        readfile($fileDoc);
+
+    }
 
     /**
      * @param $protocolId
