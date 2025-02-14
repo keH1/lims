@@ -31,7 +31,7 @@ $(function ($) {
             {
                 data: 'name',
                 render: function (data, type, item) {
-                    return `<a href="/ulab/import/lab/${item.ID}">${item.NAME}</a>`
+                    return `<a href="/ulab/import/labProfile/${item.ID}">${item.NAME}</a>`
                 }
             },
             {
@@ -85,10 +85,12 @@ $(function ($) {
                 beforeOpen: function() {
                     $form.find('#form_entity_name').val(data.name)
                     $form.find('#form_entity_id').val(data.id)
+                    $form.find('#form_entity_head').val(data.head_user_id).trigger('change')
                 },
                 afterClose: function() {
                     $form.find('#form_entity_name').val('')
                     $form.find('#form_entity_id').val('')
+                    $form.find('#form_entity_head').val('')
                 }
             }
         })

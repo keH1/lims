@@ -86,10 +86,12 @@ $(function ($) {
                 beforeOpen: function() {
                     $form.find('#form_entity_name').val(data.name)
                     $form.find('#form_entity_id').val(data.id)
+                    $form.find('#form_entity_head').val(data.head_user_id).trigger('change')
                 },
                 afterClose: function() {
                     $form.find('#form_entity_name').val('')
                     $form.find('#form_entity_id').val('')
+                    $form.find('#form_entity_head').val('')
                 }
             }
         })
