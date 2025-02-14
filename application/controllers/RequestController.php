@@ -162,6 +162,11 @@ class RequestController extends Controller
             //// конец блока заполения формы
         }
 
+        
+        // echo '<pre>';
+        // print_r($this->data['request']['assign']);
+        // die;
+
         //// блок заполненя select и datalist
 
         $this->data['contracts'] = $request->getContractsByCompanyId($deal['COMPANY_ID']);
@@ -1757,5 +1762,21 @@ class RequestController extends Controller
         }
 
         echo json_encode($company->getByInnFromBx(trim($_POST['INN'])), JSON_UNESCAPED_UNICODE);
+    }
+    
+    /**
+     * @desc Получает дополнительных пользователей для выбора ответственного
+     * в request/new и request/edit
+     */
+    public function getAssignedUserListAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var User $user */
+        $user = $this->model('User');
+
+        $data = $user->getAssignedUserList();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
