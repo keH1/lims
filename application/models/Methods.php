@@ -529,7 +529,7 @@ class Methods extends Model
                 }
 
                 // Статус
-                if ( isset($filter['search']['stage']) ) {
+                if ( isset($filter['search']['stage']) ) { // || stage = 9 (Все госты)
                     if ( $filter['search']['stage'] == 1 ) { // Актуальные
                         $where .= "m.is_actual = 1 AND ";
                     }
@@ -610,12 +610,6 @@ class Methods extends Model
 
         $where .= "1 ";
 
-        if ($filter['search']['stage'] == 8) {
-            $orderBy = "";
-        } else {
-            $orderBy = "ORDER BY {$order['by']} {$order['dir']} {$limit}";
-        }
-
         $result = [];
 
         $data = $this->DB->Query(
@@ -633,7 +627,7 @@ class Methods extends Model
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
                     WHERE {$where}
-                    {$orderBy}
+                    ORDER BY {$order['by']} {$order['dir']} {$limit}
         ");
 
         $dataTotal = $this->DB->Query(
