@@ -440,7 +440,7 @@ class Requirement extends Model
                     INNER JOIN DOGOVOR d ON d_c.ID_CONTRACT=d.ID 
                     WHERE d_c.ID_DEAL = {$dealId}")->Fetch();
 
-        if (count($contract?? []) > 0) {
+        if (!empty($contract)) {
             $contract['DATE'] = date("d.m.Y", strtotime($contract['DATE']));
             $result = $contract;
         }
