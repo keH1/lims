@@ -241,6 +241,28 @@ class Controller
         return $this->response(true);
     }
 
+    /**
+     * @param $assigneds
+     * @return array
+     */
+    protected function validateAssigned(array $assigneds): array
+    {
+        $inputArray = array_count_values($assigneds);
+
+        foreach ($inputArray as $value) {
+            if (trim($value) > 1) {
+                $duplicateValues = true;
+                break;
+            }
+        }
+        if (@$duplicateValues) {
+            return $this->response(false, [], "В поле Ответственный не могут быть два одинаковых ответственных. Заявка не сохранена");
+        }
+
+        return $this->response(true);
+    }
+
+
 
     /**
      * Стандартизированный ответ на всё
