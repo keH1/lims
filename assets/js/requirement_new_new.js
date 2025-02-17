@@ -68,6 +68,10 @@ $(function ($) {
     $inputTotal = $('#price-total')
     $inputDiscount = $('#price_discount')
 
+    $('#inlineRadio22, #inlineRadio21').change(function () {
+        $('#compliance').prop('disabled', !$('#inlineRadio22').prop('checked'))
+    })
+
     $body.on('change', '.material-check', function () {
         let materialId = $(this).data('material_id')
         $body.find(`.material-id-${materialId}`).prop("checked", $(this).prop("checked"))
