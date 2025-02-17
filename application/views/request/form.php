@@ -404,7 +404,7 @@
                     </datalist> -->
                 </div>
                 <div class="col-sm-2">
-                    <button class="btn btn-primary add_assigned btn-add-del" type="button">
+                    <button class="btn btn-primary add_assigned btn-add-del" <?= empty($this->data['request']['assign'][0]['user_id']) ? "disabled" : "" ?> type="button">
                         <i class="fa-solid fa-plus icon-fix"></i>
                     </button>
                 </div>

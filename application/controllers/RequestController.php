@@ -162,11 +162,6 @@ class RequestController extends Controller
             //// конец блока заполения формы
         }
 
-        
-        // echo '<pre>';
-        // print_r($this->data['request']['assign']);
-        // die;
-
         //// блок заполненя select и datalist
 
         $this->data['contracts'] = $request->getContractsByCompanyId($deal['COMPANY_ID']);
@@ -212,6 +207,12 @@ class RequestController extends Controller
         }
         foreach ($_POST['id_assign'] as $k => $ass) {
             $_SESSION['request_post']['assign'][$k]['user_id'] = $ass;
+        }
+
+        $valid = $this->validateAssigned($_POST['ASSIGNED']);
+        if ( !$valid['success'] ) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
         }
 
         //// блок проверок
