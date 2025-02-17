@@ -2637,7 +2637,7 @@ class DocumentGenerator extends Model
             $converter  =  new OfficeConverter($fullPathDocx, $fullPathPDF);
             $converter->convertTo($outputFile);
         } catch (Error $e) {
-            $this->pre($e);
+//            $this->pre($e);
         }
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
