@@ -147,4 +147,17 @@ class GeneratorController extends Controller
 //
 //		$generator->getContent();
 //	}
+
+    public function getVerificationGraph()
+    {
+        /** @var DocumentGenerator $generator */
+        $generator = $this->model('DocumentGenerator');
+
+        $year = $_POST['year'];
+        $type = (int)$_POST['type'];
+        $oa = $_POST['in_oa'];
+        $month = $_POST['month2'];
+
+        $generator->VerificationGraph($year, $type, $oa, $month);
+    }
 }
