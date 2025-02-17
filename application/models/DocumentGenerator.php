@@ -10,6 +10,11 @@ use \Bitrix\Main\Loader;
 
 class DocumentGenerator extends Model
 {
+    // ширина документа в твипах
+    protected const WIDTH_DOC_TWIP = 9780;
+    // ширина документа альбомная версия в твипах
+    protected const WIDTH_DOC_ALBUM_TWIP = 14428;
+
     public function __construct()
     {
         parent::__construct();
@@ -17,6 +22,25 @@ class DocumentGenerator extends Model
         Loader::includeModule('documentgenerator');
     }
 
+    /**
+     * @param int $percent
+     * @param bool $isAlbum
+     * @return float|int
+     */
+    protected static function percentToTwips($percent = 100, $isAlbum = false)
+    {
+        if ($percent <= 0) {
+            return 0;
+        }
+
+        $width = $isAlbum ? self::WIDTH_DOC_ALBUM_TWIP : self::WIDTH_DOC_TWIP;
+
+        if ($percent >= 100) {
+            return $width;
+        }
+
+        return $width * ($percent / 100);
+    }
 
     /**
 	 * * Подготовка данных для коммерческого предложения
@@ -2867,6 +2891,134 @@ class DocumentGenerator extends Model
 
 	}
 
+    /**
+     * @param $year
+     * @param $type
+     * @param null $oa
+     * @param null $month
+     */
+    public function InventoryList($inform, $oa = '0')
+    {
+        $oborudModel = new Oborud();
+
+        $pathDoc = $_SERVER['DOCUMENT_ROOT'] . '/testBD/inventoryList.docx';
+        $fileDoc = $_SERVER['DOCUMENT_ROOT'] . '/testBD/inventoryListDoc.docx';
+
+
+        $styleTable = array('borderSize' => 3, 'cellMarginLeft' => 0, 'cellMarginRight' => 0, 'borderColor' => '000000', 'leftFromText' => 0, 'rightFromText' => 0, 'bottomFromText' => 0);
+        $cellRowSpan = array('vMerge' => 'restart', 'valign' => 'center');
+        $cellRowContinue = array('vMerge' => 'continue');
+        $cellColSpan2 = array('gridSpan' => 2, 'valign' => 'center');
+        $cellColSpan3 = array('gridSpan' => 3, 'valign' => 'center');
+        $cellColSpan4 = array('gridSpan' => 4, 'valign' => 'center');
+        $cellColSpan6 = array('gridSpan' => 6, 'valign' => 'center');
+        $cellColSpan5 = array('gridSpan' => 5, 'valign' => 'center');
+        $cellColSpan8 = array('gridSpan' => 8, 'valign' => 'center');
+        $cellColSpan9 = array('gridSpan' => 9, 'valign' => 'center');
+        $FontStyle = ['size' => 10,
+            'name' => 'Times New Roman'
+        ];
+        $FontStyleTitle = ['size' => 10,
+            'name' => 'Times New Roman',
+            'bold' => true
+        ];
+        $paragraphStyle = [
+            'spaceAfter' => 0,
+            'spaceBefore' => 0,
+            'space' => ['after' => 0],
+            'spacing' => 10,
+            'lineHeight' => 1,
+            'align' => 'center',
+            'indentation' => ['left' => 0, 'right' => 0]
+        ];
+        $paragraphStyleText = [
+            'indentation' => ['left' => 700]
+        ];
+        $paragraphStyleText1 = [
+            'indentation' => ['left' => 825]
+        ];
+
+        $cellHCentered = array('align' => 'center');
+        $cellAllCentered = array('align' => 'center', 'valign' => 'center');
+        $cellVCentered = array('valign' => 'center');
+
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $template = new \PhpOffice\PhpWord\TemplateProcessor($pathDoc);
+
+        $result = [];
+        $k = 1;
+
+        $info = [
+            'date_inv' => date('d.m.Y', strtotime($inform['dateInv'])),
+            'dateStart' => date('d.m.Y', strtotime($inform['dateInvStart'])),
+            'directive_date' => date('d.m.Y', strtotime($inform['directive_date'])),
+            'directive' => $inform['directive'],
+            'date' => date('d.m.Y')
+        ];
+
+        $in_oa = $oa == 1 ? 'and bo.IN_AREA = 1' : '';
+
+
+        $res = $this->DB->Query("SELECT bo.id, bo.NAME, bo.IDENT, FACTORY_NUMBER, REG_NUM, OBJECT, TYPE_OBORUD, place_of_installation_or_storage as lab_id, 
+										ID_ASSIGN1, bl.short_name,concat(u.LAST_NAME, ' ', left(u.NAME, 1), '.', left(u.SECOND_NAME, 1)) as assigna, u.WORK_POSITION 
+       									from ba_oborud as bo
+										left join ba_laba as bl on bo.place_of_installation_or_storage = bl.ID
+										left join b_uts_iblock_5_section as lab on lab.VALUE_ID = bl.id_dep
+										left join b_user as u on lab.UF_HEAD = u.ID
+										where `IDENT` IN ('SI','VO','IO') and (SPISANIE is null or SPISANIE = '') and
+										LONG_STORAGE = 0 and bo.place_of_installation_or_storage != '' {$in_oa} 
+										and bo.is_vagon = 0
+ 										ORDER BY `place_of_installation_or_storage`");
+        $i = 1;
+        while ($row = $res->fetch()) {
+            $result[$row['lab_id']]['lab_name'] = $row['short_name'];
+            $result[$row['lab_id']]['boss_name'] = $row['assigna'];
+            $result[$row['lab_id']]['boss_position'] = $row['WORK_POSITION'];
+            $result[$row['lab_id']][] = $row;
+        }
+
+        $styleTable = array('alignment' => 'center', 'borderSize' => 5, 'borderColor' => '000000', 'width' => '100%');
+        $section = $phpWord->addSection();
+        $table_oborud = $section->addTable($styleTable);
+
+        $table_oborud->addRow(null, array('tblHeader' => true));
+        $table_oborud->addCell(self::percentToTwips(5), $cellAllCentered)->addText('№п/п', array('bold' => true, 'size' => 12), $cellHCentered);
+        $table_oborud->addCell(self::percentToTwips(50), $cellAllCentered)->addText('Наименование', array('bold' => true,'size' => 12), $cellHCentered);
+        $table_oborud->addCell(self::percentToTwips(20), $cellAllCentered)->addText('Зав. №', array('bold' => true,'size' => 12), $cellHCentered);
+        $table_oborud->addCell(self::percentToTwips(20), $cellAllCentered)->addText('Инв.№', array('bold' => true,'size' => 12), $cellHCentered);
+
+        foreach ($result as $val) {
+            $table_oborud->addRow();
+            $table_oborud->addCell(null, $cellColSpan4)->addText($val['lab_name'], array('bold' => true, 'size' => 11), $cellHCentered);
+            foreach ($val as $key=>$oborud) {
+                if (in_array($key, ['lab_name', 'boss_name', 'boss_position'])) {continue;}
+                $oborud['OBJECT'] = $oborud['OBJECT'] ? htmlspecialchars(trim($oborud['OBJECT']), ENT_QUOTES, 'UTF-8') : '';
+                $table_oborud->addRow();
+                $table_oborud->addCell(self::percentToTwips(5))->addText($i, array('size' => 11), $cellHCentered);
+                $table_oborud->addCell(self::percentToTwips(50))->addText("{$oborud['OBJECT']} {$oborud['TYPE_OBORUD']}", array('size' => 11));
+                $table_oborud->addCell(self::percentToTwips(25))->addText($oborud['FACTORY_NUMBER'], array('size' => 11), $cellHCentered);
+                $table_oborud->addCell(self::percentToTwips(15))->addText($oborud['REG_NUM'], array('size' => 11), $cellHCentered);
+                $i++;
+            }
+            $table_oborud->addRow();
+            $table_oborud->addCell(null, $cellColSpan4)->addText("Материально ответственное лицо: {$val['boss_position']} <w:br/>
+			<w:br/>{$val['boss_name']}", array('bold' => true, 'size' => 11));
+        }
+
+        $countStr = StringHelper::numberToRussian($i-1);
+
+        $info['countStr'] = $countStr;
+
+        $template->setComplexBlock('table_oborud', $table_oborud);
+        $template->setValues($info);
+
+        $template->saveAs($fileDoc);
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Disposition: attachment; filename=Инвентарная ведомость.docx');
+        readfile($fileDoc);
+
+    }
 
     /**
      * @param $protocolId
