@@ -164,6 +164,12 @@ class Organization extends Model
             return false;
         }
 
+        if ( isset($data['ip']) ) {
+            $data['ip'] = 1;
+        } else {
+            $data['ip'] = 0;
+        }
+
         $sqlData = $this->prepearTableData('ulab_organization', $data);
 
         return $this->DB->Update("ulab_organization", $sqlData, "where id = {$orgId}");
@@ -426,6 +432,19 @@ class Organization extends Model
         $sqlData = $this->prepearTableData('ulab_department', $data);
 
         $this->DB->Update("ulab_department", $sqlData, "where id = {$depId}");
+    }
+
+
+    /**
+     * @desc Обновляет данные об отделе
+     * @param $labId
+     * @param $data
+     */
+    public function setLabInfo($labId, $data)
+    {
+        $sqlData = $this->prepearTableData('ba_laba', $data);
+
+        $this->DB->Update("ba_laba", $sqlData, "where ID = {$labId}");
     }
 
 

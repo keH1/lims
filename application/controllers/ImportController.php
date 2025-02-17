@@ -304,6 +304,28 @@ class ImportController extends Controller
 
 
     /**
+     * @desc обновляет информацию о лаборатории
+     */
+    public function labUpdate()
+    {
+        $orgModel = new Organization();
+
+        $id = (int)$_POST['lab_id'];
+
+        $orgModel->setLabInfo($id, $_POST['form']);
+
+        if ( !empty($_POST['form']['HEAD_ID']) ) {
+            $data = ['lab_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['HEAD_ID'], $data);
+        }
+
+        $this->showSuccessMessage("Данные лаборатории обновлены");
+
+        $this->redirect("/import/labProfile/{$id}");
+    }
+
+
+    /**
      * @desc добавляет/обновляет информацию об организации
      */
     public function orgInsertUpdate()

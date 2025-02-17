@@ -97,5 +97,15 @@
         <input type="text" class="form-control" id="form_entity_name" name="form[name]" value="" required>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_head">Руководитель</label>
+        <select id="form_entity_head" class="form-control select2" name="form[HEAD_ID]">
+            <option value="-1">Не выбран</option>
+            <?php foreach ($this->data['users'] as $user): ?>
+                <option value="<?=$user['ID']?>"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
     <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
