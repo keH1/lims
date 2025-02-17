@@ -83,9 +83,9 @@ $(function ($) {
             fixedContentPos: false,
             callbacks: {
                 beforeOpen: function() {
-                    $form.find('#form_entity_name').val(data.name)
-                    $form.find('#form_entity_id').val(data.id)
-                    $form.find('#form_entity_head').val(data.head_user_id).trigger('change')
+                    $form.find('#form_entity_name').val(data.NAME)
+                    $form.find('#form_entity_id').val(data.ID)
+                    $form.find('#form_entity_head').val(data.HEAD_ID).trigger('change')
                 },
                 afterClose: function() {
                     $form.find('#form_entity_name').val('')
