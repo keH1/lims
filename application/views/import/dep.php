@@ -17,7 +17,7 @@
     </header>
     <div class="panel-body">
         <form action="/ulab/import/depUpdate" method="post" class="form-horizontal">
-            <input type="hidden" name="dep_id" value="<?=$this->data['info']['id']?>">
+            <input type="hidden" name="dep_id" id="dep_id" value="<?=$this->data['info']['id']?>">
 
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Организация</label>

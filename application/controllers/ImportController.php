@@ -196,6 +196,48 @@ class ImportController extends Controller
 
 
     /**
+     * @desc Перенаправляет пользователя на страницу «Профиль лабооратории»
+     * @param $id - ид лаборатории
+     */
+    public function labProfile($id)
+    {
+        if ( empty($id) ) {
+            $this->redirect('/request/list/');
+        }
+
+        $orgModel = new Organization();
+        $userModel = new User();
+
+        // TODO: пока убираю ограничения, надо лучше продумать
+//        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+//            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+//
+//            if (empty($data['org_id'])) {
+//                $this->redirect('/request/list/');
+//            }
+//        }
+
+        $labId = (int) $id;
+
+        $this->data['title'] = 'Профиль лаборатории';
+
+        $this->data['users'] = $userModel->getUsers();
+        $this->data['info'] = $orgModel->getLabInfo($labId);
+        $this->data['dep_info'] = $orgModel->getDepInfo($this->data['info']['dep_id']);
+        $this->data['branch_info'] = $orgModel->getBranchInfo($this->data['dep_info']['branch_id']);
+        $this->data['org_info'] = $orgModel->getOrgInfo($this->data['branch_info']['organization_id']);
+
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
+
+        $this->addJs("/assets/js/import/lab_profile.js?v=" . rand());
+
+        $this->view('lab_profile', '', 'template_journal');
+    }
+
+
+    /**
      * @desc обновляет информацию об организации
      */
     public function orgUpdate()
@@ -2432,7 +2474,7 @@ class ImportController extends Controller
     /**
      * @desc Получает журнал организаций
      */
-    public function getorganizationJournalAjax()
+    public function getOrganizationJournalAjax()
     {
         global $APPLICATION;
 
@@ -2510,7 +2552,7 @@ class ImportController extends Controller
             $filter['order']['dir'] = $_POST['order'][0]['dir'];
         }
 
-        $data = $orgModel->getBranchJournal($filter);
+        $data = $orgModel->getBranchJournal((int) $_POST['id'], $filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -2560,7 +2602,7 @@ class ImportController extends Controller
             $filter['order']['dir'] = $_POST['order'][0]['dir'];
         }
 
-        $data = $orgModel->getDepJournal($filter);
+        $data = $orgModel->getDepJournal((int) $_POST['id'], $filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];

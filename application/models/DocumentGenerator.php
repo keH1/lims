@@ -108,15 +108,8 @@ class DocumentGenerator extends Model
 			'COMMENT_KP' => !empty($dealInformation['COMMENT_KP']) ? $dealInformation['COMMENT_KP'] : '',
 		];
 
-
 		$arrGost = $gostModel->getGostMaterialByDealID($dealID);
 
-//		        if ($_SESSION['SESS_AUTH']['USER_ID'] == 61) {
-//        	echo '<pre>';
-//        	print_r($arrGost);
-//        	exit();
-//		}
-//		$this->pre($arrGost);
 		$this->createCommercialOfferDocument($CommInformation, $arrGost);
 	}
 
@@ -2619,8 +2612,6 @@ class DocumentGenerator extends Model
 		$outputFile = $info['curDate'].".pdf";
 		$outputPath = "archive_{$type}/".$info['id']."/";
 
-
-
 		$fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
 		$fullPathPDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$outputPath;
 
@@ -2633,11 +2624,19 @@ class DocumentGenerator extends Model
 			mkdir($newDirectory, 0777, true);
 		}
 
+
+
 		$template->setValues($info);
+
+
 
 		$template->setComplexBlock('table', $table);
 
+
+
 		$template->saveAs($file);
+
+
 
 		if ($type === 'kp') {
 		    $name_file = 'КП';
@@ -2647,25 +2646,45 @@ class DocumentGenerator extends Model
             $name_file = 'CO';
         }
 
+        $newDirectory = $_SERVER['DOCUMENT_ROOT'] ."/protocol_generator/archive_{$type}/" . $info['id'];
+
+        if( !is_dir( $newDirectory ) ) {
+            mkdir($newDirectory, 0777, true);
+        }
+
+        $fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
+        $fullPathPDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$outputPath;
+
+//		$this->pre($fullPathDocx, false);
+//		$this->pre($fullPathPDF);
+        try {
+            $converter  =  new OfficeConverter($fullPathDocx, $fullPathPDF);
+            $converter->convertTo($outputFile);
+        } catch (Error $e) {
+//            $this->pre($e);
+        }
+
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 		header('Content-Disposition: attachment; filename="' . $name_file . ' №' . $info['id'] . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
 		readfile($file);
 
-		$newDirectory = $_SERVER['DOCUMENT_ROOT'] ."/protocol_generator/archive_{$type}/" . $info['id'];
-
-		if( !is_dir( $newDirectory ) ) {
-			mkdir($newDirectory, 0777, true);
-		}
-
-		$fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
-		$fullPathPDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$outputPath;
-
-//		$this->pre($fullPathDocx, false);
-//		$this->pre($fullPathPDF);
-		$converter  =  new OfficeConverter($fullPathDocx, $fullPathPDF);
-		$converter -> convertTo($outputFile);
-
-
+//		$newDirectory = $_SERVER['DOCUMENT_ROOT'] ."/protocol_generator/archive_{$type}/" . $info['id'];
+//
+//		if( !is_dir( $newDirectory ) ) {
+//			mkdir($newDirectory, 0777, true);
+//		}
+//
+//		$fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
+//		$fullPathPDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$outputPath;
+//
+////		$this->pre($fullPathDocx, false);
+////		$this->pre($fullPathPDF);
+//        try {
+//            $converter  =  new OfficeConverter($fullPathDocx, $fullPathPDF);
+//            $converter->convertTo($outputFile);
+//        } catch (Error $e) {
+//            $this->pre($e);
+//        }
 	}
 
 	/**
