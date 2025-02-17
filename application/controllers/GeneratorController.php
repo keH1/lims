@@ -120,6 +120,22 @@ class GeneratorController extends Controller
 		$this->showSuccessMessage("Счет-оферта сформирован");
 	}
 
+    public function getInventoryList()
+    {
+        /** @var DocumentGenerator $generator */
+        $generator = $this->model('DocumentGenerator');
+
+        $inform = [
+            'dateInv' => !empty($_POST['inputDateEnd']) ? $_POST['inputDateEnd'] : date('Y-m-d'),
+            'dateInvStart' => !empty($_POST['invDateStart']) ? $_POST['invDateStart'] : date('Y-m-d'),
+            'directive' => !empty($_POST['directive']) ? $_POST['directive'] : '',
+            'directive_date' => !empty($_POST['directive_date']) ? $_POST['directive_date'] : date('Y-m-d'),
+        ];
+        $oa = $_POST['in_oa'] ?: 0;
+
+        $generator->InventoryList($inform, $oa);
+    }
+
 
 //    /**
 //     *

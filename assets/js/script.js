@@ -221,6 +221,11 @@ $(function ($) {
     $body.on("click", "button.add_assigned", function () {
         let $formGroupContainer = $(this).parents('.form-group')
         let countAddedAssigned = $('.added_assigned').length + 1
+        let arrAssigned = []
+
+        $('.assigned-select').each(function(index, selectVal) {
+            arrAssigned.push($(selectVal).val())
+        })
 
         $.ajax({
             method: 'POST',
@@ -229,7 +234,9 @@ $(function ($) {
                 users = JSON.parse(data)
 
                 let option = '<option value="" disabled selected>Выберите ответственного</option>'
-                users.forEach((user) => {
+
+                const notIntersectingUsers = users.filter(value => !arrAssigned.includes(value.ID))
+                notIntersectingUsers.forEach((user) => {
                     option += `<option value="${user.ID}">${user.LAST_NAME + " " + user.NAME}</option>`
                 })
 
@@ -293,6 +300,7 @@ $(function ($) {
             $hiddenInput = $('#' + $select.attr('id') + '-hidden')
 
         $hiddenInput.val($($select).val())
+        $(this).parents('.form-group').find('.add_assigned').removeAttr('disabled')
     })
 
     let companyId = $('input[name="company_id"]').val()

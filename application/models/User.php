@@ -513,7 +513,7 @@ class User extends Model
         $result = [];
 
         $res = $this->DB->Query("SELECT *  FROM `b_user` u 
-						WHERE u.`ID` = 61")->Fetch();
+						WHERE u.`ID` =" . $id)->Fetch();
 
         $name = trim($res['NAME']);
         $lastName = trim($res['LAST_NAME']);

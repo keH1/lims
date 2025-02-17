@@ -1206,7 +1206,7 @@ class Lab extends Model
         $result = [];
 
         $data = $this->DB->Query(
-            "SELECT bl.ID, bl.NAME,
+            "SELECT bl.ID, bl.NAME, bl.HEAD_ID, bl.dep_id, 
                     IFNULL(
                         GROUP_CONCAT(CONCAT(SUBSTRING(bu.NAME, 1, 1), '. ', bu.LAST_NAME) ORDER BY bu.NAME ASC SEPARATOR ', '),
                         '-'

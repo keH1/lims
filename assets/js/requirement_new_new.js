@@ -68,6 +68,10 @@ $(function ($) {
     $inputTotal = $('#price-total')
     $inputDiscount = $('#price_discount')
 
+    $('#inlineRadio22, #inlineRadio21').change(function () {
+        $('#compliance').prop('disabled', !$('#inlineRadio22').prop('checked'))
+    })
+
     $body.on('change', '.material-check', function () {
         let materialId = $(this).data('material_id')
         $body.find(`.material-id-${materialId}`).prop("checked", $(this).prop("checked"))
@@ -284,6 +288,33 @@ $(function ($) {
         $btnAddMethods.addClass('disabled')
     })
 
+    // применить скидку
+    $body.on('click', '.discount-apply', function () {
+        let totalPrice = parseFloat($('#price-total').val())
+        let discountVal = parseFloat($('.discount-input').val())
+        let discountType = $('.discount-type').val()
+
+        let discountPrice = 0
+
+        if ( discountType == 'percent' ) {
+            if ( discountVal < 0 ) {
+                discountVal = 0
+            } else if ( discountVal > 100 ) {
+                discountVal = 100
+            }
+
+            discountPrice = totalPrice - totalPrice * discountVal / 100
+        } else if ( discountType == 'rub' && discountVal >= 0 ) {
+            discountPrice = totalPrice - discountVal
+        }
+
+        if (discountPrice < 0) {
+            discountPrice = 0
+        }
+
+        $('#price_discount').val(discountPrice.toFixed(2))
+        $strTotal.text(discountPrice.toFixed(2) + ' руб.')
+    })
 
     $body.on('click', '.popup-edit-probe-form', function (e) {
         let data = journalDataTable.row(e.target.closest('tr')).data()
