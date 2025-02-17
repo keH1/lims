@@ -303,7 +303,7 @@
                         </div>
                     </div>
 
-                    <div class="col">
+                    <div class="col flex-grow-1 min-w-0v">
                         <div class="input-group mb-2">
                             <span class="input-group-text">Показать: </span>
                             <select id="filter-material" class="form-control select2 filter">

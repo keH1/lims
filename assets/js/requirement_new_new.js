@@ -277,6 +277,10 @@ $(function ($) {
         })
     })
 
+    $(window).on('resize', function () {
+        $('#journal_material_2').DataTable().columns.adjust();
+    });
+
     $('.filter').on('input', function () {
         journalDataTable.ajax.reload()
         journalDataTable.draw()
@@ -865,7 +869,7 @@ function createChild(row) {
     probeId.push(rowData.id)
 
     // Таблица, которую мы преобразуем в DataTable
-    let table = $('<table class="table table-striped journal text-start table-hover table-sm" />')
+    let table = $('<table class="table table-striped journal text-start table-hover table-sm w-100" />')
 
     let thead = `
         <thead>
