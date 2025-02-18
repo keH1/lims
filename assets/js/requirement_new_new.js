@@ -118,6 +118,7 @@ $(function ($) {
         theme: 'bootstrap-5',
         templateResult: formatState,
         templateSelection: formatState,
+        width: '100%',
     })
 
     $('#journal_material_2 tbody').on('click', 'td.act-details-control', function () {
