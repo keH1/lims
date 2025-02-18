@@ -22,14 +22,14 @@ $(function ($) {
             data: function ( d ) {
                 d.id = $('#dep_id').val()
             },
-            url : '/ulab/import/getLabJournalAjax/',
+            url : '/ulab/import/getLabNewJournalAjax/',
             dataSrc: function (json) {
                 return json.data
             }
         },
         columns: [
             {
-                data: 'name',
+                data: 'NAME',
                 render: function (data, type, item) {
                     return `<a href="/ulab/import/labProfile/${item.ID}">${item.NAME}</a>`
                 }

@@ -412,13 +412,14 @@ class Organization extends Model
 
 
     /**
-     * @desc Получает данные о лаборатории
-     * @param int $labId - ид лаборатории
-     * @return array|mixed
+     * @desc Добавляет данные об отделе
+     * @param $data
      */
-    public function getLabInfo(int $labId)
+    public function addDepInfo($data)
     {
-        return $this->DB->Query("select * from ba_laba where ID = {$labId}")->Fetch();
+        $sqlData = $this->prepearTableData('ulab_department', $data);
+
+        $this->DB->Insert('ulab_department', $sqlData);
     }
 
 
@@ -436,7 +437,18 @@ class Organization extends Model
 
 
     /**
-     * @desc Обновляет данные об отделе
+     * @desc Получает данные о лаборатории
+     * @param int $labId - ид лаборатории
+     * @return array|mixed
+     */
+    public function getLabInfo(int $labId)
+    {
+        return $this->DB->Query("select * from ba_laba where ID = {$labId}")->Fetch();
+    }
+
+
+    /**
+     * @desc Обновляет данные о лабе
      * @param $labId
      * @param $data
      */
@@ -449,14 +461,14 @@ class Organization extends Model
 
 
     /**
-     * @desc Добавляет данные об отделе
+     * @desc Обновляет данные о лабе
      * @param $data
      */
-    public function addDepInfo($data)
+    public function addLabInfo($data)
     {
-        $sqlData = $this->prepearTableData('ulab_department', $data);
+        $sqlData = $this->prepearTableData('ba_laba', $data);
 
-        $this->DB->Insert('ulab_department', $sqlData);
+        $this->DB->Insert("ba_laba", $sqlData);
     }
 
 
