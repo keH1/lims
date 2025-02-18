@@ -116,7 +116,7 @@ $(function ($) {
         })
 
 
-        $('body').on('change', '.change-is-used', function () {
+        journalDataTable.on('change', '.change-is-used', function () {
             let id = $(this).data('id')
 
             $.ajax({
@@ -128,11 +128,12 @@ $(function ($) {
                 dataType: 'json',
                 success: function (data) {
 
+                },
+                complete: function(data) {
+                    // journalDataTable.ajax.reload()
+                    // journalDataTable.draw()
                 }
             })
-
-            journalDataTable.ajax.reload()
-            journalDataTable.draw()
         })
 
 
@@ -147,7 +148,6 @@ $(function ($) {
                     url: '/ulab/reference/syncMeasuredPropertiesAjax',
                     dataType: 'json',
                     success: function (data) {
-                        console.log(data)
                         if (data['success']) {
                             showSuccessMessage(data['msg'])
 
