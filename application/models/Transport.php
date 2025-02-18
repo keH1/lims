@@ -1,6 +1,7 @@
 <?php
 
 class Transport extends Model {
+    private const MAX_FILE_SIZE = 1048576;
 
     /**
      * @param array $data
@@ -256,7 +257,7 @@ class Transport extends Model {
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_ENCODING, '');
 
-        curl_setopt($ch, CURLOPT_BUFFERSIZE, MAX_FILE_SIZE);
+        curl_setopt($ch, CURLOPT_BUFFERSIZE, self::MAX_FILE_SIZE);
 
         $header = array(
             'Accept: text/html', // Prefer HTML format
@@ -269,9 +270,9 @@ class Transport extends Model {
 
         curl_close($ch);
 
-        $str = htmlspecialchars($doc);
+        $str = htmlspecialchars_decode(html_entity_decode($doc));
+        preg_match_all('/fuel-box__price svelte-[^"]*"?>(\d+\.\d+)/', $str, $match);
 
-        preg_match_all('/fuel-box__price svelte-13wxv0z(.*?)p/', $str, $match);
 
         $fuelArr = [];
 

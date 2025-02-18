@@ -11,7 +11,6 @@ $(function ($) {
             },
             url : '/ulab/transport/getListProcessingAjax/',
             dataSrc: function (json) {
-                console.log(json.data)
                 return json.data;
             },
         },
@@ -42,6 +41,7 @@ $(function ($) {
             },
             {
                 data: '',
+                orderable: false,
                 render: function (data, type, item) {
                     return `<div class="btn-group">
                                 <button data-js-update="${item.id}" class="btn"><i class="fa-solid fa-pen"></i></button>
