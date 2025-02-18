@@ -63,7 +63,7 @@
 
 <script src="<?=URI?>/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js" type="text/javascript"></script>
 <script src="<?=URI?>/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js" type="text/javascript"></script>
-<script src="<?=URI?>/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.min.js" type="text/javascript"></script>
+<script src="<?=URI?>/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js" type="text/javascript"></script>
 <script src="<?=URI?>/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js" type="text/javascript"></script>
 <script src="<?=URI?>/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js" type="text/javascript"></script>
 <script src="<?=URI?>/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js" type="text/javascript"></script>

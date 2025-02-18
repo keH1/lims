@@ -1234,13 +1234,15 @@ $.extend( Buttons.prototype, {
 			var bottomOverflow = listBottom - tableBottom;
 
 			// calculate overflow when positioned above
-			var listTop = buttonPosition.top - collectionHeight;
+			var buttonTop = $(hostButton.node()).offset().top;
+			var listTop = buttonTop - collectionHeight;
 			var tableTop = tableContainer.offset().top;
 			var topOverflow = tableTop - listTop;
 
 			// if bottom overflow is larger, move to the top because it fits better, or if dropup is requested
+			options.dropup = true
 			var moveTop = buttonPosition.top - collectionHeight - 5;
-			if ( (bottomOverflow > topOverflow || options.dropup) && -moveTop < tableTop ) {
+			if ( (bottomOverflow > topOverflow || options.dropup) && (buttonTop+moveTop) > 0 ) {
 				display.css( 'top', moveTop);
 			}
 
