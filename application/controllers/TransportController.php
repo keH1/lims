@@ -256,7 +256,8 @@ class TransportController extends Controller
 
         $transport = $this->model('Transport');
 
-        $url = 'https://multigo.ru/benzin/55.062895;61.319098/1';
+        // Россия, Москва, Центральный административный округ
+        $url = 'https://multigo.ru/benzin/55.7538479;37.595463571455895/11';
         $fuelArr = $transport->parseFuelPrice($url);
 
         foreach ($fuelArr as $index => $fuel) {
