@@ -35,6 +35,7 @@ $(function ($) {
             },
             {
                 data: 'personal',
+                orderable: false,
                 render: function (data, type, item) {
                     return data == 1 ? "Да" : "Нет"
                 }
