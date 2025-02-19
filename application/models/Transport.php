@@ -270,9 +270,8 @@ class Transport extends Model {
 
         curl_close($ch);
 
-        $str = htmlspecialchars_decode(html_entity_decode($doc));
+        $str = html_entity_decode($doc);
         preg_match_all('/fuel-box__price svelte-[^"]*"?>(\d+\.\d+)/', $str, $match);
-
 
         $fuelArr = [];
 
