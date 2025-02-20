@@ -288,14 +288,28 @@ $(function ($) {
         fixedHeader:   true,
     });
 
-    journalRequests.columns().every( function () {
+    journalRequests.columns().every(function () {
+        let timeout
         $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            journalRequests
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function () {
+                journalRequests
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
+
+    // journalRequests.columns().every( function () {
+    //     $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
+    //         journalRequests
+    //             .column( $(this).parent().index() )
+    //             .search( this.value )
+    //             .draw();
+    //     })
+    // })
     
     /*journal filters*/
     $('.filter-btn-search').on('click', function () {
