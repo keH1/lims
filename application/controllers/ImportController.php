@@ -585,17 +585,6 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Ссылка для скачивания формы №6 для помещений
-     */
-    public function dowloadForm(int $labId)
-    {
-        /** @var Import $importModel */
-        $importModel = $this->model('Import');
-
-        $importModel->getForm($labId, $_GET['type']);
-    }
-
-    /**
      * @desc Добавление или обновление отдела
      */
 
@@ -2629,5 +2618,16 @@ class ImportController extends Controller
         ];
 
         echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @desc Ссылка для скачивания формы №6 для помещений
+     */
+    public function dowloadForm(int $labId)
+    {
+        /** @var Import $importModel */
+        $importModel = $this->model('Import');
+
+        $importModel->getForm($labId, $_GET['type']);
     }
 }
