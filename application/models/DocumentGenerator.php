@@ -2660,7 +2660,7 @@ class DocumentGenerator extends Model
         try {
             $converter  =  new OfficeConverter($fullPathDocx, $fullPathPDF);
             $converter->convertTo($outputFile);
-        } catch (Error $e) {
+        } catch (Exception $e) {
 //            $this->pre($e);
         }
 
