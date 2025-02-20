@@ -17,7 +17,7 @@
     </header>
     <div class="panel-body">
         <form action="/ulab/import/labUpdate" method="post" class="form-horizontal">
-            <input type="hidden" name="lab_id" id="lab_id" value="<?=$this->data['info']['id']?>">
+            <input type="hidden" name="lab_id" id="lab_id" value="<?=$this->data['info']['ID']?>">
 
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Организация</label>
@@ -46,7 +46,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Наименование *</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="form[name]" value="<?=$this->data['info']['NAME']?>" required>
+                    <input type="text" class="form-control" name="form[NAME]" value="<?=$this->data['info']['NAME']?>" required>
                 </div>
                 <div class="col-sm-2"></div>
             </div>
@@ -95,6 +95,93 @@
         <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
     </header>
     <div class="panel-body">
+
+        <li class="list-group-item ">
+            <div class="form-group row mb-0 align-items-center">
+                <label class="col-sm-4 col-form-label">Единицы измерений</label>
+                <div class="col">
+                    <a href="/ulab/reference/unitList/"  title="Журнал единиц измерений" data-bs-placement="left" data-bs-toggle="tooltip">
+                        Редактировать
+                    </a>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item  ">
+            <div class="form-group row mb-0 align-items-center">
+                <label class="col-sm-4 col-form-label">Определяемые характеристики</label>
+                <div class="col">
+                    <a href="/ulab/reference/measuredPropertiesList/"  title="Журнал определяемых характеристик" data-bs-placement="left" data-bs-toggle="tooltip">
+                        Редактировать
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item  ">
+            <div class="form-group row mb-0 align-items-center">
+                <label class="col-sm-4 col-form-label">Оборудование</label>
+                <div class="col">
+                    <a href="/ulab/oborud/list/"  title="Журнал оборудования, Импорт и экспорт" data-bs-placement="left" data-bs-toggle="tooltip">
+                        Редактировать
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item  ">
+            <div class="form-group row mb-0 align-items-center">
+                <label class="col-sm-4 col-form-label">Область аккредитации</label>
+                <div class="col">
+                    <a href="/ulab/gost/list/"  title="Журнал областей аккредитации, Импорт и экспорт" data-bs-placement="left" data-bs-toggle="tooltip">
+                        Редактировать
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item  ">
+            <div class="form-group row mb-0 align-items-center">
+                <label class="col-sm-4 col-form-label">Нормативная документация</label>
+                <div class="col">
+                    <a href="/ulab/techCondition/list/"  title="Журнал НД, Импорт и экспорт" data-bs-placement="left" data-bs-toggle="tooltip">
+                        Редактировать
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item  ">
+            <div class="form-group row mb-0 align-items-center">
+                <label class="col-sm-4 col-form-label">Объекты испытаний</label>
+                <div class="col">
+                    <a href="/ulab/material/list/"  title="Журнал объектов испытаний" data-bs-placement="left" data-bs-toggle="tooltip">
+                        Редактировать
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item  ">
+            <div class="form-group row mb-0 align-items-center">
+                <label class="col-sm-4 col-form-label">Прайс</label>
+                <div class="col">
+                    <a href="/ulab/gost/listPrice/" >
+                        Редактировать
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <!--                <li class="list-group-item ">-->
+        <!--                    <div class="form-group row mb-0 align-items-center">-->
+        <!--                        <label class="col-sm-4 col-form-label">Конфигурационные справочники</label>-->
+        <!--                        <div class="col">-->
+        <!--                            <div class="btn btn-gradient disabled mt-0 w-100 rounded" title='Данный раздел находится в разработке.' data-bs-placement="left" data-bs-toggle="tooltip">-->
+        <!--                                Недоступно-->
+        <!--                            </div>-->
+        <!--                        </div>-->
+        <!--                    </div>-->
+        <!--                </li>-->
 
     </div>
 </div>

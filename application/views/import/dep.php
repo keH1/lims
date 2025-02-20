@@ -82,7 +82,7 @@
     </div>
 </div>
 
-<form id="popup_form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/import/labImportUpdate" method="post">
+<form id="popup_form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/import/labInsertUpdate" method="post">
     <div class="title mb-3 h-2">
         Данные лаборатории
     </div>
@@ -94,7 +94,17 @@
 
     <div class="mb-3">
         <label class="form-label" for="form_entity_name">Наименование *</label>
-        <input type="text" class="form-control" id="form_entity_name" name="form[name]" value="" required>
+        <input type="text" class="form-control" id="form_entity_name" name="form[NAME]" value="" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_head">Руководитель</label>
+        <select id="form_entity_head" class="form-control select2" name="form[HEAD_ID]">
+            <option value="-1">Не выбран</option>
+            <?php foreach ($this->data['users'] as $user): ?>
+                <option value="<?=$user['ID']?>"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+            <?php endforeach; ?>
+        </select>
     </div>
 
     <button type="submit" class="btn btn-primary">Сохранить</button>

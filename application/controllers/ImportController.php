@@ -304,6 +304,28 @@ class ImportController extends Controller
 
 
     /**
+     * @desc обновляет информацию о лаборатории
+     */
+    public function labUpdate()
+    {
+        $orgModel = new Organization();
+
+        $id = (int)$_POST['lab_id'];
+
+        $orgModel->setLabInfo($id, $_POST['form']);
+
+        if ( !empty($_POST['form']['HEAD_ID']) ) {
+            $data = ['lab_id' => $id];
+            $orgModel->setAffiliationUserInfo((int)$_POST['form']['HEAD_ID'], $data);
+        }
+
+        $this->showSuccessMessage("Данные лаборатории обновлены");
+
+        $this->redirect("/import/labProfile/{$id}");
+    }
+
+
+    /**
      * @desc добавляет/обновляет информацию об организации
      */
     public function orgInsertUpdate()
@@ -371,6 +393,27 @@ class ImportController extends Controller
     }
 
 
+    /**
+     * @desc добавляет/обновляет информацию об отделе
+     */
+    public function labInsertUpdate()
+    {
+        $orgModel = new Organization();
+
+        if ( empty($_POST['lab_id']) ) {
+            $orgModel->addLabInfo($_POST['form']);
+        } else {
+            $id = (int)$_POST['lab_id'];
+
+            $orgModel->setLabInfo($id, $_POST['form']);
+        }
+
+        $this->showSuccessMessage("Данные успешно добавлены/обновлены");
+
+        $this->redirect("/import/dep/{$_POST['form']['dep_id']}");
+    }
+
+
 
     /**
      * route /import/
@@ -378,6 +421,8 @@ class ImportController extends Controller
      */
     public function list()
     {
+        $this->redirect('/import/');
+
         $this->model('Permission')->checkPermission(__FUNCTION__, __FILE__);
 
         /** @var User $userModel */
@@ -423,7 +468,7 @@ class ImportController extends Controller
         $this->view('import');
     }
 
-        /**
+    /**
      * @desc Страница внесения сведений о компании (лаборатории)
      * @order 2
      */
@@ -432,7 +477,7 @@ class ImportController extends Controller
         $this->model('Permission')->checkPermission(__FUNCTION__, __FILE__);
 
         $this->data['title'] = 'Внесение сведений о руководстве';
-                
+
         /** @var Company $companyModel */
         $companyModel = $this->model('Company');
 
@@ -930,7 +975,7 @@ class ImportController extends Controller
 
         /** @var Import $importModel */
         $importModel = $this->model('Import');
-        
+
         $this->data['title'] = 'Лабораторная база знаний';
         $this->data['onboarding'] = [];
 
@@ -1086,7 +1131,7 @@ class ImportController extends Controller
             $this->redirect($location);
         }
 
-        
+
 
         if (!isset($_POST['form']['ip'])) {           //Если выключен ИП, то проверяем ОГРН и КПП
             // ОГРН
@@ -1308,7 +1353,7 @@ class ImportController extends Controller
         }
     }
 
-       /**
+    /**
      * @desc Создание изменение отделение
      * @param $deptid
      * @hide true
@@ -1371,7 +1416,7 @@ class ImportController extends Controller
     {
         /** @var User $companyModel */
         $userModel = $this->model('User');
-        
+
         $location = '/user/list/';
         $successMsg = !empty($_POST['user_id']) ? 'Сведения о сотруднике успешно изменены' : 'Сведения о сотруднике успешно сохранены';
 
@@ -2433,7 +2478,7 @@ class ImportController extends Controller
         require_once __DIR__ . "/templates/import/classifier_tnved.php";
         $result = (new ImportTnvedController())->importTnvedFromTxt();
     }
-    
+
 
     /*public function importSoexXls()
     {
@@ -2603,6 +2648,56 @@ class ImportController extends Controller
         }
 
         $data = $orgModel->getDepJournal((int) $_POST['id'], $filter);
+
+        $recordsTotal = $data['recordsTotal'];
+        $recordsFiltered = $data['recordsFiltered'];
+
+        unset($data['recordsTotal']);
+        unset($data['recordsFiltered']);
+
+        $jsonData = [
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+        ];
+
+        echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
+    }
+
+
+    /**
+     * @desc Получает журнал отделов
+     */
+    public function getLabNewJournalAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        $orgModel = new Organization();
+
+        $filter = [
+            'paginate' => [
+                'length'    => $_POST['length'],  // кол-во строк на страницу
+                'start'     => $_POST['start'],  // текущая страница
+            ],
+            'search' => [],
+            'order' => []
+        ];
+
+        foreach ($_POST['columns'] as $column) {
+            if ( $column['search']['value'] !== '' ) {
+                $filter['search'][$column['data']] = $column['search']['value'];
+            }
+        }
+
+        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
+            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
+            $filter['order']['dir'] = $_POST['order'][0]['dir'];
+        }
+
+        $data = $orgModel->getLabJournal((int) $_POST['id'], $filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
