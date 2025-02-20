@@ -11,7 +11,6 @@ $(function ($) {
             },
             url : '/ulab/transport/getListProcessingAjax/',
             dataSrc: function (json) {
-                console.log(json.data)
                 return json.data;
             },
         },
@@ -36,12 +35,14 @@ $(function ($) {
             },
             {
                 data: 'personal',
+                orderable: false,
                 render: function (data, type, item) {
                     return data == 1 ? "Да" : "Нет"
                 }
             },
             {
                 data: '',
+                orderable: false,
                 render: function (data, type, item) {
                     return `<div class="btn-group">
                                 <button data-js-update="${item.id}" class="btn"><i class="fa-solid fa-pen"></i></button>
@@ -125,12 +126,17 @@ $(function ($) {
 
     });
 
-    transportJournal.columns().every( function () {
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            transportJournal
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
+    transportJournal.columns().every(function () {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function () {
+                transportJournal
+                    .column( $(this).parent().index() )
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 

@@ -564,7 +564,7 @@ class ImportController extends Controller
         $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
         $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
         $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.min.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
@@ -846,7 +846,7 @@ class ImportController extends Controller
 
         $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
         $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.min.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
@@ -2713,5 +2713,16 @@ class ImportController extends Controller
         ];
 
         echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @desc Ссылка для скачивания формы №6 для помещений
+     */
+    public function dowloadForm(int $labId)
+    {
+        /** @var Import $importModel */
+        $importModel = $this->model('Import');
+
+        $importModel->getForm($labId, $_GET['type']);
     }
 }

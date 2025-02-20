@@ -20,7 +20,7 @@ class TransportController extends Controller
 
         $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
         $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.min.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
@@ -170,7 +170,7 @@ class TransportController extends Controller
 
         $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
         $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.min.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
@@ -256,7 +256,8 @@ class TransportController extends Controller
 
         $transport = $this->model('Transport');
 
-        $url = 'https://multigo.ru/benzin/55.062895;61.319098/1';
+        // Россия, Москва, Центральный административный округ
+        $url = 'https://multigo.ru/benzin/55.7538479;37.595463571455895/11';
         $fuelArr = $transport->parseFuelPrice($url);
 
         foreach ($fuelArr as $index => $fuel) {
@@ -307,7 +308,7 @@ class TransportController extends Controller
 
         $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
         $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.min.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
@@ -529,7 +530,7 @@ class TransportController extends Controller
 
         $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
         $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.min.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
         $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");

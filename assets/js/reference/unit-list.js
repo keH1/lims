@@ -54,35 +54,7 @@ $(function ($) {
                     }
                 }
             ],
-            language: {
-                processing: 'Подождите...',
-                search: '',
-                searchPlaceholder: "Поиск...",
-                lengthMenu: 'Отображать _MENU_  ',
-                info: 'Записи с _START_ до _END_ из _TOTAL_ записей',
-                infoEmpty: 'Записи с 0 до 0 из 0 записей',
-                infoFiltered: '(отфильтровано из _MAX_ записей)',
-                infoPostFix: '',
-                loadingRecords: 'Загрузка записей...',
-                zeroRecords: 'Записи отсутствуют.',
-                emptyTable: 'В таблице отсутствуют данные',
-                paginate: {
-                    first: 'Первая',
-                    previous: 'Предыдущая',
-                    next: 'Следующая',
-                    last: 'Последняя'
-                },
-                buttons: {
-                    colvis: '',
-                    copy: '',
-                    excel: '',
-                    print: ''
-                },
-                aria: {
-                    sortAscending: ': активировать для сортировки столбца по возрастанию',
-                    sortDescending: ': активировать для сортировки столбца по убыванию'
-                }
-            },
+            language: dataTablesSettings.language,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
             pageLength: 25,
             order: [[0, "asc"]],
@@ -95,11 +67,16 @@ $(function ($) {
         });
 
         journalDataTable.columns().every(function () {
+            let timeout
             $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
+                clearTimeout(timeout)
+                const searchValue = this.value
+                timeout = setTimeout(function () {
                 journalDataTable
                     .column($(this).parent().index())
-                    .search(this.value)
-                    .draw();
+                    .search(searchValue)
+                    .draw()
+                }.bind(this), 1000)
             })
         })
 
@@ -119,7 +96,7 @@ $(function ($) {
         })
 
 
-        $('body').on('change', '.change-is-used', function () {
+        journalDataTable.on('change', '.change-is-used', function () {
             let id = $(this).data('id')
 
             $.ajax({
@@ -131,11 +108,12 @@ $(function ($) {
                 dataType: 'json',
                 success: function (data) {
 
+                },
+                complete: function(data) {
+                    // journalDataTable.ajax.reload()
+                    // journalDataTable.draw()
                 }
             })
-
-            journalDataTable.ajax.reload()
-            journalDataTable.draw()
         })
 
 
@@ -150,7 +128,6 @@ $(function ($) {
                     url: '/ulab/reference/syncUnitsAjax',
                     dataType: 'json',
                     success: function (data) {
-                        console.log(data)
                         if (data['success']) {
                             showSuccessMessage(data['msg'])
 

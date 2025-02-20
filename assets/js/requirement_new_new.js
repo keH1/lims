@@ -118,6 +118,7 @@ $(function ($) {
         theme: 'bootstrap-5',
         templateResult: formatState,
         templateSelection: formatState,
+        width: '100%',
     })
 
     $('#journal_material_2 tbody').on('click', 'td.act-details-control', function () {
@@ -276,6 +277,10 @@ $(function ($) {
                 .draw();
         })
     })
+
+    $(window).on('resize', function () {
+        $('#journal_material_2').DataTable().columns.adjust();
+    });
 
     $('.filter').on('input', function () {
         journalDataTable.ajax.reload()
@@ -865,7 +870,7 @@ function createChild(row) {
     probeId.push(rowData.id)
 
     // Таблица, которую мы преобразуем в DataTable
-    let table = $('<table class="table table-striped journal text-start table-hover table-sm" />')
+    let table = $('<table class="table table-striped journal text-start table-hover table-sm w-100" />')
 
     let thead = `
         <thead>

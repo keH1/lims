@@ -92,11 +92,16 @@ $(function ($) {
         });
 
         journalDataTable.columns().every(function () {
+            let timeout
             $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-                journalDataTable
-                    .column($(this).parent().index())
-                    .search(this.value)
-                    .draw();
+                clearTimeout(timeout)
+                const searchValue = this.value
+                timeout = setTimeout(function () {
+                    journalDataTable
+                        .column($(this).parent().index())
+                        .search(searchValue)
+                        .draw()
+                }.bind(this), 1000)
             })
         })
 
@@ -116,7 +121,7 @@ $(function ($) {
         })
 
 
-        $('body').on('change', '.change-is-used', function () {
+        journalDataTable.on('change', '.change-is-used', function () {
             let id = $(this).data('id')
 
             $.ajax({
@@ -128,11 +133,12 @@ $(function ($) {
                 dataType: 'json',
                 success: function (data) {
 
+                },
+                complete: function(data) {
+                    // journalDataTable.ajax.reload()
+                    // journalDataTable.draw()
                 }
             })
-
-            journalDataTable.ajax.reload()
-            journalDataTable.draw()
         })
 
 
@@ -147,7 +153,6 @@ $(function ($) {
                     url: '/ulab/reference/syncMeasuredPropertiesAjax',
                     dataType: 'json',
                     success: function (data) {
-                        console.log(data)
                         if (data['success']) {
                             showSuccessMessage(data['msg'])
 
