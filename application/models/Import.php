@@ -1,6 +1,8 @@
 <?php
 
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 /**
  * Модель для импорта данных в систему U-LAB
  * Class Import
@@ -369,5 +371,95 @@ class Import extends Model
             return $this->DB->Query($query2)->Fetch();
         }
         return $q;
+    }
+
+    /**
+     * @param int $labId
+     * @param string $type
+     * @return void
+     */
+    public function getForm(int $labId, string $type = ''): void
+    {
+        $labModel = new Lab();
+
+        $templatePath = $_SERVER['DOCUMENT_ROOT'] . '/protocol_generator/Form6.docx';
+
+        if (!file_exists($templatePath)) {
+            throw new \Exception("Шаблон не найден: {$templatePath}");
+        }
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $document = new \PhpOffice\PhpWord\TemplateProcessor($templatePath);
+
+        $data = $labModel->getRoomByLabId($labId);
+
+        $document->setValue('date', date('d.m.Y'));
+
+        $styleTable = array('alignment' =>'center', 'borderSize' => 5, 'borderColor' => '000000');
+        $section = $phpWord->addSection();
+		$table = $section->addTable($styleTable);
+
+        $table->addRow(null, array('tblHeader' => true));
+        $table->addCell(2000)->addText('№');
+        $table->addCell(2000)->addText('Наименование');
+        $table->addCell(2000)->addText('Тип');
+        $table->addCell(2000)->addText('Назначение');
+        $table->addCell(2000)->addText('Площадь');
+        $table->addCell(2000)->addText('Контролируемые параметры');
+        $table->addCell(2000)->addText('Специальное оборудование');
+        $table->addCell(2000)->addText('Право собственности');
+        $table->addCell(2000)->addText('Место нахождения');
+        $table->addCell(2000)->addText('Примечание');
+
+        $table->addRow(null, array('tblHeader' => true));
+        $table->addCell(2000)->addText('1');
+        $table->addCell(2000)->addText('2');
+        $table->addCell(2000)->addText('3');
+        $table->addCell(2000)->addText('4');
+        $table->addCell(2000)->addText('5');
+        $table->addCell(2000)->addText('6');
+        $table->addCell(2000)->addText('7');
+        $table->addCell(2000)->addText('8');
+        $table->addCell(2000)->addText('9');
+        $table->addCell(2000)->addText('10');
+
+        foreach ($data as $row) {
+            $table->addRow();
+            $table->addCell(2000)->addText($row['NUMBER']);
+            $table->addCell(2000)->addText($row['NAME']);
+
+            if (isset($row['SPEC']) && $row['SPEC'] !== '') {
+                if ($row['SPEC'] == 0) {
+                    $table->addCell(2000)->addText("Специальное");
+                } elseif ($row['SPEC'] == 1) {
+                    $table->addCell(2000)->addText("Общее");
+                } else {
+                    $table->addCell(2000)->addText("");
+                }
+            }
+
+            $table->addCell(2000)->addText($row['PURPOSE']);
+            $table->addCell(2000)->addText($row['AREA']);
+            $table->addCell(2000)->addText($row['PARAMS']);
+            $table->addCell(2000)->addText($row['SPEC_EQUIP']);
+            $table->addCell(2000)->addText($row['DOCS']);
+            $table->addCell(2000)->addText($row['PLACEMENT']);
+            $table->addCell(2000)->addText($row['COMMENT']);
+        }
+
+        $document->setComplexBlock('form', $table);
+
+        // $outputPath = "Form6_output.docx";
+        // $document->saveAs($outputPath);
+
+        header("Content-Description: File Transfer");
+        header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        header("Content-Disposition: attachment; filename=\"Форма №6.docx\"");
+        header("Expires: 0");
+        header("Cache-Control: must-revalidate");
+        header("Pragma: public");
+
+        $document->saveAs('php://output');
+
+        exit();
     }
 }
