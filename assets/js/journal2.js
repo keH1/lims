@@ -41,7 +41,7 @@ $(function ($) {
                 render: function (data, type, item) {
                     if (type === 'display' || type === 'filter') {
                         return `<a class="request-link"
-                               href="/ulab/request/card/${item.ID_Z}" target="_blank">
+                               href="/ulab/request/card/${item.ID_Z}">
                                ${item['REQUEST_TITLE']}${item['certificate']}
                             </a>`
                     }
