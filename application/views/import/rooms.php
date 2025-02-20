@@ -85,7 +85,14 @@
                 </header>
                 <div class="panel-body">
                     <?php if (!empty($this->data['lab_id'])): ?>
-
+                        <?php if (!empty($this->data['form_room'])): ?>
+                            <div class="d-flex justify-content-end mb-3">
+                                <a href="/ulab/import/dowloadForm/<?= $this->data['lab_id'] ?>?type=form" 
+                                class="btn btn-gradient rounded" title="Скачать форму №6">
+                                    <i class="fa fa-file-word"></i>
+                                </a>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="table-responsive">
                             <table class="table table-bordered text-center align-middle">
