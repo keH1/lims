@@ -396,7 +396,7 @@ class ImportController extends Controller
     /**
      * @desc добавляет/обновляет информацию об отделе
      */
-    public function labImportUpdate()
+    public function labInsertUpdate()
     {
         $orgModel = new Organization();
 
