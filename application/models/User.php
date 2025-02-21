@@ -518,8 +518,17 @@ class User extends Model
         $name = trim($res['NAME']);
         $lastName = trim($res['LAST_NAME']);
         $secondName = trim($res['SECOND_NAME']);
-        $shortName = StringHelper::getInitials($name).' '. StringHelper::getInitials($secondName).' '.$lastName;
-        $work_position =  trim($res['WORK_POSITION']);
+        $shortName = trim(
+            ($name ? StringHelper::getInitials($name) . ' ' : '') .
+            ($secondName ? StringHelper::getInitials($secondName) . ' ' : '') .
+            ($lastName ? $lastName : '')
+        );
+
+        if (!empty($name) && empty($secondName) && empty($lastName)) {
+            $shortName = rtrim($shortName, '.');
+        }
+        // $shortName = StringHelper::getInitials($name).' '. StringHelper::getInitials($secondName).' '.$lastName;
+        $work_position = trim($res['WORK_POSITION']);
 
         $result = [
             'user_id'       => $res['ID'],
