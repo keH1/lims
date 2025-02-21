@@ -85,7 +85,7 @@ $(function ($) {
         pageLength: 25,
         order: [[ 0, "desc" ]],
         colReorder: true,
-        dom: 'frt<"bottom"lip>',
+        dom: 'frtB<"bottom"lip>',
         buttons: [
             {
                 extend: 'colvis',
