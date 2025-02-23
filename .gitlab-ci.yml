@@ -1,0 +1,15 @@
+stages:
+  - deploy
+
+deploy_to_production:
+  stage: deploy
+  script:
+    - echo "Deploying changes from remote DEV branch to production DEV branch"
+    - ssh bolgar3v@bolgar3v.beget.tech"
+        cd /home/b/bolgar3v/stand-1.limsyst.ru/public_html/ulab/ &&
+        git checkout dev &&
+        git pull origin dev &&
+        git checkout main
+      "
+  only:
+    - dev
