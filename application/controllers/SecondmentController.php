@@ -509,7 +509,7 @@ class SecondmentController extends Controller
                 "KM" => $_POST['kilometer']
             ];
 
-            for ($i = 0; $i < count($_POST["other"]); $i++) {
+            for ($i = 0; $i < count($_POST["other"]??[]); $i++) {
                 $otherId = $_POST["other_id"][$i];
 
                 $otherData = [
@@ -526,7 +526,7 @@ class SecondmentController extends Controller
 
                 }
 
-                for ($j = 0; $j < count($_FILES["other"]["name"][$i]); $j++) {
+                for ($j = 0; $j < count($_FILES["other"]["name"][$i]??[]); $j++) {
 
                     $dir = "upload/secondment/other/{$secondmentId}/{$otherId}";
                     $secondment->saveFile($dir, $_FILES["other"]["name"][$i][$j], $_FILES["other"]["tmp_name"][$i][$j]);
@@ -547,7 +547,7 @@ class SecondmentController extends Controller
             }
 
             foreach ($_FILES as $category => $files) {
-                for ($i = 0; $i < count($files["name"]); $i++) {
+                for ($i = 0; $i < count($files["name"]??[]); $i++) {
                     if (in_array($category, self::SECONDMENT_FILE_CATEGORIES)) {
                         $dir = "upload/secondment/$category/{$secondmentId}";
                         $secondment->saveFile($dir, $files["name"][$i], $files["tmp_name"][$i]);
@@ -919,7 +919,7 @@ class SecondmentController extends Controller
 
             $secondmentUpdate = $secondment->update($data, 'secondment', $secondmentId);
 
-            for ($i = 0; $i < count($_POST["additional"]); $i++) {
+            for ($i = 0; $i < count($_POST["additional"]??[]); $i++) {
                 $additionalId = $_POST["additional_id"][$i];
 
                 $additionalData = [
@@ -934,7 +934,7 @@ class SecondmentController extends Controller
                     $secondment->update($additionalData, 'secondment_additional', $additionalId);
                 }
 
-                for ($j = 0; $j < count($_FILES["additional"]["name"][$i]); $j++) {
+                for ($j = 0; $j < count($_FILES["additional"]["name"][$i]??[]); $j++) {
                     $dir = "upload/secondment/additional/{$secondmentId}/{$additionalId}";
                     $secondment->saveFile($dir, $_FILES["additional"]["name"][$i][$j], $_FILES["additional"]["tmp_name"][$i][$j]);
                     echo $_FILES[$i]["name"][$j] . PHP_EOL;
@@ -944,7 +944,7 @@ class SecondmentController extends Controller
 
 
 
-            for ($i = 0; $i < count($_POST["other_fact"]); $i++) {
+            for ($i = 0; $i < count($_POST["other_fact"]??[]); $i++) {
                 $otherId = $_POST["other_id"][$i];
 
                 $otherData = [
@@ -958,7 +958,7 @@ class SecondmentController extends Controller
 
                 //   $secondment->update($otherData, 'secondment_other', $otherId);
 
-                for ($j = 0; $j < count($_FILES["other_fact"]["name"][$i]); $j++) {
+                for ($j = 0; $j < count($_FILES["other_fact"]["name"][$i]??[]); $j++) {
 
                     $dir = "upload/secondment/other_fact/{$secondmentId}/{$otherId}";
                     $secondment->saveFile($dir, $_FILES["other_fact"]["name"][$i][$j], $_FILES["other_fact"]["tmp_name"][$i][$j]);
@@ -987,7 +987,7 @@ class SecondmentController extends Controller
 
             setlocale(LC_ALL, 'ru_RU.utf8');
             foreach ($_FILES as $category => $files) {
-                for ($i = 0; $i < count($files["name"]); $i++) {
+                for ($i = 0; $i < count($files["name"]??[]); $i++) {
                     if (in_array($category, self::SECONDMENT_FILE_CATEGORIES)) {
                         $dir = "upload/secondment/$category/{$secondmentId}";
                       //  $secondment->saveFile($dir, $files["name"][$i], $files["tmp_name"][$i]);
@@ -1182,7 +1182,7 @@ class SecondmentController extends Controller
         $this->data["archiveSum"] = 0;
 
         foreach ($this->data["archiveList"] as $index => $archive) {
-            if ($index !== count($this->data["archiveList"]) - 1) {
+            if ($index !== count($this->data["archiveList"]??[]) - 1) {
                 $this->data["archiveList"][$index]["extraPayment"] = $this->data["archiveList"][$index + 1]["planned_expenses"] - $this->data["archiveList"][$index]["planned_expenses"];
             } else {
                 $this->data["archiveList"][$index]["extraPayment"] = $this->data['planned_expenses'] - $archive["planned_expenses"];
@@ -1588,7 +1588,7 @@ class SecondmentController extends Controller
                     return;
                 }
 
-                if (count($confirmReport) < 2) {
+                if (count($confirmReport??[]) < 2) {
                     $this->showSuccessMessage('Отчет подтверждён');
 
                     $response = [
@@ -1976,7 +1976,7 @@ class SecondmentController extends Controller
 
         $otherSum = 0;
 
-        for ($i = 0; $i < count($_POST["other"]); $i++) {
+        for ($i = 0; $i < count($_POST["other"]??[]); $i++) {
             $otherId = $_POST["other_id"][$i];
 
             $otherData = [
@@ -1994,7 +1994,7 @@ class SecondmentController extends Controller
                 $secondment->update($otherData, 'secondment_other', $otherId);
             }
 
-            for ($j = 0; $j < count($_FILES["other"]["name"][$i]); $j++) {
+            for ($j = 0; $j < count($_FILES["other"]["name"][$i]??[]); $j++) {
                 $dir = "upload/secondment/other/{$secondmentId}/{$otherId}";
                 $secondment->saveFile($dir, $_FILES["other"]["name"][$i][$j], $_FILES["other"]["tmp_name"][$i][$j]);
             }
@@ -2031,7 +2031,7 @@ class SecondmentController extends Controller
         }
 
         foreach ($_FILES as $category => $files) {
-            for ($i = 0; $i < count($files["name"]); $i++) {
+            for ($i = 0; $i < count($files["name"]??[]); $i++) {
                 if (in_array($category, self::SECONDMENT_FILE_CATEGORIES)) {
                     $dir = "upload/secondment/$category/{$secondmentId}";
                     $secondment->saveFile($dir, $files["name"][$i], $files["tmp_name"][$i]);
@@ -2247,7 +2247,7 @@ class SecondmentController extends Controller
 
         $fullSum = 0;
 
-        for ($i = 0; $i < count($tableArr); $i++) {
+        for ($i = 0; $i < count($tableArr??[]); $i++) {
             $tableArr[$i]["n"] = $i + 1;
             $tableArr[$i]["sum"] = $tableArr[$i]["price"] * $tableArr[$i]["gsm"];
             $fullSum += $tableArr[$i]["sum"];

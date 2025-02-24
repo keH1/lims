@@ -144,12 +144,12 @@ class ScaleCalibration extends Model
 		if ($name == 'scale') {
 			$requestFromSQL = $this->DB->Query("SELECT ID as id,
  												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
- 												FROM ba_oborud WHERE ID IN (448, 825, 833, 399, 398, 397, 383)");
+ 												FROM ba_oborud WHERE ID IN (235, 237, 239)");
 		}
 		if ($name == 'weight') {
 			$requestFromSQL = $this->DB->Query("SELECT ID as id,
  												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
- 												FROM ba_oborud WHERE ID IN (400, 401, 403, 402)");
+ 												FROM ba_oborud WHERE ID IN (279)");
 		}
 
 		$i = 1;

@@ -118,7 +118,7 @@
 			<div class="input-group">
 				<span class="input-group-text">&#177</span>
 				<input type="number" name="toSQL[scale_calibration][scale_error]" step="0.01"
-					   class="form-control bg-white scale_error" readonly>
+					   class="form-control bg-white scale_error">
 			</div>
 		</div>
 	</div>
@@ -126,9 +126,9 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Выберите средство калибровки</label>
-			<select name="toSQL[scale_calibration][id_weight]" class="form-control h-auto weight"
-					required>
+			<select name="toSQL[scale_calibration][id_weight]" class="form-control h-auto weight">
 				<option value="" selected disabled></option>
+				<option value="1" >Тестовое средство калибровки</option>
 				<?php
 				foreach ($this->data['weight'] as $val): ?>
 					<option value="<?= $val['id']?>"><?= $val['name']?></option>
@@ -143,7 +143,7 @@
 			<label class="form-label">Номинальное значение массы гири</label>
 			<div class="input-group">
 				<input type="number" name="toSQL[scale_calibration][mass_weight]" step="0.01"
-				class="form-control bg-white mass_weight" readonly>
+				class="form-control bg-white mass_weight">
 				<span class="input-group-text">г</span>
 			</div>
 		</div>
