@@ -246,7 +246,7 @@
                     </div>
                 </div>
 
-                    <?php for ($i = 1; $i < count($this->data['form']['dop_value']); $i++): ?>
+                    <?php for ($i = 1; $i < count($this->data['form']['dop_value']??[]); $i++): ?>
                         <div class="form-group row group-norm">
                             <label class="col-sm-2 col-form-label"></label>
                             <div class="col-sm-8">
@@ -265,7 +265,7 @@
                                 </button>
                             </div>
                         </div>
-                    <? endfor; ?>
+                    <?php endfor; ?>
 
             </div>
         </div>
