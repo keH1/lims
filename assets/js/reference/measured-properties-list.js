@@ -159,11 +159,27 @@ $(function ($) {
                             journalDataTable.ajax.reload()
                             journalDataTable.draw()
                         } else {
-                            showErrorMessage(data['error'])
+                            showErrorMessage(data['error']?? 'Неизвестная ошибка')
                         }
                     },
-                    error: function(data) {
-                        showErrorMessage('Ошибка во время синхронизации')
+                    error: function (jqXHR, exception) {
+                        let msg = '';
+                        if (jqXHR.status === 0) {
+                            msg = 'Not connect.\n Verify Network.';
+                        } else if (jqXHR.status === 404) {
+                            msg = 'Requested page not found. [404]';
+                        } else if (jqXHR.status === 500) {
+                            msg = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msg = '1 Requested JSON parse failed.';
+                        } else if (exception === 'timeout') {
+                            msg = 'Time out error.';
+                        } else if (exception === 'abort') {
+                            msg = 'Ajax request aborted.';
+                        } else {
+                            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                        }
+                        showErrorMessage('Ошибка во время синхронизации: ' + msg)
                     },
                     complete: function () {
                         $button.find('i').removeClass('spinner-animation')
