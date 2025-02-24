@@ -26,14 +26,14 @@ $(function () {
             {
                 data: 'id',
                 render: function (data, type, item) {
-                    if (item.is_can_edit) {
+                    // if (item.is_can_edit) {
                         return `<a class="request-link"
                                href="/ulab/nk/graduation/${item.id}">
                                ${item.id}
                             </a>`
-                    } else {
-                        return `<span>${item.id}</span>`;
-                    }
+                    // } else {
+                    //     return `<span>${item.id}</span>`;
+                    // }
                 }
             },
             {
