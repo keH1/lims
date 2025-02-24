@@ -509,32 +509,31 @@ class SecondmentController extends Controller
                 "KM" => $_POST['kilometer']
             ];
 
-            for ($i = 0; $i < count($_POST["other"]??[]); $i++) {
-                $otherId = $_POST["other_id"][$i];
+            if ( is_countable($_POST["other"]) ) {
+                for ($i = 0; $i < count($_POST["other"]); $i++) {
+                    $otherId = $_POST["other_id"][$i];
 
-                $otherData = [
-                    "secondment_id" => $secondmentId,
-                    "sum" => $_POST["other"][$i],
-                    "comment" => $_POST["comment_other"][$i]
-                ];
+                    $otherData = [
+                        "secondment_id" => $secondmentId,
+                        "sum" => $_POST["other"][$i],
+                        "comment" => $_POST["comment_other"][$i]
+                    ];
 
-                if (is_null($otherId)) {
-                    $secondment->create($otherData, 'secondment_other');
-                } else {
-                    $secondment->update($otherData, 'secondment_other', $otherId);
+                    if (is_null($otherId)) {
+                        $secondment->create($otherData, 'secondment_other');
+                    } else {
+                        $secondment->update($otherData, 'secondment_other', $otherId);
+                    }
 
-
-                }
-
-                for ($j = 0; $j < count($_FILES["other"]["name"][$i]??[]); $j++) {
-
-                    $dir = "upload/secondment/other/{$secondmentId}/{$otherId}";
-                    $secondment->saveFile($dir, $_FILES["other"]["name"][$i][$j], $_FILES["other"]["tmp_name"][$i][$j]);
-                    echo $_FILES[$i]["name"][$j] . PHP_EOL;
+                    if ( is_countable($_FILES["other"]["name"][$i]) ) {
+                        for ($j = 0; $j < count($_FILES["other"]["name"][$i] ?? []); $j++) {
+                            $dir = "upload/secondment/other/{$secondmentId}/{$otherId}";
+                            $secondment->saveFile($dir, $_FILES["other"]["name"][$i][$j], $_FILES["other"]["tmp_name"][$i][$j]);
+                            echo $_FILES[$i]["name"][$j] . PHP_EOL;
+                        }
+                    }
                 }
             }
-
-
 
 
             if (!empty($_POST["file_payment_delete"])) {
@@ -547,10 +546,12 @@ class SecondmentController extends Controller
             }
 
             foreach ($_FILES as $category => $files) {
-                for ($i = 0; $i < count($files["name"]??[]); $i++) {
-                    if (in_array($category, self::SECONDMENT_FILE_CATEGORIES)) {
-                        $dir = "upload/secondment/$category/{$secondmentId}";
-                        $secondment->saveFile($dir, $files["name"][$i], $files["tmp_name"][$i]);
+                if ( is_countable($files["name"]) ) {
+                    for ($i = 0; $i < count($files["name"]); $i++) {
+                        if (in_array($category, self::SECONDMENT_FILE_CATEGORIES)) {
+                            $dir = "upload/secondment/$category/{$secondmentId}";
+                            $secondment->saveFile($dir, $files["name"][$i], $files["tmp_name"][$i]);
+                        }
                     }
                 }
             }
@@ -919,30 +920,29 @@ class SecondmentController extends Controller
 
             $secondmentUpdate = $secondment->update($data, 'secondment', $secondmentId);
 
-            for ($i = 0; $i < count($_POST["additional"]??[]); $i++) {
-                $additionalId = $_POST["additional_id"][$i];
+            if ( is_countable($_POST["additional"]) ) {
+                for ($i = 0; $i < count($_POST["additional"]??[]); $i++) {
+                    $additionalId = $_POST["additional_id"][$i];
 
-                $additionalData = [
-                    "secondment_id" => $secondmentId,
-                    "sum" => $_POST['additional'][$i],
-                    "comment" => $_POST['comment_additional'][$i]
-                ];
+                    $additionalData = [
+                        "secondment_id" => $secondmentId,
+                        "sum" => $_POST['additional'][$i],
+                        "comment" => $_POST['comment_additional'][$i]
+                    ];
 
-                if (is_null($additionalId)) {
-                    $secondment->create($additionalData, 'secondment_additional');
-                } else {
-                    $secondment->update($additionalData, 'secondment_additional', $additionalId);
-                }
+                    if (is_null($additionalId)) {
+                        $secondment->create($additionalData, 'secondment_additional');
+                    } else {
+                        $secondment->update($additionalData, 'secondment_additional', $additionalId);
+                    }
 
-                for ($j = 0; $j < count($_FILES["additional"]["name"][$i]??[]); $j++) {
-                    $dir = "upload/secondment/additional/{$secondmentId}/{$additionalId}";
-                    $secondment->saveFile($dir, $_FILES["additional"]["name"][$i][$j], $_FILES["additional"]["tmp_name"][$i][$j]);
-                    echo $_FILES[$i]["name"][$j] . PHP_EOL;
+                    for ($j = 0; $j < count($_FILES["additional"]["name"][$i]??[]); $j++) {
+                        $dir = "upload/secondment/additional/{$secondmentId}/{$additionalId}";
+                        $secondment->saveFile($dir, $_FILES["additional"]["name"][$i][$j], $_FILES["additional"]["tmp_name"][$i][$j]);
+                        echo $_FILES[$i]["name"][$j] . PHP_EOL;
+                    }
                 }
             }
-
-
-
 
             for ($i = 0; $i < count($_POST["other_fact"]??[]); $i++) {
                 $otherId = $_POST["other_id"][$i];
@@ -1994,9 +1994,11 @@ class SecondmentController extends Controller
                 $secondment->update($otherData, 'secondment_other', $otherId);
             }
 
-            for ($j = 0; $j < count($_FILES["other"]["name"][$i]??[]); $j++) {
-                $dir = "upload/secondment/other/{$secondmentId}/{$otherId}";
-                $secondment->saveFile($dir, $_FILES["other"]["name"][$i][$j], $_FILES["other"]["tmp_name"][$i][$j]);
+            if ( is_countable($_FILES["other"]["name"][$i]) ) {
+                for ($j = 0; $j < count($_FILES["other"]["name"][$i]); $j++) {
+                    $dir = "upload/secondment/other/{$secondmentId}/{$otherId}";
+                    $secondment->saveFile($dir, $_FILES["other"]["name"][$i][$j], $_FILES["other"]["tmp_name"][$i][$j]);
+                }
             }
         }
 
@@ -2031,10 +2033,12 @@ class SecondmentController extends Controller
         }
 
         foreach ($_FILES as $category => $files) {
-            for ($i = 0; $i < count($files["name"]??[]); $i++) {
-                if (in_array($category, self::SECONDMENT_FILE_CATEGORIES)) {
-                    $dir = "upload/secondment/$category/{$secondmentId}";
-                    $secondment->saveFile($dir, $files["name"][$i], $files["tmp_name"][$i]);
+            if ( is_countable($files["name"]) ) {
+                for ($i = 0; $i < count($files["name"]); $i++) {
+                    if (in_array($category, self::SECONDMENT_FILE_CATEGORIES)) {
+                        $dir = "upload/secondment/$category/{$secondmentId}";
+                        $secondment->saveFile($dir, $files["name"][$i], $files["tmp_name"][$i]);
+                    }
                 }
             }
         }
@@ -2247,10 +2251,12 @@ class SecondmentController extends Controller
 
         $fullSum = 0;
 
-        for ($i = 0; $i < count($tableArr??[]); $i++) {
-            $tableArr[$i]["n"] = $i + 1;
-            $tableArr[$i]["sum"] = $tableArr[$i]["price"] * $tableArr[$i]["gsm"];
-            $fullSum += $tableArr[$i]["sum"];
+        if ( is_countable($tableArr) ) {
+            for ($i = 0; $i < count($tableArr); $i++) {
+                $tableArr[$i]["n"] = $i + 1;
+                $tableArr[$i]["sum"] = $tableArr[$i]["price"] * $tableArr[$i]["gsm"];
+                $fullSum += $tableArr[$i]["sum"];
+            }
         }
 
         $fields["fullSumText"] = StringHelper::setTextMoneyFormat($fullSum);
