@@ -79,7 +79,7 @@ class User extends Model
                 $userData = CUser::GetByID($row['ID'])->Fetch();
 
                 if (
-                    (isset($customFilter['UF_DEPARTMENT'])
+                    (isset($customFilter['UF_DEPARTMENT']) && !empty($userData['UF_DEPARTMENT'])
                     && empty(array_intersect($customFilter['UF_DEPARTMENT'], $userData['UF_DEPARTMENT'])))
                     && (isset($customFilter['ID'])
                     && !in_array($row['ID'], $customFilter['ID']))
