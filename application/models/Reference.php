@@ -228,7 +228,7 @@ class Reference extends Model
     /**
      * @return array
      */
-    public function syncMeasuredProperties()
+    public function syncMeasuredPropertiesFsa()
     {
         $array = array(
             'pageSize'   => 100000,
@@ -285,7 +285,70 @@ class Reference extends Model
     /**
      * @return array
      */
-    public function syncUnits()
+    public function syncMeasuredProperties()
+    {
+        try {
+            $ch = curl_init('https://ulab.niistrom.pro/API/getMeasuredProperties.php');
+
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            $json = curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                $msg = curl_error($ch);
+                curl_close($ch);
+
+                return [
+                    'success' => false,
+                    'error' => "Ошибка: {$msg}"
+                ];
+            }
+
+            curl_close($ch);
+
+            $result = json_decode($json, true);
+
+            $this->DB->Update('ulab_measured_properties', ['is_actual' => 0], "where fsa_id is not null");
+
+            $countUpdate = 0;
+            $countInsert = 0;
+            foreach ($result['data'] as $item) {
+                if ( empty($item['fsa_id']) ) {
+                    continue;
+                }
+                $name = $this->quoteStr($this->DB->ForSql(trim($item['name'])));
+                $isActual = $item['is_actual']? 1 : 0;
+                $updateAffected = $this->DB->Update('ulab_measured_properties', ['is_actual' => $isActual, 'name' => $name], "where fsa_id = {$item['fsa_id']}");
+
+                if ( !$updateAffected ) {
+                    $countInsert++;
+                    $this->DB->Insert('ulab_measured_properties', ['fsa_id' => $item['fsa_id'], 'name' => $name, 'is_actual' => $isActual]);
+                } else {
+                    $countUpdate++;
+                }
+            }
+
+            $nonActualTotal = $this->DB->Query(
+                "SELECT count(*) val
+                        FROM ulab_measured_properties
+                        WHERE is_actual = 0"
+            )->Fetch();
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => "Ошибка: " . $e->getMessage()
+            ];
+        }
+
+        return ['success' => true, 'msg' => "Синхронизация прошла успешно. Обновлено: {$countUpdate}. Добавлено: {$countInsert}. Неактуально: {$nonActualTotal['val']}"];
+    }
+
+
+    /**
+     * @return array
+     */
+    public function syncUnitsFsa()
     {
         $array = array(
             'pageSize'   => 100000,
@@ -354,6 +417,89 @@ class Reference extends Model
                     FROM ulab_dimension
                     WHERE is_actual = 0"
         )->Fetch();
+
+        return ['success' => true, 'msg' => "Синхронизация прошла успешно. Обновлено: {$countUpdate}. Добавлено: {$countInsert}. Неактуально: {$nonActualTotal['val']}"];
+    }
+
+
+    /**
+     * @return array
+     */
+    public function syncUnits()
+    {
+        try {
+            $ch = curl_init('https://ulab.niistrom.pro/API/getUnits.php');
+
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            $json = curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                $msg = curl_error($ch);
+                curl_close($ch);
+
+                return [
+                    'success' => false,
+                    'error' => "Ошибка: {$msg}"
+                ];
+            }
+
+            curl_close($ch);
+
+            $result = json_decode($json, true);
+
+            $this->DB->Update('ulab_dimension', ['is_actual' => 0], "where fsa_id is not null");
+
+            $countUpdate = 0;
+            $countInsert = 0;
+            foreach ($result['data'] as $item) {
+                if ( empty($item['fsa_id']) ) {
+                    continue;
+                }
+                $name = $this->quoteStr($this->DB->ForSql(trim($item['name'])));
+                $unitRu = $this->quoteStr($this->DB->ForSql(trim($item['unit_rus'])));
+                $unitEn = $this->quoteStr($this->DB->ForSql(trim($item['unit_eng'])));
+                $isActual = $item['is_actual']? 1 : 0;
+                $updateAffected = $this->DB->Update(
+                    'ulab_dimension',
+                    [
+                        'is_actual' => $isActual,
+                        'name' => $name,
+                        'unit_eng' => $unitEn,
+                        'unit_rus' => $unitRu,
+                    ],
+                    "where fsa_id = {$item['fsa_id']}"
+                );
+
+                if ( !$updateAffected ) {
+                    $countInsert++;
+                    $this->DB->Insert(
+                        'ulab_dimension',
+                        [
+                            'fsa_id' => $item['fsa_id'],
+                            'name' => $name,
+                            'unit_eng' => $unitEn,
+                            'unit_rus' => $unitRu,
+                            'is_actual' => $isActual
+                        ]
+                    );
+                } else {
+                    $countUpdate++;
+                }
+            }
+
+            $nonActualTotal = $this->DB->Query(
+                "SELECT count(*) val
+                        FROM ulab_dimension
+                        WHERE is_actual = 0"
+            )->Fetch();
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => "Ошибка: " . $e->getMessage()
+            ];
+        }
 
         return ['success' => true, 'msg' => "Синхронизация прошла успешно. Обновлено: {$countUpdate}. Добавлено: {$countInsert}. Неактуально: {$nonActualTotal['val']}"];
     }
