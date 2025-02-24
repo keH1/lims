@@ -90,7 +90,10 @@ class WaterController extends Controller
             }
         }
 
-        $isAdd = $usedModel->addToSQL($newAdd,'addAnalysis');
+        $isAdd = false;
+        if ( !empty($newAdd) ) {
+            $isAdd = $usedModel->addToSQL($newAdd,'addAnalysis');
+        }
 
         $this->checkAndShowSuccessOrErrorMessage($isAdd, $successMsg, $unsuccessfulMsg);
 
