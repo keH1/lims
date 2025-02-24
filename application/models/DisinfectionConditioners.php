@@ -121,7 +121,7 @@ class DisinfectionConditioners extends Model
                         ROOMS.NUMBER,
                         CONCAT (IFNULL(b_user.LAST_NAME,'-'),' ',IFNULL(b_user.NAME,'')) as global_assigned_name
                 FROM disinfection_conditioners
-                JOIN ROOMS ON disinfection_conditioners.room_id = ROOMS.ID
+                left JOIN ROOMS ON disinfection_conditioners.room_id = ROOMS.ID
                 left JOIN b_user ON disinfection_conditioners.global_assigned = b_user.ID
                 HAVING {$filters['having']}
                 ORDER BY {$filters['order']}
