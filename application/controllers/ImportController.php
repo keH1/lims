@@ -421,8 +421,6 @@ class ImportController extends Controller
      */
     public function list()
     {
-        $this->redirect('/import/');
-
         $this->model('Permission')->checkPermission(__FUNCTION__, __FILE__);
 
         /** @var User $userModel */
