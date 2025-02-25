@@ -646,4 +646,183 @@ class Organization extends Model
 
         return $result;
     }
+
+
+    /**
+     * @desc Получает данные о помещениях для журнала
+     * @param int $labId
+     * @param $filter
+     * @return array
+     */
+    public function getLabRoomsJournal(int $labId, $filter)
+    {
+        $where = "";
+        $limit = "";
+        $order = [
+            'by' => 'ID',
+            'dir' => 'DESC'
+        ];
+
+        if (!empty($filter)) {
+            // из $filter собирать строку $where тут
+            // формат такой: $where .= "что-то = чему-то AND ";
+            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
+            // слева без пробела, справа всегда AND пробел
+
+            // работа с фильтрами
+            if (!empty($filter['search'])) {
+
+            }
+        }
+
+        // работа с сортировкой
+        if (!empty($filter['order'])) {
+            if ($filter['order']['dir'] === 'asc') {
+                $order['dir'] = 'ASC';
+            }
+
+            switch ($filter['order']['by']) {
+                case 'NAME':
+                    $order['by'] = "`NAME`";
+                    break;
+            }
+        }
+
+        // работа с пагинацией
+        if (isset($filter['paginate'])) {
+            $offset = 0;
+            // количество строк на страницу
+            if (isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0) {
+                $length = $filter['paginate']['length'];
+
+                if (isset($filter['paginate']['start']) && $filter['paginate']['start'] > 0) {
+                    $offset = $filter['paginate']['start'];
+                }
+                $limit = "LIMIT {$offset}, {$length}";
+            }
+        }
+
+        $where .= "1 ";
+
+        $data = $this->DB->Query(
+            "SELECT *
+            FROM ROOMS
+            WHERE LAB_ID = {$labId} and {$where}
+            ORDER BY {$order['by']} {$order['dir']} {$limit}"
+        );
+
+        $dataTotal = $this->DB->Query(
+            "SELECT ID
+            FROM ROOMS
+            WHERE LAB_ID = {$labId} and 1"
+        )->SelectedRowsCount();
+
+        $dataFiltered = $this->DB->Query(
+            "SELECT ID
+            FROM ROOMS
+            WHERE LAB_ID = {$labId} and {$where}"
+        )->SelectedRowsCount();
+
+        $result = [];
+
+        while ($row = $data->Fetch()) {
+            $result[] = $row;
+        }
+
+        $result['recordsTotal'] = $dataTotal;
+        $result['recordsFiltered'] = $dataFiltered;
+
+        return $result;
+    }
+
+
+    /**
+     * @desc Получает данные о помещениях для журнала
+     * @param int $labId
+     * @param $filter
+     * @return array
+     */
+    public function getLabUsersJournal(int $labId, $filter)
+    {
+        $where = "";
+        $limit = "";
+        $order = [
+            'by' => 'ID',
+            'dir' => 'DESC'
+        ];
+
+        if (!empty($filter)) {
+            // из $filter собирать строку $where тут
+            // формат такой: $where .= "что-то = чему-то AND ";
+            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
+            // слева без пробела, справа всегда AND пробел
+
+            // работа с фильтрами
+            if (!empty($filter['search'])) {
+
+            }
+        }
+
+        // работа с сортировкой
+        if (!empty($filter['order'])) {
+            if ($filter['order']['dir'] === 'asc') {
+                $order['dir'] = 'ASC';
+            }
+
+            switch ($filter['order']['by']) {
+                case 'NAME':
+                    $order['by'] = "`NAME`";
+                    break;
+            }
+        }
+
+        // работа с пагинацией
+        if (isset($filter['paginate'])) {
+            $offset = 0;
+            // количество строк на страницу
+            if (isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0) {
+                $length = $filter['paginate']['length'];
+
+                if (isset($filter['paginate']['start']) && $filter['paginate']['start'] > 0) {
+                    $offset = $filter['paginate']['start'];
+                }
+                $limit = "LIMIT {$offset}, {$length}";
+            }
+        }
+
+        $where .= "1 ";
+
+        $data = $this->DB->Query(
+            "SELECT *
+            FROM b_user as u
+            join ulab_user_affiliation as ua on u.ID = ua.user_id
+            WHERE ua.lab_id = {$labId} and {$where}
+            ORDER BY {$order['by']} {$order['dir']} {$limit}"
+        );
+
+        $dataTotal = $this->DB->Query(
+            "SELECT u.ID
+            FROM b_user as u
+            join ulab_user_affiliation as ua on u.ID = ua.user_id
+            WHERE ua.lab_id = {$labId} and 1"
+        )->SelectedRowsCount();
+
+        $dataFiltered = $this->DB->Query(
+            "SELECT u.ID
+            FROM b_user as u
+            join ulab_user_affiliation as ua on u.ID = ua.user_id
+            WHERE ua.lab_id = {$labId} and {$where}"
+        )->SelectedRowsCount();
+
+        $result = [];
+
+        while ($row = $data->Fetch()) {
+            $result[] = $row;
+        }
+
+        $result['recordsTotal'] = $dataTotal;
+        $result['recordsFiltered'] = $dataFiltered;
+
+        return $result;
+    }
 }
