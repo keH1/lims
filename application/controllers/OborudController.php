@@ -332,6 +332,26 @@ class OborudController extends Controller
             $oborudModel->updateCertificateArray($oborudId, $_POST['certificate'], $_FILES['certificate']);
         }
 
+        // Этикетка для маркировки оборудования
+        if ( !empty($_FILES['label_oborud_file']['name']) ) {
+            $result = $oborudModel->saveOborudFile($oborudId, $_FILES['label_oborud_file'], 'label');
+
+            if ( !$result['success'] ) {
+                $this->showWarningMessage("Не сохранился файл 'Этикетка для маркировки оборудования'. " . $result['error']);
+            } else {
+                $oborudModel->updateFieldOborud($oborudId, 'label_oborud', $result['data']);
+            }
+        }
+        // Акт ввода в эксплуатацию
+        if ( !empty($_FILES['act_commissioning_file']['name']) ) {
+            $result = $oborudModel->saveOborudFile($oborudId, $_FILES['act_commissioning_file'], 'act');
+
+            if ( !$result['success'] ) {
+                $this->showWarningMessage("Не сохранился файл 'Акт ввода в эксплуатацию'. " . $result['error']);
+            } else {
+                $oborudModel->updateFieldOborud($oborudId, 'act_commissioning', $result['data']);
+            }
+        }
         // Описание типа оборудования
         if ( !empty($_FILES['desc_oborud_file']['name']) ) {
             $result = $oborudModel->saveOborudFile($oborudId, $_FILES['desc_oborud_file']);
