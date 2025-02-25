@@ -1304,7 +1304,7 @@
 
             <div class="line-dashed"></div>
 
-            <?php if ( !empty($this->data['oborud']['LONG_STORAGE']) ): ?>
+            <?php if ( !empty($this->data['oborud']['LONG_STORAGE']) || empty($this->data['id'])): ?>
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">
                         На длительном хранении
@@ -1336,7 +1336,7 @@
 
             <div class="line-dashed"></div>
 
-            <?php if ($this->data['oborud']['is_decommissioned']): ?>
+            <?php if ($this->data['oborud']['is_decommissioned'] || empty($this->data['id'])): ?>
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">
                         Основание для списания
