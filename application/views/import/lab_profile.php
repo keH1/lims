@@ -75,7 +75,16 @@
         <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
     </header>
     <div class="panel-body">
-
+        <table id="journal_rooms" class="table table-striped journal">
+            <thead>
+            <tr class="table-light">
+                <th scope="col" class="text-nowrap">Название</th>
+                <th scope="col" class="text-nowrap"></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -85,7 +94,16 @@
         <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
     </header>
     <div class="panel-body">
-
+        <table id="journal_users" class="table table-striped journal">
+            <thead>
+            <tr class="table-light">
+                <th scope="col" class="text-nowrap">ФИО</th>
+                <th scope="col" class="text-nowrap"></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </div>
 
