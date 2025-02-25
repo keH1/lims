@@ -277,6 +277,46 @@
 
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">
+                    Акт ввода в эксплуатацию
+                </label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input type="file" name="act_commissioning_file" class="form-control" value="">
+                        <input
+                                type="text"
+                                name="oborud[act_commissioning]"
+                                class="form-control"
+                                placeholder="Нет сохраненного файла"
+                                value="<?=$this->data['oborud']['act_commissioning'] ?? ''?>"
+                                readonly
+                        >
+                        <?php if (!empty($this->data['oborud']['act_commissioning'])): ?>
+                                <a
+                                        class="btn btn-outline-secondary btn-square-2 btn-icon"
+                                        title="Скачать/Открыть"
+
+                                        href="/file_oborud/<?=$this->data['id']?>/act/<?=$this->data['oborud']['act_commissioning']?>"
+                                >
+                                    <i class="fa-regular fa-file-lines"></i>
+                                </a>
+                            <a class="btn btn-outline-danger btn-square btn-icon delete_file" style="border-color: #ced4da;"title="Удалить">
+                                <i class="fa-solid fa-xmark"></i>
+                            </a>
+                        <?php else: ?>
+                            <a class="btn btn-outline-secondary btn-square-2 btn-icon disabled" title="Скачать/Открыть" >
+                                <i class="fa-regular fa-file-lines"></i>
+                            </a>
+                            <a class="btn btn-outline-danger btn-square btn-icon disabled" title="Удалить" >
+                                <i class="fa-solid fa-xmark"></i>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">
                     Описание типа оборудования
                 </label>
                 <div class="col-sm-8">
@@ -396,6 +436,46 @@
                                     <i class="fa-regular fa-file-lines"></i>
                                 </a>
                             <?php endif; ?>
+                            <a class="btn btn-outline-danger btn-square btn-icon delete_file" style="border-color: #ced4da;"title="Удалить">
+                                <i class="fa-solid fa-xmark"></i>
+                            </a>
+                        <?php else: ?>
+                            <a class="btn btn-outline-secondary btn-square-2 btn-icon disabled" title="Скачать/Открыть" >
+                                <i class="fa-regular fa-file-lines"></i>
+                            </a>
+                            <a class="btn btn-outline-danger btn-square btn-icon disabled" title="Удалить" >
+                                <i class="fa-solid fa-xmark"></i>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">
+                    Этикетка для маркировки оборудования
+                </label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input type="file" name="label_oborud_file" class="form-control" value="">
+                        <input
+                                type="text"
+                                name="oborud[label_oborud]"
+                                class="form-control"
+                                placeholder="Нет сохраненного файла"
+                                value="<?=$this->data['oborud']['label_oborud'] ?? ''?>"
+                                readonly
+                        >
+                        <?php if (!empty($this->data['oborud']['label_oborud'])): ?>
+                            <a
+                                    class="btn btn-outline-secondary btn-square-2 btn-icon"
+                                    title="Скачать/Открыть"
+
+                                    href="/file_oborud/<?=$this->data['id']?>/label/<?=$this->data['oborud']['label_oborud']?>"
+                            >
+                                <i class="fa-regular fa-file-lines"></i>
+                            </a>
                             <a class="btn btn-outline-danger btn-square btn-icon delete_file" style="border-color: #ced4da;"title="Удалить">
                                 <i class="fa-solid fa-xmark"></i>
                             </a>

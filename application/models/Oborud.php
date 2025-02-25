@@ -813,9 +813,12 @@ class Oborud extends Model {
     }
 
 
-    public function saveOborudFile($oborudId, $file)
+    public function saveOborudFile($oborudId, $file, $folder = '')
     {
-        $uploadDescFileDir = $_SERVER['DOCUMENT_ROOT'] . '/file_oborud/' . $oborudId;
+        if ( $folder != '' ) {
+            $folder = "/{$folder}/";
+        }
+        $uploadDescFileDir = $_SERVER['DOCUMENT_ROOT'] . '/file_oborud/' . $oborudId . $folder;
 
         return $this->saveFile($uploadDescFileDir, $file['name'], $file['tmp_name']);
     }
