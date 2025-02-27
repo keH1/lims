@@ -79,6 +79,21 @@ class Organization extends Model
 
 
     /**
+     * @desc удаляет связь пользователя организации, департаменту, отделу или лаборатории
+     * @param int $userId
+     * @return false|mixed
+     */
+    public function deleteAffiliationUser(int $userId)
+    {
+        if ( empty($userId) ) {
+            return false;
+        }
+
+        return $this->DB->Query("delete from ulab_user_affiliation where user_id = {$userId}")->Fetch();
+    }
+
+
+    /**
      * @desc получает ид отдела из ид лаборатории
      * @param int $labId
      * @return false|int
@@ -469,6 +484,27 @@ class Organization extends Model
         $sqlData = $this->prepearTableData('ba_laba', $data);
 
         $this->DB->Insert("ba_laba", $sqlData);
+    }
+
+
+    /**
+     * @desc Получает пользователей, не привязанных к лабораториям
+     * @return array
+     */
+    public function getNotAffiliationUser()
+    {
+        $sql = $this->DB->Query(
+            "select ID, `NAME`, `LAST_NAME`, `SECOND_NAME`, `WORK_POSITION` 
+                from b_user where ID not in (select user_id from ulab_user_affiliation) and ACTIVE = 'Y' and BLOCKED = 'N'"
+        );
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+            $result[] = $row;
+        }
+
+        return $result;
     }
 
 

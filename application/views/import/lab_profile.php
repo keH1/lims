@@ -75,6 +75,8 @@
         <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
     </header>
     <div class="panel-body">
+        <a href="#popup_form_rooms" class="popup-with-form btn btn-success mb-2">Добавить</a>
+
         <table id="journal_rooms" class="table table-striped journal">
             <thead>
             <tr class="table-light">
@@ -94,10 +96,13 @@
         <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
     </header>
     <div class="panel-body">
+        <a href="#popup_form_users" class="popup-with-form btn btn-success mb-2">Добавить</a>
+
         <table id="journal_users" class="table table-striped journal">
             <thead>
             <tr class="table-light">
                 <th scope="col" class="text-nowrap">ФИО</th>
+                <th scope="col" class="text-nowrap">Должность</th>
                 <th scope="col" class="text-nowrap"></th>
             </tr>
             </thead>
@@ -204,20 +209,47 @@
     </div>
 </div>
 
-<!--<form id="popup_form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/import/labImportUpdate" method="post">-->
-<!--    <div class="title mb-3 h-2">-->
-<!--        Данные лаборатории-->
-<!--    </div>-->
-<!---->
-<!--    <div class="line-dashed-small"></div>-->
-<!---->
-<!--    <input type="hidden" id="form_entity_id" name="lab_id" value="">-->
-<!--    <input type="hidden" name="form[dep_id]" value="--><?//=$this->data['info']['id']?><!--">-->
-<!---->
-<!--    <div class="mb-3">-->
-<!--        <label class="form-label" for="form_entity_name">Наименование *</label>-->
-<!--        <input type="text" class="form-control" id="form_entity_name" name="form[name]" value="" required>-->
-<!--    </div>-->
-<!---->
-<!--    <button type="submit" class="btn btn-primary">Сохранить</button>-->
-<!--</form>-->
+<form id="popup_form_rooms" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/import/roomInsertUpdate" method="post">
+    <div class="title mb-3 h-2">
+        Данные помещения
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <input type="hidden" id="form_entity_id" name="room_id" value="">
+    <input type="hidden" name="form[LAB_ID]" value="<?=$this->data['info']['ID']?>">
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_name">Наименование *</label>
+        <input type="text" class="form-control" id="form_entity_name" name="form[NAME]" value="" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_number">Номер комнаты</label>
+        <input type="text" class="form-control" id="form_entity_number" name="form[NUMBER]" value="">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+<form id="popup_form_users" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/import/addAffiliationUser" method="post">
+    <div class="title mb-3 h-2">
+        Данные сотрудника
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <input type="hidden" name="lab_id" value="<?=$this->data['info']['ID']?>">
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_user_id">Сотрудник *</label>
+        <select id="form_entity_user_id" class="form-control select2" name="user_id" required>
+            <option value="">Не выбран</option>
+            <?php foreach ($this->data['not_affiliation_users'] as $user): ?>
+                <option value="<?=$user['ID']?>"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
