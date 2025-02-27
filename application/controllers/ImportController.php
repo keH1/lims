@@ -226,6 +226,7 @@ class ImportController extends Controller
         $this->data['dep_info'] = $orgModel->getDepInfo($this->data['info']['dep_id']);
         $this->data['branch_info'] = $orgModel->getBranchInfo($this->data['dep_info']['branch_id']);
         $this->data['org_info'] = $orgModel->getOrgInfo($this->data['branch_info']['organization_id']);
+        $this->data['not_affiliation_users'] = $orgModel->getNotAffiliationUser();
 
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
@@ -413,6 +414,46 @@ class ImportController extends Controller
         $this->redirect("/import/dep/{$_POST['form']['dep_id']}");
     }
 
+
+    /**
+     * @desc добавляет/обновляет информацию о помещении
+     */
+    public function roomInsertUpdate()
+    {
+        $labModel = new Lab();
+
+        if ( empty($_POST['room_id']) ) {
+            $labModel->addRoom($_POST['form']);
+        } else {
+            $id = (int)$_POST['room_id'];
+
+            $labModel->updateRoom($id, $_POST['form']);
+        }
+
+        $this->showSuccessMessage("Данные успешно добавлены/обновлены");
+
+        $this->redirect("/import/labProfile/{$_POST['form']['LAB_ID']}");
+    }
+
+
+    /**
+     * @desc добавляет связь пользователя к лабе
+     */
+    public function addAffiliationUser()
+    {
+        $orgModel = new Organization();
+
+        $userId = (int)$_POST['user_id'];
+        $labId = (int)$_POST['lab_id'];
+
+        $data = ['lab_id' => $labId];
+
+        $orgModel->setAffiliationUserInfo($userId, $data);
+
+        $this->showSuccessMessage("Данные успешно добавлены/обновлены");
+
+        $this->redirect("/import/labProfile/{$labId}");
+    }
 
 
     /**
@@ -2811,6 +2852,20 @@ class ImportController extends Controller
         ];
 
         echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
+    }
+
+
+    public function deleteAffiliationUserAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        $orgModel = new Organization();
+
+        $userId = (int)$_POST['user_id'];
+
+        $orgModel->deleteAffiliationUser($userId);
     }
 
 

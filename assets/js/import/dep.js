@@ -80,6 +80,7 @@ $(function ($) {
             },
             type: 'inline',
             closeBtnInside: true,
+            closeOnBgClick: false,
             fixedContentPos: false,
             callbacks: {
                 beforeOpen: function() {
@@ -94,5 +95,7 @@ $(function ($) {
                 }
             }
         })
+
+        return false
     })
 })
