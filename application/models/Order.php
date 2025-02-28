@@ -473,8 +473,10 @@ class Order extends Model {
                 }
 
                 $stageArr = [
-                    "b.OPLATA < b.PRICE AND ",
-                    "b.OPLATA >= b.PRICE AND "
+                    // "b.OPLATA < b.PRICE AND ",
+                    // "b.OPLATA >= b.PRICE AND "
+                    "(b.price_discount IS NULL OR b.price_discount = '' OR (b.OPLATA < b.price_discount)) AND ",
+                    "b.OPLATA >= b.price_discount AND b.OPLATA > 0 AND "
                 ];
                 // стадии
                 if ( isset($filter['search']['stage']) ) {
@@ -536,7 +538,7 @@ class Order extends Model {
         $i = 0;
         while ($row = $data->Fetch()) {
             $row['num'] = ++$i;
-            $row['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
+            // $row['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
 
             $row['date'] = StringHelper::dateRu($row['DATE_CREATE']);
 
