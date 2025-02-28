@@ -456,10 +456,6 @@ class Order extends Model {
             'dir' => 'DESC'
         ];
 
-        // echo '<pre>';
-        // print_r(gettype($filter['search']['OPLATA']));
-        // die;
-
         if ( !empty($filter) ) {
             // из $filter собирать строку $where тут
             // формат такой: $where .= "что-то = чему-то AND ";
@@ -532,16 +528,6 @@ class Order extends Model {
             }
         }
         $where .= "1 ";
-
-        // echo '<pre>';
-        // print_r($where);
-        // echo '<pre>';
-        // print_r($order['by']);
-        // echo '<pre>';
-        // print_r($order['dir']);
-        // echo '<pre>';
-        // print_r($limit);
-        // die;
 
         $result = [];
 
