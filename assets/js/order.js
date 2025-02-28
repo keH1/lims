@@ -299,4 +299,10 @@ $(function ($) {
 		journalDataTable.ajax.reload()
 		journalDataTable.draw()
 	})
+
+	$('.search').on('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+        }
+    })
 })
