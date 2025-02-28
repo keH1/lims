@@ -190,7 +190,7 @@ Class OrderController extends Controller
         $this->data['dealID'] = $dealInfo;
         $this->data['tz_id'] = $contract['TZ_ID'];
 
-        $this->data['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
+        // $this->data['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
 
         $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
 

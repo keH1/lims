@@ -171,10 +171,13 @@ $(function ($) {
 					if ( p < o ) {
 						return `<a href="#" class="btn btn-primary disabled">Переплата</a>`
 					}
-
-					if ( !item['is_show_finance'] ) {
-						return `<a href="#" class="btn btn-primary disabled">Нет прав</a>`
+					if ( p > o ) {
+						return `<a href="#" class="btn btn-primary disabled">Не оплач.</a>`
 					}
+
+					// if ( !item['is_show_finance'] ) {
+					// 	return `<a href="#" class="btn btn-primary disabled">Нет прав</a>`
+					// }
 
 					return `<a href="#add-payment" data-deal_id="${item['ID_DEAL']}" data-pay="${item['OPLATA']}" data-price="${item['price_discount']}" class="btn btn-primary popup-with-form">Оплатить</a>`
 				}
@@ -278,12 +281,17 @@ $(function ($) {
 		})
 	})
 
-	journalDataTable.columns().every( function () {
-		$(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-			journalDataTable
-				.column( $(this).parent().index() )
-				.search( this.value )
-				.draw()
+	let timeout
+	journalDataTable.columns().every(function () {
+		$(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+			clearTimeout(timeout)
+			const searchValue = this.value
+			timeout = setTimeout(function () {
+				journalDataTable
+					.column($(this).parent().index())
+					.search(searchValue)
+					.draw()
+			}.bind(this), 1000)
 		})
 	})
 
@@ -291,4 +299,10 @@ $(function ($) {
 		journalDataTable.ajax.reload()
 		journalDataTable.draw()
 	})
+
+	$('.search').on('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+        }
+    })
 })

@@ -471,10 +471,33 @@ class Order extends Model {
                 if ( isset($filter['search']['order_id']) ) {
                     $where .= "dtc.`ID_CONTRACT` = '{$filter['search']['order_id']}' AND ";
                 }
+                if ( isset($filter['search']['price_discount']) ) {
+                    $where .= "(
+                        (b.price_discount IS NOT NULL AND b.price_discount <> '' AND 
+                        b.price_discount = CAST('{$filter['search']['price_discount']}' AS DECIMAL(13,2)))
+                        OR 
+                        (b.price_discount = 0.00 AND '{$filter['search']['price_discount']}' = '0')
+                    ) AND ";
+                }
+                if ( isset($filter['search']['ACCOUNT']) ) {
+                    $where .= "b.ACCOUNT = '{$filter['search']['ACCOUNT']}' AND ";
+                }
+                if ( isset($filter['search']['OPLATA']) ) {
+                    if ($filter['search']['OPLATA'] === '0') {
+                        $where .= "(b.OPLATA = 0) AND ";
+                    } else {
+                        $where .= "(
+                            (b.OPLATA IS NOT NULL AND b.OPLATA <> '' AND 
+                            (b.OPLATA = CAST('{$filter['search']['OPLATA']}' AS DOUBLE)))
+                        ) AND ";
+                    }
+                }
 
                 $stageArr = [
-                    "b.OPLATA < b.PRICE AND ",
-                    "b.OPLATA >= b.PRICE AND "
+                    // "b.OPLATA < b.PRICE AND ",
+                    // "b.OPLATA >= b.PRICE AND "
+                    "(b.price_discount IS NULL OR b.price_discount = '' OR (b.OPLATA < b.price_discount)) AND ",
+                    "b.OPLATA >= b.price_discount AND b.OPLATA > 0 AND "
                 ];
                 // стадии
                 if ( isset($filter['search']['stage']) ) {
@@ -536,7 +559,7 @@ class Order extends Model {
         $i = 0;
         while ($row = $data->Fetch()) {
             $row['num'] = ++$i;
-            $row['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
+            // $row['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
 
             $row['date'] = StringHelper::dateRu($row['DATE_CREATE']);
 
