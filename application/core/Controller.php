@@ -52,7 +52,7 @@ class Controller
         if ( !empty($viewName) && file_exists(APP_PATH . "modules/{$folder}/View/{$dir}/{$view}_{$viewName}.php") ) {
             $this->contentView = APP_PATH . "modules/{$folder}/View/{$dir}{$view}_{$viewName}.php";
         } else {
-            $this->contentView = APP_PATH . "modules/{$folder}/View{$dir}/{$view}.php";
+            $this->contentView = APP_PATH . "modules/{$folder}/View/{$dir}{$view}.php";
 
             if ( !file_exists($this->contentView) ) {
                 // TODO:  редирект на страницу с ошибкой
@@ -86,7 +86,7 @@ class Controller
         unset($this->data);
         unset($this->addedCSS);
         unset($this->addedJS);
-        unset($this->topNavMenu);
+
         unset($_POST);
 
         require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php");
@@ -94,17 +94,15 @@ class Controller
 
     protected function viewEmpty($view = 'index', $dir = '')
     {
-        global $APPLICATION;
-
         if ( empty($dir) ) {
             $dir = strtolower(str_replace('Controller', '', $this::getClassName()));
         }
 
-        $this->contentView = "{$dir}/{$view}.php";
+        $folder = str_replace('Controller', '', $this::getClassName());
 
-        if ( !file_exists(APP_PATH . 'views/' . $this->contentView) ) {
-            // TODO:  редирект на страницу с ошибкой
-        }
+        $dir .= '/';
+
+        $this->contentView = APP_PATH . "modules/{$folder}/View/{$dir}{$view}.php";
 
         if ( isset($_SESSION['message_danger']) ) {
             $this->messageError = $_SESSION['message_danger'];
@@ -119,7 +117,7 @@ class Controller
         if ( file_exists(APP_PATH . "views/template_empty.php") ) {
             require(APP_PATH . "views/template_empty.php");
         } else {
-            include APP_PATH.'views/'.$this->contentView;
+            include $this->contentView;
         }
 
         unset($_SESSION['message_danger']);
@@ -128,7 +126,7 @@ class Controller
         unset($this->data);
         unset($this->addedCSS);
         unset($this->addedJS);
-        //unset($this->topNavMenu);
+
         unset($_POST);
     }
 
