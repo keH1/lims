@@ -4522,7 +4522,7 @@ class ResultController extends Controller
                     $tmpName = $sheet['name'];
                 }
 
-                $this->viewEmpty("template/{$sheet['name']}", '');
+                $this->viewEmpty("template/{$sheet['name']}");
             }
         }
     }

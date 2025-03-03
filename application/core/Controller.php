@@ -49,10 +49,10 @@ class Controller
 
         $dir .= '/';
 
-        if ( !empty($viewName) && file_exists(APP_PATH . "modules/{$folder}/View/{$dir}/{$view}_{$viewName}.php") ) {
-            $this->contentView = APP_PATH . "modules/{$folder}/View/{$dir}{$view}_{$viewName}.php";
+        if ( !empty($viewName) && file_exists(APP_PATH . "modules/{$folder}/View/{$view}_{$viewName}.php") ) {
+            $this->contentView = APP_PATH . "modules/{$folder}/View/{$view}_{$viewName}.php";
         } else {
-            $this->contentView = APP_PATH . "modules/{$folder}/View/{$dir}{$view}.php";
+            $this->contentView = APP_PATH . "modules/{$folder}/View/{$view}.php";
 
             if ( !file_exists($this->contentView) ) {
                 // TODO:  редирект на страницу с ошибкой
@@ -100,9 +100,7 @@ class Controller
 
         $folder = str_replace('Controller', '', $this::getClassName());
 
-        $dir .= '/';
-
-        $this->contentView = APP_PATH . "modules/{$folder}/View/{$dir}{$view}.php";
+        $this->contentView = APP_PATH . "modules/{$folder}/View/{$view}.php";
 
         if ( isset($_SESSION['message_danger']) ) {
             $this->messageError = $_SESSION['message_danger'];
