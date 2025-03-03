@@ -17,7 +17,6 @@ class Controller
     private $addedJS     = [];
     private $addedCDN     = [];
     private $addedCSS    = [];
-    private $topNavMenu  = [];
 
     protected static function getClassName(): string
     {
@@ -46,17 +45,16 @@ class Controller
         $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
         $viewName = $permissionInfo['view_name']?? '';
 
-        if ( empty($dir) ) {
-            $dir = strtolower(str_replace('Controller', '', $this::getClassName()));
-        }
+        $folder = str_replace('Controller', '', $this::getClassName());
 
+        $dir .= '/';
 
-        if ( !empty($viewName) && file_exists(APP_PATH . "views/{$dir}/{$view}_{$viewName}.php") ) {
-            $this->contentView = "{$dir}/{$view}_{$viewName}.php";
+        if ( !empty($viewName) && file_exists(APP_PATH . "modules/{$folder}/View/{$dir}/{$view}_{$viewName}.php") ) {
+            $this->contentView = APP_PATH . "modules/{$folder}/View/{$dir}{$view}_{$viewName}.php";
         } else {
-            $this->contentView = "{$dir}/{$view}.php";
+            $this->contentView = APP_PATH . "modules/{$folder}/View{$dir}/{$view}.php";
 
-            if ( !file_exists(APP_PATH . 'views/' . $this->contentView) ) {
+            if ( !file_exists($this->contentView) ) {
                 // TODO:  редирект на страницу с ошибкой
             }
         }
@@ -75,10 +73,11 @@ class Controller
             $this->messageWarning = $_SESSION['message_warning'];
         }
 
+        // APP_PATH . "modules/{$folder}/View/{$dir}/{$view}.php
         if ( file_exists(APP_PATH . "views/{$template}.php") ) {
             require(APP_PATH . "views/{$template}.php");
         } else {
-            include APP_PATH.'views/'.$this->contentView;
+            include $this->contentView;
         }
         
         unset($_SESSION['message_danger']);

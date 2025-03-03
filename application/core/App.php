@@ -15,9 +15,8 @@ class App
 
         $url = $this->parseUrl();
 
-        $controllerName = "index";
-        if (!empty($url[0]) && file_exists(APP_PATH . 'controllers/' . ucfirst($url[0]) . 'Controller.php')) {
-            $controllerName = ucfirst($url[0]);
+        $controllerName = ucfirst($url[0]);
+        if (!empty($url[0]) && file_exists(APP_PATH . "modules/{$controllerName}/Controller/" . ucfirst($url[0]) . 'Controller.php')) {
             $controller = $controllerName . 'Controller';
             $this->controller = $controller;
             unset($url[0]);

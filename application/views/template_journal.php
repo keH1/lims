@@ -50,8 +50,8 @@
 </div>
 
 <main class="content-wrapper">
-    <?php if ( file_exists(APP_PATH . 'views/' . $this->contentView) ): ?>
-        <?php include APP_PATH.'views/'.$this->contentView; ?>
+    <?php if ( file_exists($this->contentView) ): ?>
+        <?php include $this->contentView; ?>
     <?php endif; ?>
 </main>
 

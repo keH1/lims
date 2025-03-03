@@ -2,10 +2,14 @@
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 
 spl_autoload_register(function ($class) {
-    if ( file_exists(APP_PATH . "controllers/{$class}.php") ) {
-        include APP_PATH . "controllers/{$class}.php";
+    $folder = str_replace('Controller', '', $class);
+
+    if ( file_exists(APP_PATH . "modules/{$folder}/Controller/{$class}.php") ) {
+        include APP_PATH . "modules/{$folder}/Controller/{$class}.php";
+    } else if ( file_exists(APP_PATH . "modules/{$folder}/Model/{$class}.php") ) {
+        include APP_PATH . "modules/{$folder}/Model/{$class}.php";
     } else {
-        include APP_PATH . "models/{$class}.php";
+        // редирект на страницу с ошибкой
     }
 });
 
