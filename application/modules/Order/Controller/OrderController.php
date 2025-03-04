@@ -46,9 +46,9 @@ Class OrderController extends Controller
         $this->addJS("/assets/plugins/modal/modalWindow.js");
 
         $this->addJs('/assets/js/order-list.js');
-		$this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
+        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
 
-		$this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
+        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
 
         $this->view('list');
     }
@@ -147,16 +147,16 @@ Class OrderController extends Controller
             $SumPayment += $item['OPLATA'];
 //            if ($item['status'] == 'work') {
 
-				$totalCost += $item['price_discount'];
+            $totalCost += $item['price_discount'];
 //            }
         }
 
-		$contractRequestCoast = 0;
+        $contractRequestCoast = 0;
 
-		foreach ($requestByOrder as $item) {
-			if ($item['ID_DEAL'] == $contract['head_request'] || $item['status'] == 'lose') continue;
-			$contractRequestCoast += $request->getTzByDealId($item['ID_DEAL'])['price_discount'];
-		}
+        foreach ($requestByOrder as $item) {
+            if ($item['ID_DEAL'] == $contract['head_request'] || $item['status'] == 'lose') continue;
+            $contractRequestCoast += $request->getTzByDealId($item['ID_DEAL'])['price_discount'];
+        }
 
         $this->data['history'] = $order->getFinanceHistory($contractID);
 
@@ -190,7 +190,7 @@ Class OrderController extends Controller
         $this->data['dealID'] = $dealInfo;
         $this->data['tz_id'] = $contract['TZ_ID'];
 
-        $this->data['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
+        // $this->data['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
 
         $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
 
@@ -318,30 +318,30 @@ Class OrderController extends Controller
      */
     public function changeOrder()
     {
-		/** @var Request $request */
-		$request = $this->model('Request');
-		/** @var Order $orderModel */
-		$orderModel = $this->model('Order');
+        /** @var Request $request */
+        $request = $this->model('Request');
+        /** @var Order $orderModel */
+        $orderModel = $this->model('Order');
 
-		$orderID = $_POST['orderID'];
+        $orderID = $_POST['orderID'];
 
-		$data['NUMBER'] = $_POST["NUMBER"];
-		$data['DATE'] = $_POST['DATE'];
-		$data['LONGTERM'] = $_POST['LONGTERM'] == 'on' ? 1 : 0;
-		$data['CONTRACT_TYPE'] = $_POST['CONTRACT_TYPE'];
-		$data['FLOW_DATE'] = $_POST['FLOW_DATE']  == 'on' ? 1 : 0;
-		$data['CLIENT_NUMBER'] = $_POST['CLIENT_NUMBER']  == 'on' ? 1 : 0;
-		if ($_POST['LONGTERM'] == 'on') {
-			if (!empty($_POST['head_request'])) {
-				$data['SUMM'] = $request->getTzByDealId($_POST['head_request'])['price_discount'];
-				$data['head_request'] = $_POST['head_request'];
-			} else {
-				$data['SUMM'] = $_POST['CONTRACT_SUMM'];
-			}
-		}
+        $data['NUMBER'] = $_POST["NUMBER"];
+        $data['DATE'] = $_POST['DATE'];
+        $data['LONGTERM'] = $_POST['LONGTERM'] == 'on' ? 1 : 0;
+        $data['CONTRACT_TYPE'] = $_POST['CONTRACT_TYPE'];
+        $data['FLOW_DATE'] = $_POST['FLOW_DATE']  == 'on' ? 1 : 0;
+        $data['CLIENT_NUMBER'] = $_POST['CLIENT_NUMBER']  == 'on' ? 1 : 0;
+        if ($_POST['LONGTERM'] == 'on') {
+            if (!empty($_POST['head_request'])) {
+                $data['SUMM'] = $request->getTzByDealId($_POST['head_request'])['price_discount'];
+                $data['head_request'] = $_POST['head_request'];
+            } else {
+                $data['SUMM'] = $_POST['CONTRACT_SUMM'];
+            }
+        }
 
         $orderModel->setOrderById($orderID, $data);
-    	$location = '/order/card/' . $orderID;
+        $location = '/order/card/' . $orderID;
         $this->redirect($location);
     }
 
@@ -351,55 +351,55 @@ Class OrderController extends Controller
      * @param $orderID
      */
     public function creatOrderPrice($orderID)
-	{
-		/** @var Order $order */
-		$order = $this->model('Order');
+    {
+        /** @var Order $order */
+        $order = $this->model('Order');
 
-		$location = '/order/card/' . $orderID;
+        $location = '/order/card/' . $orderID;
 
-		$res = $order->setClientPrice($orderID);
+        $res = $order->setClientPrice($orderID);
 
-		if ($res) {
-			$this->showSuccessMessage('Прайс успешно добавлен');
-			$this->redirect($location);
-		}
-	}
+        if ($res) {
+            $this->showSuccessMessage('Прайс успешно добавлен');
+            $this->redirect($location);
+        }
+    }
 
 
     /**
      * @desc Сохраняет данные оплаты
      */
-	public function setOplata()
-	{
-		/** @var Order $order */
-		$order = $this->model('Order');
+    public function setOplata()
+    {
+        /** @var Order $order */
+        $order = $this->model('Order');
 
-		$orderID = $_POST['order_id'];
+        $orderID = $_POST['order_id'];
 
-		$location = '/ulab/order/card/' . $orderID;
+        $location = '/ulab/order/card/' . $orderID;
 
-		$data = [
-			'ID_CONTRACT' => $orderID,
-			'PAY_SUMM' => $_POST['pay'],
-			'PAY_DATE' => $_POST['payDate'],
-		];
+        $data = [
+            'ID_CONTRACT' => $orderID,
+            'PAY_SUMM' => $_POST['pay'],
+            'PAY_DATE' => $_POST['payDate'],
+        ];
 
-		$result = $order->setOplata($data);
+        $result = $order->setOplata($data);
 
-		if ($result) {
-			$this->showSuccessMessage('Оплата успешно добавлена');
-			$this->redirect($location);
-		} else {
-			$this->showErrorMessage('Не удалось добавить оплату');
-			$this->redirect($location);
-		}
-	}
+        if ($result) {
+            $this->showSuccessMessage('Оплата успешно добавлена');
+            $this->redirect($location);
+        } else {
+            $this->showErrorMessage('Не удалось добавить оплату');
+            $this->redirect($location);
+        }
+    }
 
 
     /**
      * @desc Загрузить pdf ТЗ
      */
-	public function uploadTzDocPdfAjax()
+    public function uploadTzDocPdfAjax()
     {
         global $APPLICATION;
 
@@ -438,48 +438,48 @@ Class OrderController extends Controller
      * @param $orderId
      */
     public function cancelOrder($orderId)
-	{
-		/** @var Order $orderModel */
-		$orderModel = $this->model('Order');
+    {
+        /** @var Order $orderModel */
+        $orderModel = $this->model('Order');
 
-		$orderModel->orderCancelByOrderId($orderId);
+        $orderModel->orderCancelByOrderId($orderId);
 
-		$result = $orderModel->getContractById($orderId)['IS_ACTION'];
+        $result = $orderModel->getContractById($orderId)['IS_ACTION'];
 
-		$location = '/ulab/order/card/' . $orderId;
+        $location = '/ulab/order/card/' . $orderId;
 
-		if ($result) {
-			$this->showSuccessMessage("Договор восстановлен");
+        if ($result) {
+            $this->showSuccessMessage("Договор восстановлен");
 
-		} else {
-			$this->showErrorMessage("Договор аннулирован");
-		}
-		$this->redirect($location);
-	}
+        } else {
+            $this->showErrorMessage("Договор аннулирован");
+        }
+        $this->redirect($location);
+    }
 
 
     /**
      * @desc Удаляет PDF файл прил. к договору (тз)
      */
-	public function delTzDocAjax()
-	{
-		global $APPLICATION;
+    public function delTzDocAjax()
+    {
+        global $APPLICATION;
 
-		$APPLICATION->RestartBuffer();
+        $APPLICATION->RestartBuffer();
 
-		/** @var Order $orderModel */
-		$orderModel = $this->model('Order');
+        /** @var Order $orderModel */
+        $orderModel = $this->model('Order');
 
-		$id = $_POST['id'];
+        $id = $_POST['id'];
 
-		$result = $orderModel->deletePdfTZ($id);
+        $result = $orderModel->deletePdfTZ($id);
 
-		if ($result) {
-			$this->showSuccessMessage("Файл успешно удален");
-		} else {
-			$this->showErrorMessage("Файл не удален");
-		}
+        if ($result) {
+            $this->showSuccessMessage("Файл успешно удален");
+        } else {
+            $this->showErrorMessage("Файл не удален");
+        }
 
-		echo json_encode(['succes' => $result], JSON_UNESCAPED_UNICODE);
-	}
+        echo json_encode(['succes' => $result], JSON_UNESCAPED_UNICODE);
+    }
 }
