@@ -276,8 +276,7 @@ class Company extends Model
 
             $result = $companyInfo;
         }
-
-        require_once __DIR__ . '/User.php';
+        
         $userModel = new User();
         if ($withReplacement) {
             if (!empty($companyInfo['director_id'])) {
