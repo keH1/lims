@@ -1596,3 +1596,26 @@ table.fixedHeader-floating thead tr {
     border: unset;
 }
 /**********ТАБЫ***********/
+
+.dropzone .dz-default.dz-message {
+    background-image: none;
+    background-color: #f9f9f9;
+    border: 2px dashed #00b8ce;
+    border-radius: 8px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.dropzone .dz-default.dz-message:hover {
+    background-color: #e9ecef;
+}
+
+.dropzone .dz-default.dz-message span {
+    display: block;
+}

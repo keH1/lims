@@ -764,7 +764,7 @@
         <div>
             <form id="dropzone-example" class="dropzone dz-clickable" action="/ulab/request/uploadUserFileAjax/<?=$this->data['deal_id']?>">
                 <div class="dropzone-previews"></div>
-                <div class="dz-default dz-message"><span>Drop files here to upload</span></div>
+                <div class="dz-default dz-message"><span>Добавьте файлы для загрузки</span></div>
             </form>
         </div>
     </div>
