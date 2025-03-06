@@ -917,7 +917,7 @@
     <!--./protocolInformation-->
 
 
-    <form id="gost_room_form" action="/ulab/result/saveRoomStart/" method="post" class="bg-light mfp-hide col-md-5 m-auto p-3 position-relative">
+    <form id="gost_room_form" action="/ulab/result/saveRoomStart/" method="post" class="bg-light mfp-hide col-md-7 m-auto p-3 position-relative">
         <div class="title mb-3 h-2">
             Помещение
         </div>

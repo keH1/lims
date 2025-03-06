@@ -465,6 +465,9 @@ $(function ($) {
         journalDataTable.draw()
     })
 
+    function isValidNumber(value) {
+        return value !== null && value !== '' && !isNaN(+value)
+    }
 
     $body.on('click', '.btn_start', function () {
         let probeIdList = $(".probe-check:checked").map(function(){
@@ -490,6 +493,16 @@ $(function ($) {
                     closeOnBgClick: false,
                     showCloseBtn: true,
                     callbacks: {
+                        open: function() {
+                            $contentBlock.find('[data-bs-toggle="popover"]').each(function () {
+                                new bootstrap.Popover(this, {
+                                    customClass: 'popover-wide-equipment',
+                                    html: true,
+                                    trigger: 'hover focus',
+                                    container: 'body'
+                                })
+                            })
+                        },
                         beforeOpen: function() {
                             $contentBlock.empty()
 
@@ -507,11 +520,84 @@ $(function ($) {
                                     $.each(probe, function (j, method) {
                                         if ( method.rooms.length === 0 ) { return true }
 
+                                        const warnings = []
+                                        const currentDate = new Date()
+
+                                        if (Array.isArray(method.equipment)) {
+                                            method.equipment.forEach(item => {
+                                                const equipment = item.info || {}
+                                                const room = item.room || {}
+                                                const { temp, wet } = room
+
+                                                // Если переносное оборудование то не проверять
+                                                if (+equipment['is_portable']) {
+                                                    return
+                                                }
+
+                                                // Проверка: оборудование не проверено
+                                                if (!+item.CHECKED) {
+                                                    warnings.push(`<strong>${equipment.OBJECT}</strong> - не проверено.`)
+                                                }
+
+                                                // Проверка температуры
+                                                if (+equipment.TEMPERATURE !== 1) {
+                                                    if (!isValidNumber(temp) || !isValidNumber(equipment.TOO_EX) || !isValidNumber(equipment.TOO_EX2)) {
+                                                        warnings.push(`<strong>${equipment.OBJECT}</strong> - отсутствуют корректные данные для проверки температуры.`)
+                                                    } else if (+temp < +equipment.TOO_EX || +temp > +equipment.TOO_EX2) {
+                                                        warnings.push(`<strong>${equipment.OBJECT}</strong> - температура не соответствует.`)
+                                                    }
+                                                }
+
+                                                // Проверка влажности
+                                                if (+equipment.HUMIDITY !== 1) {
+                                                    if (!isValidNumber(wet) || !isValidNumber(equipment.OVV_EX) || !isValidNumber(equipment.OVV_EX2)) {
+                                                        warnings.push(`<strong>${equipment.OBJECT}</strong> - отсутствуют корректные данные для проверки влажности.`)
+                                                    } else if (+temp < +equipment.OVV_EX || +temp > +equipment.OVV_EX2) {
+                                                        warnings.push(`<strong>${equipment.OBJECT}</strong> - влажность не соответствует.`)
+                                                    }
+                                                }
+
+                                                // Проверка срока поверки оборудования
+                                                if (!+equipment.NO_METR_CONTROL) { // Подлежит периодическому контролю
+                                                    const dateEnd = equipment.actual_certificate?.at(-1)?.date_end
+                                                    if (dateEnd) {
+                                                        const poverkaDate = new Date(dateEnd)
+                                                        if (!isNaN(poverkaDate) && poverkaDate <= currentDate && !["OOPP", "VO"].includes(equipment.IDENT)) {
+                                                            warnings.push(`<strong>${equipment.OBJECT}</strong> - истек срок поверки оборудования.`)
+                                                        }
+                                                    } else {
+                                                        warnings.push(`<strong>${equipment.OBJECT}</strong> - отсутствуют корректные данные поверки оборудования.`)
+                                                    }
+                                                }
+                                            });
+                                        }
+
+                                        const equipmentWarnings = warnings.join('<br>')
+
+                                        const warningIcon = equipmentWarnings
+                                            ? `<i class="fas fa-exclamation-circle text-danger ml-1 cursor-pointer" tabindex="0"
+                                                data-bs-toggle="popover"  
+                                                data-bs-title="Несоответствия оборудования"
+                                                data-bs-content="${equipmentWarnings.trim()}"
+                                                onclick="event.stopPropagation()"></i>`
+                                            : ''
+
+
                                         let roomHtml = ``
                                         $.each(method.rooms, function (k, room) {
                                             let textLabelTemp = ``
                                             let textLabelWet = ``
                                             let textLabelPress = ``
+
+                                            const isInvalidTemp = (!isValidNumber(room.temp) || +room.temp < +method.cond_temp_1 || +room.temp > +method.cond_temp_2) && +method.is_not_cond_temp != 1
+                                                ? 'is-invalid bg-img-none'
+                                                : ''
+                                            const isInvalidWet = (!isValidNumber(room.wet) || +room.wet < +method.cond_wet_1 || +room.wet > +method.cond_wet_2) && +method.is_not_cond_wet != 1
+                                                ? 'is-invalid bg-img-none'
+                                                : ''
+                                            const isInvalidPress = (!isValidNumber(room.pressure) || +room.pressure < +method.cond_pressure_1 || +room.pressure > +method.cond_pressure_2) && +method.is_not_cond_pressure != 1
+                                                ? 'is-invalid bg-img-none'
+                                                : ''
 
                                             if ( method.is_not_cond_temp == 1 ) {
                                                 textLabelTemp = `Не нормируется`
@@ -528,31 +614,42 @@ $(function ($) {
                                             } else {
                                                 textLabelPress = `От ${method.cond_pressure_1} до ${method.cond_pressure_2}`
                                             }
+
                                             roomHtml += `<div class="row mb-2 room_block">
                                                             <div class="col-5">
                                                                 <div class="form-check pt-2">
                                                                     <input type="checkbox" class="form-check-input check_room" id="check_room_${method.ugtp_id}_${room.room_id}" name="form[${method.ugtp_id}][room_id]" value="${room.room_id}" checked>
-                                                                    <label class="form-check-label" for="check_room_${method.ugtp_id}_${room.room_id}">${room.name}</label>
+                                                                    <label class="form-check-label" for="check_room_${method.ugtp_id}_${room.room_id}">
+                                                                        ${room.name || '<span class="text-danger">Не выбрано помещение</span>'}
+                                                                    </label>
                                                                 </div>
                                                             </div>
                                                             <div class="col">
-                                                                <input type="number" step="any" class="form-control input_temp" data-room_id="${room.room_id}" name="form[${method.ugtp_id}][${room.room_id}][temp]" value="${room.temp?? ''}">
+                                                                <input type="number" step="any" class="form-control input_temp ${isInvalidTemp}" 
+                                                                    data-room_id="${room.room_id}" data-min="${method.cond_temp_1}" data-max="${method.cond_temp_2}" data-validate="${method.is_not_cond_temp}" 
+                                                                    name="form[${method.ugtp_id}][${room.room_id}][temp]" value="${room.temp?? ''}">
                                                                 <div class="form-text">${textLabelTemp}</div>
                                                             </div>
                                                             <div class="col">
-                                                                <input type="number" step="any" class="form-control input_wet" data-room_id="${room.room_id}" name="form[${method.ugtp_id}][${room.room_id}][wet]" value="${room.wet?? ''}">
+                                                                <input type="number" step="any" class="form-control input_wet ${isInvalidWet}" 
+                                                                    data-room_id="${room.room_id}" data-min="${method.cond_wet_1}" data-max="${method.cond_wet_2}" data-validate="${method.is_not_cond_wet}" 
+                                                                    name="form[${method.ugtp_id}][${room.room_id}][wet]" value="${room.wet?? ''}">
                                                                 <div class="form-text">${textLabelWet}</div>
                                                             </div>
                                                             <div class="col">
-                                                                <input type="number" step="any" class="form-control input_press" data-room_id="${room.room_id}" name="form[${method.ugtp_id}][${room.room_id}][pressure]" value="${room.pressure?? ''}">
+                                                                <input type="number" step="any" class="form-control input_press ${isInvalidPress}" 
+                                                                    data-room_id="${room.room_id}" data-min="${method.cond_pressure_1}" data-max="${method.cond_pressure_2}" data-validate="${method.is_not_cond_pressure}" 
+                                                                    name="form[${method.ugtp_id}][${room.room_id}][pressure]" value="${room.pressure?? ''}">
                                                                 <div class="form-text">${textLabelPress}</div>
                                                             </div>
                                                         </div>`
                                         })
 
+                                        let methodColorClass = (!+method.is_actual || !+method.is_confirm) ? 'text-danger' : '';
+
                                         html += `<div class="gost_room_block mb-3">
                                                     <div class="row mb-1">
-                                                        <div class="col-5"><strong>${method.name}</strong></div>
+                                                        <div class="col-5"><strong class="${methodColorClass}">${method.name} ${+method.is_confirm?'':'(не проверено)'}</strong> ${warningIcon}</div>
                                                         <div class="col">Температура</div>
                                                         <div class="col">Влажность</div>
                                                         <div class="col">Давление</div>
@@ -574,6 +671,21 @@ $(function ($) {
         return false
     })
 
+    function validateInput($element, roomId, selector) {
+        let min = parseFloat($element.data('min'))
+        let max = parseFloat($element.data('max'))
+        let validate = parseInt($element.data('validate'))
+        let value = parseFloat($element.val())
+
+        if ((isNaN(value) || value < min || value > max) && validate !== 1) {
+            $element.addClass('is-invalid bg-img-none')
+            $(`${selector}[data-room_id="${roomId}"]`).addClass('is-invalid bg-img-none')
+        } else {
+            $element.removeClass('is-invalid bg-img-none')
+            $(`${selector}[data-room_id="${roomId}"]`).removeClass('is-invalid bg-img-none')
+        }
+    }
+
     $body.on('change', '.check_room', function () {
         let $block = $(this).closest('.room_block')
 
@@ -585,18 +697,21 @@ $(function ($) {
         let roomId = $(this).data('room_id')
 
         $(`.input_temp[data-room_id="${roomId}"]`).val(value)
+        validateInput($(this), roomId, '.input_temp')
     })
     $body.on('input', '.input_wet', function () {
         let value = $(this).val()
         let roomId = $(this).data('room_id')
 
         $(`.input_wet[data-room_id="${roomId}"]`).val(value)
+        validateInput($(this), roomId, '.input_wet')
     })
     $body.on('input', '.input_press', function () {
         let value = $(this).val()
         let roomId = $(this).data('room_id')
 
         $(`.input_press[data-room_id="${roomId}"]`).val(value)
+        validateInput($(this), roomId, '.input_press')
     })
 
     $body.on('click', '.btn_pause', function () {
@@ -1088,5 +1203,39 @@ $(function ($) {
                 console.log(msg)
             }
         })
+    })
+
+    /**
+     * Проверка условия у протокола перед формированием
+     */
+    $body.on('click', '.validate-conditions', function (e) {
+        let success = true
+        let protocolId = $(this).data('protocol_id')
+
+        $('.messages').empty();
+
+        $.ajax({
+            method: 'POST',
+            cache: false,
+            async: false,
+            url: '/ulab/result/validateProtocolAjax/',
+            dataType: 'json',
+            data: {
+                protocol_id: protocolId
+            },
+            success: function (data) {
+                if ( data.success ) {
+                    success = true
+                } else {
+                    success = false
+                    $.each(data.errors, function (i, item) {
+                        showErrorMessage(item)
+                    })
+                    window.scrollTo(0,0)
+                }
+            }
+        })
+
+        return success
     })
 })

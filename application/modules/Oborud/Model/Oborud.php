@@ -1362,10 +1362,10 @@ class Oborud extends Model {
                 bo.*, bo.ID bo_id  
                 FROM ulab_material_to_request umtr 
                     INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id  
-                    INNER JOIN PROTOCOLS p ON p.ID = umtr.protocol_id 
-                    INNER JOIN TZ_OB_CONNECT toc ON toc.PROTOCOL_ID = umtr.protocol_id  
+                    INNER JOIN PROTOCOLS p ON p.ID = IF(umtr.protocol_id = 0, ugtp.protocol_id, umtr.protocol_id)  
+                    INNER JOIN TZ_OB_CONNECT toc ON toc.PROTOCOL_ID = IF(umtr.protocol_id = 0, ugtp.protocol_id, umtr.protocol_id)   
                     INNER JOIN ba_oborud bo ON bo.ID = toc.ID_OB
-                    WHERE umtr.protocol_id = {$protocolId}"
+                    WHERE (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId}))"
         );
 
         while ($row = $sql->Fetch()) {
@@ -1397,7 +1397,7 @@ class Oborud extends Model {
                                     INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id 
                                     INNER JOIN ulab_methods_oborud umo ON umo.method_id = ugtp.method_id 
                                     INNER JOIN ba_oborud bo ON bo.ID = umo.id_oborud
-                                    WHERE umtr.protocol_id = {$protocolId}");
+                                    WHERE (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId}))");
 
         while ($row = $result->Fetch()) {
             $response[] = $row;

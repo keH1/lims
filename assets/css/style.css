@@ -1597,6 +1597,14 @@ table.fixedHeader-floating thead tr {
 }
 /**********ТАБЫ***********/
 
+.bg-img-none {
+    background-image: none !important;
+}
+
+.popover-wide-equipment {
+    max-width: 30rem;
+}
+
 .dropzone .dz-default.dz-message {
     background-image: none;
     background-color: #f9f9f9;
