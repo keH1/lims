@@ -161,7 +161,7 @@ $(function ($) {
 
     $('#add-certificate-modal-form').on('submit', function(event) {
         event.preventDefault()
-        var formData = new FormData(this)
+        let formData = new FormData(this)
 
         $.ajax({
             url: $(this).attr('action'),
