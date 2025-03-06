@@ -288,10 +288,6 @@ class OborudController extends Controller
             $successMsg = 'Оборудование успешно создано';
         }
 
-        // echo '<pre>';
-        // print_r($_FILES);
-        // die;
-
         // сохраним пост в сессию, что бы при ошибке не заполнять поля заново
         $_SESSION['request_post'] = $_POST['oborud'];
 
@@ -412,11 +408,6 @@ class OborudController extends Controller
 
         // обновляем таблицу класс точности
         $oborudModel->setPrecisionTable($oborudId, $_POST['precision_table']);
-
-        
-        // echo '<pre>';
-        // print_r($successMsg);
-        // die;
 
         $this->showSuccessMessage($successMsg);
         unset($_SESSION['request_post']);
