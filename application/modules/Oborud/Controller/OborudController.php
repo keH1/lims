@@ -527,14 +527,14 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Страница образцов контроля
+     * @desc Журнал стандартных образцов
      */
     public function sampleList()
     {
         /** @var  Lab $lab*/
         $lab = $this->model('Lab');
 
-        $this->data['title'] = 'Образцы контроля';
+        $this->data['title'] = 'Журнал стандартных образцов';
 
         $this->data['lab'] = $lab->getLabaRoom();
 
@@ -555,7 +555,7 @@ class OborudController extends Controller
     }
 
     /**
-     * @desc Получение данных для образцов контроля Ajax запросом
+     * @desc Получение данных для журнала стандартных образцов
      */
     public function getSampleListAjax()
     {
@@ -612,7 +612,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Получает историю образцов контроля
+     * @desc Получает историю стандартных образцов
      */
     public function getSampleHistoryAjax()
     {
@@ -631,7 +631,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Страница создания и обновления образца контроля
+     * @desc Страница создания и обновления стандартного образца
      * @param $id
      */
     public function sampleCard($id)
@@ -645,7 +645,7 @@ class OborudController extends Controller
         /** @var Permission $permissionModel */
         $permissionModel = $this->model('Permission');
 
-        $this->data['title'] = $id ? 'Редактирование образца контроля' : 'Создание образца контроля';
+        $this->data['title'] = $id ? 'Редактирование стандартного образца' : 'Создание стандартного образца';
 
         $sample = $oborudModel->getSample($id);
         $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
@@ -800,12 +800,12 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Сохранение/обновление данных образца контроля
+     * @desc Сохранение/обновление данных стандартного образца
      */
     public function sampleInsertUpdate()
     {
         if (empty($_POST)) {
-            $this->showErrorMessage("Некорректные данные при сохранении образца контроля");
+            $this->showErrorMessage("Некорректные данные при сохранении стандартного образца");
             $this->redirect("/oborud/sampleList/");
         }
 
@@ -817,10 +817,10 @@ class OborudController extends Controller
 
         if (!empty($id)) {
             $location = "/oborud/sampleCard/{$id}";
-            $action = "Редактирование образца контроля";
+            $action = "Редактирование стандартного образца";
         } else {
             $location = "/oborud/sampleCard/";
-            $action = "Создание образца контроля";
+            $action = "Создание стандартного образца";
         }
 
         // Сохраним пост в сессию, что бы при ошибке не заполнять поля заново
@@ -930,7 +930,7 @@ class OborudController extends Controller
         $data['IS_ACTUAL'] = 0;
 
         $result = $oborudModel->updateSample($id, $data);
-        $oborudModel->addHistorySample($id, 'Признание образца контроля не актуальным');
+        $oborudModel->addHistorySample($id, 'Признание стандартного образца не актуальным');
 
         if (empty($result)) {
             $this->showErrorMessage("Образец контроля не удалось сделать не актуальным");

@@ -1425,10 +1425,10 @@ class Oborud extends Model {
             $data['titleStage'] = 'Образец контроля не актуален';
         } else if (empty($data['UNLIMITED_EXPIRY']) && $beforeDate <= 0) {
             $data['bgStage'] = 'bg-red';
-            $data['titleStage'] = 'Истек срок образца контроля';
+            $data['titleStage'] = 'Истек срок стандартного образца';
         } else if (empty($data['UNLIMITED_EXPIRY']) && $beforeDate < 5184000) {
             $data['bgStage'] = 'bg-yellow';
-            $data['titleStage'] = 'До истечения срока образца контроля осталось менее 90 дней';
+            $data['titleStage'] = 'До истечения срока стандартного образца осталось менее 90 дней';
         } else if (!empty($data['UNLIMITED_EXPIRY']) || $beforeDate >= 5184000) {
             $data['bgStage'] = 'bg-light-green';
             $data['titleStage'] = '';
@@ -1444,7 +1444,7 @@ class Oborud extends Model {
     }
 
     /**
-     * Образцы контроля
+     * Получает данные для журнала стандартных образцов
      * @param array $filter
      * @return array
      */
@@ -1608,7 +1608,7 @@ class Oborud extends Model {
     }
 
     /**
-     * Получить данные образца контроля по id
+     * Получить данные стандартного образца по id
      * @param $sampleId
      * @return array
      */
@@ -1630,7 +1630,7 @@ class Oborud extends Model {
     }
 
     /**
-     * Добавить данные образца контроля
+     * Добавить данные стандартного образца
      * @param $data
      * @return false|mixed|string
      */
@@ -1700,7 +1700,7 @@ class Oborud extends Model {
     }
 
     /**
-     * Получить историю образцов контроля
+     * Получить историю стандартных образцов
      * @param $sampleId
      * @return array
      */
@@ -1745,7 +1745,7 @@ class Oborud extends Model {
     }
 
     /**
-     * Получить данные компонентов по id образца контроля
+     * Получить данные компонентов по id стандартного образца
      * @param $sampleId
      * @return array
      */
