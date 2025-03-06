@@ -1546,7 +1546,7 @@ class Methods extends Model
             $d = $date->format('Y-m-d');
 
             // Не учитывать если суббота, воскресенье и праздники
-            if ($curr == 'Sat' || $curr == 'Sun' || in_array($d, HOLIDAYS)) {
+            if ($curr == 'Sat' || $curr == 'Sun' || in_array($d, $holidays)) {
                 continue;
             }
 
@@ -1565,12 +1565,6 @@ class Methods extends Model
      */
     public function validateMethods($ugtpIds, $dateStart, $dateEnd, $protocolId)
     {
-        if ( $protocolId == 6714 ) {
-            return [
-                'success' => true,
-            ];
-        }
-
         $oborudModel = new Oborud();
         $protocolModel = new Protocol();
         $labModel = new Lab();
@@ -1612,8 +1606,8 @@ class Methods extends Model
         }
 
         if ( !empty($dateStart) && !empty($dateEnd) && ($dateStart > $dateEnd)  ) {
-            //$errors[] =
-            //    "Внимание! Дата начала испытания {$dateStartRu} , больше даты окончания испытания {$dateEndRu}!";
+            $errors[] =
+                "Внимание! Дата начала испытания {$dateStartRu} , больше даты окончания испытания {$dateEndRu}!";
         }
 
         // Проверка методик
@@ -1686,25 +1680,29 @@ class Methods extends Model
         // Проверка на условия оборудования
         foreach ($conditionsForOboruds as $data) {
             foreach ($data['oborud'] as $key => $oborud) {
+
+                if (empty($oborud['bo_id'])) {
+                    continue;
+                }
+
                 $roomName = $data['rooms'][$key]['name'] ?? '';
                 $condition = $data['conditions'][$key] ?: [];
 
                 $anchor = "<a href='/ulab/oborud/edit/{$oborud['bo_id']}'>{$oborud['OBJECT']} {$oborud['TYPE_OBORUD']} {$oborud['REG_NUM']}</a>";
 
                 // Если переосное оборудование то не проверять
-                $this->pre($data);
                 if (!$oborud['is_portable']) {
-                    // Если не для всех дат были заполнены условия окружающей среды
-                    if (!empty($data['no_conditions'][$key])) {
-                        $errors[] =
-                            "Внимание! Для оборудования {$anchor}, {$roomName}, за {$data['no_conditions'][$key]} нет данных условий окружающей среды! {$conditionList}";
-                        continue;
-                    }
-
                     // Проверка привязки оборудования к помещению
                     if (empty($oborud['roomnumber'])) {
                         $errors[] =
                             "Внимание! Оборудование {$anchor} не привязно к помещению!";
+                        continue;
+                    }
+
+                    // Если не для всех дат были заполнены условия окружающей среды
+                    if (!empty($data['no_conditions'][$key])) {
+                        $errors[] =
+                            "Внимание! Для оборудования {$anchor}, {$roomName} за {$data['no_conditions'][$key]} нет данных условий окружающей среды! {$conditionList}";
                         continue;
                     }
 
@@ -1736,10 +1734,12 @@ class Methods extends Model
                     $errors[] = "Внимание! Оборудование {$anchor} не проверено!";
                 }
 
-                // Срок поверки
-                $poverka = strtotime($oborud['POVER']) - strtotime($dateEnd);
-                if ($poverka <= 0 && $oborud['IDENT'] != "OOPP" && $oborud['IDENT'] != "VO") {
-                    $errors[] = "Внимание! Истек срок поверки оборудования {$anchor}!";
+                if (!$oborud['NO_METR_CONTROL']) { // Подлежит периодическому контролю
+                    // Срок поверки
+                    $poverka = strtotime($oborud['POVER']) - strtotime($dateEnd);
+                    if ($poverka <= 0 && $oborud['IDENT'] != "OOPP" && $oborud['IDENT'] != "VO") {
+                        $errors[] = "Внимание! Истек срок поверки оборудования {$anchor}!";
+                    }
                 }
 
                 // TODO: Сертификаты??

@@ -1596,3 +1596,12 @@ table.fixedHeader-floating thead tr {
     border: unset;
 }
 /**********ТАБЫ***********/
+
+.bg-img-none {
+    background-image: none !important;
+}
+
+.popover-wide-equipment {
+    max-width: 30rem;
+}
+

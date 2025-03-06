@@ -4896,45 +4896,45 @@ class ResultController extends Controller
         $trialsRange = $labModel->getTrialsRange($protocolId);
         $ugtp = $resultModel->getUGTPNotSelection($protocolId);
 
-//        foreach ($ugtp as $val) {
-//            $stateLastAction = $resultModel->getStateLastAction($val['id']);
-//            $method = $methodsModel->getMethodByUgtpId($val['id']);
-//
-//            $anchor = "<a href='".URI."/gost/method/{$method['id']}'>{$method['view_gost_for_protocol']}</a>";
-//
-//            if ( empty($stateLastAction) ) {
-//                $response = [
-//                    'success' => false,
-//                    'errors' => ["Отсутствуют данные, начала и окончания испытаний, методика {$anchor}"],
-//                    'data' => '',
-//                ];
-//                echo json_encode($response, JSON_UNESCAPED_UNICODE);
-//                die();
-//            }
-//
-//            if ( $stateLastAction['state'] !== 'complete' ) {
-//                $response = [
-//                    'success' => false,
-//                    'errors' => ["Не завершены испытания по методике {$anchor}"],
-//                    'data' => '',
-//                ];
-//                echo json_encode($response, JSON_UNESCAPED_UNICODE);
-//                die();
-//            }
-//        }
-//
-//        foreach ($trialsRange as $val) {
-//            $ugtpIds = [$val['ugtp_id']];
-//            $dateStart = $val['date_start'];
-//            $dateEnd = $val['date_end'];
-//
-//            // Валидация
-//            $validate = $methodsModel->validateMethods($ugtpIds, $dateStart, $dateEnd, $protocolId);
-//            if (!$validate['success']) {
-//                echo json_encode($validate, JSON_UNESCAPED_UNICODE);
-//                die();
-//            }
-//        }
+        foreach ($ugtp as $val) {
+            $stateLastAction = $resultModel->getStateLastAction($val['id']);
+            $method = $methodsModel->getMethodByUgtpId($val['id']);
+
+            $anchor = "<a href='".URI."/gost/method/{$method['id']}'>{$method['view_gost_for_protocol']}</a>";
+
+            if ( empty($stateLastAction) ) {
+                $response = [
+                    'success' => false,
+                    'errors' => ["Отсутствуют данные, начала и окончания испытаний, методика {$anchor}"],
+                    'data' => '',
+                ];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                die();
+            }
+
+            if ( $stateLastAction['state'] !== 'complete' ) {
+                $response = [
+                    'success' => false,
+                    'errors' => ["Не завершены испытания по методике {$anchor}"],
+                    'data' => '',
+                ];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                die();
+            }
+        }
+
+        foreach ($trialsRange as $val) {
+            $ugtpIds = [$val['ugtp_id']];
+            $dateStart = $val['date_start'];
+            $dateEnd = $val['date_end'];
+
+            // Валидация
+            $validate = $methodsModel->validateMethods($ugtpIds, $dateStart, $dateEnd, $protocolId);
+            if (!$validate['success']) {
+                echo json_encode($validate, JSON_UNESCAPED_UNICODE);
+                die();
+            }
+        }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }

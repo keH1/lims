@@ -3330,6 +3330,7 @@ class Result extends Model
         $labModel = new Lab();
         $reqModel = new Requirement();
         $materialModel = new Material();
+        $oborudModel = new Oborud();
 
         $method = $reqModel->getGostToProbe($ugtpId);
         $materialInfo = $materialModel->getById($method['material_id']);
@@ -3338,6 +3339,8 @@ class Result extends Model
 
         $methodInfo = $methodModel->get($methodId);
         $rooms = $methodModel->getRoom($methodId);
+        $equipmentList = $methodId ? $methodModel->getOborud($methodId) : [];
+
 
         $result = [
             'umtr_id' => $method['umtr_id'],
@@ -3357,7 +3360,10 @@ class Result extends Model
             'cond_pressure_1' => $methodInfo['cond_pressure_1'],
             'cond_pressure_2' => $methodInfo['cond_pressure_2'],
             'is_not_cond_pressure' => $methodInfo['is_not_cond_pressure'],
+            'is_actual' => $methodInfo['is_actual'],
+            'is_confirm' => $methodInfo['is_confirm'],
             'rooms' => [],
+            'equipment' => [],
         ];
 
         foreach ($rooms as $roomId) {
@@ -3372,6 +3378,27 @@ class Result extends Model
                 'pressure' => $cond['pressure'],
             ];
         }
+
+        foreach ($equipmentList as $equipment) {
+            $equipmentId = $equipment['id_oborud'] ?? null;
+            $equipmentInfo = $equipmentId ? $oborudModel->getOborudById($equipmentId) : [];
+
+            $roomNumber  = $equipmentInfo['roomnumber'] ?? null;
+            $conditions    = $roomNumber ? $labModel->getConditionsRoomToday($roomNumber) : [];
+            $roomInfo      = $roomNumber ? $labModel->getRoomById($roomNumber) : [];
+
+            $equipment['info'] = $equipmentInfo;
+            $equipment['room'] = [
+                'room_id'  => $roomNumber,
+                'name'     => $roomInfo['name'] ?? 'Неизвестно',
+                'temp'     => $conditions['temp'] ?? null,
+                'wet'      => $conditions['humidity'] ?? null,
+                'pressure' => $conditions['pressure'] ?? null,
+            ];
+
+            $result['equipment'][] = $equipment;
+        }
+
 
         return $result;
     }
