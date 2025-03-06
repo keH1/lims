@@ -793,26 +793,47 @@ class Oborud extends Model {
      * @param $data
      * @param $file
      */
+    // public function addCertificate($data, $file)
+    // {
+    //     if ( !empty($file['name']) ) {
+    //         $resultFile = $this->saveOborudFile($data['oborud_id'], $file);
+
+    //         if (!$resultFile['success']) {
+    //             $_SESSION['message_warning'] = "Не сохранился файл 'Свидетельство о поверке'. " . $resultFile['error'];
+    //         } else {
+    //             $data['file'] = $resultFile['data'];
+    //         }
+    //     }
+
+    //     $sqlData = $this->prepearTableData('ba_oborud_certificate', $data);
+
+    //     $sqlData['is_actual'] = isset($data['is_actual'])? 1 : 0;
+
+    //     $this->DB->Insert('ba_oborud_certificate', $sqlData);
+    // }
     public function addCertificate($data, $file)
     {
-        if ( !empty($file['name']) ) {
+        if (!empty($file['name'])) {
             $resultFile = $this->saveOborudFile($data['oborud_id'], $file);
-
+    
             if (!$resultFile['success']) {
                 $_SESSION['message_warning'] = "Не сохранился файл 'Свидетельство о поверке'. " . $resultFile['error'];
+                return false;
             } else {
                 $data['file'] = $resultFile['data'];
             }
         }
-
+   
         $sqlData = $this->prepearTableData('ba_oborud_certificate', $data);
+        $sqlData['is_actual'] = isset($data['is_actual']) ? 1 : 0;
+    
+        $id = $this->DB->Insert('ba_oborud_certificate', $sqlData);
+        $data['id'] = $id;
 
-        $sqlData['is_actual'] = isset($data['is_actual'])? 1 : 0;
-
-        $this->DB->Insert('ba_oborud_certificate', $sqlData);
+        return $data;
     }
 
-
+    
     public function saveOborudFile($oborudId, $file, $folder = '')
     {
         if ( $folder != '' ) {
