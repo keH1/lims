@@ -658,7 +658,8 @@ class OborudController extends Controller
         $this->data['stage'] = $oborudModel->getSampleStage($sample);
 
         // Проверка на доступ к изменению данных
-        $this->data['is_may_change'] = in_array($permissionInfo['id'],  [SMK_PERMISSION, ADMIN_PERMISSION]); // HEAD_IC_PERMISSION
+        //$this->data['is_may_change'] = in_array($permissionInfo['id'],  [SMK_PERMISSION, ADMIN_PERMISSION]); // HEAD_IC_PERMISSION
+        $this->data['is_may_change'] = true;
 
         if (!empty($_SESSION['request_post'])) {
             $this->data['id'] = $id;
