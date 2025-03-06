@@ -1020,6 +1020,7 @@
                                                 title="Скачать/Открыть"
 
                                                 href="/file_oborud/<?=$this->data['id']?>/<?=$row['file']?>"
+                                                download="/file_oborud/<?=$this->data['id']?>/<?=$row['file']?>"
                                         >
                                             <i class="fa-regular fa-file-lines"></i>
                                         </a>
@@ -1603,7 +1604,7 @@
     <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
 
-<form id="add-certificate-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/addCertificate/" method="post" enctype="multipart/form-data">
+<form id="add-certificate-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/addCertificateAjax/" method="post" enctype="multipart/form-data">
     <div class="title mb-3 h-2">
         Добавление документа
     </div>
@@ -1649,7 +1650,7 @@
 
     <div class="line-dashed-small"></div>
 
-    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <button type="submit" id="submit-certificate" class="btn btn-primary">Сохранить</button>
 </form>
 
 

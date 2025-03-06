@@ -158,4 +158,135 @@ $(function ($) {
             </div>`
         )
     })
+
+    $('#add-certificate-modal-form').on('submit', function(event) {
+        event.preventDefault()
+        let formData = new FormData(this)
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.success) {
+                    $.magnificPopup.close()
+
+                    let $lastDashedLine = $('#certificate-block .line-dashed').last(),
+                        html = addNewCertificateFields(response.data)
+
+                    $lastDashedLine.after(html)
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Произошла ошибка: ' + error)
+            }
+        })
+    })
+
+    function addNewCertificateFields(data) {
+        let html = `
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">
+                    Актуальный документ
+                </label>
+                <div class="col-sm-8 pt-2">
+                    <input type="checkbox" name="certificate[${data.id}][is_actual]"
+                           class="form-check-input" value="1"
+                           ${data.is_actual ? 'checked' : ''}
+                    >
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">
+                    Дата документа
+                </label>
+                <div class="col-sm-8">
+                    <input type="date" name="certificate[${data.id}][date_start]"
+                           class="form-control" value="${data.date_start ?? ''}"
+                    >
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">
+                    Срок действия
+                </label>
+                <div class="col-sm-8">
+                    <input type="date" name="certificate[${data.id}][date_end]"
+                           class="form-control" value="${data.date_end ?? ''}"
+                    >
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">
+                    Номер документа
+                </label>
+                <div class="col-sm-8">
+                    <input type="text" name="certificate[${data.id}][name]"
+                           class="form-control" value="${data.name ?? ''}"
+                    >
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">
+                    Файл
+                </label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input type="file" name="certificate[${data.id}]" class="form-control" value="">
+                        <input type="text" name="certificate[${data.id}][file]"
+                               class="form-control" placeholder="Нет сохраненного файла"
+                               value="${data.file ?? ''}" readonly
+                        >
+                        <a class="btn btn-outline-secondary btn-square-2 btn-icon"
+                           title="Скачать/Открыть"
+                           href="/file_oborud/${data.oborud_id}/${data.file}"
+                           download="/file_oborud/${data.oborud_id}/${data.file}"
+                        >
+                            <i class="fa-regular fa-file-lines"></i>
+                        </a>
+                        <a class="btn btn-outline-danger btn-square btn-icon delete_file"
+                           style="border-color: #ced4da;"title="Удалить">
+                            <i class="fa-solid fa-xmark"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">
+                    Ссылка на ФГИС Аршин
+                </label>
+                <div class="col-sm-8">
+                    <input type="text" name="certificate[${data.id}][link_fgis]"
+                           maxlength="255" class="form-control" value="${data.link_fgis ?? ''}"
+                    >
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">
+                    Аттестованные значения
+                </label>
+                <div class="col-sm-8">
+                    <input type="text" name="certificate[${data.id}][certified_values]"
+                           maxlength="255" class="form-control" value="${data.certified_values ?? ''}">
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+            <div class="line-dashed"></div>`
+
+        return html
+    }
 })

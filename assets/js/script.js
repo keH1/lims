@@ -101,7 +101,12 @@ $(function ($) {
         fixedContentPos: false,
         closeOnBgClick: false,
         focus: '#focus-blur-loop-select',
-        midClick: true
+        midClick: true,
+        callbacks: {
+            afterClose: function() {
+                $('#add-certificate-modal-form')[0].reset()
+            }
+        }
     })
 
     // panel collapsible

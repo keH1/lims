@@ -328,7 +328,6 @@ class OborudController extends Controller
             }
         } else { // Редактирование
             $oborudModel->updateOborud($oborudId, $_POST['oborud']);
-
             $oborudModel->updateCertificateArray($oborudId, $_POST['certificate'], $_FILES['certificate']);
         }
 
@@ -420,16 +419,40 @@ class OborudController extends Controller
     /**
      * @desc добавляет сертификат оборудованию
      */
-    public function addCertificate()
+    // public function addCertificate()
+    // {
+    //     /** @var Oborud $oborudModel */
+    //     $oborudModel = $this->model('Oborud');
+
+    //     $oborudModel->addCertificate($_POST['form'], $_FILES['file']);
+
+    //     $this->showSuccessMessage("Сертификат добавлен");
+
+    //     $this->redirect("/oborud/edit/{$_POST['form']['oborud_id']}#certificate-block");
+    // }
+    public function addCertificateAjax()
     {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $oborudModel->addCertificate($_POST['form'], $_FILES['file']);
+        $result = $oborudModel->addCertificate($_POST['form'], $_FILES['file']);
 
-        $this->showSuccessMessage("Сертификат добавлен");
+        if ($result) {
+            $response = [
+                'success' => true,
+                'data' => $result,
+            ];
+        } else {
+            $response = [
+                'success' => false,
+            ];
+        }
 
-        $this->redirect("/oborud/edit/{$_POST['form']['oborud_id']}#certificate-block");
+        header('Content-Type: application/json');
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
 
