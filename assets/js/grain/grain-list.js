@@ -35,6 +35,12 @@ $(function ($) {
                 next: 'Следующая',
                 last: 'Последняя'
             },
+            buttons: {
+                colvis: '',
+                copy: '',
+                excel: '',
+                print: ''
+            },
             aria: {
                 sortAscending: ': активировать для сортировки столбца по возрастанию',
                 sortDescending: ': активировать для сортировки столбца по убыванию'
@@ -43,17 +49,58 @@ $(function ($) {
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         dom: 'fBrt<"bottom"lip>',
+        order: [[0, "asc"]],
         colReorder: true,
+        dom: 'frtB<"bottom"lip>',
+        buttons: [
+            {
+                extend: 'colvis',
+                titleAttr: 'Выбрать'
+            },
+            {
+                extend: 'copy',
+                titleAttr: 'Копировать',
+                exportOptions: {
+                    modifier: {
+                        page: 'current'
+                    }
+                }
+            },
+            {
+                extend: 'excel',
+                titleAttr: 'excel',
+                exportOptions: {
+                    modifier: {
+                        page: 'current'
+                    }
+                }
+            },
+            {
+                extend: 'print',
+                titleAttr: 'Печать',
+                exportOptions: {
+                    modifier: {
+                        page: 'current'
+                    }
+                }
+            }
+        ],
         bSortCellsTop: true,
-        order: [[0, "asc"]]
+        // scrollX:       true,
+        fixedHeader:   true
     })
 
-    journalGrain.columns().every( function () {
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            journalGrain
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
+    journalGrain.columns().every( function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function () {
+                journalGrain
+                    .column( $(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
     
@@ -67,5 +114,4 @@ $(function ($) {
         journalGrain.ajax.reload()
         journalGrain.draw()
     })
-
 })
