@@ -8,8 +8,8 @@ $(function ($) {
 
     $('.select2').select2({
         theme: 'bootstrap-5',
-        templateResult: select2FormatState,
-        templateSelection: select2FormatState,
+        // templateResult: select2FormatState,
+        // templateSelection: select2FormatState,
     })
 
     $('#is_return_check').change(function () {
