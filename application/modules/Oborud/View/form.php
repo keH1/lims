@@ -608,7 +608,7 @@
                     В области аккредитации
                 </label>
                 <div class="col-sm-8 pt-2">
-                    <input type="checkbox" name="oborud[IN_AREA]" class="form-check-input <?=in_array($_SESSION["SESS_AUTH"]["USER_ID"], [10, 137, 222])? '' : 'disabled'?>" value="1" <?=$this->data['oborud']['IN_AREA'] == 1 ? 'checked' : ''?>>
+                    <input type="checkbox" name="oborud[IN_AREA]" class="form-check-input" value="1" <?=$this->data['oborud']['IN_AREA'] == 1 ? 'checked' : ''?>>
                 </div>
                 <div class="col-sm-2"></div>
             </div>
