@@ -1530,7 +1530,7 @@
         </header>
         <div class="panel-body">
             <?php foreach ($this->data['method_list'] as $method): ?>
-                <a href="/ulab/gost/method/<?=$method['id']?>" target="_blank"><?=$method['view_gost']?></a><br>
+                <a href="/ulab/gost/method/<?=$method['id']?>"><?=$method['view_gost']?></a><br>
             <?php endforeach; ?>
         </div>
     </div>
