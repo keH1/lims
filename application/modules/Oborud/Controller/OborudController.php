@@ -526,9 +526,6 @@ class OborudController extends Controller
         if ( !empty($_POST['lab']) ) {
             $filter['search']['lab'] = $_POST['lab'];
         }
-        if ( $_POST['everywhere'] !== '' ) {
-            $filter['search']['everywhere'] = $_POST['everywhere'];
-        }
 
         $data = $oborud->getDataToJournal($filter);
 

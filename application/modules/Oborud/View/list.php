@@ -43,10 +43,6 @@
 <div class="filters mb-4">
     <div class="row">
         <div class="col">
-            <input id="filter_everywhere" type="search" class="form-control filter" placeholder="Поиск..." aria-controls="journal_requests">
-        </div>
-        
-        <div class="col">
             <select id="selectStage" class="form-control filter filter-stage">
                 <option value="all" selected="">Все статусы</option>
                 <option value="norm">Нет замечаний</option>
@@ -96,7 +92,7 @@
         <th scope="col" >Документ об аттестации/поверки/калибровки</th>
         <th scope="col" class="text-nowrap">От</th>
         <th scope="col" class="text-nowrap">До</th>
-        <th scope="col" class="text-nowrap">Место поверки</th>
+        <th scope="col" class="text-nowrap">Контролирующая организация</th>
         <th scope="col" class="text-nowrap">Право собственности</th>
         <th scope="col" class="text-nowrap">Лаборатория</th>
         <th scope="col" class="text-nowrap">Место установки</th>
