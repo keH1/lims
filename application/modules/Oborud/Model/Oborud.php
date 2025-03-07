@@ -103,7 +103,6 @@ class Oborud extends Model {
                 if ( isset($filter['search']['stage']) ) {
                     $stage = [
                         // Все статусы
-                        // 'all' => "b.`REG_NUM` NOT LIKE '%В%' and b.LONG_STORAGE = 0 AND b.`is_decommissioned` = 0 AND ",
                         'all' => "b.LONG_STORAGE = 0 AND b.`is_decommissioned` = 0 AND ",
                         // Нет замечаний
                         'norm' => "b.CHECKED = 1 and b.LONG_STORAGE = 0 and (b.NO_METR_CONTROL = 1 or (c.is_actual = 1 and (c.date_end - interval 90 day) > '{$currentDate}')) and b.is_decommissioned = 0 and ",
@@ -128,19 +127,6 @@ class Oborud extends Model {
                     $where .= $stage[$filter['search']['stage']];
                 }
 
-                // везде
-                if ( isset($filter['search']['everywhere']) ) {
-                    $where .=
-                        "(
-                        b.NAME LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.OBJECT LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.TYPE_OBORUD LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.IDENT LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.FACTORY_NUMBER LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.REG_NUM LIKE '%{$filter['search']['everywhere']}%' 
-                        ) AND ";
-                }
-
                 // Лаба Комната
                 if ( isset($filter['search']['lab']) ) {
                     if ( (int)$filter['search']['lab'] == -1 ) {
@@ -153,6 +139,32 @@ class Oborud extends Model {
                     }
                 }
 
+                // Контролирующая организация
+                if ( isset($filter['search']['POVERKA_PLACE']) ) {
+                    $where .= "b.POVERKA_PLACE LIKE '%{$filter['search']['POVERKA_PLACE']}%' AND ";
+                }
+
+                // Право собственности
+                if ( isset($filter['search']['property_rights']) ) {
+                    $where .= "b.property_rights LIKE '%{$filter['search']['property_rights']}%' AND ";
+                }
+
+                // Наименование лаборатории
+                if ( isset($filter['search']['laba_name']) ) {
+                    $where .= "l.NAME LIKE '%{$filter['search']['laba_name']}%' AND ";
+                }
+
+                // Место установки
+                if ( isset($filter['search']['room']) ) {
+                    if (isset($filter['search']['room'])) {
+                        if (ctype_digit($filter['search']['room'])) {
+                            $roomNumber = intval($filter['search']['room']);
+                            $where .= "b.roomnumber = {$roomNumber} AND ";
+                        } else {
+                            $where .= "(1=0) AND ";
+                        }
+                    }
+                }
             }
 
             // работа с сортировкой
