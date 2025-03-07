@@ -11,6 +11,7 @@
         </nav>
     </header>
 <?php endif; ?>
+
 <form action="/ulab/import/orgUpdate" method="post" class="form-horizontal">
     <div class="panel panel-default">
         <header class="panel-heading">
@@ -55,6 +56,15 @@
             </span>
         </header>
         <div class="panel-body" style="display: none">
+            <div class="form-group row align-items-center">
+                <label class="col-sm-2 col-form-label">Полное наименование организации</label>
+                <div class="col-sm-8">
+                    <input type="text" name="form[full_name]" class="form-control clearable" placeholder="Введите полное наименование"
+                           value="<?= $this->data['info']['full_name'] ?? '' ?>">
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
             <div class="form-group row align-items-center">
                 <label class="col-sm-2 col-form-label">ИП</label>
                 <div class="col-sm-8">
