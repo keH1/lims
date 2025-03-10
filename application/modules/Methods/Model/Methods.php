@@ -1998,7 +1998,7 @@ class Methods extends Model
                 }
                 // Метод
                 if ( isset($filter['search']['test_method_name']) ) {
-                    $where .= "m.test_method_name LIKE '%{$filter['search']['test_method_name']}%' AND ";
+                    $where .= "t.name LIKE '%{$filter['search']['test_method_name']}%' AND ";
                 }
             }
 

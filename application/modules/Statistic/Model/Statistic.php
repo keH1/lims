@@ -1700,11 +1700,11 @@ class Statistic extends Model
 
         $labOneWorkDop = $this->protDop($protocolWork);
 
-        $arrToLab = array_count_values($labAll);
-        $arrToLabOneWon = array_count_values($labOneWon);
-        $arrToLabOneWork = array_count_values($labOneWork);
+        $arrToLab = array_count_values($labAll??[]);
+        $arrToLabOneWon = array_count_values($labOneWon??[]);
+        $arrToLabOneWork = array_count_values($labOneWork??[]);
 
-        $arr['id_tz'] = array_unique($arr['id_tz']);
+        $arr['id_tz'] = array_unique($arr['id_tz']??[]);
 
 
         $methodsArr = [];
@@ -1741,13 +1741,13 @@ class Statistic extends Model
         $labAllTestLaba[57] = 0;
 
         foreach ($labAllTest as $labId => $val) {
-            $labAllTestLaba[$labId] = count($val);
+            $labAllTestLaba[$labId] = count($val??[]);
         }
 
         $labAllTestPriceLaba = [];
         foreach ($labOneWon as $labId => $val) {
             $labAllTestPriceLaba[$labId][] = $val['price'];
-            $arrSum[$labId] = array_sum($val['price']);
+            $arrSum[$labId] = array_sum($val['price']??[]);
         }
 
         Registry::set('count', $labAllTestLaba);
@@ -1755,7 +1755,7 @@ class Statistic extends Model
 
         $allTests = count($methodAllGost);
 
-        $labsAllMethod = array_count_values($methodAllGost);
+        $labsAllMethod = array_count_values($methodAllGost??[]);
         $arrGost = implode(',', $methodAllGost);
         $infoGostArr = $this->DB->Query("SELECT * FROM `ba_gost` WHERE `ID` IN ({$arrGost})");
 
