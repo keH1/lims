@@ -123,17 +123,16 @@ class Methods extends Model
                 left join ulab_measurement as ml on ml.id = m.measurement_id 
                 where m.id = {$id}"
         );
-
-
+        
         $result = $methodSql->Fetch();
 
-
-        if ( !empty($result) ) {
+        if ($result && isset($result['id'])) {
             if ($result['id'] == 2669) {
                 $assignedList = $userMethod->getAllActiveUserId();
             } else {
                 $assignedList = $this->getAssigned($result['id']);
             }
+
             foreach ($assignedList as $user) {
                 $result['assigned'][] = $userMethod->getUserShortById($user);
             }
@@ -145,9 +144,11 @@ class Methods extends Model
 
             $result['view_gost'] = "{$result['reg_doc']}{$strYear}{$strClause} | {$result['name']}";
             $result['view_gost_for_protocol'] = "{$result['reg_doc']}{$strYear}{$strClause}";
+            
+            return $result;
+        } else {
+            return [];
         }
-
-        return $result;
     }
 
 
@@ -2104,7 +2105,10 @@ class Methods extends Model
 
         $result = [];
         while ($row = $sql->Fetch()) {
-            $result[] = $this->get($row['method_id']);
+            $res = $this->get($row['method_id']);
+            if ($res) {
+                $result[] = $res;
+            }
         }
 
         return $result;
