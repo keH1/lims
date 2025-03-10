@@ -1,3 +1,31 @@
+function initDataTable(selector, options) {
+    const defaultOptions = {
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        bSortCellsTop: true,
+        fixedHeader: false
+    }
+    
+    const tableOptions = $.extend(true, {}, defaultOptions, options)
+    const dataTable = $(selector).DataTable(tableOptions)
+    
+    dataTable.on('column-visibility.dt', function(e, settings, column, state) {
+        dataTable.columns().every(function() {
+            if (this.visible()) {
+                $(this.header()).css('width', $(this.header()).width() + 'px')
+                $(this.footer()).css('width', $(this.header()).width() + 'px')
+            }
+        })
+        
+        dataTable.columns.adjust().draw()
+    })
+   
+    return dataTable
+}
+
+window.initDataTable = initDataTable
+
 const dataTablesSettings = {
     'buttons':[
         {

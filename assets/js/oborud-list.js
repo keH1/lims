@@ -1,10 +1,7 @@
 $(function ($) {
     let $journal = $('#journal_oborud')
 
-    /*journal requests*/
-    let journalDataTable = $journal.DataTable({
-        processing: true,
-        serverSide: true,
+    let journalDataTable = window.initDataTable('#journal_oborud', {
         ajax: {
             type : 'POST',
             data: function ( d ) {
@@ -48,10 +45,10 @@ $(function ($) {
                 render: $.fn.dataTable.render.ellipsis(50, true)
             },
             {
-                data: 'REG_NUM'
+                data: 'REG_NUM',
             },
             {
-                data: 'god_vvoda_expluatation'
+                data: 'god_vvoda_expluatation',
             },
             {
                 data: 'measuring_range',
@@ -67,23 +64,21 @@ $(function ($) {
             },
             {
                 data: 'date_start',
-                width:"125px"
             },
             {
                 data: 'date_end',
-                width:"125px"
             },
             {
-                data: 'POVERKA_PLACE'
+                data: 'POVERKA_PLACE',
             },
             {
-                data: 'property_rights'
+                data: 'property_rights',
             },
             {
-                data: 'laba_name'
+                data: 'laba_name',
             },
             {
-                data: 'room'
+                data: 'room',
             },
             {
                 data: 'IN_AREA',
@@ -119,9 +114,6 @@ $(function ($) {
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttons,
-        bSortCellsTop: true,
-        scrollX:       true,
-        fixedHeader:   true,
     });
 
     journalDataTable.columns().every(function () {
@@ -137,15 +129,6 @@ $(function ($) {
             }.bind(this), 1000)
         })
     })
-
-    // journalDataTable.columns().every( function () {
-    //     $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-    //         journalDataTable
-    //             .column( $(this).parent().index() )
-    //             .search( this.value )
-    //             .draw();
-    //     })
-    // })
 
     /*journal filters*/
     $('.filter-btn-search').on('click', function () {

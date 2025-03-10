@@ -10,9 +10,13 @@ $(function ($) {
     }
 
     /*journal requests*/
-    let journalRequests = $('#journal_requests').DataTable({
-        processing: true,
-        serverSide: true,
+    // let journalRequests = $('#journal_requests').DataTable({
+    let journalDataTable = window.initDataTable('#journal_requests', {
+        // processing: true,
+        // serverSide: true,
+        // bSortCellsTop: true,
+        // scrollX:       true,
+        // fixedHeader:   true,
         ajax: {
             type : 'POST',
             data: function ( d ) {
@@ -283,18 +287,15 @@ $(function ($) {
                 }
             }
         ],
-        bSortCellsTop: true,
-        scrollX:       true,
-        fixedHeader:   true,
     });
 
-    journalRequests.columns().every(function () {
+    journalDataTable.columns().every(function () {
         let timeout
         $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function () {
-                journalRequests
+                journalDataTable
                     .column($(this).parent().index())
                     .search(searchValue)
                     .draw()
@@ -302,15 +303,6 @@ $(function ($) {
         })
     })
 
-    // journalRequests.columns().every( function () {
-    //     $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-    //         journalRequests
-    //             .column( $(this).parent().index() )
-    //             .search( this.value )
-    //             .draw();
-    //     })
-    // })
-    
     /*journal filters*/
     $('.filter-btn-search').on('click', function () {
         $('#journal_requests_filter').addClass('is-open')
@@ -318,8 +310,8 @@ $(function ($) {
     })
 
     $('.filter').on('change', function () {
-        journalRequests.ajax.reload()
-        journalRequests.draw()
+        journalDataTable.ajax.reload()
+        journalDataTable.draw()
     })
 
     $('.filter-btn-reset').on('click', function () {
