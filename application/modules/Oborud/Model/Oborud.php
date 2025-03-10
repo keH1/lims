@@ -156,14 +156,7 @@ class Oborud extends Model {
 
                 // Место установки
                 if ( isset($filter['search']['room']) ) {
-                    if (isset($filter['search']['room'])) {
-                        if (ctype_digit($filter['search']['room'])) {
-                            $roomNumber = intval($filter['search']['room']);
-                            $where .= "b.roomnumber = {$roomNumber} AND ";
-                        } else {
-                            $where .= "(1=0) AND ";
-                        }
-                    }
+                    $where .= "b.roomnumber IN (SELECT r.ID FROM ROOMS r WHERE CONCAT(r.NAME, ' ', r.NUMBER) LIKE '%{$filter['search']['room']}%') AND ";
                 }
             }
 
