@@ -96,11 +96,15 @@ class Company extends Model
         $bankReq = $bankObj->getList($params)->fetch();
         $address['address'] = EntityRequisite::getAddresses($reqArr['ID']);
 
-        if ( empty($bankReq) ) {
+        if ( empty($bankReq) && !empty($reqArr) && !empty($address) ) {
             return array_merge($reqArr, $address);
         }
 
-        return array_merge($bankReq, $reqArr, $address);
+        if ( !empty($bankReq) && !empty($reqArr) && !empty($address) ) {
+            return array_merge($bankReq, $reqArr, $address);
+        }
+
+        return [];
     }
 
     /**

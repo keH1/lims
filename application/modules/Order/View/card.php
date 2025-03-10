@@ -115,11 +115,19 @@
 						</a>
 					</li>
 					<li class="nav-item me-2">
-						<a class="nav-link link-card" style="color: black; font-size: 20px"
-						   href="/ulab/order/cancelOrder/<?= $this->data['order']['id'] ?>"
-						   title="Аннулировать договор">
-							<i class="fa-solid fa-xmark fa-2xl"></i>
-						</a>
+                        <?php if ( $this->data['order']['action'] ): ?>
+                            <a class="nav-link link-card" style="color: black; font-size: 20px"
+                               href="/ulab/order/cancelOrder/<?= $this->data['order']['id'] ?>"
+                               title="Аннулировать договор">
+                                <i class="fa-solid fa-xmark fa-2xl"></i>
+                            </a>
+                        <?php else: ?>
+                            <a class="nav-link link-card" style="color: black; font-size: 20px"
+                               href="/ulab/order/cancelOrder/<?= $this->data['order']['id'] ?>"
+                               title="Восстановить договор">
+                                <i class="fa-solid fa-trash-arrow-up fa-xl"></i>
+                            </a>
+                        <?php endif; ?>
 					</li>
 					<?php if ($this->data['order']['longterm'] == 1): ?>
 						<li class="nav-item me-2">
