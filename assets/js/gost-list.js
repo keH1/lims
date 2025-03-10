@@ -1,10 +1,7 @@
 $(function () {
     let $journal = $('#journal_gost')
 
-    /*journal requests*/
-    let journalDataTable = $journal.DataTable({
-        processing: true,
-        serverSide: true,
+    let journalDataTable = window.initDataTable('#journal_gost', {
         ajax: {
             type : 'POST',
             data: function ( d ) {
@@ -157,9 +154,6 @@ $(function () {
                 }
             }
         ],
-        bSortCellsTop: true,
-        scrollX:       true,
-        fixedHeader:   true,
     });
 
     journalDataTable.columns().every(function () {
