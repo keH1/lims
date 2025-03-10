@@ -156,7 +156,7 @@ class Oborud extends Model {
 
                 // Место установки
                 if ( isset($filter['search']['room']) ) {
-                    $where .= "b.roomnumber IN (SELECT r.ID FROM ROOMS r WHERE CONCAT(r.NAME, ' ', r.NUMBER) LIKE '%{$filter['search']['room']}%') AND ";
+                    $where .= "b.roomnumber IN (SELECT r.ID FROM ROOMS r WHERE CONCAT(r.NAME, ' ', r.NUMBER) COLLATE utf8mb3_unicode_ci LIKE '%{$filter['search']['room']}%') AND ";
                 }
             }
 
