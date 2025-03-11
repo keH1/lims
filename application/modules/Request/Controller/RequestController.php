@@ -716,6 +716,10 @@ class RequestController extends Controller
             $this->redirect('/request/list/');
         }
 
+        // echo '<pre>';
+        // print_r($_POST);
+        // die;
+
         $dealId = (int) $dealId;
 
         /** @var Request $request */
@@ -832,6 +836,7 @@ class RequestController extends Controller
         $this->data['dogovor'] = $dogovorData;
 
         $this->data['act_vr'] = $requirement->getActVr($tzId);
+
         $this->data['tz_doc'] = $tzDoc;
         $this->data['first_protocol'] = $protocolData[0]?? [];
 
@@ -1080,6 +1085,8 @@ class RequestController extends Controller
 		$this->data['act_complete']['is_disable_form'] = false && !in_array($_SESSION['SESS_AUTH']['USER_ID'], [61, 88, 1, 25]) || 0;
 //		$this->data['act_complete']['is_disable_form'] = !($deal['STAGE_ID'] == 2) || ;
         $this->data['act_complete']['is_disable_mail'] = empty($actVr) || 0;
+        // 4 - Роль руководителя лаборатории
+        $this->data['act_complete']['assigned_users'] = $user->getUsersByRoleId(4);
 
 
 

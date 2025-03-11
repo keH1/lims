@@ -976,4 +976,34 @@ class User extends Model
             return false;
         }
     }
+
+    /**
+     * @param int $roleId
+     * @return array
+     */
+    public function getUsersByRoleId(int $roleId): array
+    {
+        $permission = new Permission();
+        $users = $this->getUsers();
+
+        $data = [];
+
+        foreach ($users as $us) {
+            $userRole = $permission->getUserRole($us['ID']);
+            if ($userRole != $roleId)
+                continue;
+
+            $data[] = [
+                'id' => $us['ID'],
+                'FIO' => $us['LAST_NAME'] . ' ' .
+                    mb_strtoupper(mb_substr($us['NAME'], 0, 1)) . '. ' .
+                    mb_strtoupper(mb_substr($us['SECOND_NAME'], 0, 1)) . '.',
+                'department' => empty($us['WORK_DEPARTMENT'])? 'Отдел не указан' : $us['WORK_DEPARTMENT'],
+                'position' => empty($us['WORK_POSITION'])? 'Должность не указана' : $us['WORK_POSITION'],
+                'role' => $userRole,
+            ];
+        }
+
+        return $data;
+    }
 }

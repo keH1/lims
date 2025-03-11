@@ -933,9 +933,10 @@
     <div class="mb-3">
         <label class="form-label">Руководитель</label>
         <select name="lead" class="form-control" required>
-            <option value="1">Ахтямов Э.Р.</option>
-            <option value="2">Габдрахманова А.А.</option>
-            <option value="3">Молчанова Е.Н.</option>
+            <option value="" <?=$this->data['act_vr']['LEAD'] == '' ? 'selected' : ''?> disabled>Выберите руководителя</option>
+            <?php foreach ($this->data['act_complete']['assigned_users'] as $user): ?>
+                <option <?=$this->data['act_vr']['LEAD'] == $user['id'] ? 'selected' : ''?> value="<?=$user['id']?>"><?=$user['FIO']?></option>
+            <?php endforeach; ?>
         </select>
     </div>
 
