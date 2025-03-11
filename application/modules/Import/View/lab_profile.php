@@ -77,6 +77,8 @@
     <div class="panel-body">
         <a href="#popup_form_rooms" class="popup-with-form btn btn-success mb-2">Добавить</a>
 
+        <a href="/ulab/import/rooms/<?=$this->data['info']['ID']?>" class="ms-2">Управление помещениями</a>
+
         <table id="journal_rooms" class="table table-striped journal">
             <thead>
             <tr class="table-light">
@@ -97,6 +99,8 @@
     </header>
     <div class="panel-body">
         <a href="#popup_form_users" class="popup-with-form btn btn-success mb-2">Добавить</a>
+
+        <a href="/ulab/user/list/" class="ms-2">Управление кадрами</a>
 
         <table id="journal_users" class="table table-striped journal">
             <thead>
