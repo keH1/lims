@@ -82,7 +82,12 @@ const dataTablesSettings = {
             colvis: '',
             copy: '',
             excel: '',
-            print: ''
+            print: '',
+            copyTitle: 'Копирование в буфер обмена',
+            copySuccess: {
+                _: 'Скопировано %d строк в буфер обмена',
+                1: 'Скопирована 1 строка в буфер обмена'
+            }
         },
         aria: {
             sortAscending: ': активировать для сортировки столбца по возрастанию',

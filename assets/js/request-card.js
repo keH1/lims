@@ -16,7 +16,6 @@ $(function ($) {
     })
 
     $('.popup-mail').on('click', function () {
-        console.log($(this).data())
         $('#TYPE').val($(this).data('type'))
         $('#TITLE').val($(this).data('title'))
         $('#ATTACH').val($(this).data('attach'))
