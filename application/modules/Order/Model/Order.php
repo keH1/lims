@@ -15,6 +15,7 @@ class Order extends Model {
         return $this->DB->Query("select * from DOGOVOR where ID = {$orderId}")->Fetch();
     }
 
+
     /**
      * @param $filter
      * @return array
@@ -164,6 +165,115 @@ class Order extends Model {
 
         $result['recordsTotal'] = $dataTotal['val'];
         $result['recordsFiltered'] = $dataFiltered['val'];
+
+        return $result;
+    }
+
+
+    /**
+     * @param $filter
+     * @return array
+     */
+    public function getReviseDataToJournal($filter)
+    {
+        $where = "";
+        $limit = "";
+        $order = [
+            'by' => 'b.ID',
+            'dir' => 'DESC'
+        ];
+        if ( !empty($filter) ) {
+            // из $filter собирать строку $where тут
+            // формат такой: $where .= "что-то = чему-то AND ";
+            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
+            // слева без пробела, справа всегда AND пробел
+
+            // работа с фильтрами
+            if ( !empty($filter['search']) ) {
+                // Номер
+                if ( isset($filter['search']['NUMBER']) ) {
+                    $where .= "d.NUMBER LIKE '%{$filter['search']['NUMBER']}%' AND ";
+                }
+                // Клиент
+                if ( isset($filter['search']['COMPANY_TITLE']) ) {
+                    $where .= "tz.COMPANY_TITLE LIKE '%{$filter['search']['COMPANY_TITLE']}%' AND ";
+                }
+            }
+
+            // работа с сортировкой
+            if ( !empty($filter['order']) ) {
+                if ( $filter['order']['dir'] === 'asc' ) {
+                    $order['dir'] = 'ASC';
+                }
+
+                switch ($filter['order']['by']) {
+                    case 'NUMBER':
+                        $order['by'] = 'year(d.DATE) desc, d.NUMBER';
+                        break;
+                    case 'COMPANY_TITLE':
+                        $order['by'] = 'tz.COMPANY_TITLE';
+                        break;
+                }
+            }
+
+            // работа с пагинацией
+            if ( isset($filter['paginate']) ) {
+                $offset = 0;
+                // количество строк на страницу
+                if ( isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0 ) {
+                    $length = $filter['paginate']['length'];
+
+                    if ( isset($filter['paginate']['start']) && $filter['paginate']['start'] > 0 ) {
+                        $offset = $filter['paginate']['start'];
+                    }
+                    $limit = "LIMIT {$offset}, {$length}";
+                }
+            }
+        }
+        $where .= "1 ";
+
+        $data = $this->DB->Query(
+            "select 
+                d.ID, d.NUMBER, tz.COMPANY_TITLE, tz.price_discount, tz.OPLATA,
+                sum(tz.price_discount) as SUM_ALL_PRICE, 
+                (sum(tz.price_discount) - sum(tz.OPLATA)) as SUM_NO_PAYMENT, 
+                count(tz.ID) as COUNT_REQUEST,
+                count(CASE WHEN tz.price_discount > tz.OPLATA THEN 1 END) as COUNT_REQUEST_NO_PAYMENT
+            from DOGOVOR as d
+            inner join DEALS_TO_CONTRACTS as dtc on dtc.ID_CONTRACT = d.ID
+            inner join ba_tz as tz on dtc.ID_DEAL = tz.ID_Z
+            where {$where}
+            group by d.ID 
+            ORDER BY {$order['by']} {$order['dir']} {$limit}"
+        );
+
+        $dataTotal = $this->DB->Query(
+            "select 
+                d.ID
+            from DOGOVOR as d
+            inner join DEALS_TO_CONTRACTS as dtc on dtc.ID_CONTRACT = d.ID
+            inner join ba_tz as tz on dtc.ID_DEAL = tz.ID_Z
+            group by d.ID"
+        )->SelectedRowsCount();
+
+        $dataFiltered = $this->DB->Query(
+            "select 
+                d.ID
+            from DOGOVOR as d
+            inner join DEALS_TO_CONTRACTS as dtc on dtc.ID_CONTRACT = d.ID
+            inner join ba_tz as tz on dtc.ID_DEAL = tz.ID_Z
+            where {$where}
+            group by d.ID"
+        )->SelectedRowsCount();
+
+        $result = [];
+
+        while ($row = $data->Fetch()) {
+            $result[] = $row;
+        }
+
+        $result['recordsTotal'] = $dataTotal;
+        $result['recordsFiltered'] = $dataFiltered;
 
         return $result;
     }
