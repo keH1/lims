@@ -55,6 +55,20 @@ Class OrderController extends Controller
 
 
     /**
+     * @desc Журнал Сверки
+     * route /order/reviseList/
+     */
+    public function reviseList()
+    {
+        $this->data['title'] = 'Журнал Сверки';
+
+        $this->addJs('/assets/js/order-revise-list.js');
+
+        $this->view('revise_list', '', 'template_journal');
+    }
+
+
+    /**
      * @desc Получает данные для журнала договоров
      */
     public function getListProcessingAjax()
@@ -95,6 +109,57 @@ Class OrderController extends Controller
         }
 
         $data = $order->getDataToJournal($filter);
+
+        $recordsTotal = $data['recordsTotal'];
+        $recordsFiltered = $data['recordsFiltered'];
+
+        unset($data['recordsTotal']);
+        unset($data['recordsFiltered']);
+
+        $jsonData = [
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data
+        ];
+
+        echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
+    }
+
+
+    /**
+     * @desc Получает данные для журнала договоров
+     */
+    public function getReviseDataJournalAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        /** @var Order $order */
+        $order = $this->model('Order');
+
+        $filter = [
+            'paginate' => [
+                'length'    => $_POST['length'], // кол-во строк на страницу
+                'start'     => $_POST['start'],  // текущая страница
+            ],
+            'search' => [],
+            'order' => []
+        ];
+
+        foreach ($_POST['columns'] as $column) {
+            if ( $column['search']['value'] !== '' ) {
+                $filter['search'][$column['data']] = $column['search']['value'];
+            }
+        }
+
+        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
+            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
+            $filter['order']['dir'] = $_POST['order'][0]['dir'];
+        }
+
+        $data = $order->getReviseDataToJournal($filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
