@@ -1,16 +1,11 @@
 $(document).ready(function () {
 
-
     $("#package-search").on("keyup change", function (e) {
-        console.log("test!")
+
         let searchValue = this.value.toLowerCase();
-
-        console.log(this.value);
-
 
         [...$(".search-item")].forEach(function (item) {
             let itemText = $(item).find("label").text().toLowerCase();
-
 
             if (itemText.includes(searchValue)) {
                 $(item).show()
@@ -23,14 +18,12 @@ $(document).ready(function () {
     $('[data-js-add-shipment]').click(function (e) {
 
         let dealId = $(this).attr("data-js-add-shipment");
-        //  console.log(dealId)
         $.ajax({
             url: `${URI}/request/addShipmentAjax/`,
             type: "POST", //метод отправки
             dataType: 'json', // data type
             data: {"dealId": dealId},
             success: function (result) {
-                //  console.log(result);
                 document.location.href = `/local/factory/shipments/form/${result}`
 
             },
