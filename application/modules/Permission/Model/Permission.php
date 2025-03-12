@@ -267,8 +267,12 @@ class Permission extends Model
                 $where .= "EMAIL LIKE '%{$filter['search']['EMAIL']}%' AND ";
             }
             // Должность
-            if (isset($filter['search']['WORK_POSITION'])) {
-                $where .= "(u.WORK_POSITION LIKE '%{$filter['search']['WORK_POSITION']}%' OR u.WORK_POSITION IS NULL OR u.WORK_POSITION = '') AND ";
+            if (isset($filter['search']['WORK_POSITION']) && $filter['search']['WORK_POSITION'] != '-1') {
+                if ( $filter['search']['WORK_POSITION'] == '-2' ) {
+                    $where .= "u.WORK_POSITION IS NULL OR u.WORK_POSITION = '' AND ";
+                } else {
+                    $where .= "u.WORK_POSITION LIKE '{$filter['search']['WORK_POSITION']}' AND ";
+                }
             }
             // Роль
             if (isset($filter['search']['permission_name'])) {
