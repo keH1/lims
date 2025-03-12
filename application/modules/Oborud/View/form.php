@@ -1382,7 +1382,7 @@
                     Ответственный сотрудник
                 </label>
                 <div class="col-sm-8">
-                    <select class="form-control select2" name="oborud[ID_ASSIGN1]">
+                    <select class="form-control select2 equipment-assigned" name="oborud[ID_ASSIGN1]">
                         <option value="">Не указан</option>
                         <?php foreach ($this->data['users'] as $user): ?>
                             <option value="<?=$user['ID']?>" <?=$this->data['oborud']['ID_ASSIGN1'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
@@ -1397,7 +1397,7 @@
                     Доп. ответственный сотрудник
                 </label>
                 <div class="col-sm-8">
-                    <select class="form-control select2" name="oborud[ID_ASSIGN2]">
+                    <select class="form-control select2 add-equipment-assigned" name="oborud[ID_ASSIGN2]">
                         <option value="">Не указан</option>
                         <?php foreach ($this->data['users'] as $user): ?>
                             <option value="<?=$user['ID']?>" <?=$this->data['oborud']['ID_ASSIGN2'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>

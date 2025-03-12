@@ -289,4 +289,97 @@ $(function ($) {
 
         return html
     }
+
+    const $firstSelect = $('.equipment-assigned')
+    const $secondSelect = $('.add-equipment-assigned')
+    const removedOptions = {
+        first: {},
+        second: {}
+    }
+   
+    function removeOption(value, $targetSelect, storageKey) {
+        if (!value) 
+            return
+        
+        const $option = $targetSelect.find(`option[value="${value}"]`)
+        if ($option.length) {
+            removedOptions[storageKey][value] = {
+                text: $option.text(),
+                index: $option.index()
+            }
+            $option.remove()
+        }
+    }
+    
+    function restoreOption(value, storageKey) {
+        if (!value) 
+            return
+        
+        const optionData = removedOptions[storageKey][value]
+        if (optionData) {
+            const $targetSelect = storageKey === 'first' ? $firstSelect : $secondSelect
+            const $newOption = $(`<option value="${value}">${optionData.text}</option>`)
+            
+            const $options = $targetSelect.find('option')
+            if (optionData.index < $options.length)
+                $options.eq(optionData.index).before($newOption)
+            else
+                $targetSelect.append($newOption)
+            
+            delete removedOptions[storageKey][value]
+        }
+    }
+    
+    function restoreAll(storageKey) {
+        Object.keys(removedOptions[storageKey]).forEach(value => {
+            restoreOption(value, storageKey)
+        })
+    }
+    
+    function initSelects() {
+        const firstVal = $firstSelect.val()
+        if (firstVal)
+            removeOption(firstVal, $secondSelect, 'second')
+        
+        const secondVal = $secondSelect.val()
+        if (secondVal)
+            removeOption(secondVal, $firstSelect, 'first')
+        
+        $firstSelect.data('prev-val', firstVal)
+        $secondSelect.data('prev-val', secondVal)
+    }
+    
+    initSelects()
+    
+    $firstSelect.on('change', function() {
+        const prevVal = $(this).data('prev-val')
+        const newVal = $(this).val()
+        
+        if (prevVal && prevVal !== newVal)
+            restoreOption(prevVal, 'second')
+        
+        if (newVal)
+            removeOption(newVal, $secondSelect, 'second')
+        else
+            restoreAll('second')
+        
+        $(this).data('prev-val', newVal)
+        $secondSelect.trigger('change.select2')
+    })
+    
+    $secondSelect.on('change', function() {
+        const prevVal = $(this).data('prev-val')
+        const newVal = $(this).val()
+        
+        if (prevVal && prevVal !== newVal)
+            restoreOption(prevVal, 'first')
+        
+        if (newVal)
+            removeOption(newVal, $firstSelect, 'first')
+        else
+            restoreAll('first')
+        
+        $(this).data('prev-val', newVal)
+        $firstSelect.trigger('change.select2')
+    })
 })
