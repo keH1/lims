@@ -37,22 +37,27 @@ $(function ($) {
             },
             {
                 data: 'SUM_ALL_PRICE',
+                className: 'text-center',
                 orderable: false,
             },
             {
                 data: 'SUM_NO_PAYMENT',
+                className: 'text-center',
                 orderable: false,
             },
             {
                 data: 'COUNT_REQUEST',
+                className: 'text-center',
                 orderable: false,
             },
             {
                 data: 'COUNT_REQUEST_NO_PAYMENT',
+                className: 'text-center',
                 orderable: false,
             },
             {
                 data: 'btn',
+                className: 'text-center',
                 width: '100px',
                 orderable: false,
                 render: function (data, type, item) {
