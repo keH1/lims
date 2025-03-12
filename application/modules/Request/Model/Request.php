@@ -172,6 +172,7 @@ class Request extends Model
             $row['DOGOVOR_NUM'] = $match[1] ?? '';
 
 			$row['price_ru'] = StringHelper::priceFormatRus($row['price_discount']);
+            $row['act_information'] = json_decode($row['act_information'], true);
 
             $result = $row;
         }

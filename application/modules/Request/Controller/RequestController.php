@@ -158,7 +158,7 @@ class RequestController extends Controller
 
             $this->data['request']['assign']            = $user->getAssignedByDealId($dealId);
             $this->data['request']['material']          = $material->getMaterialsToRequest($dealId);
-
+            $this->data['request']['act_information']   = $requestData['act_information'];
             //// конец блока заполения формы
         }
 
@@ -496,6 +496,7 @@ class RequestController extends Controller
             }
         }
 
+        $actInformation = json_encode($_POST['information'], JSON_UNESCAPED_UNICODE);
         $dataTz = [
             'COMPANY_TITLE' => '"' . htmlspecialchars($_POST['company']) . '"', //TODO: надо убрать из таблицы это поле
             'COMPANY_ID' => $companyId,
@@ -505,7 +506,8 @@ class RequestController extends Controller
             'DOGOVOR_NUM' => "'{$_POST['NUM_DOGOVOR']}'",
             'DOGOVOR_TABLE' => "'{$orderName}'",
             'POSIT_LEADS' => "'{$_POST['PositionGenitive']}'",
-            'order_type' => (int)$_POST['order_type']
+            'order_type' => (int)$_POST['order_type'],
+            'act_information' => "'{$actInformation}'"
         ];
 
 
