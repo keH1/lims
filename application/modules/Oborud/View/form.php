@@ -1336,8 +1336,7 @@
             <?php endif; ?>
 
             <div class="line-dashed"></div>
-
-            <?php if ($this->data['oborud']['is_decommissioned'] || empty($this->data['id'])): ?>
+            <?php if ($this->data['oborud']['is_decommissioned']): ?>
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">
                         Основание для списания
@@ -1357,7 +1356,7 @@
                     </div>
                     <div class="col-sm-2"></div>
                 </div>
-            <?php else: ?>
+            <?php elseif ((int)$this->data['oborud']['is_decommissioned'] === 0 && $this->data['oborud']['is_decommissioned'] != null): ?>
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label"></label>
                     <div class="col-sm-8">
