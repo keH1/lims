@@ -114,11 +114,7 @@ $(function ($) {
 				data: 'ACTUAL_VER',
 				orderable: false,
 				render: function (data, type, item) {
-					if ( !item['ACTUAL_VER'] ) {
-						return `-`
-					} else {
-						return `<a href="/protocol_generator/archive_tz/${item['ID']}/${item['ACTUAL_VER']}.pdf">${item['ID']}</a>`
-					}
+					return `<a href="/ulab/requirement/card_new/${item['ID']}">${item['ID']}</a>`
 				}
 			},
 			{
