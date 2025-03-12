@@ -59,7 +59,7 @@
 <?php if (!empty($this->data['id'])): ?>
     <h2 class="d-flex mb-3">
         <div class="stage-block rounded <?=$this->data['status']['bgStage']?> me-1 mt-1" title="<?=$this->data['status']['titleStage']?>"></div>
-        <?=$this->data['oborud']['OBJECT']?> <?=$this->data['oborud']['REG_NUM']?>
+        <span><?=$this->data['oborud']['OBJECT']?> <?=$this->data['oborud']['REG_NUM']?></span>
     </h2>
 
     <div class="panel panel-default">
