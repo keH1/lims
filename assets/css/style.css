@@ -1627,3 +1627,9 @@ table.fixedHeader-floating thead tr {
 .dropzone .dz-default.dz-message span {
     display: block;
 }
+
+h2 .stage-block {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+}
