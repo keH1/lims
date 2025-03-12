@@ -385,12 +385,6 @@ class Oborud extends Model {
             'dir' => 'DESC'
         ];
         if ( !empty($filter) ) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
-
-            // работа с фильтрами
             if ( !empty($filter['search']) ) {
                 if ( isset($filter['search']['oborud_id']) ) {
                     $where .= "b.ID = '{$filter['search']['oborud_id']}' AND ";
@@ -401,11 +395,14 @@ class Oborud extends Model {
                 }
 
                 if ( isset($filter['search']['place']) ) {
-                    $where .= "m.place LIKE '%{$filter['search']['place']}%' AND ";
+                    if (in_array($filter['search']['place'], ['не', 'перемещался', 'не перемещался'])) {
+                        $where .= "(m.place IS NULL OR m.place = '') AND ";
+                    } else {
+                        $where .= "m.place LIKE '%{$filter['search']['place']}%' AND ";
+                    }
                 }
             }
 
-            // работа с сортировкой
             if ( !empty($filter['order']) ) {
                 if ( $filter['order']['dir'] === 'asc' ) {
                     $order['dir'] = 'ASC';
@@ -425,10 +422,8 @@ class Oborud extends Model {
                 }
             }
 
-            // работа с пагинацией
             if ( isset($filter['paginate']) ) {
                 $offset = 0;
-                // количество строк на страницу
                 if ( isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0 ) {
                     $length = $filter['paginate']['length'];
 
