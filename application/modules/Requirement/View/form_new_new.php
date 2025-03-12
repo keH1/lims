@@ -499,14 +499,6 @@
         </select>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Карьер</label>
-
-        <select class="form-control select2 clear_confirm_change" name="form[quarry_id]">
-            <option value="">Нет карьера</option>
-        </select>
-    </div>
-
     <div class="line-dashed-small"></div>
 
     <div class="d-flex justify-content-between">
