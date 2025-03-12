@@ -18,7 +18,6 @@ $(function ($) {
             },
             url : '/ulab/order/getReviseDataJournalAjax/',
             dataSrc: function (json) {
-                console.log(json)
                 return json.data
             }
         },
