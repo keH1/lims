@@ -395,10 +395,14 @@ class Oborud extends Model {
                 }
 
                 if ( isset($filter['search']['place']) ) {
-                    if (in_array($filter['search']['place'], ['не', 'перемещался', 'не перемещался'])) {
+                    $placeFilter = trim($filter['search']['place']);
+                    $placeLower = mb_strtolower($placeFilter);
+                    
+                    $isNonMoved = preg_match('/(н[её]|п[еере])/ui', $placeLower);
+                    if ($isNonMoved) {
                         $where .= "(m.place IS NULL OR m.place = '') AND ";
                     } else {
-                        $where .= "m.place LIKE '%{$filter['search']['place']}%' AND ";
+                        $where .= "m.place LIKE '%{$placeFilter}%' AND ";
                     }
                 }
             }
