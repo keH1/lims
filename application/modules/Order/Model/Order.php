@@ -269,6 +269,13 @@ class Order extends Model {
         $result = [];
 
         while ($row = $data->Fetch()) {
+            if ( empty($row['SUM_ALL_PRICE']) ) {
+                $row['SUM_ALL_PRICE'] = 0;
+            }
+            if ( empty($row['SUM_NO_PAYMENT']) ) {
+                $row['SUM_NO_PAYMENT'] = 0;
+            }
+
             $result[] = $row;
         }
 

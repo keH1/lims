@@ -57,7 +57,7 @@ $(function ($) {
                 width: '100px',
                 orderable: false,
                 render: function (data, type, item) {
-                    return `<a href="#" class="btn btn-primary">Акт сверки</a>`
+                    return `<a href="#" class="btn btn-primary btn-revise">Акт сверки</a>`
                 }
             },
         ],
@@ -86,5 +86,14 @@ $(function ($) {
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
         journalDataTable.draw()
+    })
+
+    //Событие на кнопку "АКТ Сверки"
+    journalDataTable.on('click', '.btn-revise', function() {
+        let data = journalDataTable.row($(this).closest('tr')).data()
+        // Отправляем GET запрос , на формирование Акта сверки
+        window.open('/protocol_generator/protocol_revise.php?ID_CONTRACT=' + data.ID, '_blank')
+
+        return false
     })
 })
