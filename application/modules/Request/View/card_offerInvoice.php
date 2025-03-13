@@ -790,12 +790,6 @@
 <!--                <th scope="col">Прил. к договору (тз)</th>-->
 <!--                <th scope="col">Счет</th>-->
                 <th scope="col">Акт ВР</th>
-                <th scope="col">Фото испытаний
-					<form id="target" enctype="multipart/form-data" action="/ulab/request/dwnImage/<?=$this->data['deal_id']?>" method="POST">
-						<label title="Загрузить протокол" id="image-svg" for="file" class=""></label>
-						<input id="file" type="file" name="photo" onchange="form.submit()"/>
-					</form>
-				</th>
             </tr>
             </thead>
             <tbody>
@@ -835,11 +829,6 @@
                         <a target="_blank" href="<?=$this->data['file']['act']['dir']?><?=$item?>"><?=$item?></a><br>
                     <?php endforeach; ?>
                 </td>
-				<td class="align-top">
-					<?php foreach ($this->data['file']['photo']['files'] as $item): ?>
-						<a target="_blank" href="<?=$this->data['file']['photo']['dir']?><?=$item?>"><?=$item?></a><br>
-					<?php endforeach; ?>
-				</td>
             </tr>
             </tbody>
         </table>
