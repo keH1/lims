@@ -70,9 +70,12 @@ class OborudController extends Controller
         $oborudModel = $this->model('Oborud');
         /** @var Methods $methodModel */
         $methodModel = $this->model('Methods');
+        
+        if (!is_numeric($oborudId) || !$oborudModel->isExistEquipment($oborudId)) {
+            $this->redirect('/oborud/list/');
+        }
 
         $this->data['title'] = 'Редактировать оборудование';
-
         $this->data['id'] = $oborudId;
         $this->data['oborud'] = $oborudModel->getOborudById($oborudId);
         $this->data['status'] = $oborudModel->getStatus($this->data['oborud']);
@@ -104,46 +107,6 @@ class OborudController extends Controller
         $this->data['users'] = $user->getUsers();
 
         $this->data['oborud_list'] = $oborudModel->getList();
-
-
-        $this->data['commissioning_user'] = [
-            [
-                'id' => 10,
-                'short_name' => 'Е. Апанович',
-            ],
-            [
-                'id' => 137,
-                'short_name' => 'Е. Байгазова',
-            ],
-            [
-                'id' => 15,
-                'short_name' => 'В. Шингарев',
-            ],
-            [
-                'id' => 13,
-                'short_name' => 'Т. Велютич',
-            ],
-            [
-                'id' => 11,
-                'short_name' => 'Т. Овчинникова',
-            ],
-            [
-                'id' => 58,
-                'short_name' => 'Р. Живцова',
-            ],
-            [
-                'id' => 27,
-                'short_name' => 'А. Шишкина',
-            ],
-            [
-                'id' => 95,
-                'short_name' => 'Т. Хеленюк',
-            ],
-            [
-                'id' => 123,
-                'short_name' => 'Н. Турьева',
-            ],
-        ];
 
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
@@ -1091,6 +1054,21 @@ class OborudController extends Controller
         $result = $oborudModel->removeComponent($id);
         $oborudModel->addHistorySample($sampleId, $action);
 
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @desc Удалить данные компонента Ajax запросом
+     */
+    public function getListEquipmentAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var Oborud $oborudModel */
+        $oborudModel = $this->model('Oborud');
+
+        $result = $oborudModel->getList();
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
 }

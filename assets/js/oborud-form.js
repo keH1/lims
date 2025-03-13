@@ -44,36 +44,82 @@ $(function ($) {
     })
 
     $('.add-inter-oborud').click(function () {
-        const $block = $(this).closest('.head-inter-oborud')
-        const id = $block.find('select').val()
-        const name = $block.find('select option:selected').text()
-        const count = $body.find(`#inter-oborud${id}`).length
+        const $block = $('.head-inter-oborud').last()
+        let optionEquipment = ''
 
-        if ( id !== '' && count === 0) {
-            $block.after(`
-                <div id="inter-oborud${id}" class="form-group row block-inter-oborud">
-                    <label class="col-sm-2 col-form-label"></label>
-                    <div class="col-sm-8">
-                        <div class="input-group">
-                            <input type="text" class="form-control" value="${name}">
-                            <a class="btn btn-outline-secondary" target="_blank" title="Перейти в оборудование" href="/ulab/oborud/edit/${id}">
-                                <i class="fa-solid fa-right-to-bracket"></i>
-                            </a>
+        const url = window.location.pathname,
+              urlParts = url.split('/'),
+              excludeId = urlParts[urlParts.length - 1],
+              isNewEquipment = url.includes('/new/')
+
+        $.ajax({
+            method: 'POST',
+            url: '/ulab/Oborud/getListEquipmentAjax',
+            dataType: 'json',
+            success: function (equipmentList) {
+                if (!isNewEquipment) {
+                    const isValidId = /^\d+$/.test(excludeId),
+                          isIdInList = equipmentList.some(equipment => equipment.ID == excludeId)
+    
+                    if (!isValidId || !isIdInList) {
+                        return
+                    }
+                }
+
+                equipmentList.forEach(function (equipment) {
+                    if (equipment.ID != excludeId) { 
+                        optionEquipment += `
+                            <option value="${equipment.ID}">
+                                ${equipment.view_name}
+                            </option>`
+                    }
+                })
+
+                $block.after(`
+                    <div class="form-group row head-inter-oborud border-bottom pb-3">
+                        <label class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <select class="form-control select2 inter-equipment" name="inter[]">
+                                    <option value="">Не выбрано</option>
+                                    ${optionEquipment}
+                                </select>
+                                <a class="btn btn-outline-secondary disabled" target="_blank" title="Перейти в оборудование">
+                                    <i class="fa-solid fa-right-to-bracket"></i>
+                                </a>
+                            </div>
                         </div>
-                        <input type="hidden" name="inter[]" class="form-control" value="${id}">
+                        <div class="col-sm-2">
+                            <button type="button" class="btn btn-danger btn-square delete-inter-oborud" title="Отвязать оборудование">
+                                <i class="fa-solid fa-minus icon-fix"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-sm-2">
-                        <button type="button" class="btn btn-danger btn-square delete-inter-oborud" title="Отвязать оборудование">
-                            <i class="fa-solid fa-minus icon-fix"></i>
-                        </button>
-                    </div>
-                </div>
-            `)
+                `)
+
+                $('.select2').select2({
+                    theme: 'bootstrap-5'
+                })
+            }
+        })
+    })
+
+    $body.on('change', '.inter-equipment', function () {
+        const $select = $(this),
+              selectedValue = $select.val(),
+              $link = $select.closest('.input-group').find('a.btn-outline-secondary')
+
+        if (selectedValue) {
+            $link.removeClass('disabled')
+            $link.attr('href', `/ulab/oborud/edit/${selectedValue}`)
+        } else {
+            $link.addClass('disabled')
+            $link.removeAttr('href')
         }
     })
 
     $body.on('click', '.delete-inter-oborud', function () {
-        $(this).closest('.block-inter-oborud').remove()
+        $(this).closest('.head-inter-oborud').remove()
     })
 
     $body.on('click', '.delete-precision', function () {

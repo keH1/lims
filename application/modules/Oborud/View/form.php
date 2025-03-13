@@ -1481,12 +1481,21 @@
                     Оборудование
                 </label>
                 <div class="col-sm-8">
-                    <select class="form-control select2">
-                        <option value="">Не выбрано</option>
-                        <?php foreach ($this->data['oborud_list'] as $item): ?>
-                            <option value="<?=$item['ID']?>" <?=$this->data['oborud_id'] == $item['ID']? 'selected': ''?>><?=$item['view_name']?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="input-group">
+                        <select class="form-control select2 inter-equipment" name="inter[]">
+                            <option value="">Не выбрано</option>
+                            <?php foreach ($this->data['oborud_list'] as $item): ?>
+                                <?php if ((int)$this->data['id'] == (int)$item['ID']) continue; ?>
+                                <option value="<?=$item['ID']?>" <?=$this->data['interchangeable'][0]['ID'] == $item['ID']? 'selected': ''?>><?=$item['view_name']?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <a class="btn btn-outline-secondary <?=$this->data['interchangeable'][0]['ID'] ?? 'disabled'?>"
+                           target="_blank" title="Перейти в оборудование"
+                           href="/ulab/oborud/edit/<?=$this->data['interchangeable'][0]['ID'] ?? ''?>"
+                        >
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                        </a>
+                    </div>
                 </div>
                 <div class="col-sm-2">
                     <button type="button" class="btn btn-success btn-square add-inter-oborud" title="Добавить оборудование">
@@ -1495,19 +1504,22 @@
                 </div>
             </div>
 
-            <?php foreach ($this->data['interchangeable'] as $item): ?>
-                <div id="inter-oborud<?=$item['ID']?>" class="form-group row block-inter-oborud" data-id="<?=$item['ID']?>">
-                    <label class="col-sm-2 col-form-label">
-
-                    </label>
+            <?php for ($i = 1; $i < count((array)$this->data['interchangeable']); $i++): ?>
+                <div class="form-group row head-inter-oborud border-bottom pb-3">
+                    <label class="col-sm-2 col-form-label"></label>
                     <div class="col-sm-8">
                         <div class="input-group">
-                            <input type="text" class="form-control" value="<?=$item['view_name']?>">
-                            <a class="btn btn-outline-secondary" target="_blank" title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$item['ID']?>">
+                            <select class="form-control select2 inter-equipment" name="inter[]">
+                                <option value="">Не выбрано</option>
+                                <?php foreach ($this->data['oborud_list'] as $item): ?>
+                                    <?php if ((int)$this->data['id'] == (int)$item['ID']) continue; ?>
+                                    <option value="<?=$item['ID']?>" <?=$this->data['interchangeable'][$i]['ID'] == $item['ID']? 'selected': ''?>><?=$item['view_name']?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <a class="btn btn-outline-secondary" target="_blank" title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$this->data['interchangeable'][$i]['ID']?>">
                                 <i class="fa-solid fa-right-to-bracket"></i>
                             </a>
                         </div>
-                        <input type="hidden" name="inter[]" class="form-control" value="<?=$item['ID']?>">
                     </div>
                     <div class="col-sm-2">
                         <button type="button" class="btn btn-danger btn-square delete-inter-oborud" title="Отвязать оборудование">
@@ -1515,24 +1527,24 @@
                         </button>
                     </div>
                 </div>
-            <?php endforeach; ?>
+            <?php endfor; ?>
         </div>
     </div>
 
     <?php if ($this->data['id']): ?>
-    <div class="panel panel-default">
-        <header class="panel-heading">
-            В методиках
-            <span class="tools float-end">
-                <a href="#" class="fa fa-chevron-up"></a>
-            </span>
-        </header>
-        <div class="panel-body">
-            <?php foreach ($this->data['method_list'] as $method): ?>
-                <a href="/ulab/gost/method/<?=$method['id']?>"><?=$method['view_gost']?></a><br>
-            <?php endforeach; ?>
+        <div class="panel panel-default">
+            <header class="panel-heading">
+                В методиках
+                <span class="tools float-end">
+                    <a href="#" class="fa fa-chevron-up"></a>
+                </span>
+            </header>
+            <div class="panel-body">
+                <?php foreach ($this->data['method_list'] as $method): ?>
+                    <a href="/ulab/gost/method/<?=$method['id']?>"><?=$method['view_gost']?></a><br>
+                <?php endforeach; ?>
+            </div>
         </div>
-    </div>
     <?php endif; ?>
 
     <button class="btn btn-primary" type="submit" name="save">Сохранить</button>
