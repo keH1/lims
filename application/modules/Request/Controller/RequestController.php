@@ -37,6 +37,8 @@ class RequestController extends Controller
         $this->data['is_edit'] = false;
 
         if ( isset($_SESSION['request_post']) ) {
+            $_SESSION['request_post']['CompanyFullName'] = htmlspecialchars($_SESSION['request_post']['CompanyFullName']);
+
             $this->data['request'] = $_SESSION['request_post'];
 
             unset($_SESSION['request_post']);
