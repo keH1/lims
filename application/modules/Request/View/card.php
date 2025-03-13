@@ -438,11 +438,7 @@
                         </svg>
                     </a>
                 </td>
-                <td>
-                    <a class="no-decoration disabled me-1" href="#" id="sign-btn" onclick="tabletStart(<?=$this->data['deal_id']?>); return false;" title="Расписаться">
-                        <img src="<?=URI?>/assets/images/signup.png" alt="sign" width="35">
-                    </a>
-                </td>
+                <td></td>
                 <td></td>
             </tr>
 
