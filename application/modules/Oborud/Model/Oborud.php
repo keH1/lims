@@ -736,6 +736,8 @@ class Oborud extends Model {
         $sqlData = $this->prepearTableData('ba_oborud_moving', $data);
 
         $this->DB->Insert('ba_oborud_moving', $sqlData);
+
+        return $data;
     }
 
 
@@ -1079,11 +1081,23 @@ class Oborud extends Model {
         if ( !empty($newOborudId) ) {
             $this->DB->Update('ulab_methods_oborud', ['id_oborud' => $newOborudId], "where id_oborud = {$oborudId}");
         }
+
+        return $data;
     }
 
     /**
      * на длительное хранение
      */
+    // public function setLongStorage($oborudId, $data, $newOborudId = '')
+    // {
+    //     $sqlData = $this->prepearTableData('ba_oborud', $data);
+
+    //     $this->DB->Update('ba_oborud', $sqlData, "where id = {$oborudId}");
+
+    //     if ( !empty($newOborudId) ) {
+    //         $this->DB->Update('ulab_methods_oborud', ['id_oborud' => $newOborudId], "where id_oborud = {$oborudId}");
+    //     }
+    // }
     public function setLongStorage($oborudId, $data, $newOborudId = '')
     {
         $sqlData = $this->prepearTableData('ba_oborud', $data);
@@ -1093,6 +1107,8 @@ class Oborud extends Model {
         if ( !empty($newOborudId) ) {
             $this->DB->Update('ulab_methods_oborud', ['id_oborud' => $newOborudId], "where id_oborud = {$oborudId}");
         }
+
+        return $data;
     }
 
 
