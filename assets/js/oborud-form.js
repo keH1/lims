@@ -205,12 +205,20 @@ $(function ($) {
         )
     })
 
-    $('#add-certificate-modal-form').on('submit', function(event) {
-        event.preventDefault()
-        let formData = new FormData(this)
+    $('#add-certificate-modal-form')
+        .add('#add-moving-modal-form')
+        .add('#long-storage-modal-form')
+        .add('#decommissioned-modal-form')
+        .on('submit', handleModalFormSubmit)
 
+    function handleModalFormSubmit(event) {
+        event.preventDefault()
+        const $form = $(this),
+                formId = $form.attr('id'),
+                formData = new FormData(this)
+    
         $.ajax({
-            url: $(this).attr('action'),
+            url: $form.attr('action'),
             type: 'POST',
             data: formData,
             contentType: false,
@@ -218,18 +226,77 @@ $(function ($) {
             success: function(response) {
                 if (response.success) {
                     $.magnificPopup.close()
-
-                    let $lastDashedLine = $('#certificate-block .line-dashed').last(),
-                        html = addNewCertificateFields(response.data)
-
-                    $lastDashedLine.after(html)
+    
+                    const $formGroup = $(`a[href="#${formId}"]`).closest('.form-group')
+                    let html = ''
+    
+                    switch (formId) {
+                        case 'add-certificate-modal-form':
+                            const $lastDashedLine = $('#certificate-block .line-dashed').last()
+                            html = addNewCertificateFields(response.data)
+                            $lastDashedLine.after(html)
+                            break
+                        case 'add-moving-modal-form':
+                            $('.moving-place').val(response.data.place)
+    
+                            const $selectAssigned = $('.moving-assigned'),
+                                    $selectAssignedGet = $('.moving-assigned-get')
+    
+                            if ($selectAssigned.length && response.data.responsible_user_id) {
+                                $selectAssigned.val(response.data.responsible_user_id).trigger('change')
+                            }
+    
+                            if ($selectAssignedGet.length && response.data.receiver_user_id) {
+                                $selectAssignedGet.val(response.data.receiver_user_id).trigger('change')
+                            }
+                            break
+                        case 'long-storage-modal-form':
+                            $formGroup.empty()
+                            html = `
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">На длительном хранении</label>
+                                    <div class="col-sm-8 pt-2">
+                                        <input type="checkbox" name="oborud[LONG_STORAGE]" class="form-check-input" value="1" checked="">
+                                    </div>
+                                    <div class="col-sm-2"></div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Дата постановки на длительное хранение</label>
+                                    <div class="col-sm-8">
+                                        <input type="date" name="oborud[LONG_STORAGE_DATE]"
+                                               class="form-control" value="${response.data.LONG_STORAGE_DATE}">
+                                    </div>
+                                    <div class="col-sm-2"></div>
+                                </div>`
+                            $formGroup.append(html)
+                            break
+                        case 'decommissioned-modal-form':
+                            $formGroup.empty()
+                            html = `
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Основание для списания</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" value="${response.data.SPISANIE}" readonly>
+                                    </div>
+                                    <div class="col-sm-2"></div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Дата списания</label>
+                                    <div class="col-sm-8">
+                                        <input type="date" class="form-control" value="${response.data.DATE_SP}" readonly>
+                                    </div>
+                                    <div class="col-sm-2"></div>
+                                </div>`
+                            $formGroup.append(html)
+                            break
+                    }
                 }
             },
             error: function(xhr, status, error) {
                 alert('Произошла ошибка: ' + error)
             }
         })
-    })
+    }
 
     function addNewCertificateFields(data) {
         let html = `

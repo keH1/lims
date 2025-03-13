@@ -1219,7 +1219,7 @@
                         Место перемещения
                     </label>
                     <div class="col-sm-8">
-                        <input class="form-control" placeholder="Не перемещался" value="<?=$this->data['moving']['place'] ?? ''?>" readonly>
+                        <input class="form-control moving-place" placeholder="Не перемещался" value="<?=$this->data['moving']['place'] ?? ''?>" disabled>
                     </div>
                     <div class="col-sm-2">
                         <a class="btn btn-square btn-outline-secondary" href="/ulab/oborud/movingJournal/<?=$this->data['id']?>" title="Журнал перемещений">
@@ -1233,7 +1233,7 @@
                         Ответственный за перемещение
                     </label>
                     <div class="col-sm-8">
-                        <select class="form-control" disabled>
+                        <select class="form-control moving-assigned" disabled>
                             <option value="">Не выбран</option>
                             <?php foreach ($this->data['users'] as $user): ?>
                                 <option value="<?=$user['ID']?>" <?=$this->data['moving']['responsible_user_id'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
@@ -1248,7 +1248,7 @@
                         Ответственный за получение
                     </label>
                     <div class="col-sm-8">
-                        <select class="form-control" disabled>
+                        <select class="form-control moving-assigned-get" disabled>
                             <option value="">Не выбран</option>
                             <?php foreach ($this->data['users'] as $user): ?>
                                 <option value="<?=$user['ID']?>" <?=$this->data['moving']['receiver_user_id'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
@@ -1551,7 +1551,7 @@
 </form>
 
 
-<form id="decommissioned-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/decommissioned/" method="post">
+<form id="decommissioned-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/decommissionedAjax/" method="post">
     <div class="title mb-3 h-2">
         Списание оборудования
     </div>
@@ -1585,7 +1585,7 @@
     <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
 
-<form id="long-storage-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/setLongStorage/" method="post">
+<form id="long-storage-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/setLongStorageAjax/" method="post">
     <div class="title mb-3 h-2">
         Постановка на длительное хранение
     </div>
@@ -1665,7 +1665,7 @@
 </form>
 
 
-<form id="add-moving-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/addOborudMoving/" method="post" enctype="multipart/form-data">
+<form id="add-moving-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/addOborudMovingAjax/" method="post" enctype="multipart/form-data">
     <div class="title mb-3 h-2">
         Добавление перемещения
     </div>

@@ -122,18 +122,43 @@ class OborudController extends Controller
     /**
      *
      */
-    public function addOborudMoving()
+    // public function addOborudMoving()
+    // {
+    //     /** @var Oborud $oborudModel */
+    //     $oborudModel = $this->model('Oborud');
+
+    //     $oborudModel->addOborudMoving($_POST['form']);
+
+    //     if ( isset($_POST['journal_page']) ) {
+    //         $this->redirect("/oborud/movingJournal/{$_POST['form']['oborud_id']}");
+    //     } else {
+    //         $this->redirect("/oborud/edit/{$_POST['form']['oborud_id']}#moving-block");
+    //     }
+    // }
+
+    public function addOborudMovingAjax()
     {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $oborudModel->addOborudMoving($_POST['form']);
+        $result = $oborudModel->addOborudMoving($_POST['form']);
 
-        if ( isset($_POST['journal_page']) ) {
-            $this->redirect("/oborud/movingJournal/{$_POST['form']['oborud_id']}");
+        if ($result) {
+            $response = [
+                'success' => true,
+                'data' => $result,
+            ];
         } else {
-            $this->redirect("/oborud/edit/{$_POST['form']['oborud_id']}#moving-block");
+            $response = [
+                'success' => false,
+            ];
         }
+
+        header('Content-Type: application/json');
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
 
@@ -422,32 +447,81 @@ class OborudController extends Controller
     /**
      * @desc списание оборудования
      */
-    public function decommissioned()
+    // public function decommissioned()
+    // {
+    //     /** @var Oborud $oborudModel */
+    //     $oborudModel = $this->model('Oborud');
+
+    //     $oborudModel->setDecommissioned((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
+
+    //     $this->showSuccessMessage("Оборудование списано");
+
+    //     $this->redirect("/oborud/edit/{$_POST['oborud_id']}");
+    // }
+
+    public function decommissionedAjax()
     {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $oborudModel->setDecommissioned((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
+        $result = $oborudModel->setDecommissioned((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
 
-        $this->showSuccessMessage("Оборудование списано");
+        if ($result) {
+            $response = [
+                'success' => true,
+                'data' => $result,
+            ];
+        } else {
+            $response = [
+                'success' => false,
+            ];
+        }
 
-        $this->redirect("/oborud/edit/{$_POST['oborud_id']}");
+        header('Content-Type: application/json');
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
 
     /**
      * @desc списание оборудования
      */
-    public function setLongStorage()
+    // public function setLongStorage()
+    // {
+    //     /** @var Oborud $oborudModel */
+    //     $oborudModel = $this->model('Oborud');
+
+    //     $oborudModel->setLongStorage((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
+
+    //     $this->showSuccessMessage("Оборудование на длительном хранении");
+
+    //     $this->redirect("/oborud/edit/{$_POST['oborud_id']}");
+    // }
+    public function setLongStorageAjax()
     {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $oborudModel->setLongStorage((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
+        $result = $oborudModel->setLongStorage((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
 
-        $this->showSuccessMessage("Оборудование на длительном хранении");
+        if ($result) {
+            $response = [
+                'success' => true,
+                'data' => $result,
+            ];
+        } else {
+            $response = [
+                'success' => false,
+            ];
+        }
 
-        $this->redirect("/oborud/edit/{$_POST['oborud_id']}");
+        header('Content-Type: application/json');
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
 
