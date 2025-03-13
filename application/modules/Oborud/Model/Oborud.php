@@ -2020,4 +2020,14 @@ class Oborud extends Model {
         return $result;
     }
 
+    /**
+     * Проверяет существование оборудования по ID
+     * @param int $oborudId
+     * @return bool
+     */
+    public function isExistEquipment(int $oborudId): bool
+    {
+        $result = $this->DB->Query("SELECT COUNT(*) FROM ba_oborud WHERE ID = {$oborudId}");
+        return $result->Fetch()['COUNT(*)'] > 0;
+    }
 }
