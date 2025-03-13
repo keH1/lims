@@ -93,7 +93,7 @@
                     <a class="btn btn-danger"
                        href="<?=URI?>/gost/nonActualGost/<?=$this->data['id']?>"
                        title="Отметить все методики в ГОСТе как неактуальные"
-                       onclick="confirm('Отметить все методики в ГОСТе как неактуальные?')"
+                       onclick="return confirm('Отметить все методики в ГОСТе как неактуальные?')"
                     >Не актуально</a>
                 <?php endif; ?>
             </div>
