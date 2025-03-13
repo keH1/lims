@@ -65,7 +65,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Полное наименование компании</label>
                 <div class="col-sm-8">
-                    <input type="text" name="CompanyFullName" class="form-control clearable" value="<?= htmlspecialchars($this->data['request']['CompanyFullName']) ?? '' ?>">
+                    <input type="text" name="CompanyFullName" class="form-control clearable" value="<?= $this->data['request']['CompanyFullName'] ?? '' ?>">
                 </div>
                 <div class="col-sm-2"></div>
             </div>
