@@ -772,7 +772,7 @@
 
 	<div class="mb-3">
 		<label class="form-label">Оплата</label>
-		<input type="number" name="pay" step="0.01" min="0" max="<?=$this->data['payment']['surcharge']?>" class="form-control" value="<?=$this->data['payment']['surcharge']?>" required>
+		<input type="number" name="pay" step="0.01" min="0.01" max="<?=$this->data['payment']['surcharge']?>" class="form-control" value="<?=$this->data['payment']['surcharge']?>" required>
 	</div>
 
 	<div class="mb-3">
