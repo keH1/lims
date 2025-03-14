@@ -170,6 +170,10 @@ select, .select-arrow {
     background-position-y: 5px;
 }
 
+.dataTables_length select {
+    background-position-y: 0px;
+}
+
 /*filters*/
 
 /*input[type="date"],*/
