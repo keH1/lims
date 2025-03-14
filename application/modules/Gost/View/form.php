@@ -6,11 +6,6 @@
                     <i class="fa-solid fa-list"></i>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link" href="<?=URI?>/gost/new/" title="Новый ГОСТ">
-                    <i class="fa-solid fa-plus"></i>
-                </a>
-            </li>
             <?php if ( !empty($this->data['id']) ): ?>
                 <li class="nav-item me-2">
                     <a class="nav-link disable-after-click" href="<?=URI?>/gost/copyGost/<?=$this->data['id']?>" title="Скопировать ГОСТ">
