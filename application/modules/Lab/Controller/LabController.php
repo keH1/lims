@@ -90,7 +90,6 @@ class LabController extends Controller
     public function getJournalConditionAjax()
     {
         global $APPLICATION;
-
         $APPLICATION->RestartBuffer();
 
         /** @var Lab $labModel */
@@ -98,8 +97,8 @@ class LabController extends Controller
 
         $filter = [
             'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
+                'length' => $_POST['length'],
+                'start' => $_POST['start'],
             ],
             'search' => [],
             'order' => []
@@ -124,7 +123,6 @@ class LabController extends Controller
         if (!empty($_POST['room'])) {
             $filter['search']['room'] = $_POST['room'];
         }
-
 
         $data = $labModel->getJournalCondition($filter);
 
