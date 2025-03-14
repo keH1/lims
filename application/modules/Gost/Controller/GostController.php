@@ -199,9 +199,7 @@ class GostController extends Controller
 //        $this->data['assigned_list'] = $userModel->getAssignedUserListByLab($this->data['lab']);
 //        $this->data['lab_user_list'] = $labModel->getLabAndUser();
         $this->data['user_list'] = $userModel->getUserList1();
-        ///\ заполение формы
-//        $userModel->pre($this->data['user_list']);
-
+        
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
 
@@ -286,9 +284,10 @@ class GostController extends Controller
         $data['is_text_fact'] = $_POST['form']['is_text_fact'] ?? 0;
         $data['is_range_text'] = $_POST['form']['is_range_text'] ?? 0;
 
+
         $methodsModel->updateLab($_POST['id'], $data['lab']);
         $methodsModel->updateRoom($_POST['id'], $data['room']);
-        $methodsModel->updateAssigned($_POST['id'], $data['assigned']);
+        $methodsModel->updateAssigned($_POST['id'], $_POST['form']['assigned']);
         $methodsModel->updateUncertainty($_POST['id'], $_POST['uncertainty']);
         $methodsModel->updateOborud($_POST['id'], $_POST['oborud']);
 
