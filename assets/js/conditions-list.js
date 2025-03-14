@@ -396,19 +396,6 @@ $(function ($) {
                     return '';
                 }
             },
-            // {
-            //     data: 'updated_at',
-            //     render: function (data, type, item) {
-            //         if (item.is_can_edit) {
-            //             return `<span class="text-primary cursor-pointer update-conditions"
-            //                     title="Редактировать показатели измерений" data-condition-id="${item.u_c_id}">
-            //                         ${item.ru_updated_at}
-            //                 </span>`;
-            //         } else {
-            //             return `<span>${item.ru_updated_at}</span>`;
-            //         }
-            //     }
-            // },
             {
                 data: 'created_at',
                 render: function (data, type, item) {
@@ -437,7 +424,6 @@ $(function ($) {
                 orderable: false,
             },
         ],
-        columnDefs: [{ visible: false, targets: 0 }],
         order: [[ 1, "desc" ]],
         language: dataTablesSettings.language,
         dom: 'frtB<"bottom"lip>',
