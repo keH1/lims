@@ -277,7 +277,7 @@ class Lab extends Model
                 }
                 // помещение
                 if (isset($filter['search']['room'])) {
-                    $where .= "u_c.room_id IN (SELECT r.ID FROM ROOMS r WHERE CONCAT(r.NAME, ' ', r.NUMBER) LIKE '%{$filter['search']['room']}%') AND ";
+                    $where .= "u_c.room_id IN (SELECT r.ID FROM ROOMS r WHERE CONCAT(r.NAME, ' ', r.NUMBER) COLLATE utf8mb3_unicode_ci LIKE '%{$filter['search']['room']}%') AND ";
                 }
             }
 
