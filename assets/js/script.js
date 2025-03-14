@@ -136,6 +136,26 @@ $(function ($) {
         focus: '#focus-blur-loop-select',
         midClick: true,
         callbacks: {
+            open: function() {
+                $('.mfp-content').css({
+                    'max-height': '90vh',
+                    'overflow-y': 'auto'
+                })
+
+                $('body').css('overflow', 'hidden')
+
+                $('.mfp-bg').on('click', function() {
+                    $.magnificPopup.close()
+                })
+            },
+            close: function() {
+                $('body').css('overflow', 'auto')
+
+                $('.mfp-content').css({
+                    'max-height': 'none',
+                    'overflow-y': 'visible'
+                })
+            },
             afterClose: function() {
                 $('#add-certificate-modal-form')[0].reset()
             }
