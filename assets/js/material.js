@@ -357,6 +357,14 @@ $(function ($) {
         }
     })
 
+    // выбираем методику
+    body.on('change', '.method-select', function () {
+        const id = $(this).val()
+        $(this).closest('.input-group').find('.method-link')
+            .removeClass('disabled')
+            .attr('href', `/ulab/gost/method/${id}`)
+    })
+
     // выбираем ТУ
     body.on('change', '.tu-select', function () {
         const id = $(this).val()
