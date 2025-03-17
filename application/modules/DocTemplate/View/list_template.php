@@ -12,7 +12,7 @@
                 </a>
             </li>
             <li class="nav-item me-2 d-none">
-                <a class="nav-link popup-help" href="/ulab/help/" title="ПОМОГИТЕ">
+                <a class="nav-link popup-help" href="/ulab/help/" title="Техническая поддержка">
                     <i class="fa-solid fa-question"></i>
                 </a>
             </li>
