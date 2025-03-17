@@ -302,7 +302,7 @@
                                 <button type="button" class="btn btn-danger float-end mb-1 delete-scheme"><i
                                             class="fa-solid fa-minus"></i> Удалить схему
                                 </button>
-                                <label for="scheme-name-<?= $scheme['id'] ?>" class="form-label">Название схемы:</label>
+                                <label for="scheme-name-<?= $scheme['id'] ?>" class="form-label">Название схемы: <span class="redStars">*</span></label>
                                 <input type="text" name="scheme-param" class="form-control"
                                        id="scheme-name-<?= $scheme['id'] ?>" placeholder="Введите название схемы"
                                        value="<?= $scheme['name'] ?>">
@@ -311,7 +311,7 @@
                             <div class="line-dashed-small"></div>
                             <div class="row justify-content-between">
                                 <div class="col-5">
-                                    <label class="form-label mb-1">Методика испытаний <span class="redStars">*</span></label>
+                                    <label class="form-label mb-1">Методика испытаний</label>
                                 </div>
                                 <div class="col-5">
                                     <label class="form-label mb-1">Нормативная документация</label>
@@ -389,15 +389,14 @@
                         <input type="hidden" name="scheme_id" value="">
                         <input type="hidden" name="material_id" value="<?= $this->data['id'] ?>">
                         <div class="mb-3">
-                            <label for="scheme-name-new" class="form-label">Название схемы:</label>
+                            <label for="scheme-name-new" class="form-label">Название схемы: <span class="redStars">*</span></label>
                             <input type="text" class="form-control" id="scheme-name-new" name="scheme-param"
                                    placeholder="Введите название схемы">
                         </div>
                         <div class="line-dashed-small"></div>
                         <div class="row justify-content-between">
                             <div class="col-5">
-                                <label class="form-label mb-1">Методика испытаний <span
-                                            class="redStars">*</span></label>
+                                <label class="form-label mb-1">Методика испытаний</label>
                             </div>
                             <div class="col-5">
                                 <label class="form-label mb-1">Нормативная документация</label>
