@@ -125,10 +125,7 @@ $(function ($) {
                 id: id
             },
             dataType: 'text',
-            success: function (data) {
-                journalDataTable.ajax.reload()
-                journalDataTable.draw()
-            },
+            success: function (data) { },
             error: function (jqXHR, exception) {
                 let msg = '';
                 if (jqXHR.status === 0) {
