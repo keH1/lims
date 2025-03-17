@@ -14,7 +14,7 @@
                 </a>
             </li>
             <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/VLK/Method_component_list/Method_component_list.html" title="ПОМОГИТЕ">
+                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/VLK/Method_component_list/Method_component_list.html" title="Техническая поддержка">
                     <i class="fa-solid fa-question"></i>
                 </a>
             </li>

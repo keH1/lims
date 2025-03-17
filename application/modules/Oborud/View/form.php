@@ -48,7 +48,7 @@
                 </li>
             <?php endif; ?>
             <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Equipment_card/Equipment_card.html" title="ПОМОГИТЕ">
+                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Equipment_card/Equipment_card.html" title="Техническая поддержка">
                     <i class="fa-solid fa-question"></i>
                 </a>
             </li>
