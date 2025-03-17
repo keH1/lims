@@ -145,7 +145,7 @@
                         <?php if ($item['id'] < 100): ?>
                             <option class="font-bold" value="<?= $item['id'] ?>" disabled><?= $item['name'] ?></option>
                         <?php else: ?>
-                            <option value="<?= $item['id'] ?>" <?= $item['id'] === $this->data['room'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>" <?//= $item['id'] === $this->data['room'] ? 'selected' : '' ?>>
                                 -- <?= $item['name'] ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>
