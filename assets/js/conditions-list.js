@@ -21,6 +21,8 @@ $(function ($) {
     body.on('click', '.add-conditions', function () {
         const conditionsModalForm = $('#conditionsModalForm');
 
+        conditionsModalForm[0].reset()
+
         let roomId = +$('#selectRoom').val();
             roomId = roomId > 0 ? roomId : '';
 
@@ -726,7 +728,7 @@ $(function ($) {
 
                     conditionsModalForm.find('#temp').val(data['data']['random_temp']);
                     conditionsModalForm.find('#humidity').val(data['data']['random_wet']);
-                    //conditionsModalForm.find('#pressure').val(data['data']['random_pressure']);
+                    conditionsModalForm.find('#pressure').val(data['data']['random_pressure']);
                 }
             },
             error: function (jqXHR, exception) {
