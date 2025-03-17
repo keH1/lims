@@ -318,7 +318,6 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         precursorJournal.ajax.reload()
-        precursorJournal.draw()
     })
 
     $('.filter-btn-reset').on('click', function () {

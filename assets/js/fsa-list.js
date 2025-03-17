@@ -75,7 +75,6 @@ $(function ($) {
 
         $('.filter').on('change', function () {
             journalDataTable.ajax.reload()
-            journalDataTable.draw()
         })
 
         $('.filter-btn-reset').on('click', function () {

@@ -88,6 +88,5 @@ $(function () {
 
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
     })
 })

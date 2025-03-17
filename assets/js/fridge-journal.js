@@ -196,7 +196,6 @@ $(function ($) {
 
         $('.filter').on('change', function () {
             fridgejournal.ajax.reload()
-            fridgejournal.draw()
         })
 
         $('.filter-btn-reset').on('click', function () {
