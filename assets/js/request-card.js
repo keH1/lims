@@ -36,39 +36,6 @@ $(function ($) {
         $('.act-manual-block').toggleClass('visually-hidden')
     })
 
-    // $('#act-probe-modal-form').submit(function () {
-    //     let $inputActNumber     = $(this).find('input[name=actNumber]'),
-    //         $inputActDate       = $(this).find('input[name=actDate]'),
-    //         $inputSamplePlace   = $(this).find('input[name=samplePlace]'),
-    //         $inputSampleDate    = $(this).find('input[name=sampleDate]'),
-    //         $inputTzId          = $(this).find('input[name=tz_id]')
-    //
-    //     let tzId = $inputTzId.val()
-    //
-    //     $.ajax({
-    //         method: "POST",
-    //         url: "add_act_num.php",
-    //         data: {
-    //             act: $inputActNumber.val(),
-    //             id_z: tzId,
-    //             date_act: $inputActDate.val(),
-    //             place_probe: $inputSamplePlace.val(),
-    //             date_probe: $inputSampleDate.val()
-    //         },
-    //         success: function (data) {
-    //             if (data) {
-    //                 $inputActNumber.prop("disabled", true);
-    //                 $inputActDate.prop("disabled", true);
-    //                 $inputSamplePlace.prop("disabled", true);
-    //                 $inputSampleDate.prop("disabled", true);
-    //                 window.open(`/probe.php?ID=${tzId}`, '_blank');
-    //             }
-    //         }
-    //     })
-    //
-    //     return false
-    // })
-
     $('#act-work-modal-form').submit(function () {
         let actNumber     = $(this).find('input[name=actNumber]').val(),
             actDate       = $(this).find('input[name=actDate]').val(),
