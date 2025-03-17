@@ -720,10 +720,6 @@ class RequestController extends Controller
             $this->redirect('/request/list/');
         }
 
-        // echo '<pre>';
-        // print_r($_POST);
-        // die;
-
         $dealId = (int) $dealId;
 
         /** @var Request $request */
@@ -1223,15 +1219,6 @@ class RequestController extends Controller
         $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
 
         $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-
-        $this->addCSS("/assets/plugins/stu-sdk-sigcaptx/demoButtons.css");
-
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/BigInt.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/sjcl.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/demoButtons_encryption.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/q.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/wgssStuSdk.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/sign.js");
 
         $this->addCSS("/assets/plugins/dropzone/css/basic.css");
         $this->addCSS("/assets/plugins/dropzone/dropzone3.css");
