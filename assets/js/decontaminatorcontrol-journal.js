@@ -215,7 +215,6 @@ $(function ($) {
 
         $('.filter').on('change', function () {
             mainTable.ajax.reload()
-            mainTable.draw()
         })
 
         $('.filter-btn-reset').on('click', function () {

@@ -241,7 +241,6 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         recipeJournal.ajax.reload()
-        recipeJournal.draw()
     })
 
     $('.filter-btn-reset').on('click', function () {

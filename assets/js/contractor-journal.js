@@ -444,7 +444,6 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         tableJournal.ajax.reload()
-        tableJournal.draw()
     })
 
     $("body").on('mouseover', '.block', function () {

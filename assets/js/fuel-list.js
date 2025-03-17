@@ -91,7 +91,6 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         fuelJournal.ajax.reload()
-        fuelJournal.draw()
     })
 
     $('.filter-btn-reset').on('click', function () {

@@ -89,7 +89,6 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
     })
 
     //Событие на кнопку "АКТ Сверки"

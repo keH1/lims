@@ -120,7 +120,6 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         transportJournal.ajax.reload()
-        transportJournal.draw()
     })
 
     $('.filter-btn-reset').on('click', function () {
