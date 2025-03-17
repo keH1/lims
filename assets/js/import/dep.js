@@ -37,6 +37,7 @@ $(function ($) {
             {
                 data: 'control',
                 width: '150px',
+                orderable: false,
                 render: function (data, type, item) {
                     return '<a href="#" class="edit_btn">Редактировать</a>'
                 }
