@@ -79,24 +79,29 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($this->data['gost_to_material'] as $arrGost): ?>
-                        <tr class="trGost">
-                            <input type="hidden" class="gost-to-material-id" value="<?= $arrGost['id'] ?>">
-                            <td>
-                                <a href="/obl_acc.php?ID=<?= $arrGost['id'] ?>"
-                                   target="_blank"><?= $arrGost['view_gost'] ?></a>
-                                <input class="gostId"
-                                       type="hidden" value="<?= $arrGost['id'] ?>"
-                                       name="arrGost[]">
-                            </td>
-                            <td><?= $arrGost['name'] ?></td>
-                            <td>
-                                <button type="button" class="btn btn-outline-danger del-gost btn-square-new">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
+                        <?php foreach ($this->data['gost_to_material'] as $arrGost): ?>
+                            <tr class="trGost">
+                                <input type="hidden" class="gost-to-material-id" value="<?= $arrGost['id'] ?>">
+                                <td>
+                                    <a href="/obl_acc.php?ID=<?= $arrGost['id'] ?>"
+                                    target="_blank"><?= $arrGost['view_gost'] ?></a>
+                                    <input class="gostId"
+                                        type="hidden" value="<?= $arrGost['id'] ?>"
+                                        name="arrGost[]">
+                                </td>
+                                <td><?= $arrGost['name'] ?></td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-danger del-gost btn-square-new">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        <tr class="method-not-found" <?= !empty($this->data['gost_to_material']) ? 'style="display: none;"' : '' ?>>
+                            <td colspan="3" class="text-center">
+                                Нет методик
                             </td>
                         </tr>
-                    <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
