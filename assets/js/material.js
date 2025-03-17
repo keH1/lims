@@ -65,6 +65,8 @@ $(function ($) {
         let gost = $('#select-gost option:selected').data('gost')
         let spec = $('#select-gost option:selected').data('spec')
 
+        $('.method-not-found').hide()
+
         let tr = `<tr>
                     <td><a href="/obl_acc.php?ID=${gostId}" target="_blank">${gost}</a><input type="hidden" value="${gostId}" name="arrGost[]"></td>
                     <td>${spec}</td>
@@ -80,6 +82,22 @@ $(function ($) {
 
     body.on('click', '.del-gost', function () {
         $(this).closest('tr').remove()
+
+        let tbody = document.querySelector('#table-gost tbody'),
+            rows = tbody.getElementsByTagName('tr'),
+            hasVisibleRows = false
+    
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i].style.display !== "none" && !rows[i].classList.contains('method-not-found')) {
+                hasVisibleRows = true
+                break
+            }
+        }
+    
+        let notFoundRow = document.querySelector('#table-gost .method-not-found')
+        if (notFoundRow) {
+            notFoundRow.style.display = hasVisibleRows ? "none" : ""
+        }
     })
 
     body.on('click', '#a', function () {
@@ -423,27 +441,65 @@ $(function ($) {
                     </h2>
                     `;
     })
+
+    $('#search-text').on('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+            tableSearch()
+        }
+    })
 })
 
 function tableSearch() {
-    let phrase = document.getElementById('search-text')
-    let table = document.getElementById('table-gost')
-    let regPhrase = new RegExp(phrase.value, 'i')
-    let flag = false
+    let phrase = document.getElementById('search-text'),
+        table = document.getElementById('table-gost'),
+        regPhrase = new RegExp(phrase.value, 'i'),
+        flag = false,
+        hasVisibleRows = false
+
+    if (phrase.value.trim() === "") {
+        for (let i = 2; i < table.rows.length; i++) {
+            if (!table.rows[i].classList.contains('method-not-found')) {
+                table.rows[i].style.display = ""
+            }
+        }
+
+        let notFoundRow = table.querySelector('.method-not-found')
+        if (notFoundRow) {
+            let hasOtherRows = false
+            for (let i = 2; i < table.rows.length; i++) {
+                if (!table.rows[i].classList.contains('method-not-found') && table.rows[i].style.display !== "none") {
+                    hasOtherRows = true
+                    break
+                }
+            }
+            notFoundRow.style.display = hasOtherRows ? "none" : ""
+        }
+        return
+    }
 
     for (let i = 2; i < table.rows.length; i++) {
         flag = false
+
         for (let j = table.rows[i].cells.length - 1; j >= 0; j--) {
             flag = regPhrase.test(table.rows[i].cells[j].innerHTML)
+
             if (flag) {
                 break
             }
         }
+
         if (flag) {
             table.rows[i].style.display = ""
+            hasVisibleRows = true
         } else {
             table.rows[i].style.display = "none"
         }
+    }
+
+    let notFoundRow = table.querySelector('.method-not-found')
+    if (notFoundRow) {
+        notFoundRow.style.display = hasVisibleRows ? "none" : ""
     }
 }
 
