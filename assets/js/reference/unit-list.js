@@ -131,8 +131,8 @@ $(function ($) {
                         if (data['success']) {
                             showSuccessMessage(data['msg'])
 
-                            journalDataTable.ajax.reload()
-                            journalDataTable.draw()
+                            // journalDataTable.ajax.reload()
+                            // journalDataTable.draw()
                         } else {
                             showErrorMessage(data['error'])
                         }
