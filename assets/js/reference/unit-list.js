@@ -57,7 +57,7 @@ $(function ($) {
             language: dataTablesSettings.language,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
             pageLength: 25,
-            order: [[0, "asc"]],
+            order: [[1, "asc"]],
             colReorder: true,
             dom: 'fBrt<"bottom"lip>',
             buttons: [],
