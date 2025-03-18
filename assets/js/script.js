@@ -662,10 +662,6 @@ function showSuccessMessage(msg) {
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>`
     )
-
-    window.setTimeout(function () {
-        $(".alert").alert('close');
-    }, 2000)
 }
 
 function bufferToBase64(buf) {
