@@ -319,6 +319,8 @@
 				</tbody>
 			</table>
 
+			<div class="line-dashed"></div>
+
 			<?php if ($this->data['order']['longterm'] == 1):?>
 				<div class="mb-3">
 					Общая расчетная сумма по заявкам: <b><?= $this->data['cost_contract'] ?></b>

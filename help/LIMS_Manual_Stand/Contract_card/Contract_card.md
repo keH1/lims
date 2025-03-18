@@ -57,7 +57,7 @@
 
 ### Иконка возврата в журнал договоров
 
-<img src="png/I4.png" width="28" style="display: inline" text align=center> – нажмите на данную иконку чтобы осуществить возврат в журнал договоров.
+<img src="png/i4.png" width="28" style="display: inline" text align=center> – нажмите на данную иконку чтобы осуществить возврат в журнал договоров.
 
 ### Блок «Основная информация»
 
