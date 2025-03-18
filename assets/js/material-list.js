@@ -5,11 +5,8 @@ $(function ($) {
         fixedContentPos: false
     })
 
-    let body = $('body')
-
     let $journal = $('#journal_material')
 
-    /*journal requests*/
     let journalDataTable = $journal.DataTable({
         processing: true,
         serverSide: true,
@@ -35,7 +32,6 @@ $(function ($) {
                 data: 'is_active',
                 width: '100px',
                 className: 'text-center',
-                orderable: true,
                 render: function (data, type, item) {
                     let checked = ''
                     if ( item.is_active == 1 ) {
@@ -47,17 +43,6 @@ $(function ($) {
                             </label>`
                 }
             },
-            // {
-            //     data: 'linkName',
-            //     orderable: false,
-            //     className: 'text-center',
-            //     width: '100px',
-            //     render: function (data, type, item) {
-            //         return `<a class="delete-material btn btn-sm btn-danger btn-square-sm">
-            //                     <i class="fa-solid fa-xmark"></i>
-            //                 </a>`
-            //     }
-            // },
         ],
         language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
@@ -82,7 +67,6 @@ $(function ($) {
         })
     })
 
-    /*journal filters*/
     $('.filter-btn-search').on('click', function () {
         $('#journal_filter').addClass('is-open')
         $('.filter-btn-search').hide()
