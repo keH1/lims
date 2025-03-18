@@ -105,7 +105,7 @@ $(function ($) {
                 data: 'NUM_ACT_TABLE',
                 render: function (data, type, item) {
                     if (type === 'display' || type === 'filter') {
-                        return `<a class="number-act" href="/probe.php?ID=${item['ID_Z']}&1" target="_blank">
+                        return `<a class="number-act" href="/ulab/probe/card/${item['ID_Z']}" target="_blank">
                                 ${item['NUM_ACT_TABLE']}
                             </a>`
                     }
