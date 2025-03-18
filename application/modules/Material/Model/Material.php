@@ -819,12 +819,14 @@ class Material extends Model
                 case 'requestTitle':
                     $order['by'] = 'm.NAME';
                     break;
+                case 'is_active':
+                    $order['by'] = 'm.is_active';
+                    break;
             }
         }
 
         if (isset($filter['paginate'])) {
             $offset = 0;
-            // количество строк на страницу
             if (isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0) {
                 $length = $filter['paginate']['length'];
 
