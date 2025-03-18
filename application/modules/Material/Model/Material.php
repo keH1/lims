@@ -820,7 +820,7 @@ class Material extends Model
                     $order['by'] = 'm.NAME';
                     break;
                 case 'is_active':
-                    $order['by'] = 'is_active';
+                    $order['by'] = 'm.is_active';
                     break;
             }
         }
