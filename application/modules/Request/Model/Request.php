@@ -774,7 +774,9 @@ class Request extends Model
             if ( !empty($filter['search']) ) {
                 // Заявка
                 if ( isset($filter['search']['requestTitle']) ) {
-                    $where .= "b.REQUEST_TITLE LIKE '%{$filter['search']['requestTitle']}%' AND ";
+                    $text = htmlentities($filter['search']['requestTitle']);
+
+                    $where .= "b.REQUEST_TITLE LIKE '%{$text}%' AND ";
                 }
                 // ID заявки
 				if ( isset($filter['search']['deal_id']) ) {
@@ -789,7 +791,9 @@ class Request extends Model
                 }
                 // Клиент
                 if ( isset($filter['search']['COMPANY_TITLE']) ) {
-                    $where .= "b.COMPANY_TITLE LIKE '%{$filter['search']['COMPANY_TITLE']}%' AND ";
+                    $text = htmlentities($filter['search']['COMPANY_TITLE']);
+
+                    $where .= "b.COMPANY_TITLE LIKE '%{$text}%' AND ";
                 }
                 // Крайний срок
                 if ( isset($filter['search']['DEADLINE_TABLE']) ) {
@@ -801,7 +805,9 @@ class Request extends Model
                 }
                 // Объект испытаний
                 if ( isset($filter['search']['MATERIAL']) ) {
-                    $where .= "b.MATERIAL LIKE '%{$filter['search']['MATERIAL']}%' AND ";
+                    $text = htmlentities($filter['search']['MATERIAL']);
+
+                    $where .= "b.MATERIAL LIKE '%{$text}%' AND ";
                 }
                 // Ответственный
                 if ( isset($filter['search']['ASSIGNED']) ) {
@@ -835,7 +841,9 @@ class Request extends Model
                 }
                 // Производитель
                 if ( isset($filter['search']['MANUFACTURER_TITLE']) ) {
-                    $where .= "b.MANUFACTURER_TITLE LIKE '%{$filter['search']['MANUFACTURER_TITLE']}%' AND ";
+                    $text = htmlentities($filter['search']['MANUFACTURER_TITLE']);
+
+                    $where .= "b.MANUFACTURER_TITLE LIKE '%{$text}%' AND ";
                 }
                 // Последнее изменение (пользователь)
                 if ( isset($filter['search']['USER_HISTORY']) ) {
@@ -1094,7 +1102,7 @@ class Request extends Model
 
 			if ($row['TAKEN_ID_DEAL'] || $row['TYPE_ID'] == 7) {
 				$row['bgPrice'] = 'bg-green-transp';
-			} elseif ($price && $row['OPLATA'] >= $price || !$price) {
+			} elseif ($row['price_discount'] && $row['OPLATA'] >= $row['price_discount'] || !$row['price_discount']) {
 				$row['bgPrice'] = 'bg-transparent';
 			} else {
 				$row['bgPrice'] = 'bg-light-red';
