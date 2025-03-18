@@ -91,7 +91,9 @@
 									<use xlink:href="<?= URI ?>/assets/images/icons.svg#upload"/>
 								</svg>
 								<input class="d-none upload_pdf" type="file" name="upload_pdf"
-									   data-dogovor_id="<?= $this->data['order']['id'] ?>">
+									   data-dogovor_id="<?= $this->data['order']['id'] ?>"
+									   accept="application/pdf"
+								>
 							</label>
 						<?php endif; ?>
 					</li>
