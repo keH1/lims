@@ -168,7 +168,7 @@ $(function ($) {
 						return `<a href="#" class="btn btn-primary disabled">Переплата</a>`
 					}
 					if ( p > o ) {
-						return `<a href="#" class="btn btn-primary disabled">Не оплач.</a>`
+						return `<a href="#" class="btn btn-primary disabled">Не оплачено</a>`
 					}
 
 					// if ( !item['is_show_finance'] ) {
