@@ -50,5 +50,5 @@
 
     <div class="line-dashed-small"></div>
 
-    <button type="submit" class="btn btn-primary disable-after-click">Сохранить</button>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
