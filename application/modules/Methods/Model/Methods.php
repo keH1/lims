@@ -482,6 +482,10 @@ class Methods extends Model
                 if ( isset($filter['search']['reg_doc']) ) {
                     $where .= "g.reg_doc LIKE '%{$filter['search']['reg_doc']}%' AND ";
                 }
+                // Пункт
+                if ( isset($filter['search']['clause']) ) {
+                    $where .= "m.clause LIKE '%{$filter['search']['clause']}%' AND ";
+                }
                 // Наименование документа
                 if ( isset($filter['search']['description']) ) {
                     $where .= "g.description LIKE '%{$filter['search']['description']}%' AND ";
@@ -515,8 +519,9 @@ class Methods extends Model
                     $where .= "m.is_extended_field = '%{$filter['search']['is_extended_field']}%' AND ";
                 }
                 // Цена
-                if ( isset($filter['search']['price']) ) {
-                    $where .= "m.price = '{$filter['search']['price']}' AND ";
+                if ( isset($filter['search']['price']) && is_numeric($filter['search']['price']) ) {
+                    $price = floatval($filter['search']['price']);
+                    $where .= "m.price = {$price} AND ";
                 }
 
                 // Лаба Комната
