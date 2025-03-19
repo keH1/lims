@@ -597,4 +597,18 @@ class IndexController extends Controller
 //		$methodsModel->pre($mId, false);
 //
 //	}
+
+    public function showPermission()
+    {
+        $this->data['title'] = 'Роли и доступы';
+
+        /** @var  Permission $permissionModel */
+        $permissionModel = $this->model('Permission');
+
+        $this->data['controller_method_list'] = $permissionModel->getControllerMethod();
+//        $permissionModel->pre($this->data['controller_method_list']);
+        $this->data['permission_list'] = $permissionModel->getPermission();
+
+        $this->view('perm');
+    }
 }
