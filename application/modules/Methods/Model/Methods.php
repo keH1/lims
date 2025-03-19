@@ -810,11 +810,6 @@ class Methods extends Model
         ];
 
         if (!empty($filter)) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
-
             // работа с фильтрами
             if (!empty($filter['search'])) {
                 if ( isset($filter['search']['dateStart']) ) {
@@ -823,6 +818,14 @@ class Methods extends Model
                 // Номер документа
                 if ( isset($filter['search']['reg_doc']) ) {
                     $where .= "g.reg_doc LIKE '%{$filter['search']['reg_doc']}%' AND ";
+                }
+                // Пункт
+                if ( isset($filter['search']['clause']) ) {
+                    $where .= "m.clause LIKE '%{$filter['search']['clause']}%' AND ";
+                }
+                // Объект испытаний
+                if ( isset($filter['search']['materials']) ) {
+                    $where .= "g.materials LIKE '%{$filter['search']['materials']}%' AND ";
                 }
                 // Наименование документа
                 if ( isset($filter['search']['description']) ) {
@@ -865,7 +868,6 @@ class Methods extends Model
             }
         }
 
-        // работа с сортировкой
         if (!empty($filter['order'])) {
             if ($filter['order']['dir'] === 'asc') {
                 $order['dir'] = 'ASC';
@@ -892,10 +894,8 @@ class Methods extends Model
             }
         }
 
-        // работа с пагинацией
         if (isset($filter['paginate'])) {
             $offset = 0;
-            // количество строк на страницу
             if (isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0) {
                 $length = $filter['paginate']['length'];
 
@@ -911,48 +911,88 @@ class Methods extends Model
         $result = [];
 
         $data = $this->DB->Query(
-            "SELECT 
-                        m.*, m.id method_id,
-                        g.*, g.id gost_id,  
-                        p.fsa_id mp_fsa_id, p.name mp_name, 
-                        count(m.id) as count_method
-                    FROM ulab_gost as g
-                    inner JOIN ulab_methods as m ON g.id = m.gost_id 
-                    inner JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id 
-                    inner JOIN ulab_methods_lab as l ON l.method_id = m.id
-                    inner join ulab_gost_to_probe as gtp on gtp.new_method_id = m.id
-                    inner join ulab_material_to_request as mater on gtp.material_to_request_id = mater.id and mater.protocol_id > 0
-                    inner join ulab_start_trials as st ON st.ugtp_id = gtp.id
-                    WHERE {$where} and st.state = 'complete'
-                    group by m.id
-                    ORDER BY  {$order['by']} {$order['dir']} {$limit}"
+           "SELECT m.*, m.id method_id,
+                   g.*, g.id gost_id,  
+                   p.fsa_id mp_fsa_id, p.name mp_name, 
+                   count(m.id) AS count_method
+            FROM ulab_gost AS g
+            INNER JOIN ulab_methods AS m
+            ON g.id = m.gost_id
+
+            INNER JOIN ulab_measured_properties AS p
+            ON p.id = m.measured_properties_id
+
+            INNER JOIN ulab_methods_lab AS l
+            ON l.method_id = m.id
+
+            INNER JOIN ulab_gost_to_probe AS gtp
+            ON gtp.new_method_id = m.id
+
+            INNER JOIN ulab_material_to_request AS mater
+            ON gtp.material_to_request_id = mater.id
+                AND mater.protocol_id > 0
+
+            INNER JOIN ulab_start_trials AS st
+            ON st.ugtp_id = gtp.id
+
+            WHERE {$where} AND st.state = 'complete'
+            GROUP BY m.id
+            ORDER BY  {$order['by']} {$order['dir']} {$limit}"
         );
 
-
         $dataTotal = $this->DB->Query(
-            "SELECT *
-                    FROM ulab_gost as g
-                    inner JOIN ulab_methods m ON g.id = m.gost_id 
-                    inner JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id 
-                    inner JOIN ulab_methods_lab as l ON l.method_id = m.id 
-                    inner join ulab_gost_to_probe as gtp on gtp.new_method_id = m.id
-                    inner join ulab_material_to_request as mater on gtp.material_to_request_id = mater.id and mater.protocol_id > 0
-                    inner join ulab_start_trials as st ON st.ugtp_id = gtp.id                
-                    WHERE 1
-                    group by m.id"
-        )->SelectedRowsCount();
+           "SELECT *
+            FROM ulab_gost AS g
+
+            INNER JOIN ulab_methods AS m
+            ON g.id = m.gost_id 
+
+            INNER JOIN ulab_measured_properties AS p
+            ON p.id = m.measured_properties_id 
+
+            INNER JOIN ulab_methods_lab AS l
+            ON l.method_id = m.id 
+
+            INNER JOIN ulab_gost_to_probe AS gtp
+            ON gtp.new_method_id = m.id
+
+            INNER JOIN ulab_material_to_request AS mater
+            ON gtp.material_to_request_id = mater.id
+                AND mater.protocol_id > 0
+
+            INNER JOIN ulab_start_trials AS st
+            ON st.ugtp_id = gtp.id
+
+            WHERE 1
+            GROUP BY m.id
+        ")->SelectedRowsCount();
+
         $dataFiltered = $this->DB->Query(
-            "SELECT *
-                    FROM ulab_gost as g
-                    inner JOIN ulab_methods as m ON g.id = m.gost_id 
-                    inner JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id 
-                    inner JOIN ulab_methods_lab as l ON l.method_id = m.id
-                    inner join ulab_gost_to_probe as gtp on gtp.new_method_id = m.id
-                    inner join ulab_material_to_request as mater on gtp.material_to_request_id = mater.id and mater.protocol_id > 0
-                    inner join ulab_start_trials as st ON st.ugtp_id = gtp.id
-                    WHERE {$where} and st.state = 'complete'
-                    group by m.id"
-        )->SelectedRowsCount();
+           "SELECT *
+            FROM ulab_gost AS g
+
+            INNER JOIN ulab_methods AS m
+            ON g.id = m.gost_id 
+
+            INNER JOIN ulab_measured_properties AS p
+            ON p.id = m.measured_properties_id
+
+            INNER JOIN ulab_methods_lab AS l
+            ON l.method_id = m.id
+
+            INNER JOIN ulab_gost_to_probe AS gtp
+            ON gtp.new_method_id = m.id
+
+            INNER JOIN ulab_material_to_request AS mater
+            ON gtp.material_to_request_id = mater.id
+                AND mater.protocol_id > 0
+
+            INNER JOIN ulab_start_trials AS st
+            ON st.ugtp_id = gtp.id
+
+            WHERE {$where} AND st.state = 'complete'
+            GROUP BY m.id
+        ")->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
 
