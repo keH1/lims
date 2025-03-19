@@ -875,8 +875,8 @@ class Methods extends Model
                 case 'reg_doc':
                     $order['by'] = 'g.reg_doc';
                     break;
-                case 'description':
-                    $order['by'] = 'g.description';
+                case 'materials':
+                    $order['by'] = 'g.materials';
                     break;
                 case 'name':
                     $order['by'] = 'm.name';
