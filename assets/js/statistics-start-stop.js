@@ -90,8 +90,14 @@ $(function () {
 
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     // Добавить прослушиватель событий для открытия и закрытия сведений
     $('#trialStatistics tbody').on('click', 'td.details-control', function () {

@@ -93,6 +93,13 @@ $(function ($) {
         fuelJournal.ajax.reload()
     })
 
+    function reportWindowSize() {
+        fuelJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
+
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })

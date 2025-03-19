@@ -355,8 +355,14 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         solutionJournal.ajax.reload()
-        solutionJournal.draw()
     })
+
+    function reportWindowSize() {
+        solutionJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()

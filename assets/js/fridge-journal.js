@@ -188,15 +188,22 @@ $(function ($) {
             width: '100%',
         })
 
-        /** journal filters */
-        $('.filter-btn-search').on('click', function () {
-            $('#journal_requests_filter').addClass('is-open')
-            $('.filter-btn-search').hide()
-        })
+    /** journal filters */
+    $('.filter-btn-search').on('click', function () {
+        $('#journal_requests_filter').addClass('is-open')
+        $('.filter-btn-search').hide()
+    })
 
-        $('.filter').on('change', function () {
-            fridgejournal.ajax.reload()
-        })
+    $('.filter').on('change', function () {
+        fridgejournal.ajax.reload()
+    })
+
+    function reportWindowSize() {
+        fridgejournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
         $('.filter-btn-reset').on('click', function () {
             location.reload()

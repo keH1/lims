@@ -446,6 +446,13 @@ $(function ($) {
         tableJournal.ajax.reload()
     })
 
+    function reportWindowSize() {
+        tableJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
+
     $("body").on('mouseover', '.block', function () {
         if (container.scrollLeft() === 0) {
             $(".dataTables_scrollBody").css("overflow", "visible");

@@ -258,6 +258,13 @@ $(function ($) {
         mainTable.ajax.reload()
     })
 
+    function reportWindowSize() {
+        mainTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
+
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })

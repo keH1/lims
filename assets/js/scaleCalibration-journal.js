@@ -191,8 +191,14 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         precursorJournal.ajax.reload()
-        precursorJournal.draw()
     })
+
+    function reportWindowSize() {
+        precursorJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()

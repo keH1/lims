@@ -91,6 +91,13 @@ $(function ($) {
         journalDataTable.ajax.reload()
     })
 
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
+
     //Событие на кнопку "АКТ Сверки"
     journalDataTable.on('click', '.btn-revise', function() {
         let data = journalDataTable.row($(this).closest('tr')).data()

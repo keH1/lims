@@ -271,8 +271,14 @@ $(function ($) {
 
 	$('.filter').on('change', function () {
 		journalDataTable.ajax.reload()
-		journalDataTable.draw()
 	})
+
+	function reportWindowSize() {
+		journalDataTable
+			.columns.adjust()
+	}
+
+	window.onresize = reportWindowSize
 
 	$('.search').on('keydown', function (event) {
         if (event.key === 'Enter') {

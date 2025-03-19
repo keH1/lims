@@ -177,6 +177,13 @@ $(function ($) {
         precursorJournal.ajax.reload()
     })
 
+    function reportWindowSize() {
+        precursorJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
+
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })

@@ -112,6 +112,12 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         journalGrain.ajax.reload()
-        journalGrain.draw()
     })
+
+    function reportWindowSize() {
+        journalGrain
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 })
