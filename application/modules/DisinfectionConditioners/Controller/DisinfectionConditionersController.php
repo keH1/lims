@@ -49,15 +49,14 @@ class DisinfectionConditionersController extends Controller
     public function getListProcessingAjax()
     {
         global $APPLICATION;
-
         $APPLICATION->RestartBuffer();
 
         $usedModel = $this->model($this->nameModel);
 
         $filter = [
             'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
+                'length' => $_POST['length'],
+                'start' => $_POST['start'],
             ],
             'search' => [],
             'order' => []
@@ -75,7 +74,6 @@ class DisinfectionConditionersController extends Controller
         }
 
         $data = $usedModel->getList($filter);
-
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
