@@ -150,49 +150,4 @@ $(function () {
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })
-
-    /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $journal.width()
-
-    $('.btnRightTable, .arrowRight').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
-
-    $('.btnLeftTable, .arrowLeft').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: -scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
-
-    $(document).scroll(function() {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height()
-
-        $(".dtfh-floatingparenthead tr:first-child th")
-            .css("padding-inline", "0px")
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
-            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
-        }
-    })
 })
