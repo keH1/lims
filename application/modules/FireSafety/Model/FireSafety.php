@@ -39,12 +39,6 @@ class FireSafety extends Model
         ];
 
         if (!empty($filter)) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
-
-            // работа с фильтрами
             if (!empty($filter['search'])) {
                 // Дата проведения теоретического инструктажа
                 if (isset($filter['search']['theory_date'])) {
@@ -94,9 +88,13 @@ class FireSafety extends Model
             }
         }
 
-
-        // работа с сортировкой
-        if (!empty($filter['order'])) {
+        if (isset($filter['sortByMaxDate']) && $filter['sortByMaxDate']) {
+            $order['by'] = 'GREATEST(IFNULL(fsl.theory_date, "1000-01-01"), IFNULL(fsl.practice_date, "1000-01-01"))';
+            
+            if (!empty($filter['order']['dir'])) {
+                $order['dir'] = $filter['order']['dir'];
+            }
+        } elseif (!empty($filter['order'])) {
             if ($filter['order']['dir'] === 'asc') {
                 $order['dir'] = 'ASC';
             }
@@ -130,11 +128,8 @@ class FireSafety extends Model
             }
         }
 
-
-        // работа с пагинацией
         if (isset($filter['paginate'])) {
             $offset = 0;
-            // количество строк на страницу
             if (isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0) {
                 $length = $filter['paginate']['length'];
 
