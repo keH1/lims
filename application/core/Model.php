@@ -322,7 +322,7 @@ class Model
      * 
      * @param string $table Имя таблицы
      * @param string|array $fields Имя поля или массив полей
-     * @return string|int|null Максимальное значение (строка для дат, число для числовых полей) или null, если данных нет
+     * @return string|int|float|double|decimal|null Максимальное значение (строка для дат, число для числовых полей) или null, если данных нет
      */
     public function getMaxValueByFields(string $table, $fields): mixed
     {
@@ -366,8 +366,8 @@ class Model
             ")->Fetch()['max_value'];
 
             if ($maxValue) {
-                $maxValues[] = $maxValue;
-                $fieldTypes[] = strtolower($sql['DATA_TYPE']);
+                $maxValues[$field] = $maxValue;
+                $fieldTypes[$field] = strtolower($sql['DATA_TYPE']);
             }
         }
 
@@ -375,12 +375,19 @@ class Model
             return null;
         }
 
-        $maxValue = max($maxValues);
+        $maxField = array_keys($maxValues, max($maxValues))[0];
+        $maxValue = $maxValues[$maxField];
+        $maxFieldType = $fieldTypes[$maxField];
 
-        if (in_array('int', $fieldTypes) || in_array('decimal', $fieldTypes) || in_array('float', $fieldTypes)) {
-            return (int)$maxValue;
+        switch ($maxFieldType) {
+            case 'int':
+                return (int)$maxValue;
+            case 'float':
+            case 'double':
+            case 'decimal':
+                return (float)$maxValue;
+            default:
+                return $maxValue;
         }
-
-        return $maxValue;
     }
 }
