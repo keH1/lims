@@ -2,6 +2,7 @@
     <div class="row">
         <div class="col">
             <select id="selectStage" class="form-control filter filter-stage">
+                <option value="">Все</option>
                 <option value="2">В ОА</option>
                 <option value="3">РОА</option>
                 <option value="5">Вне ОА</option>
