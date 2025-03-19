@@ -520,7 +520,7 @@ class Methods extends Model
                 }
                 // Цена
                 if ( isset($filter['search']['price']) && is_numeric($filter['search']['price']) ) {
-                    $price = intval($filter['search']['price']);
+                    $price = floatval($filter['search']['price']);
                     $where .= "m.price = {$price} AND ";
                 }
 
