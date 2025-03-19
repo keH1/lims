@@ -227,8 +227,14 @@ $( document ).ready(function() {
 
     $('.filter').on('change', function () {
         secondmentJournal.ajax.reload()
-        secondmentJournal.draw()
     })
+
+    function reportWindowSize() {
+        secondmentJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()

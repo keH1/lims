@@ -217,10 +217,17 @@ $(function () {
 
                 $('.filter').on('change', function () {
                     journalDataTable.ajax.reload()
-                    journalDataTable.draw()
 
                     destroyChartBar()
                 })
+
+                function reportWindowSize() {
+                    journalDataTable
+                        .columns.adjust()
+                }
+
+                window.onresize = reportWindowSize
+
             }
         })
     })

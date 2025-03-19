@@ -253,6 +253,13 @@ $(function ($) {
         recipeJournal.ajax.reload()
     })
 
+    function reportWindowSize() {
+        recipeJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
+
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })

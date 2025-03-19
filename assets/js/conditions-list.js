@@ -455,6 +455,13 @@ $(function ($) {
         journalDataTable.ajax.reload()
     })
 
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
+
     $('.filter-btn-reset').on('click', function () {
         location.assign(location.pathname)
     })

@@ -110,9 +110,15 @@ $(function ($) {
      * фильтры журнала
      */
     $('.filter').on('change', function () {
-        journalDataTable.ajax.reload();
-        journalDataTable.draw();
+        journalDataTable.ajax.reload()
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.assign(location.pathname);

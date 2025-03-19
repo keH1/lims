@@ -279,12 +279,11 @@ $(function ($) {
     })
 
     $(window).on('resize', function () {
-        $('#journal_material_2').DataTable().columns.adjust();
-    });
+        $('#journal_material_2').DataTable().columns.adjust()
+    })
 
     $('.filter').on('input', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
 
         let $btnGroupEdit = $('.btn-group-edit')
         let $btnAddMethods = $('.btn-add-methods')
@@ -661,7 +660,6 @@ $(function ($) {
             method: "POST",
             complete: function () {
                 journalDataTable.ajax.reload()
-                journalDataTable.draw()
 
                 $button.html(btnHtml)
                 $button.removeClass('disabled')
@@ -690,7 +688,6 @@ $(function ($) {
             method: "POST",
             complete: function () {
                 journalDataTable.ajax.reload()
-                journalDataTable.draw()
 
                 $button.html(btnHtml)
                 $button.removeClass('disabled')
@@ -718,8 +715,9 @@ $(function ($) {
             async: true,
             method: "POST",
             complete: function () {
+                $form.find('.method-container').empty()
+
                 journalDataTable.ajax.reload()
-                journalDataTable.draw()
 
                 $button.html(btnHtml)
                 $button.removeClass('disabled')
@@ -1082,7 +1080,6 @@ function createChild(row) {
                 method: "POST",
                 success: function (json) {
                     journal.ajax.reload()
-                    journal.draw()
                 }
             })
         }
@@ -1107,7 +1104,6 @@ function createChild(row) {
                 success: function (json) {
                     if ( json.success ) {
                         journal.ajax.reload()
-                        journal.draw()
 
                         $spanMethodCount.text(--rowData.count_methods)
 
@@ -1189,7 +1185,6 @@ function createChild(row) {
             success: function (json) {
                 if ( json.success ) {
                     journal.ajax.reload()
-                    journal.draw()
 
                     $strTotal.text(json.data.price_ru)
                     $inputTotal.val(json.data.price)

@@ -89,4 +89,11 @@ $(function () {
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 })

@@ -122,6 +122,13 @@ $(function ($) {
         transportJournal.ajax.reload()
     })
 
+    function reportWindowSize() {
+        transportJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
+
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })

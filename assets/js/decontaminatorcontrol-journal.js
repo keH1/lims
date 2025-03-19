@@ -207,15 +207,22 @@ $(function ($) {
         })
 
 
-        /** journal filters */
-        $('.filter-btn-search').on('click', function () {
-            $('#journal_requests_filter').addClass('is-open')
-            $('.filter-btn-search').hide()
-        })
+    /** journal filters */
+    $('.filter-btn-search').on('click', function () {
+        $('#journal_requests_filter').addClass('is-open')
+        $('.filter-btn-search').hide()
+    })
 
-        $('.filter').on('change', function () {
-            mainTable.ajax.reload()
-        })
+    $('.filter').on('change', function () {
+        mainTable.ajax.reload()
+    })
+
+    function reportWindowSize() {
+        mainTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
         $('.filter-btn-reset').on('click', function () {
             location.reload()

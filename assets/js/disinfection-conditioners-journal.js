@@ -124,6 +124,13 @@ $(function ($) {
         fridgejournal.ajax.reload()
     })
 
+    function reportWindowSize() {
+        fridgejournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
+
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })

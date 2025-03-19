@@ -160,8 +160,14 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         reactiveJournal.ajax.reload()
-        reactiveJournal.draw()
     })
+
+    function reportWindowSize() {
+        reactiveJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()

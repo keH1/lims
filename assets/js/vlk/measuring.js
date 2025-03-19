@@ -377,9 +377,15 @@ $(function () {
 
     /*journal filters*/
     $('.filter').on('change', function () {
-        journalDataTable.ajax.reload();
-        journalDataTable.draw();
-    });
+        journalDataTable.ajax.reload()
+    })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $body.on('click', '.measuring-history', function () {
         const id = $(this).data('id');

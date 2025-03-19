@@ -320,9 +320,16 @@ $(function ($) {
            clearTimeout(debounceTimeout);
 
             debounceTimeout = setTimeout(function () {
-                journalDataTable.draw()
+                journalDataTable.ajax.reload()
             }, 350);
         })
+
+        function reportWindowSize() {
+            journalDataTable
+                .columns.adjust()
+        }
+
+        window.onresize = reportWindowSize
 
         $('.filter-btn-reset').on('click', function () {
             location.reload()

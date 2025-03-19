@@ -140,8 +140,14 @@ $(function () {
 
             $('.filter').on('change', function () {
                 journalDataTable.ajax.reload()
-                journalDataTable.draw()
             })
+
+            function reportWindowSize() {
+                journalDataTable
+                    .columns.adjust()
+            }
+
+            window.onresize = reportWindowSize
 
             $('#workarea-content').on('change', '.user_in_method', function () {
                 const userId = $(this).data('user_id')
