@@ -62,7 +62,7 @@ $('#secondmentTable').DataTable({
         },
     ],
     language: {
-        processing: 'Подождите...',
+        processing: '<div class="processing-wrapper">Подождите...</div>',
         search: '',
         searchPlaceholder: "Поиск...",
         lengthMenu: 'Отображать _MENU_  ',
