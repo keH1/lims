@@ -23,12 +23,13 @@ class FireSafetyController extends Controller
     {
         $this->data['title'] = 'Журнал пожарной безопасности';
 
+        /** @var FireSafety $fireSafetyModel */
+        $fireSafetyModel = $this->model('FireSafety');
         /** @var  User $userModel*/
         $userModel = $this->model('User');
 
         $this->data['date_start'] = date('Y-m-d', strtotime('-1 year'));
-        $this->data['date_end'] = date('Y-m-d');
-
+        $this->data['date_end'] = $fireSafetyModel->getMaxValueByFields('fire_safety_log', ['theory_date', 'practice_date']);
         $this->data['users'] = $userModel->getUsers();
 
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
@@ -46,7 +47,6 @@ class FireSafetyController extends Controller
     public function getFireSafetyLogAjax(): void
     {
         global $APPLICATION;
-
         $APPLICATION->RestartBuffer();
 
         /** @var FireSafety $fireSafetyModel */
@@ -54,8 +54,8 @@ class FireSafetyController extends Controller
 
         $filter = [
             'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
+                'length' => $_POST['length'],
+                'start' => $_POST['start'],
             ],
             'search' => [],
             'order' => []
@@ -67,16 +67,23 @@ class FireSafetyController extends Controller
             }
         }
 
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
+        if (isset($_POST['sortByMaxDate']) && (int)$_POST['sortByMaxDate'] === 1) {
+            $filter['sortByMaxDate'] = true;
+            
+            if (isset($_POST['order']) && !empty($_POST['order'])) {
+                $filter['order']['dir'] = $_POST['order'][0]['dir'];
+            }
+        } else {
+            if (isset($_POST['order']) && !empty($_POST['columns'])) {
+                $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
+                $filter['order']['dir'] = $_POST['order'][0]['dir'];
+            }
         }
 
         if ( !empty($_POST['dateStart']) ) {
             $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
             $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
         }
-
 
         $data = $fireSafetyModel->getFireSafetyLog($filter);
 
@@ -90,7 +97,7 @@ class FireSafetyController extends Controller
             "draw" => $_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
-            "data" => $data,
+            "data" => $data
         ];
 
         echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
