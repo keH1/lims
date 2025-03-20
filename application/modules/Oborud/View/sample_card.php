@@ -85,7 +85,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Назначение <span class="redStars">*</span></label>
                 <div class="col-sm-8">
-                    <textarea name="sample[PURPOSE]" class="form-control" style="height: 80px;"><?=$this->data['sample']['PURPOSE'] ?? ''?></textarea>
+                    <textarea name="sample[PURPOSE]" class="form-control" style="height: 80px;" required><?=$this->data['sample']['PURPOSE'] ?? ''?></textarea>
                 </div>
                 <div class="col-sm-2"></div>
             </div>
