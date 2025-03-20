@@ -3008,8 +3008,7 @@ class DocumentGenerator extends Model
 
         $doc_name = rawurlencode($doc_name);
         header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        header('Content-Disposition: attachment; filename="' . $doc_name . '"');
-        header('Content-Disposition: attachment; filename*=UTF-8\'\'' . $doc_name);
+        header('Content-Disposition: attachment; filename="' . $doc_name . '"; filename*=UTF-8\'\'' . $doc_name);
         readfile($fileDoc);
     }
 
