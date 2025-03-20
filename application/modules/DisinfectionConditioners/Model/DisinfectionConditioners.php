@@ -27,7 +27,6 @@ class DisinfectionConditioners extends Model
         {
             $filterUsed = $filter['search'][$item];
 
-
             if (isset($filterUsed)) {
                 return "$item LIKE '%$filterUsed%' AND ";
             }
@@ -35,13 +34,21 @@ class DisinfectionConditioners extends Model
         }
 
         if (!empty($filter)) {
+            // По дате проведения работ
+            if (isset($filter['search']['date_dateformat'])) {
+                $filters['having'] .= "DATE_FORMAT(dc.date, '%d.%m.%Y') LIKE '%{$filter['search']['date_dateformat']}%' AND ";
+            }
+            // По дате приготовления раствора
+            if (isset($filter['search']['date_sol_dateformat'])) {
+                $filters['having'] .= "DATE_FORMAT(dc.date_sol, '%d.%m.%Y') LIKE '%{$filter['search']['date_sol_dateformat']}%' AND ";
+            }
+
             foreach ($tableColumnForFilter as $item) {
                 $filters['having'] .= addHaving($filter, $item);
             }
 
             if (isset($filter['paginate'])) {
                 $offset = 0;
-                // количество строк на страницу
                 if (isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0) {
                     $length = $filter['paginate']['length'];
 
@@ -95,10 +102,7 @@ class DisinfectionConditioners extends Model
         return $this->insertToSQL($dataAdd, $name, $_SESSION['SESS_AUTH']['USER_ID']);
     }
 
-    public function getFromSQL(
-        string $name,
-        array  $filters = null
-    ): array
+    public function getFromSQL(string $name, array  $filters = null): array
     {
         $namesTable = [
             'allRecord' => 'disinfection_conditioners'
@@ -110,26 +114,29 @@ class DisinfectionConditioners extends Model
 
         if ($name == 'getList') {
             $requestFromSQL = $this->DB->Query(
-                "SELECT DATE_FORMAT(date,'%d.%m.%Y')                 AS date_dateformat, 
-                        date,
-                        room_id,
-                        conditioner,
-                        disinfectant,
-                        DATE_FORMAT(date_sol,'%d.%m.%Y')                 AS date_sol_dateformat, 
-                        date_sol,
-                        user_id, 
-                        ROOMS.NUMBER,
-                        CONCAT (IFNULL(b_user.LAST_NAME,'-'),' ',IFNULL(b_user.NAME,'')) as global_assigned_name
-                FROM disinfection_conditioners
-                left JOIN ROOMS ON disinfection_conditioners.room_id = ROOMS.ID
-                left JOIN b_user ON disinfection_conditioners.global_assigned = b_user.ID
+               "SELECT DATE_FORMAT(dc.date,'%d.%m.%Y') AS date_dateformat, 
+                       dc.date,
+                       dc.room_id,
+                       dc.conditioner,
+                       dc.disinfectant,
+                       DATE_FORMAT(dc.date_sol,'%d.%m.%Y') AS date_sol_dateformat, 
+                       dc.date_sol,
+                       dc.user_id, 
+                       r.NUMBER,
+                       CONCAT (IFNULL(bu.LAST_NAME,'-'),' ',IFNULL(bu.NAME,'')) AS global_assigned_name
+                FROM disinfection_conditioners AS dc
+
+                LEFT JOIN ROOMS r
+                ON dc.room_id = r.ID
+ 
+                LEFT JOIN b_user as bu
+                ON dc.global_assigned = bu.ID
+                 
                 HAVING {$filters['having']}
                 ORDER BY {$filters['order']}
                 {$filters['limit']}
-        "
-            );
+            ");
         }
-
 
         while ($row = $requestFromSQL->Fetch()) {
             $row['date'] = date('d.m.Y', strtotime($row['date']));
@@ -140,4 +147,3 @@ class DisinfectionConditioners extends Model
         return $response;
     }
 }
-

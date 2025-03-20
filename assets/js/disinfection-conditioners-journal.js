@@ -42,13 +42,11 @@ $(function ($) {
                 data: 'global_assigned_name'
             }
         ],
-
-        columnDefs: [{
-            className: 'control',
-
-            'orderable': false,
-        },
-
+        columnDefs: [
+            {
+                className: 'control',
+                orderable: false,
+            },
         ],
         language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
@@ -92,15 +90,19 @@ $(function ($) {
         bSortCellsTop: true,
         scrollX: true,
         fixedHeader: false,
-
     })
 
-    fridgejournal.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-            fridgejournal
-                .column($(this).parent().index())
-                .search(this.value)
-                .draw()
+    fridgejournal.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                fridgejournal
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 
