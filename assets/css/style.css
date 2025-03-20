@@ -1677,3 +1677,11 @@ h2 .stage-block {
     transition: opacity 0.2s;
 }
 /*journal_order END*/
+
+.processing-wrapper {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}

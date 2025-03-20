@@ -27,7 +27,7 @@ function initDataTable(selector, options) {
 window.initDataTable = initDataTable
 
 const dataTablesSettings = {
-    'buttons':[
+    buttons:[
         {
             extend: 'colvis',
             titleAttr: 'Выбрать'
@@ -61,7 +61,7 @@ const dataTablesSettings = {
         }
     ],
     language:{
-        processing: 'Подождите...',
+        processing: '<div class="processing-wrapper">Подождите...</div>',
         search: '',
         searchPlaceholder: "Поиск...",
         lengthMenu: 'Отображать _MENU_  ',

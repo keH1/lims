@@ -9,14 +9,7 @@ $(function ($) {
         })
     }
 
-    /*journal requests*/
-    // let journalRequests = $('#journal_requests').DataTable({
     let journalDataTable = window.initDataTable('#journal_requests', {
-        // processing: true,
-        // serverSide: true,
-        // bSortCellsTop: true,
-        // scrollX:       true,
-        // fixedHeader:   true,
         ajax: {
             type : 'POST',
             data: function ( d ) {
@@ -226,39 +219,7 @@ $(function ($) {
         order: [[ 2, "desc" ]],
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        buttons: dataTablesSettings.buttons,
     });
 
     journalDataTable.columns().every(function () {
