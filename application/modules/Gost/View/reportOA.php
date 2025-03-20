@@ -1,15 +1,16 @@
 <div class="filters mb-4">
     <div class="row">
         <div class="col">
-            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="2022-12-15" placeholder="Введите дату начала:">
+            <input type="date" id="inputDateStart" class="form-control filter-date-start" value="2022-12-15" placeholder="Введите дату начала:">
         </div>
 
         <div class="col">
-            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="<?= date('Y-m-d') ?>" placeholder="Введите дату окончания:">
+            <input type="date" id="inputDateEnd" class="form-control filter-date-end" value="<?= date('Y-m-d') ?>" placeholder="Введите дату окончания:">
         </div>
 
         <div class="col">
-            <select id="selectStage" class="form-control filter filter-stage">
+            <select id="selectStage" class="form-control filter-stage">
+                <option value="">Все</option>
                 <option value="2">В ОА</option>
                 <option value="3">РОА</option>
                 <option value="5">Вне ОА</option>
@@ -19,12 +20,16 @@
         </div>
 
         <div class="col">
-            <select id="selectLab" class="form-control filter filter-lab">
+            <select id="selectLab" class="form-control filter-lab">
                 <option value="0">Все лаборатории</option>
                 <?php foreach ($this->data['lab_list'] as $item): ?>
                     <option value="<?=$item['ID']?>"><?=$item['NAME']?></option>
                 <?php endforeach; ?>
             </select>
+        </div>
+
+        <div class="col-auto">
+            <button type="button" class="btn btn-primary filter">Сформировать</button>
         </div>
 
         <div class="col-auto">
