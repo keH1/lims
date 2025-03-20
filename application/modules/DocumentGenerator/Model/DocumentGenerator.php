@@ -3002,10 +3002,15 @@ class DocumentGenerator extends Model
         $newTemplate->setValue('year_graph', $year);
         $newTemplate->saveAs($fileDoc);
 
+        // header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        // header('Content-Disposition: attachment; filename="' . $doc_name . '"');
+        // readfile($fileDoc);
+
+        $doc_name = rawurlencode($doc_name);
         header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         header('Content-Disposition: attachment; filename="' . $doc_name . '"');
+        header('Content-Disposition: attachment; filename*=UTF-8\'\'' . $doc_name);
         readfile($fileDoc);
-
     }
 
     /**
