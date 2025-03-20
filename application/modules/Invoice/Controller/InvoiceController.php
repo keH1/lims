@@ -67,8 +67,8 @@ class InvoiceController extends Controller
 
         $filter = [
             'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
+                'length'    => $_POST['length'],
+                'start'      => $_POST['start'],
             ],
             'search' => [],
             'order' => []

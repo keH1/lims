@@ -1692,12 +1692,6 @@ class Request extends Model
         ];
 
         if ( !empty($filter) ) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
-
-            // работа с фильтрами
             if ( !empty($filter['search']) ) {
                 // Заявка
                 if ( isset($filter['search']['REQUEST_TITLE']) ) {
@@ -1735,8 +1729,39 @@ class Request extends Model
                     $where .= "b.MATERIAL LIKE '%{$filter['search']['MATERIAL']}%' AND ";
                 }
                 // Ответственный
-                if ( isset($filter['search']['ASSIGNED']) ) {
-                    $where .= "b.ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
+                if (isset($filter['search']['ASSIGNED'])) {
+                    $searchText = $filter['search']['ASSIGNED'];
+                    
+                    $searchNames = explode(',', $searchText);
+                    $whereNames = [];
+                    
+                    foreach ($searchNames as $searchName) {
+                        $searchName = trim($searchName);
+                        if (empty($searchName)) continue;
+                        
+                        if (mb_strlen($searchName, 'UTF-8') === 1) {
+                            $whereNames[] = "(EXISTS (
+                                SELECT 1 FROM assigned_to_request AS atr 
+                                JOIN b_user AS u ON atr.user_id = u.ID 
+                                WHERE atr.deal_id = b.ID_Z AND
+                                (u.NAME LIKE '{$searchName}%' OR 
+                                 u.LAST_NAME LIKE '{$searchName}%')
+                            ))";
+                        } else {
+                            $whereNames[] = "(EXISTS (
+                                SELECT 1 FROM assigned_to_request AS atr 
+                                JOIN b_user AS u ON atr.user_id = u.ID 
+                                WHERE atr.deal_id = b.ID_Z AND
+                                (u.NAME LIKE '%{$searchName}%' OR 
+                                 u.LAST_NAME LIKE '%{$searchName}%' OR
+                                 CONCAT(SUBSTRING(u.NAME, 1, 1), '. ', u.LAST_NAME) LIKE '%{$searchName}%')
+                            ))";
+                        }
+                    }
+                    
+                    if (!empty($whereNames)) {
+                        $where .= "(" . implode(' OR ', $whereNames) . ") AND ";
+                    }
                 }
                 // Акт ПП
                 if ( isset($filter['search']['NUM_ACT_TABLE']) ) {
@@ -1804,7 +1829,12 @@ class Request extends Model
                         $order['by'] = 'b.MATERIAL';
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = 'b.ASSIGNED';
+                        $order['by'] = "(SELECT SUBSTRING(u.NAME, 1, 1) 
+                                        FROM assigned_to_request AS atr 
+                                        JOIN b_user AS u ON atr.user_id = u.ID 
+                                        WHERE atr.deal_id = b.ID_Z 
+                                        ORDER BY atr.is_main DESC
+                                        LIMIT 1)";
                         break;
                     case 'REQUEST_TITLE':
                         $order['by'] = 'b.REQUEST_TITLE';
