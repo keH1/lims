@@ -196,7 +196,8 @@ class User extends Model
             ];
             if ($isFirst) $isFirst = false;
 
-            $resultInsert = $this->DB->Insert('assigned_to_request', $data);
+            $sqlData = $this->prepearTableData('assigned_to_request', $data);
+            $resultInsert = $this->DB->Insert('assigned_to_request', $sqlData);
 
             if ( $resultInsert === false ) {
                 return false;
@@ -636,6 +637,9 @@ class User extends Model
 
     public function updateUserDepartment($userId, $departmentId)
     {
+        $userId = (int)$userId;
+        $departmentId = (int)$departmentId;
+
         $fieldsToUpdate = array(
             "UF_DEPARTMENT" => array($departmentId)
         );
@@ -645,10 +649,8 @@ class User extends Model
 
         if ($updateResult) {
             return true;
-            //echo "Данные пользователя успешно обновлены";
         } else {
             return false;
-            //echo "Ошибка при обновлении данных пользователя: " . $user->LAST_ERROR;
         }
     }
 

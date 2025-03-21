@@ -146,6 +146,7 @@ class Lab extends Model
         $where = '1';
 
         if ( !empty($labIdList) ) {
+            $labIdList = array_map('intval', $labIdList);
             $str = implode(',', $labIdList);
             $where = "l.ID IN ({$str})";
         }
@@ -392,6 +393,7 @@ class Lab extends Model
     }
 
     /**
+     * @deprecated
      * подготовить данные условий
      * @param $data
      * @return array
@@ -443,7 +445,7 @@ class Lab extends Model
      */
     public function addConditions(array $data): int
     {
-        $sqlData = $this->prepareConditionsData($data);
+        $sqlData = $this->prepearTableData('ulab_conditions', $data);
 
         $result = $this->DB->Insert('ulab_conditions', $sqlData);
 
@@ -458,7 +460,7 @@ class Lab extends Model
      */
     public function updateConditions(int $id, array $data)
     {
-        $sqlData = $this->prepareConditionsData($data);
+        $sqlData = $this->prepearTableData('ulab_conditions', $data);
 
         $where = "WHERE id = {$id}";
         return $this->DB->Update('ulab_conditions', $sqlData, $where);

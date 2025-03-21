@@ -232,28 +232,10 @@ class OborudController extends Controller
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'], // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( !empty($column['search']['value']) ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $oborudModel->prepareFilter($_POST ?? []);
 
         if ( !empty($_POST['oborud_id']) ) {
-            $filter['search']['oborud_id'] = $_POST['oborud_id'];
+            $filter['search']['oborud_id'] = (int)$_POST['oborud_id'];
         }
 
         $data = $oborudModel->getDataToOborudMovingJournal($filter);
@@ -265,7 +247,7 @@ class OborudController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -278,7 +260,7 @@ class OborudController extends Controller
     public function insertUpdate()
     {
         $isEdit = isset($_POST['id']);
-        $oborudId = $_POST['id']?? '';
+        $oborudId = (int)$_POST['id']?? '';
 
         if ( $isEdit ) {
             $redirect = "/oborud/edit/{$oborudId}";
@@ -464,7 +446,7 @@ class OborudController extends Controller
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $oborudModel->setDecommissioned((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
+        $oborudModel->setDecommissioned((int)$_POST['oborud_id'], $_POST['form'], (int)$_POST['change_oborud_id']);
 
         $this->showSuccessMessage("Оборудование списано");
 
@@ -480,7 +462,7 @@ class OborudController extends Controller
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $oborudModel->setLongStorage((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
+        $oborudModel->setLongStorage((int)$_POST['oborud_id'], $_POST['form'], (int)$_POST['change_oborud_id']);
 
         $this->showSuccessMessage("Оборудование на длительном хранении");
 
@@ -500,32 +482,7 @@ class OborudController extends Controller
         /** @var  Oborud $oborud*/
         $oborud = $this->model('Oborud');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( isset($column['search']['value']) && $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
+        $filter = $oborud->prepareFilter($_POST ?? []);
 
         $data = $oborud->getDataToJournal($filter);
 
@@ -536,7 +493,7 @@ class OborudController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -586,31 +543,7 @@ class OborudController extends Controller
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
+        $filter = $oborudModel->prepareFilter($_POST ?? []);
 
         $data = $oborudModel->getSampleList($filter);
 
@@ -621,7 +554,7 @@ class OborudController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -643,8 +576,10 @@ class OborudController extends Controller
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $data['info'] = $oborudModel->getSample($_POST['id']);
-        $data['history'] = $oborudModel->getSampleHistory($_POST['id']);
+        $id = (int)$_POST['id'];
+
+        $data['info'] = $oborudModel->getSample($id);
+        $data['history'] = $oborudModel->getSampleHistory($id);
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -1063,8 +998,8 @@ class OborudController extends Controller
         /** @var Permission $permissionModel */
         $permissionModel = $this->model('Permission');
 
-        $result = $oborudModel->getComponent($_POST['id']);
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $result = $oborudModel->getComponent((int)$_POST['id']);
+        $permissionInfo = $permissionModel->getUserPermission((int)$_SESSION['SESS_AUTH']['USER_ID']);
 
         // Проверка на доступ к изменению данных
         $result['is_may_change'] = in_array($permissionInfo['id'],  [SMK_PERMISSION, ADMIN_PERMISSION]); // HEAD_IC_PERMISSION

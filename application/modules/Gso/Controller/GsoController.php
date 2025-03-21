@@ -63,7 +63,9 @@ class GsoController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $data = $usedModel->getList($this->postToFilter($_POST));
+        $filter = $usedModel->prepareFilter($_POST ?? []);
+
+        $data = $usedModel->getList($filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -159,7 +161,7 @@ class GsoController extends Controller
         $APPLICATION->RestartBuffer();
 
         $usedModel = $this->model($this->nameModel);
-        $filters["id"]=$_POST['which_select_id'];
+        $filters["id"]=(int)$_POST['which_select_id'];
         $type = $_POST['type'];
 
         $data = $usedModel->getUpdateData($type, $filters);

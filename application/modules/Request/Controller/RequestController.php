@@ -404,7 +404,7 @@ class RequestController extends Controller
                 $this->redirect($location);
             }
         } else {
-            $companyId = $_POST['company_id'];
+            $companyId = (int)$_POST['company_id'];
 
             $requisite = $company->getRequisiteByCompanyId($companyId);
             //$resetId = $requisite['PRESET_ID'];
@@ -490,26 +490,26 @@ class RequestController extends Controller
         $orderName = '';
 
         if ( !empty($_POST['NUM_DOGOVOR']) ) {
-            $contract = $order->getContractById($_POST['NUM_DOGOVOR']);
+            $contract = $order->getContractById((int)$_POST['NUM_DOGOVOR']);
             if (!empty($contract)) {
                 $orderName = $contract['cont'];
             }
         }
 
         $dataTz = [
-            'COMPANY_TITLE' => '"' . htmlspecialchars($_POST['company']) . '"', //TODO: надо убрать из таблицы это поле
+            'COMPANY_TITLE' => htmlspecialchars($_POST['company']), //TODO: надо убрать из таблицы это поле
             'COMPANY_ID' => $companyId,
-            'TYPE_ID' => "'{$_POST['REQ_TYPE']}'",
+            'TYPE_ID' => $_POST['REQ_TYPE'],
             'CHECK_IP' => isset($_POST['check_ip'])? '1' : '0',
-            'SAVE_MAIL' => "'{$saveMail}'",
-            'DOGOVOR_NUM' => "'{$_POST['NUM_DOGOVOR']}'",
-            'DOGOVOR_TABLE' => "'{$orderName}'",
-            'POSIT_LEADS' => "'{$_POST['PositionGenitive']}'",
+            'SAVE_MAIL' => $saveMail,
+            'DOGOVOR_NUM' => $_POST['NUM_DOGOVOR'],
+            'DOGOVOR_TABLE' => $orderName,
+            'POSIT_LEADS' => $_POST['PositionGenitive'],
             'order_type' => (int)$_POST['order_type']
         ];
 
 
-        $requisiteResult = $company->setRequisiteByCompanyId($companyId, $dataBank);
+        $requisiteResult = $company->setRequisiteByCompanyId((int)$companyId, $dataBank);
         if ( !$requisiteResult['success'] ) {
             $this->showErrorMessage($requisiteResult['error']);
             $this->redirect($location);
@@ -522,7 +522,7 @@ class RequestController extends Controller
 //                $this->redirect($location);
 //            }
 
-            $dealId = $dataRequest['ID'] = $_POST['id'];
+            $dealId = $dataRequest['ID'] = (int)$_POST['id'];
 
             $currDeal = $request->getDealById($dealId);
             $arrTitle = explode(' ', $currDeal['TITLE']);
@@ -536,7 +536,7 @@ class RequestController extends Controller
                 $this->redirect($location);
             }
 
-            $dataTz['REQUEST_TITLE'] = "'{$currTitle}'";
+            $dataTz['REQUEST_TITLE'] = $currTitle;
             $resultUpdateTz = $request->updateTz($dealId, $dataTz);
             
             if ( empty($resultUpdateTz) ) {
@@ -570,13 +570,15 @@ class RequestController extends Controller
                 $this->redirect($location);
             }
 
+            $dealId = (int)$dealId;
+
             $newDeal = $request->getDealById($dealId);
 
             $strMaterial = implode(', ', $arrMaterialName);
 
-            $dataTz['REQUEST_TITLE'] = "'{$newDeal['TITLE']}'";
-            $dataTz['MATERIAL'] = "'{$strMaterial}'";
-            $dataTz['STAGE_ID'] = "'NEW'";
+            $dataTz['REQUEST_TITLE'] = $newDeal['TITLE'];
+            $dataTz['MATERIAL'] = $strMaterial;
+            $dataTz['STAGE_ID'] = 'NEW';
             $resultAddTz = $request->addTz($dealId, $dataTz);
 
             if ( empty($resultAddTz) ) {
@@ -610,7 +612,7 @@ class RequestController extends Controller
         $labaIdStr = implode(',', array_unique($labaId));
 
         $updateData = [
-            'LABA_ID' => "'{$labaIdStr}'"
+            'LABA_ID' => $labaIdStr
         ];
 
         $request->updateTz($dealId, $updateData);
@@ -715,10 +717,6 @@ class RequestController extends Controller
         if (empty($dealId)) {
             $this->redirect('/request/list/');
         }
-
-        // echo '<pre>';
-        // print_r($_POST);
-        // die;
 
         $dealId = (int) $dealId;
 
@@ -1258,7 +1256,7 @@ class RequestController extends Controller
 
         $newDeal = $request->getDealById($dealId);
 
-        $dataTz['REQUEST_TITLE'] = "'{$newDeal['TITLE']}'";
+        $dataTz['REQUEST_TITLE'] = $newDeal['TITLE'];
 
         $request->updateTz($dealId, $dataTz);
 
@@ -1277,7 +1275,7 @@ class RequestController extends Controller
 
         $request->updateStageDeal($dealId, 2);
         $today = date('Y-m-d');
-        $request->updateTz($dealId, ['dateEnd' => "'{$today}'"]);
+        $request->updateTz($dealId, ['dateEnd' => $today]);
 
         $this->showSuccessMessage('Статус заявки изменен на "Завершено"');
         $this->redirect("/request/card/{$dealId}");
@@ -1413,6 +1411,8 @@ class RequestController extends Controller
         /** @var Request $request */
         $request = $this->model('Request');
 
+        $idDeal = (int)$idDeal;
+
         $request->addComment($idDeal, $_POST['comment']);
 
         $this->redirect("/request/card/{$idDeal}");
@@ -1426,20 +1426,21 @@ class RequestController extends Controller
         /** @var Request $request */
         $request = $this->model('Request');
 
-        $idDeal = $_POST['deal_id'];
+        $idDeal = (int)$_POST['deal_id'];
+        $pay = (float)$_POST['pay'];
 
         if ( empty($idDeal) ) {
             $this->showErrorMessage('Не указан, или указан неверно ИД заявки');
             $this->redirect("/request/list/");
         }
 
-		if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], [25, 88, 61]) && ($_POST['pay'] <= 0) ) {
+		if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], [25, 88, 61]) && ($pay <= 0) ) {
             $this->showErrorMessage('Оплата не может быть меньше или равна нулю');
             $this->redirect("/request/card/{$idDeal}");
         }
 
-        $request->addPay($idDeal, $_POST['pay'], "'" . date("d.m.Y", strtotime($_POST['payDate'])) . "'");
-        $request->addMessage($idDeal, $_POST['pay']);
+        $request->addPay($idDeal, $pay, "'" . date("d.m.Y", strtotime($_POST['payDate'])) . "'");
+        $request->addMessage($idDeal, $pay);
 
         $this->showSuccessMessage('Оплата прошла успешно');
         $this->redirect("/request/card/{$idDeal}");
@@ -1489,43 +1490,9 @@ class RequestController extends Controller
 
         $userId = (int)$currentUser['ID'];
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( isset($column['search']['value']) && $column['search']['value'] != '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-        }
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
-        if ( !empty($_POST['everywhere']) ) {
-            $filter['search']['everywhere'] = $_POST['everywhere'];
-        }
+        $filter = $request->prepareFilter($_POST ?? []);
 
         $data = $request->getDataToJournalRequests($userId, $filter);
-
-
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -1534,7 +1501,7 @@ class RequestController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -1584,10 +1551,12 @@ class RequestController extends Controller
 
         $response = [];
 
-        if ( isset($_POST['company_id']) && !empty($_POST['company_id']) ) {
+        $companyId = (int)$_POST['company_id'];
+
+        if ( isset($companyId) && !empty($companyId) ) {
             /** @var Company $company */
             $company = $this->model('Company');
-            $response = $company->getRequisiteByCompanyId($_POST['company_id']);
+            $response = $company->getRequisiteByCompanyId($companyId);
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
@@ -1607,10 +1576,12 @@ class RequestController extends Controller
 
         $response = [];
 
-        if ( isset($_POST['company_id']) ) {
+        $companyId = (int)$_POST['company_id'];
+
+        if ( isset($companyId) ) {
             /** @var Request $request */
             $request = $this->model('Request');
-            $response = $request->getContractsByCompanyId($_POST['company_id']);
+            $response = $request->getContractsByCompanyId($companyId);
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
@@ -1628,6 +1599,8 @@ class RequestController extends Controller
         global $APPLICATION;
 
         $APPLICATION->RestartBuffer();
+
+        $dealId = (int)$dealId;
 
         if ( !isset($_POST['src']) ) {
             $response = [
@@ -1729,7 +1702,7 @@ class RequestController extends Controller
             return;
         }
 
-        echo json_encode($company->getCompanyIdByInn(trim($_POST['INN'])));
+        echo json_encode($company->getCompanyIdByInn($_POST['INN']));
     }
 
     /**
@@ -1749,7 +1722,7 @@ class RequestController extends Controller
 			return;
 		}
 
-		echo json_encode($company->getCompanyByInn(trim($_POST['INN'])), JSON_UNESCAPED_UNICODE);
+		echo json_encode($company->getCompanyByInn($_POST['INN']), JSON_UNESCAPED_UNICODE);
 	}
 
     /**
@@ -1769,7 +1742,7 @@ class RequestController extends Controller
             return;
         }
 
-        echo json_encode($company->getByInnFromBx(trim($_POST['INN'])), JSON_UNESCAPED_UNICODE);
+        echo json_encode($company->getByInnFromBx($_POST['INN']), JSON_UNESCAPED_UNICODE);
     }
     
     /**

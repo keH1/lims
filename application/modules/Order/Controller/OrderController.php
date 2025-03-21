@@ -66,33 +66,7 @@ Class OrderController extends Controller
         /** @var Order $order */
         $order = $this->model('Order');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'], // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-        }
-        if ( !empty($_POST['everywhere']) ) {
-            $filter['search']['everywhere'] = $_POST['everywhere'];
-        }
+        $filter = $order->prepareFilter($_POST ?? []);
 
         $data = $order->getDataToJournal($filter);
 
@@ -103,7 +77,7 @@ Class OrderController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -230,32 +204,10 @@ Class OrderController extends Controller
         /** @var Order $orderModel */
         $orderModel = $this->model('Order');
 
+        $filter = $orderModel->prepareFilter($_POST ?? []);
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( !empty($_POST['order_id']) ) {
-            $filter['search']['order_id'] = $_POST['order_id'];
-        }
-        if ( $_POST['stage'] !== '' ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
+        if (!empty($_POST['order_id'])) {
+            $filter['search']['order_id'] = (int)$_POST['order_id'];
         }
 
         $data = $orderModel->getDataJournalRequest($filter);
@@ -267,7 +219,7 @@ Class OrderController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -323,7 +275,7 @@ Class OrderController extends Controller
         /** @var Order $orderModel */
         $orderModel = $this->model('Order');
 
-        $orderID = $_POST['orderID'];
+        $orderID = (int)$_POST['orderID'];
 
         $data['NUMBER'] = $_POST["NUMBER"];
         $data['DATE'] = $_POST['DATE'];
@@ -333,7 +285,7 @@ Class OrderController extends Controller
         $data['CLIENT_NUMBER'] = $_POST['CLIENT_NUMBER']  == 'on' ? 1 : 0;
         if ($_POST['LONGTERM'] == 'on') {
             if (!empty($_POST['head_request'])) {
-                $data['SUMM'] = $request->getTzByDealId($_POST['head_request'])['price_discount'];
+                $data['SUMM'] = $request->getTzByDealId((int)$_POST['head_request'])['price_discount'];
                 $data['head_request'] = $_POST['head_request'];
             } else {
                 $data['SUMM'] = $_POST['CONTRACT_SUMM'];
@@ -409,7 +361,7 @@ Class OrderController extends Controller
         $orderModel = $this->model('Order');
 
         if ( !empty($_POST['tz_id']) ) {
-            $resultUpload = $orderModel->uploadTzDocPdf($_FILES["file"], $_POST['tz_id']);
+            $resultUpload = $orderModel->uploadTzDocPdf($_FILES["file"], (int)$_POST['tz_id']);
         }
 
         if ( !empty($_POST['dogovor_id']) ) {
@@ -418,10 +370,10 @@ Class OrderController extends Controller
 
         if ( $resultUpload['success'] ) {
             if ( !empty($_POST['doc_id']) ) {
-                $orderModel->saveTzDocPdf($resultUpload['data'], $_POST['doc_id']);
+                $orderModel->saveTzDocPdf($resultUpload['data'], (int)$_POST['doc_id']);
             }
             if ( !empty($_POST['dogovor_id']) ) {
-                $orderModel->saveDogovorPdf($resultUpload['data'], $_POST['dogovor_id']);
+                $orderModel->saveDogovorPdf($resultUpload['data'], (int)$_POST['dogovor_id']);
             }
 
             $this->showSuccessMessage("Файл загружен");
@@ -470,7 +422,7 @@ Class OrderController extends Controller
         /** @var Order $orderModel */
         $orderModel = $this->model('Order');
 
-        $id = $_POST['id'];
+        $id = (int)$_POST['id'];
 
         $result = $orderModel->deletePdfTZ($id);
 

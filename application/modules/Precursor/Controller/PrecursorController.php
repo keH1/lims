@@ -4,7 +4,7 @@
  * @desc Прекурсор
  * Class PrecursorController
  */
-class PrecursorController extends Controller
+class s extends Controller
 {
     private string $nameModel = 'Precursor';
 
@@ -60,8 +60,9 @@ class PrecursorController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
+        $filter = $usedModel->prepareFilter($_POST ?? []);
 
-        $data = $usedModel->getList($this->postToFilter($_POST));
+        $data = $usedModel->getList($filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -70,7 +71,7 @@ class PrecursorController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data

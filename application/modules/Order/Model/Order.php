@@ -443,7 +443,8 @@ class Order extends Model {
             'ID_CONTRACT' => $contractId,
         ];
 
-        $this->DB->Insert('DEALS_TO_CONTRACTS', $data);
+        $sqlData = $this->prepearTableData('DEALS_TO_CONTRACTS', $data);
+        $this->DB->Insert('DEALS_TO_CONTRACTS', $sqlData);
     }
 
 
@@ -686,8 +687,8 @@ class Order extends Model {
      */
     public function setOplata($data)
     {
-        $data['PAY_DATE'] = $this->quoteStr($this->DB->ForSql($data['PAY_DATE']));
-        return $this->DB->Insert('PAYMENTS_TO_CONTRACTS', $data);
+        $sqlData = $this->prepearTableData('PAYMENTS_TO_CONTRACTS', $data);
+        return $this->DB->Insert('PAYMENTS_TO_CONTRACTS', $sqlData);
     }
 
     /**

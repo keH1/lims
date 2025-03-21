@@ -59,7 +59,9 @@ class FridgecontrolController extends Controller
 
         $thisModel = $this->model($this->nameModel);
 
-        $data = $thisModel->getList($this->postToFilter($_POST));
+        $filter = $thisModel->prepareFilter($_POST ?? []);
+
+        $data = $thisModel->getList($filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -68,7 +70,7 @@ class FridgecontrolController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data

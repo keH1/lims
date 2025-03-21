@@ -58,35 +58,7 @@ class ContractorController extends Controller
         /** @var Contractor $contractor */
         $contractor = $this->model('Contractor');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if (!empty($column['search']['value'])) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if (!empty($_POST['date_start'])) {
-            $filter['search']['date_start'] = $_POST['date_start'];
-        }
-
-        if (!empty($_POST['date_end'])) {
-            $filter['search']['date_end'] = $_POST['date_end'];
-        }
-
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $filter = $contractor->prepareFilter($_POST ?? []);
 
         $data = $contractor->getJournal($filter);
 
@@ -97,7 +69,7 @@ class ContractorController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "result_stages" => $contractor->getContractorResult(),
@@ -118,7 +90,7 @@ class ContractorController extends Controller
 
         $contractor = $this->model('Contractor');
 
-        $id = $_POST["row_id"];
+        $id = (int)$_POST["row_id"];
 
         $data = [
             "act" => $_POST["act"],
@@ -164,7 +136,7 @@ class ContractorController extends Controller
         $contractor = $this->model('Contractor');
         $telegram = $this->model('Telegram');
 
-        $id = $_POST["row_id"];
+        $id = (int)$_POST["row_id"];
 
         $data = [
             "status" => $_POST["status"]
@@ -204,7 +176,7 @@ class ContractorController extends Controller
         if (isset($_POST["id"])) {
             $contractor = $this->model('Contractor');
 
-            $id = $_POST["id"];
+            $id = (int)$_POST["id"];
 
             $data = [
               "fio" => $_POST["fio"],

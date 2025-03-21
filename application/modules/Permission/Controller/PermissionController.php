@@ -102,9 +102,10 @@ class PermissionController extends Controller
         /** @var  Permission $permissionModel */
         $permissionModel = $this->model('Permission');
 
-        $roleId = $_POST['role_id'];
+        $roleId = (int)$_POST['role_id'];
+        $postData = $_POST ?? [];
 
-        $permissionModel->updateRole($roleId, $_POST);
+        $permissionModel->updateRole($roleId, $postData);
 
         $this->showSuccessMessage("Роль успешно обновлена");
 
@@ -120,7 +121,10 @@ class PermissionController extends Controller
         /** @var  Permission $permissionModel */
         $permissionModel = $this->model('Permission');
 
-        $permissionModel->updateUser($_POST['user_id'], $_POST['role_id']);
+        $userId = (int)$_POST['user_id'];
+        $roleId = (int)$_POST['role_id'];
+
+        $permissionModel->updateUser($userId, $roleId);
 
         $this->showSuccessMessage("Пользователь успешно обновлен");
 
@@ -140,7 +144,9 @@ class PermissionController extends Controller
         /** @var  Permission $permissionModel */
         $permissionModel = $this->model('Permission');
 
-        $info = $permissionModel->getRoleInfo($_POST['role_id']);
+        $roleId = (int)$_POST['role_id'];
+
+        $info = $permissionModel->getRoleInfo($roleId);
 
         echo json_encode($info, JSON_UNESCAPED_UNICODE);
     }
@@ -233,25 +239,7 @@ class PermissionController extends Controller
         /** @var  Permission $permission*/
         $permission = $this->model('Permission');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( !empty($column['search']['value']) ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $permission->prepareFilter($_POST ?? []);
 
         $data = $permission->getDatatoJournalUsers($filter);
 
@@ -262,7 +250,7 @@ class PermissionController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -280,17 +268,14 @@ class PermissionController extends Controller
         /** @var  Permission $permissionModel */
         $permissionModel = $this->model('Permission');
 
-        //$permissionModel->updateUser($_POST['user_id'], $_POST['role_id']);
-
-        $usersData = $_POST['array_update_users'];
+        $usersData = $_POST['array_update_users'] ?? [];
         foreach ($usersData as $userData) {
-            $userId = $userData['user_id'];
-            $roleId = $userData['role_id'];
+            $userId = (int)$userData['user_id'];
+            $roleId = (int)$userData['role_id'];
             $permissionModel->updateUser($userId, $roleId);
         }
 
         $this->showSuccessMessage("Пользователи успешно обновлены");
-        //$this->redirect("/permission/users/");
     }
 
 
@@ -307,16 +292,14 @@ class PermissionController extends Controller
         /** @var  User $userModel */
         $userModel = $this->model('User');
 
-        //$permissionModel->updateUser($_POST['user_id'], $_POST['role_id']);
+        $usersData = $_POST['array_update_users'] ?? [];
 
-        $usersData = $_POST['array_update_users'];
         foreach ($usersData as $userData) {
-            $userId = $userData['user_id'];
-            $departmentId = $userData['department_id'];
+            $userId = (int)$userData['user_id'];
+            $departmentId = (int)$userData['department_id'];
             $userModel->updateUserDepartment($userId, $departmentId);
         }
 
         $this->showSuccessMessage("Пользователи успешно обновлены");
-        //$this->redirect("/permission/users/");
     }
 }

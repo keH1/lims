@@ -23,7 +23,8 @@ class ExecJournal extends Model
             return ['message' => "Такого поля не существует", 'status' => "Bad request", 'error' => true,];
         }
 
-        $this->DB->Update("osk_executive_documentation", [$name => '"' . $value . '"'], "WHERE id = $id");
+        $sqlData = $this->prepearTableData('osk_executive_documentation', [$name => $value]);
+        $this->DB->Update("osk_executive_documentation", $sqlData, "WHERE id = $id");
 
         return ['message' => "Запись успешно обновлена", 'status' => "ok", 'error' => false,];
     }
@@ -213,8 +214,10 @@ class ExecJournal extends Model
 
     public function updateRow(array $data)
     {
-        $rowId = $data['row_id'];
+        $rowId = (int)$data['row_id'];
         unset($data['row_id']);
+
+        $data = array_intersect_key($data, array_flip($this->fillable));
 
         foreach ($this->fillable as $value) {
             if (!array_key_exists($value, $data)) {
@@ -229,7 +232,7 @@ class ExecJournal extends Model
                 $value = false;
             }
 
-            $this->DB->Update("osk_executive_documentation", [$key => '"' . $value . '"'], "WHERE contractor_id = $rowId");
+            $this->DB->Update("osk_executive_documentation", [$key => '"' . $this->DB->ForSql(trim(strip_tags($value))) . '"'], "WHERE contractor_id = $rowId");
         }
     }
 

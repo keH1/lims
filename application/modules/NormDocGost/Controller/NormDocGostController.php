@@ -218,7 +218,7 @@ class NormDocGostController extends Controller
         $data['is_output'] = $_POST['form']['is_output'] ?? 0;
         $data['is_manual'] = $_POST['form']['is_manual'] ?? 0;
 
-        $result = $normDocGost->updateMethod($_POST['id'], $data);
+        $result = $normDocGost->updateMethod((int)$_POST['id'], $data);
 
         $normDocGost->updateMethodGroup($_POST['group']);
 
@@ -262,7 +262,7 @@ class NormDocGostController extends Controller
         /** @var NormDocGost $normDocGost */
         $normDocGost = $this->model('NormDocGost');
 
-        $result = $normDocGost->copyMethod($_POST['method_id']);
+        $result = $normDocGost->copyMethod((int)$_POST['method_id']);
 
         if ( empty($result) ) {
             $this->showErrorMessage("Методику не удалось скопировать");
@@ -374,7 +374,7 @@ class NormDocGostController extends Controller
 
         if ( !empty($_POST['id']) ) { // редактирование
             $idGost = $_POST['id'];
-            $normDocGost->updateGost($_POST['id'], $_POST['form']);
+            $normDocGost->updateGost((int)$_POST['id'], $_POST['form']);
         } else { // создание
             $idGost = $normDocGost->addGost($_POST['form']);
         }
@@ -439,26 +439,7 @@ class NormDocGostController extends Controller
         /** @var NormDocGost $normDocGostModel */
         $normDocGostModel = $this->model('NormDocGost');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $normDocGostModel->prepareFilter($_POST ?? []);
 
         $data = $normDocGostModel->getJournalList($filter);
 
@@ -491,27 +472,9 @@ class NormDocGostController extends Controller
         /** @var NormDocGost $normDocGostModel */
         $normDocGostModel = $this->model('NormDocGost');
 
-		$filter = [
-			'paginate' => [
-				'length'    => $_POST['length'], // кол-во строк на страницу
-				'start'     => $_POST['start'],  // текущая страница
-			],
-			'search' => [],
-			'order' => []
-		];
+        $filter = $normDocGostModel->prepareFilter($_POST ?? []);
 
-		foreach ($_POST['columns'] as $column) {
-			if ( $column['search']['value'] !== '' ) {
-				$filter['search'][$column['data']] = $column['search']['value'];
-			}
-		}
-
-		if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-			$filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-			$filter['order']['dir'] = $_POST['order'][0]['dir'];
-		}
-
-		$filter['search']['id'] = $_POST['id'] ?? 0;
+		$filter['search']['id'] = (int)$_POST['id'] ?? 0;
 
 		$data = $normDocGostModel->methodsJournal($filter);
 
@@ -522,7 +485,7 @@ class NormDocGostController extends Controller
 		unset($data['recordsFiltered']);
 
 		$jsonData = [
-			"draw" => $_POST['draw'],
+			"draw" => (int)$_POST['draw'],
 			"recordsTotal" => $recordsTotal,
 			"recordsFiltered" => $recordsFiltered,
 			"data" => $data
@@ -562,7 +525,7 @@ class NormDocGostController extends Controller
         /** @var NormDocGost $normDocGostModel */
         $normDocGostModel = $this->model('NormDocGost');
 
-        $normDocGostModel->deleteMethodGroup($_POST['material_group_id']);
+        $normDocGostModel->deleteMethodGroup((int)$_POST['material_group_id']);
 
         echo json_encode($_POST, JSON_UNESCAPED_UNICODE);
     }

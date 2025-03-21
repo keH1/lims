@@ -207,6 +207,12 @@ class Reactive extends Model
 
     public function getUpdateData(array $filter): array
     {
+        array_walk($filter, function(&$value) {
+            $value = is_numeric($value)
+                ? (int)$value
+                : $this->DB->ForSql(trim(strip_tags($value)));
+        });
+
         return $this->getFromSQL("data_for_update", $filter);
     }
 

@@ -2174,12 +2174,6 @@ class ResultController extends Controller
         $successMsg = 'Данные результатов испытаний успешно сохранены';
         $selected = $_POST['selected'] ? '&selected' : '';
 
-        /*if ($_SESSION['SESS_AUTH']['ROLE'] == 6) {
-            $location = "/result/resultCard_tester/{$_POST['deal_id']}";
-        } else {
-            $location = $protocolId ? "/result/card_new/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_new/{$_POST['deal_id']}";
-        }*/
-//        $location = $protocolId ? "/result/card_new/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_new/{$_POST['deal_id']}";
         $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
 
         $deal = $request->getDealById($dealId);
@@ -2194,15 +2188,15 @@ class ResultController extends Controller
             $this->redirect('/request/list/');
         }
 
-        if (!empty($protocolId) && !empty($protocol['INVALID'])) {
-            $this->showErrorMessage("Ошибка сохранения данных, нельзя изменить данные у протокола признанным недействительным");
-            $this->redirect($location);
-        }
-
         // Если у протокола есть номер и протокол не разблокирован, то изменить данные нельзя
         $protocol = $resultModel->getProtocolById($protocolId);
         if (!empty($protocolId) && !empty($protocol['NUMBER']) && empty($protocol['EDIT_RESULTS'])) {
             $this->showErrorMessage("Ошибка сохранения данных, нельзя изменить данные у протокола с присвоенным номером");
+            $this->redirect($location);
+        }
+
+        if (!empty($protocolId) && !empty($protocol['INVALID'])) {
+            $this->showErrorMessage("Ошибка сохранения данных, нельзя изменить данные у протокола признанным недействительным");
             $this->redirect($location);
         }
 

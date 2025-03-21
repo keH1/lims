@@ -136,10 +136,8 @@ class ApplicationCard extends Model
 
     public function update(array $attributes)
     {
-        $contractorId = $attributes['contractorId'];
-        $schemeId = $attributes['scheme_id'];
-
-//        $filePaths = $this->uploadFiles($_FILES, $contractorId);
+        $contractorId = (int)$attributes['contractorId'];
+        $schemeId = (int)$attributes['scheme_id'];
 
         $dataToUpdate = [//            'executive_scheme' => filter_var($attributes['executive_scheme'], FILTER_VALIDATE_BOOLEAN),
 //            'materials_used' => filter_var($attributes['materials_used'], FILTER_VALIDATE_BOOLEAN),
@@ -149,9 +147,6 @@ class ApplicationCard extends Model
 //            'quality_document_comment' => $attributes['quality_document_comment'],
             'general_comment' => $attributes['general_comment'], 'scheme_id' => $schemeId,];
 
-//        foreach ($filePaths as $key => $value) {
-//            $dataToUpdate[$key] = $value;
-//        }
         $this->synchroniseSchemaInformation($contractorId, $schemeId);
 
         foreach ($dataToUpdate as $key => $value) {
@@ -162,15 +157,17 @@ class ApplicationCard extends Model
 
 
         foreach ($_POST['schema_info'] as $schemaInfo) {
-            $filePath = $this->getFilePath($_FILES['schema_info'], $schemaInfo['index'], $contractorId, $schemeId, $schemaInfo['scheme_type_id']);
+            $schemaTypeId = (int)$schemaInfo['scheme_type_id'];
+
+            $filePath = $this->getFilePath($_FILES['schema_info'], $schemaInfo['index'], $contractorId, $schemeId, $schemaTypeId);
 
             $attrs = [
                 'img_path' => "'" . $filePath . "'",
-                'comment' => "'" . $schemaInfo['comment']  . "'",
+                'comment' => "'" . $this->DB->ForSql($schemaInfo['comment'])  . "'",
                 'checkbox' => "'" . filter_var($schemaInfo['checkbox'], FILTER_VALIDATE_BOOLEAN) . "'"
             ];
 
-            $this->DB->Update("osk_app_card_scheme_info", $attrs, "WHERE application_card_id = $contractorId and scheme_id = $schemeId and scheme_type_id = {$schemaInfo['scheme_type_id']}");
+            $this->DB->Update("osk_app_card_scheme_info", $attrs, "WHERE application_card_id = $contractorId and scheme_id = $schemeId and scheme_type_id = {$schemaTypeId}");
         }
 
         return 0;

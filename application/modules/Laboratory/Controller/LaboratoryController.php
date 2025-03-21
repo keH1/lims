@@ -486,33 +486,10 @@ class LaboratoryController extends Controller
 
 		$passport = $this->model('Laboratory');
 
-		$filter = [
-			'paginate' => [
-				'length' => $_POST['length'],  // кол-во строк на страницу
-				'start' => $_POST['start'],  // текущая страница
-			],
-			'search' => [],
-			'order' => []
-		];
-
-		foreach ($_POST['columns'] as $column) {
-			if (!empty($column['search']['value'])) {
-				$filter['search'][$column['data']] = $column['search']['value'];
-			}
-		}
-
-		if (isset($_POST['order']) && !empty($_POST['columns'])) {
-			$filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-			$filter['order']['dir'] = $_POST['order'][0]['dir'];
-		}
-
-		if (!empty($_POST['dateStart'])) {
-			$filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart']));
-			$filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd']));
-		}
+        $filter = $passport->prepareFilter($_POST ?? []);
 
 		if (isset($_POST['hidden'])) {
-			$filter['search']['hidden'] = $_POST["hidden"];
+			$filter['search']['hidden'] = (int)$_POST["hidden"];
 		}
 
 		$data = $passport->getJournal($filter);
@@ -529,7 +506,7 @@ class LaboratoryController extends Controller
 		//  $test = CCrmDeal::GetList();
 
 		$jsonData = [
-			"draw" => $_POST["draw"],
+			"draw" => (int)$_POST["draw"],
 			"recordsTotal" => $recordsTotal,
 			"recordsFiltered" => $recordsFiltered,
 			"data" => $data,
@@ -571,7 +548,7 @@ class LaboratoryController extends Controller
         /** @var Gost $gost */
         $gost = new LabGost();
 
-        $gostArr = $gost->getGostBySchemeId($_POST["scheme_id"]);
+        $gostArr = $gost->getGostBySchemeId((int)$_POST["scheme_id"]);
         $ulabGostArr = [];
         $ozGostArr = [];
 
@@ -600,22 +577,22 @@ class LaboratoryController extends Controller
         $curDate = date("Y-m-d");
 
         $ozPassportData = [
-            "ba_tz_id" => "'{$baTzId}'",
+            "ba_tz_id" => $baTzId,
             "scheme_id" => $_POST["scheme_id"],
-            "batch_number" => "'{$_POST["batch_number"]}'",
-            "b_product_id" => "'{$_POST["b_product_id"]}'",
-            "order_number" => "'{$_POST["order_number"]}'",
+            "batch_number" => $_POST["batch_number"],
+            "b_product_id" => $_POST["b_product_id"],
+            "order_number" => $_POST["order_number"],
             //  "assigned_name" => "'{$_POST["assigned_name"]}'",
-            "assigned_id" => "'{$_POST["assigned_id"]}'",
-            "quantity" => "'{$_POST["quantity"]}'",
-            "client" => "'{$_POST["client"]}'",
-            "created_date" => "'{$curDate}'",
+            "assigned_id" => $_POST["assigned_id"],
+            "quantity" => $_POST["quantity"],
+            "client" => $_POST["client"],
+            "created_date" => $curDate,
             "hidden" => $_POST["hidden"]
             //   "assigned_name" => $_POST["assigned_name"]
         ];
 
         if ($_POST["composition_code"]) {
-            $ozPassportData["composition_code"] = "'{$_POST["composition_code"]}'";
+            $ozPassportData["composition_code"] = $_POST["composition_code"];
         }
 
         //$ozTzId = $request->addOzTz($ozTzData);
@@ -677,10 +654,10 @@ class LaboratoryController extends Controller
         $comment = $this->model('LabComment');
         $passport = $this->model('LabPassport');
 
-        $tzGostId = $_POST["id"];
+        $tzGostId = (int)$_POST["id"];
 
         $value = $_POST["value"];
-        $tzId = $_POST["tz_id"];
+        $tzId = (int)$_POST["tz_id"];
         $batchNumber = $_POST["batch_number"];
 
 
@@ -688,11 +665,11 @@ class LaboratoryController extends Controller
             "TEXT" => $_POST["ulab_comment"]
         ];
 
-        if ($_POST["ulab_comment_id"]) {
-            $comment->updateData($commentData, $_POST["ulab_comment_id"]);
+        if ((int)$_POST["ulab_comment_id"]) {
+            $comment->updateData($commentData, (int)$_POST["ulab_comment_id"]);
         } elseif ($_POST["ulab_comment"]) {
             $commentData["ID_REQ"] = $_POST["deal_id"];
-            $comment->add($commentData, $_POST["ulab_comment_id"]);
+            $comment->add($commentData, (int)$_POST["ulab_comment_id"]);
         }
 
         if ($value == "") {

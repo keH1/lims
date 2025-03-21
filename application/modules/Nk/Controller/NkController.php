@@ -168,31 +168,7 @@ class NkController extends Controller
         /** @var Nk $nkModel */
         $nkModel = $this->model('Nk');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart']));
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd']));
-        }
+        $filter = $nkModel->prepareFilter($_POST ?? []);
 
         $data = $nkModel->getGraduationJournal($filter);
 
@@ -203,7 +179,7 @@ class NkController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -246,8 +222,8 @@ class NkController extends Controller
         $response = [];
 
         if ( !empty($_POST['measurement_id']) && (int)$_POST['measurement_id'] > 0 ) {
-            $material = $gostModel->getMaterialByUgtpId($_POST['ugtp_id']);
-            $response = $nkModel->getGraduation($_POST['measurement_id']);
+            $material = $gostModel->getMaterialByUgtpId((int)$_POST['ugtp_id']);
+            $response = $nkModel->getGraduation((int)$_POST['measurement_id']);
             $response += $material;
         }
 

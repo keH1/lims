@@ -79,7 +79,7 @@ class ProbeController extends Controller
         /** @var Probe $probeModel */
         $probeModel = $this->model('Probe');
 
-        $probeModel->takeProbe((int)$umtrId, $_SESSION['SESS_AUTH']['USER_ID']);
+        $probeModel->takeProbe((int)$umtrId, (int)$_SESSION['SESS_AUTH']['USER_ID']);
 
         $dealId = $probeModel->getDealIdByProbe((int)$umtrId);
 
@@ -300,35 +300,7 @@ class ProbeController extends Controller
         /** @var  Request $request*/
         $request = $this->model('Request');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( !empty($column['search']['value']) ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart']));
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd']));
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
-        if ( !empty($_POST['everywhere']) ) {
-            $filter['search']['everywhere'] = $_POST['everywhere'];
-        }
+        $filter = $request->prepareFilter($_POST ?? []);
 
         $data = $request->getDatatoJournalActProbe($filter);
 
@@ -339,7 +311,7 @@ class ProbeController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -394,6 +366,7 @@ class ProbeController extends Controller
 
 		if ($_POST['arr']) {
 			foreach ($_POST['arr'] as $idUmtr) {
+                $idUmtr = (int)$idUmtr;
 				$probeModel->acceptProbe($idUmtr);
 			}
 		} else {
@@ -420,6 +393,7 @@ class ProbeController extends Controller
 
 		if ($_POST['arr']) {
 			foreach ($_POST['arr'] as $idUmtr) {
+                $idUmtr = (int)$idUmtr;
 				$probeModel->removeAcceptProbe($idUmtr);
 			}
 		} else {
@@ -443,7 +417,7 @@ class ProbeController extends Controller
         /** @var  Probe $probeModel */
         $probeModel = $this->model('Probe');
 
-        $data = $probeModel->get($_POST['id']);
+        $data = $probeModel->get((int)$_POST['id']);
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -461,8 +435,10 @@ class ProbeController extends Controller
         /** @var  Probe $probeModel */
         $probeModel = $this->model('Probe');
 
-        $data['info'] = $probeModel->get($_POST['id']);
-        $data['history'] = $probeModel->getHistory($_POST['id']);
+        $id = (int)$_POST['id'];
+
+        $data['info'] = $probeModel->get($id);
+        $data['history'] = $probeModel->getHistory($id);
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -479,7 +455,7 @@ class ProbeController extends Controller
         /** @var  Probe $probeModel */
         $probeModel = $this->model('Probe');
 
-        $id = $_POST['id'];
+        $id = (int)$_POST['id'];
         $prop = $_POST['checked'];
 
         $probeModel->setSelectionType($id, $prop);

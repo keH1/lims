@@ -307,7 +307,9 @@ class Probe extends Model
         $requestModel = new Request();
 		$probeModel = new Probe();
 
-//        $requestData = $requestModel->getDealById($data['deal_id']);
+        $actId = (int)$data['act_id'];
+        $actType = (int)$data['actType'];
+        $dealId = (int)$data['deal_id'];
 
         $curYear = date("Y");
 
@@ -331,16 +333,16 @@ class Probe extends Model
             'PROBE_IN_LAB' => 1,
         ];
 
-        if ( !empty($data['act_id']) ) { // обновление
+        if ( !empty($actId) ) { // обновление
             $historyType = "Обновление АКТа приемки проб";
             $sqlData = $this->prepearTableData('ACT_BASE', $actData);
-            $this->DB->Update('ACT_BASE', $sqlData, "where ID = {$data['act_id']}");
+            $this->DB->Update('ACT_BASE', $sqlData, "where ID = {$actId}");
         } else { // добавление
             $historyType = "Формирование АКТа приемки проб";
             $maxNumAct = $this->DB->Query(
                 "select max(CONVERT(ACT_NUM, UNSIGNED INTEGER )) as max 
                 FROM `ACT_BASE` 
-                WHERE `act_type` = {$data['actType']} AND `ACT_DATE` > '{$curYear}-01-01'"
+                WHERE `act_type` = {$actType} AND `ACT_DATE` > '{$curYear}-01-01'"
             )->Fetch();
 
             $numAct = $maxNumAct['max'] + 1;
@@ -355,10 +357,10 @@ class Probe extends Model
         }
 
         $requestSqlData = $this->prepearTableData('ba_tz', $requestData);
-        $requestModel->updateTz($data['deal_id'], $requestSqlData);
+        $requestModel->updateTz($dealId, $requestSqlData);
 
         // TODO: для старой версии
-        $where = "mtr.ID_DEAL = {$data['deal_id']}";
+        $where = "mtr.ID_DEAL = {$dealId}";
 
         $stmpMtr = $this->DB->Query(
             "SELECT 
@@ -379,21 +381,23 @@ class Probe extends Model
         );
 
         while ($row = $stmpMtr->Fetch()) {
+            $ptmId = (int)$row['ptm_id'];
             $date = strtotime($row['ACT_DATE']);
             $year = date("Y", $date) % 10 ? substr(date("Y", $date), -2) : date("Y", $date);
 
             $cipher = $row['ACT_NUM'] . '.' . $row['num'] . '/' . $year;
 
             $dateProbe = [
-                'cipher' => "'{$cipher}'"
+                'cipher' => $cipher
             ];
 
-            $this->DB->Update("probe_to_materials", $dateProbe, "WHERE id = {$row['ptm_id']}");
+            $sqlData = $this->prepearTableData('probe_to_materials', $dateProbe);
+            $this->DB->Update("probe_to_materials", $sqlData, "WHERE id = {$ptmId}");
         }
 
 
         // собирает шифры для проб в заявке, для таблицы ulab_material_to_request
-        $umtrWhere = "umtr.deal_id = {$data['deal_id']}";
+        $umtrWhere = "umtr.deal_id = {$dealId}";
 
         $umtr = $this->DB->Query(
             "SELECT
@@ -414,6 +418,7 @@ class Probe extends Model
 
         $i = 1;
         while ($row = $umtr->Fetch()) {
+            $umtrId = (int)$row['umtr_id'];
             $date = strtotime($row['ACT_DATE']);
             $year = date("Y", $date) % 10 ? substr(date("Y", $date), -2) : date("Y", $date);
 
@@ -421,13 +426,14 @@ class Probe extends Model
             $cipher = $row['ACT_NUM'] . '.' . $i . '/' . $year;
 
             $dateProbe = [
-                'cipher' => "'{$cipher}'"
+                'cipher' => $cipher
             ];
 
-            $this->DB->Update("ulab_material_to_request", $dateProbe, "WHERE id = {$row['umtr_id']}");
+            $sqlData = $this->prepearTableData('ulab_material_to_request', $dateProbe);
+            $this->DB->Update("ulab_material_to_request", $sqlData, "WHERE id = {$umtrId}");
             $i++;
 
-            $probeModel->addHistory($row['umtr_id'], "Пробу принял");
+            $probeModel->addHistory($umtrId, "Пробу принял");
         }
 
 
@@ -454,7 +460,9 @@ class Probe extends Model
 		$requestModel = new Request();
 		$requirementModel = new Requirement();
 
-		$tzId = $requirementModel->getTzIdByDealId($data['deal_id']);
+        $dealId = (int)$data['deal_id'];
+
+		$tzId = $requirementModel->getTzIdByDealId($dealId);
 
 		$curYear = date("Y");
 		$curYearCipher = date("y");
@@ -470,9 +478,10 @@ class Probe extends Model
 		];
 
 		if ( !empty($data['act_id']) ) { // обновление
+		    $actId = (int)$data['act_id'];
 			$historyType = "Обновление АКТа приемки проб";
 			$sqlData = $this->prepearTableData('ACT_BASE', $actData);
-			$this->DB->Update('ACT_BASE', $sqlData, "where ID = {$data['act_id']}");
+			$this->DB->Update('ACT_BASE', $sqlData, "where ID = {$actId}");
 		} else { // добавление
 			$historyType = "Формирование АКТа приемки проб";
 
@@ -487,21 +496,22 @@ class Probe extends Model
 		}
 
 		$requestSqlData = $this->prepearTableData('ba_tz', $requestData);
-		$requestModel->updateTz($data['deal_id'], $requestSqlData);
+		$requestModel->updateTz($dealId, $requestSqlData);
 
 		$i = 1;
 		foreach ($data['probe'] as $umtr_id => $val) {
+            $umtrId = (int)$umtr_id;
 
 			$val['cipher'] = $data['ACT_NUM'] . '.' . $i . "/$curYearCipher";
 			$val['in_act'] = 1;
 
-			$this->setLabHeaderByUmtrId($umtr_id);
+			$this->setLabHeaderByUmtrId($umtrId);
 
 			$umtrSqlData = $this->prepearTableData('ulab_material_to_request', $val);
-			$this->DB->Update('ulab_material_to_request', $umtrSqlData, "where id = {$umtr_id}");
+			$this->DB->Update('ulab_material_to_request', $umtrSqlData, "where id = {$umtrId}");
 			$i++;
 
-			$this->addHistory($umtr_id, "Пробу принял");
+			$this->addHistory($umtrId, "Пробу принял");
 		}
 
 
@@ -569,6 +579,7 @@ class Probe extends Model
 
 	public function setLabHeaderByUmtrId($umtr_id)
 	{
+        $umtr_id = (int)$umtr_id;
 		$sql = $this->DB->Query("select * 
 							from ulab_material_to_request as umtr
 							join ulab_gost_to_probe as ugtp on umtr.id = material_to_request_id 

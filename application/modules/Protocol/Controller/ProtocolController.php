@@ -126,39 +126,7 @@ Class ProtocolController extends Controller
         /** @var  Protocol $protocol */
         $protocol = $this->model('Protocol');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'], // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( !empty($column['search']['value']) ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart']));
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd']));
-        }
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
-        if ( !empty($_POST['everywhere']) ) {
-            $filter['search']['everywhere'] = $_POST['everywhere'];
-        }
+        $filter = $protocol->prepareFilter($_POST ?? []);
 
         $data = $protocol->getDataToJournal($filter);
 
@@ -169,7 +137,7 @@ Class ProtocolController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -181,7 +149,7 @@ Class ProtocolController extends Controller
     /**
      * @desc Проверяет данные у протокола перед формированием
      */
-    public function validateProtocolAjax()
+    public function cc()
     {
         global $APPLICATION;
 
@@ -190,7 +158,7 @@ Class ProtocolController extends Controller
         /** @var  Protocol $protocolModel */
         $protocolModel = $this->model('Protocol');
 
-		if (!in_array($_POST['protocol_id'], [5675, 5651, 5711, 5679, 5752, 5810, 5754, 5755, 5803, 5834, 5875, 5913,
+		if (!in_array((int)$_POST['protocol_id'], [5675, 5651, 5711, 5679, 5752, 5810, 5754, 5755, 5803, 5834, 5875, 5913,
 			5929, 5930,	5912, 5911, 5866, 5856, 5783, 6001, 6002, 5975, 6030, 6042, 6047, 5843, 6045, 6061, 6060, 6057,
 			6064, 6065, 6070, 6166, 6167, 6168, 6171, 6173, 6174, 6179, 6176, 6177, 6186, 6185, 6190, 6192, 6170, 6197,
 			6199, 5888, 6200, 6201, 6202, 6203, 6204, 6205, 6207, 6195, 5988, 6226, 6225, 6227, 6251, 6252, 6206, 6265,
@@ -198,7 +166,7 @@ Class ProtocolController extends Controller
 			6336, 6333, 6371, 6404, 6440, 6342, 6425, 6607, 6610, 6687, 6651, 6650, 6749, 6788, 6789, 6790, 6595, 6734,
 			6947, 6930, 6931, 6840, 6962, 7078, 7086, 7224, 6786, 7273, 7213, 7237, 7271, 7272, 7280, 7281, 7417, 7380,
 			7523, 7524, 7536, 7538, 7539, 7540, 7424, 7537, 7628, 8235, 8080, 8321, 8457, 8458, 8468]) ) {
-        	$result = $protocolModel->validateProtocol($_POST['protocol_id']);
+        	$result = $protocolModel->validateProtocol((int)$_POST['protocol_id']);
 		}
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -217,7 +185,7 @@ Class ProtocolController extends Controller
         /** @var  Protocol $protocolModel */
         $protocolModel = $this->model('Protocol');
 
-        $result = $protocolModel->saveSig($_POST['id'], $_POST['file_name'], $_POST['sign']);
+        $result = $protocolModel->saveSig((int)$_POST['id'], $_POST['file_name'], $_POST['sign']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -235,7 +203,7 @@ Class ProtocolController extends Controller
         /** @var DocumentGenerator $generatorModel */
         $generatorModel = $this->model('DocumentGenerator');
 
-        $result = $generatorModel->sigProtocol($_POST['protocol_id']);
+        $result = $generatorModel->sigProtocol((int)$_POST['protocol_id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }

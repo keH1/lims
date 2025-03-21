@@ -59,7 +59,9 @@ class ParasiteController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $data = $usedModel->getList($this->postToFilter($_POST));
+        $filter = $usedModel->prepareFilter($_POST ?? []);
+
+        $data = $usedModel->getList($filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -68,7 +70,7 @@ class ParasiteController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -141,7 +143,7 @@ class ParasiteController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $data = $usedModel->addSeedingResult($_POST['sampling_id']);
+        $data = $usedModel->addSeedingResult((int)$_POST['sampling_id']);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }

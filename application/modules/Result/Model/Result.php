@@ -3122,7 +3122,7 @@ class Result extends Model
 
         foreach ($umtr as $key => $val) {
             if (!empty($val['protocol_id']) && empty($_POST['probe_checkbox'][$val['id']])) {
-                $result = $this->updateMaterialToRequest($val['id'], $mtrData);
+                $result = $this->updateMaterialToRequest((int)$val['id'], $mtrData);
 
                 if ($result !== 1) {
                     $response = [
@@ -3167,6 +3167,7 @@ class Result extends Model
         $placeProbe = !empty($data['PLACE_PROBE']) ? $data['PLACE_PROBE'] : '-';
 
         foreach ($data['probe_checkbox'] as $umtrId => $val) {
+            $umtrId = (int)$umtrId;
             $umtr = $this->materialToRequestData($umtrId);
 
             if (!empty($umtr['protocol_id']) && (int)$umtr['protocol_id'] !== $protocolId) {
@@ -3194,6 +3195,7 @@ class Result extends Model
         }
 
         foreach ($data['gost_check'] as $ugtpId => $val) {
+            $ugtpId = (int)$ugtpId;
             $ugtp = $this->DB->Query("select * from ulab_gost_to_probe where id = {$ugtpId}")->Fetch();
 
             if ( !empty($ugtp['protocol_id']) ) {
