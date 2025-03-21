@@ -627,7 +627,6 @@ $("[data-js-delete-file]").click(function (e) {
     let filesWrap = $(this).parent();
   //  let addButton = $(filesWrap).find("[data-js-upload-wrap]");
     let fileButton = $(filesWrap).find("[data-js-file-wrap]");
-    console.log(filesWrap)
     $(filesWrap).hide(300)
     $(fileButton).hide(300)
   //  $(addButton).show(300)
@@ -635,7 +634,6 @@ $("[data-js-delete-file]").click(function (e) {
 })
 
 $('#city').select2({
-
     ajax: {
         url: "/ulab/secondment/getSettlementsAjax",
         type: "post",
@@ -643,7 +641,7 @@ $('#city').select2({
         delay: 250,
         data: function (params) {
             return {
-                searchTerm: params.term || '*' // search term
+                searchTerm: params.term || '' // search term
             };
         },
         processResults: function (response) {

@@ -389,7 +389,7 @@
                         </tr>
                         <tr>
                             <td>Километраж</td>
-                            <td><input type="number" name="KM" style="width: 100%"></td>
+                            <td><input type="number" name="KM" min="0" step="any" style="width: 100%" value="1"></td>
                         </tr>
                         <tr>
                             <td>Координаты</td>
@@ -417,18 +417,6 @@
             </div>
         </div>
     </div>
-
-<!--    <div class="row mb-3">-->
-<!--        <div class="col">-->
-<!--            <select class="form-select" id="project_id" name="project_id">-->
-<!--                --><?php //foreach ($this->data["projects"] as $project): ?>
-<!--                    <option value="--><?//= $project["id"] ?><!--">-->
-<!--                        --><?//= $project["name"] ?>
-<!--                    </option>-->
-<!--                --><?php //endforeach; ?>
-<!--            </select>-->
-<!--        </div>-->
-<!--    </div>-->
 
     <div class="row mb-3">
         <div class="col">

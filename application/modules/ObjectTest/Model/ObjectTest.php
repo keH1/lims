@@ -3,21 +3,12 @@
 class ObjectTest extends Model
 {
     public function add($data) {
+        $data['KM'] = floatval($data['KM']);
+        $data['ID_COMPANY'] = intval($data['ID_COMPANY']);
+        $data['CITY_ID'] = intval($data['CITY_ID']);
+
         $sqlData = $this->prepearTableData('DEV_OBJECTS', $data);
         $this->DB->Insert('DEV_OBJECTS', $sqlData);
-//       // $this->DB->Insert('DEV_OBJECTS', $data);
-//        [
-//            "NAME" => $name,
-//            "ID_COMPANY" => $companyId,
-//            "COORD" => $coord,
-//            "CITY_ID" => $city,
-//            "KM" => $km
-//        ] = $data;
-//
-//        $this->DB->Query("
-//            INSERT INTO `DEV_OBJECTS` (NAME, ID_COMPANY, COORD, CITY_ID, KM)
-//            VALUES ('{$name}', {$companyId}, '{$coord}', {$city}, {$km})
-//        ");
 
         return intval($this->DB->LastID());
     }
