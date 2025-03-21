@@ -1,13 +1,7 @@
 $(function ($) {
-
     let body = $('body')
-    /*recipe journal*/
+
     let precursorJournal = $('#scales_journal').DataTable({
-        processing: true,
-        serverSide: true,
-        bAutoWidth: false,
-        autoWidth: false,
-        fixedColumns: false,
         ajax: {
             type: 'POST',
             data: function (d) {
@@ -18,7 +12,6 @@ $(function ($) {
             },
             url: '/ulab/scale/getListProcessingAjax/',
             dataSrc: function (json) {
-                console.log(json);
                 return json.data
             },
         },
@@ -44,7 +37,7 @@ $(function ($) {
             },
             {
                 data: 'number',
-                orderable: false
+                // orderable: false
             },
             {
                 data: 'date_calibration'
@@ -83,68 +76,36 @@ $(function ($) {
             }
 
         ],
-
-        columnDefs: [{
-            className: 'control',
-            /*'targets': */
-            'orderable': false,
-        }],
+        // columnDefs: [{
+        //     className: 'control',
+        //     'orderable': false,
+        // }],
         language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
         pageLength: 25,
         order: [],
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX: true,
         fixedHeader: false,
-
     })
 
-    precursorJournal.columns().every( function () {
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            precursorJournal
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
+    precursorJournal.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                precursorJournal
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 
-
-    /*journal buttons*/
     let container = $('div.dataTables_scrollBody'),
         scroll = $('#fridgecontrol_journal').width()
 
@@ -169,9 +130,6 @@ $(function ($) {
             $('.arrowLeft').css('transform', `translateY(${positionScroll - 250}px)`)
         }
     })
-
-
-
 
     /** modal */
     $('.popup-first').magnificPopup({
