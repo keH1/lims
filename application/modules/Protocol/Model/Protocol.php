@@ -100,12 +100,6 @@ class Protocol extends Model
             'dir' => 'DESC'
         ];
         if ( !empty($filter) ) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
-
-            // работа с фильтрами
             if ( !empty($filter['search']) ) {
                 // Протокол
                 if ( isset($filter['search']['NUMBER_AND_YEAR']) ) {
@@ -149,8 +143,39 @@ class Protocol extends Model
                     $where .= "b.MATERIAL LIKE '%{$filter['search']['MATERIAL']}%' AND ";
                 }
                 // Ответственный
-                if ( isset($filter['search']['ASSIGNED']) ) {
-                    $where .= "usr.LAST_NAME LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
+                if (isset($filter['search']['ASSIGNED'])) {
+                    $searchText = $filter['search']['ASSIGNED'];
+                    
+                    $searchNames = explode(',', $searchText);
+                    $whereNames = [];
+                    
+                    foreach ($searchNames as $searchName) {
+                        $searchName = trim($searchName);
+                        if (empty($searchName)) continue;
+                        
+                        if (mb_strlen($searchName, 'UTF-8') === 1) {
+                            $whereNames[] = "(EXISTS (
+                                SELECT 1 FROM assigned_to_request AS ass 
+                                JOIN b_user AS usr ON ass.user_id = usr.ID 
+                                WHERE ass.deal_id = b.ID_Z AND
+                                (usr.NAME LIKE '{$searchName}%' OR 
+                                    usr.LAST_NAME LIKE '{$searchName}%')
+                            ))";
+                        } else {
+                            $whereNames[] = "(EXISTS (
+                                SELECT 1 FROM assigned_to_request AS ass 
+                                JOIN b_user AS usr ON ass.user_id = usr.ID 
+                                WHERE ass.deal_id = b.ID_Z AND
+                                (usr.NAME LIKE '%{$searchName}%' OR 
+                                    usr.LAST_NAME LIKE '%{$searchName}%' OR
+                                    CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) LIKE '%{$searchName}%')
+                            ))";
+                        }
+                    }
+                    
+                    if (!empty($whereNames)) {
+                        $where .= "(" . implode(' OR ', $whereNames) . ") AND ";
+                    }
                 }
                 // ТЗ
                 if ( isset($filter['search']['tz']) ) {
@@ -270,7 +295,12 @@ class Protocol extends Model
                         $order['by'] = 'b.MATERIAL';
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = 'b.ASSIGNED';
+                        $order['by'] = "(SELECT SUBSTRING(usr.NAME, 1, 1) 
+                                        FROM assigned_to_request AS ass 
+                                        JOIN b_user AS usr ON ass.user_id = usr.ID 
+                                        WHERE ass.deal_id = b.ID_Z 
+                                        ORDER BY ass.is_main DESC
+                                        LIMIT 1)";
                         break;
                     case 'DOGOVOR_TABLE':
                         $order['by'] = 'b.DOGOVOR_TABLE';
