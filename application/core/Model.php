@@ -95,11 +95,8 @@ class Model
                 continue;
             }
 
-            // $postData[$param] как проверить что параметр может быть обработан $value = trim(strip_tags($postData[$param])); и $filter['search'][$param] = $this->DB->ForSql($value);
-
-            // Как нибудь можно уйти от дублирования кода $value = trim(strip_tags($postData[$param])); и $filter['search'][$param] = $this->DB->ForSql($value);?
             if (in_array($param, ['stage'])) {
-                if (isset($postData[$param]) && !is_array($postData[$param])) { // Может если массив то экранировать все значения? array_map($this->DB->ForSql($value), $postData[$param])
+                if (isset($postData[$param]) && !is_array($postData[$param])) {
                     $value = trim(strip_tags($postData[$param]));
                     $filter['search'][$param] = $this->DB->ForSql($value);
                 }
@@ -112,26 +109,6 @@ class Model
                 }
             }
         }
-
-//        $room = isset($postData['room']) ? trim(strip_tags($postData['room'])) : '';
-//        if (!empty($room)) {
-//            $filter['search']['room'] = $this->DB->ForSql($room);
-//        }
-//
-//        $lab = isset($postData['lab']) ? trim(strip_tags($postData['lab'])) : '';
-//        if (!empty($lab)) {
-//            $filter['search']['lab'] = $this->DB->ForSql($lab);
-//        }
-//
-//        $stage = isset($postData['stage']) ? trim(strip_tags($postData['stage'])) : '';
-//        if ($stage !== '') {
-//            $filter['search']['stage'] = $this->DB->ForSql($stage);
-//        }
-//
-//        $idWhichFilter = isset($postData['idWhichFilter']) ? trim(strip_tags($postData['idWhichFilter'])) : '';
-//        if ($idWhichFilter !== '') {
-//            $filter['idWhichFilter'] = $this->DB->ForSql($idWhichFilter);
-//        }
 
         return $filter;
     }
@@ -189,24 +166,6 @@ class Model
 
         return $result;
     }
-
-//    protected function getColumnsByTable($tableName)
-//    {
-//        $dbName = $this->DB->DBName;
-//
-//        $sql = $this->DB->Query(
-//            "SELECT `COLUMN_NAME`, `DATA_TYPE`
-//                FROM `INFORMATION_SCHEMA`.`COLUMNS`
-//                WHERE `TABLE_SCHEMA`='{$dbName}' AND `TABLE_NAME`='{$tableName}'");
-//
-//        $result = [];
-//
-//        while ($row = $sql->Fetch()) {
-//            $result[$row['COLUMN_NAME']] = $row['DATA_TYPE'];
-//        }
-//
-//        return $result;
-//    }
 
     protected function getColumnsMetadata(string $tableName): array
     {
@@ -314,83 +273,6 @@ class Model
 
         return $sqlData;
     }
-
-//    protected function prepearTableData($table, $data)
-//    {
-//        $columns = $this->getColumnsByTable($table);
-//
-//        $sqlData = [];
-//
-//        foreach ($columns as $column => $type) {
-//            if ( $column == 'id' ) {
-//                continue;
-//            }
-//            if (isset($data[$column])) {
-//                $rawValue = trim(strip_tags($data[$column]));
-//
-//                switch ($type) {
-//                    case 'int':
-//                    case 'tinyint':
-//                    case 'smallint':
-//                    case 'mediumint':
-//                    case 'bigint':
-//                        $value = is_numeric($rawValue) ? intval($rawValue) : 0;
-//                        $sqlData[$column] = $value;
-//                        break;
-//
-//                    case 'decimal':
-//                    case 'float':
-//                    case 'double':
-//                        if (is_numeric($rawValue)) {
-//                            $value = $this->quoteStr($this->DB->ForSql($rawValue));
-//                        } else {
-//                            $value = 0;
-//                        }
-//                        $sqlData[$column] = $value;
-//                        break;
-//
-//                    case 'date':
-//                        if ($rawValue === '') {
-//                            $value = "NULL";
-//                        } else {
-//                            $dateObj = $this->parseDateValue($rawValue, ['Y-m-d H:i:s', 'Y-m-d', 'Y-m-d\TH:i:s', 'Y-m-d\TH:i']);
-//                            if ($dateObj) {
-//                                $value = $this->quoteStr($this->DB->ForSql($dateObj->format('Y-m-d')));
-//                            } else {
-//                                $value = "NULL";
-//                            }
-//                        }
-//                        $sqlData[$column] = $value;
-//                        break;
-//
-//                    case 'datetime':
-//                    case 'timestamp':
-//                        if ($rawValue === '') {
-//                            $value = "NULL";
-//                        } else {
-//                            $dateObj = $this->parseDateValue($rawValue, ['Y-m-d H:i:s', 'Y-m-d', 'Y-m-d\TH:i:s', 'Y-m-d\TH:i']);
-//                            if ($dateObj) {
-//                                if ($dateObj->format('H:i:s') === '00:00:00' && strpos($rawValue, ':') === false) {
-//                                    $formatted = $dateObj->format('Y-m-d') . ' 00:00:00';
-//                                } else {
-//                                    $formatted = $dateObj->format('Y-m-d H:i:s');
-//                                }
-//                                $value = $this->quoteStr($this->DB->ForSql($formatted));
-//                            } else {
-//                                $value = "NULL";
-//                            }
-//                        }
-//                        $sqlData[$column] = $value;
-//                        break;
-//
-//                    default:
-//                        $sqlData[$column] = $this->quoteStr($this->DB->ForSql($rawValue));
-//                }
-//            }
-//        }
-//
-//        return $sqlData;
-//    }
 
     public function __construct()
     {
