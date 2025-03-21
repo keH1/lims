@@ -389,7 +389,7 @@
                         </tr>
                         <tr>
                             <td>Километраж</td>
-                            <td><input type="number" name="KM" min="0" style="width: 100%" value="1"></td>
+                            <td><input type="number" name="KM" min="0" step="any" style="width: 100%" value="1"></td>
                         </tr>
                         <tr>
                             <td>Координаты</td>

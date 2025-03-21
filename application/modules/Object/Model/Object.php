@@ -4,7 +4,7 @@ class Object extends Model
 {
     public function add($data)
     {
-        $data['KM'] = intval($data['KM']);
+        $data['KM'] = floatval($data['KM']);
         $data['ID_COMPANY'] = intval($data['ID_COMPANY']);
         $data['CITY_ID'] = intval($data['CITY_ID']);
 
