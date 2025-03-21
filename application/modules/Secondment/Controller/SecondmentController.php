@@ -349,6 +349,8 @@ class SecondmentController extends Controller
                 $this->showErrorMessage($valid['error']);
                 $this->redirect($location);
             }
+        } else {
+            $_POST['settlement_id'] = 0;
         }
 
         if (isset($_POST['object_id'])) {
@@ -359,13 +361,9 @@ class SecondmentController extends Controller
             }
         }
 
-//        if (isset($_POST['contract_id'])) {
-//            $valid = $this->validateNumber($_POST['contract_id'], 'Договор', false);
-//            if (!$valid['success']) {
-//                $this->showErrorMessage($valid['error']);
-//                $this->redirect($location);
-//            }
-//        }
+        if (!isset($_POST['contract_id'])) {
+            $_POST['contract_id'] = 0;
+        }
 
         if (isset($_POST['date_begin'])) {
             $valid = $this->validateDate($_POST['date_begin'], 'Дата начала командировки', true);
@@ -471,17 +469,17 @@ class SecondmentController extends Controller
             }
 
             $data = [
-                'user_id' => $_POST['user_id'],
-                'settlement_id' => $_POST['settlement_id'],
-                'object_id' => $_POST['object_id'],
-                'company_id' => $_POST['company_id'],
-                'contract_id' => $_POST['contract_id'],
+                'user_id' => intval($_POST['user_id']),
+                'settlement_id' => intval($_POST['settlement_id']),
+                'object_id' => intval($_POST['object_id']),
+                'company_id' => intval($_POST['company_id']),
+                'contract_id' => intval($_POST['contract_id']),
                 'contract_type' => $_POST['contract_type'],
                 'contract' => $_POST['contract'],
                 'date_begin' => $_POST['date_begin'],
                 'date_end' => $_POST['date_end'],
                 'total_days' => $_POST['total_days'],
-                'vehicle_id' => $_POST['transport'],
+                'vehicle_id' => intval($_POST['transport']),
                 'content' => $_POST['content'],
                 'comment' => $_POST['comment'],
                 'ticket_price' => $_POST['ticket_price'],
@@ -494,7 +492,7 @@ class SecondmentController extends Controller
                 'comment_per_diem' => $_POST['comment_per_diem'],
                 'accommodation' => $_POST['accommodation'],
                 'comment_accommodation' => $_POST['comment_accommodation'],
-                'other' => $_POST['other'],
+                'other' => floatval($_POST['other']),
                 'comment_other' => $_POST['comment_other'],
                 'planned_expenses' => $_POST['planned_expenses'],
                 'comment_planned_expenses' => $_POST['comment_planned_expenses']
