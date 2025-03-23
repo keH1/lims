@@ -833,7 +833,7 @@ class Request extends Model
                 }
                 // Стоимость
                 if ( isset($filter['search']['price_discount']) ) {
-                    $where .= "b.price_discount = '{$filter['search']['price_discount']}' AND ";
+                    $where .= "b.price_discount like '%{$filter['search']['price_discount']}%' AND ";
                 }
                 // Дата оплаты
                 if ( isset($filter['search']['DATE_OPLATA']) ) {
