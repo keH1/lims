@@ -1431,7 +1431,7 @@ class Request extends Model
 
 
     /**
-     * журнал акта приёмки проб
+     * Журнал акта приёмки проб
      * @param array $filter
      * @return array
      */
@@ -1444,6 +1444,7 @@ class Request extends Model
             'dir' => 'DESC'
         ];
 
+        $labModel = new Lab();
         $permissionModel = new Permission();
         $perm = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
 
@@ -1462,6 +1463,10 @@ class Request extends Model
                 // Заявка
                 if ( isset($filter['search']['REQUEST_TITLE']) ) {
                     $where .= "b.REQUEST_TITLE LIKE '%{$filter['search']['REQUEST_TITLE']}%' AND ";
+                }
+                // Шифры
+                if ( isset($filter['search']['CIPHER']) ) {
+                    $where .= "umtr.cipher LIKE '%{$filter['search']['CIPHER']}%' AND ";
                 }
                 // Дата
                 if ( isset($filter['search']['DATE_ACT']) ) {
@@ -1494,19 +1499,6 @@ class Request extends Model
                 // Лаборатории
                 if ( isset($filter['search']['lab']) ) {
                     $where .= "b.LABA_ID LIKE '%{$filter['search']['lab']}%' AND ";
-                }
-                // везде
-                if ( isset($filter['search']['everywhere']) ) {
-                    $where .=
-                        "(
-                        b.NUM_ACT_TABLE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.DOGOVOR_TABLE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.DATE_ACT LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.COMPANY_TITLE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.MATERIAL LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.ASSIGNED LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.REQUEST_TITLE LIKE '%{$filter['search']['everywhere']}%'  
-                        ) AND ";
                 }
             }
 
@@ -1564,10 +1556,12 @@ class Request extends Model
 
 
         $data = $this->DB->Query(
-            "SELECT DISTINCT b.ID b_id, b.TZ, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, 
-                        b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, b.ASSIGNED, a.ACT_NUM 
+            "SELECT DISTINCT b.ID b_id, b.TZ, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
+                        b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, b.ASSIGNED, a.ACT_NUM,
+                        GROUP_CONCAT(umtr.cipher SEPARATOR ', ') as CIPHER
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
+                    inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
@@ -1578,6 +1572,7 @@ class Request extends Model
             "SELECT b.ID val
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
+                    inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' 
@@ -1587,6 +1582,7 @@ class Request extends Model
             "SELECT b.ID val
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
+                    inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
@@ -1610,18 +1606,14 @@ class Request extends Model
                 $row['ASSIGNED'] = implode(', ', $arrAss);
             }
 
-            $cipher = $this->getCipherByDealId($row['ID_Z']);
-            $arrCipher = [];
-
-			foreach ($cipher as $item) {
-				$arrCipher[] = $item['cipher'];
-			}
-
-			if (!empty($arrCipher)) {
-				$row['CIPHER'] = implode(', ', $arrCipher);
-			} else {
-				$row['CIPHER'] = '';
-			}
+//            $labs = [];
+//            if (!empty($row['LABA_ID'])) {
+//                $labs = implode(',', $row['LABA_ID']);
+//            }
+//
+//            foreach ($labs as $lab) {
+//                $labModel->getLabByUserId()
+//            }
 
 			$protocols = $this->getProtocolsByTzId($row['b_id']);
 			$protocolsData = [];
@@ -1972,25 +1964,6 @@ class Request extends Model
         return $result;
     }
 
-	/**
-	 * @param $dealId
-	 */
-    public function getCipherByDealId($dealId)
-	{
-		$cipherArr = $this->DB->Query(
-			"SELECT * FROM MATERIALS_TO_REQUESTS mtr, probe_to_materials ptm WHERE ptm.material_request_id = mtr.ID AND mtr.ID_DEAL = {$dealId}");
-
-		$result = [];
-
-		while ($cipher = $cipherArr->Fetch()) {
-			$result[] = [
-				'cipher' => $cipher['cipher']
-			];
-		}
-
-		return $result;
-
-	}
 
     /**
      * добавляет к ответственным в заявке новых ответственных

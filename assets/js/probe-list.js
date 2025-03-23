@@ -24,6 +24,7 @@ $(function ($) {
             },
             {
                 data: 'CIPHER',
+                orderable: false,
                 render: $.fn.dataTable.render.ellipsis(40, true)
             },
             {
