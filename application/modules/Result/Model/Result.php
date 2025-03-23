@@ -590,7 +590,8 @@ class Result extends Model
      */
     public function addTrialResults(array $data): int
     {
-        $result = $this->DB->Insert('ulab_trial_results', $data);
+        $sqlData = $this->prepearTableData('ulab_trial_results', $data);
+        $result = $this->DB->Insert('ulab_trial_results', $sqlData);
 
         return intval($result);
     }
@@ -604,8 +605,10 @@ class Result extends Model
      */
     public function updateTrialResults(int $ugtp_id, array $data)
     {
+        $sqlData = $this->prepearTableData('ulab_trial_results', $data);
+
         $where = "WHERE gost_to_probe_id = {$ugtp_id}";
-        return $this->DB->Update('ulab_trial_results', $data, $where);
+        return $this->DB->Update('ulab_trial_results', $sqlData, $where);
     }
 
     /**
@@ -2149,6 +2152,8 @@ class Result extends Model
         $dateEnd = $data['DATE_END'] ?? '';
         $changeTrialsDate = !empty($data['CHANGE_TRIALS_DATE']) ? 1 : 0;
         foreach ($ugtpIds as $ugtpId) {
+            $ugtpId = (int)$ugtpId;
+
             //если даты начала испытаний нет
             if (!$dateBegin) {
                 continue;
@@ -2173,22 +2178,25 @@ class Result extends Model
                 foreach ($startTrial as $data) {
                     if ($data['state'] === 'start') {
                         $dataUpdate = [
-                            'date' => '"' . $dateBegin . '"',
+                            'date' => $dateBegin,
                         ];
 
-                        $where = "WHERE id = {$data['id']}";
+                        $dataUpdate = $this->prepearTableData('ulab_start_trials', $dataUpdate);
+
+                        $where = "WHERE id = " . (int)$data['id'];
                         $this->DB->Update('ulab_start_trials', $dataUpdate, $where);
                     }
                 }
             } else {
                 $dataStart = [
                     'ugtp_id' => $ugtpId,
-                    'state' => "'start'",
-                    'date' => '"' . $dateBegin . '"',
+                    'state' => 'start',
+                    'date' => $dateBegin,
                     'user' => $currentUserId,
                     'is_actual' => 1,
                     'is_change' => 1,
                 ];
+                $dataStart = $this->prepearTableData('ulab_start_trials', $dataStart);
                 $this->DB->Insert('ulab_start_trials', $dataStart);
             }
 
@@ -2196,10 +2204,12 @@ class Result extends Model
                 foreach ($startTrial as $data) {
                     if ($data['state'] === 'complete') {
                         $dataUpdate = [
-                            'date' => '"' . $dateEnd . '"',
+                            'date' => $dateEnd,
                         ];
 
-                        $where = "WHERE id = {$data['id']}";
+                        $dataUpdate = $this->prepearTableData('ulab_start_trials', $dataUpdate);
+
+                        $where = "WHERE id = " . (int)$data['id'];
                         $this->DB->Update('ulab_start_trials', $dataUpdate, $where);
                     }
                 }
@@ -2207,12 +2217,13 @@ class Result extends Model
                 if ($dateEnd) {
                     $dataStop = [
                         'ugtp_id' => $ugtpId,
-                        'state' => "'complete'",
-                        'date' => '"' . $dateEnd . '"',
+                        'state' => 'complete',
+                        'date' => $dateEnd,
                         'user' => $currentUserId,
                         'is_actual' => 1,
                         'is_change' => 1,
                     ];
+                    $dataStop = $this->prepearTableData('ulab_start_trials', $dataStop);
                     $this->DB->Insert('ulab_start_trials', $dataStop);
                 }
             }
@@ -3225,7 +3236,7 @@ class Result extends Model
         $protocolModel = new Protocol;
 
         $protocol = $protocolModel->getProtocolById($protocolId);
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission((int)$_SESSION['SESS_AUTH']['USER_ID']);
 
         $data['VERIFY'] = serialize($data['VERIFY']);
         $data['NO_COMPLIANCE'] = $data['NO_COMPLIANCE'] ?? 0;
@@ -3415,7 +3426,7 @@ class Result extends Model
         $labModel = new Lab();
 
         foreach ($data as $ugtpId => $item) {
-            $roomId = $item['room_id'];
+            $roomId = (int)$item['room_id'];
             $sqlData = [
                 'ugtp_id' => $ugtpId,
                 'room_id' => $roomId,
@@ -3443,6 +3454,7 @@ class Result extends Model
                 );
             }
 
+            $sqlData = $this->prepearTableData('ulab_gost_room', $sqlData);
             $this->DB->Insert('ulab_gost_room', $sqlData);
 
             $this->startTrial($ugtpId);

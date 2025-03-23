@@ -1575,6 +1575,8 @@ class Methods extends Model
         $isSuccess = true;
         $errors = []; // тексты сообщений ошибок
         $conditionList = "<a href='".URI."/lab/conditionList'>Журнал условий</a>";
+        $dateStart = $this->DB->ForSql(trim(strip_tags($dateStart)));
+        $dateEnd = $this->DB->ForSql(trim(strip_tags($dateEnd)));
         $dateStartRu = $dateStart ? date('d.m.Y', strtotime($dateStart)) : '';
         $dateEndRu = $dateEnd ? date('d.m.Y', strtotime($dateEnd)) : '';
 

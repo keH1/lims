@@ -452,7 +452,7 @@ class Request extends Model
         );
 
         $data = [
-            'STAGE_ID' => "'{$stage}'",
+            'STAGE_ID' => $stage,
             'STAGE_NUMBER' => $stageNumber
         ];
         $this->updateTz($dealId, $data);
