@@ -597,12 +597,6 @@
 				<th scope="col">Прил. к договору (тз)</th>
 				<th scope="col">Счет</th>
 				<th scope="col">Акт ВР</th>
-				<th scope="col">Фото испытаний
-					<form id="target" enctype="multipart/form-data" action="/ulab/request/dwnImage/<?=$this->data['deal_id']?>" method="POST">
-						<label title="Загрузить протокол" id="image-svg" for="file" class=""></label>
-						<input id="file" type="file" name="photo" onchange="form.submit()"/>
-					</form>
-				</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -640,11 +634,6 @@
 				<td class="align-top">
 					<?php foreach ($this->data['file']['act']['files'] as $item): ?>
 						<a href="<?=$this->data['file']['act']['dir']?><?=$item?>"><?=$item?></a><br>
-					<?php endforeach; ?>
-				</td>
-				<td class="align-top">
-					<?php foreach ($this->data['file']['photo']['files'] as $item): ?>
-						<a href="<?=$this->data['file']['photo']['dir']?><?=$item?>"><?=$item?></a><br>
 					<?php endforeach; ?>
 				</td>
 			</tr>
@@ -772,7 +761,7 @@
 
 	<div class="mb-3">
 		<label class="form-label">Оплата</label>
-		<input type="number" name="pay" step="0.01" min="0" max="<?=$this->data['payment']['surcharge']?>" class="form-control" value="<?=$this->data['payment']['surcharge']?>" required>
+		<input type="number" name="pay" step="0.01" min="0.01" max="<?=$this->data['payment']['surcharge']?>" class="form-control" value="<?=$this->data['payment']['surcharge']?>" required>
 	</div>
 
 	<div class="mb-3">

@@ -14,7 +14,6 @@ $( document ).ready(function() {
             },
             url : '/ulab/secondment/getListProcessingAjax/',
             dataSrc: function (json) {
-                console.log(json)
                 isAdmin = json.isAdmin
                 return json.data;
             },
@@ -137,85 +136,30 @@ $( document ).ready(function() {
                 }
             }
         ],
-        language:{
-            processing: 'Подождите...',
-            search: '',
-            searchPlaceholder: "Поиск...",
-            lengthMenu: 'Отображать _MENU_  ',
-            info: 'Записи с _START_ до _END_ из _TOTAL_ записей',
-            infoEmpty: 'Записи с 0 до 0 из 0 записей',
-            infoFiltered: '(отфильтровано из _MAX_ записей)',
-            infoPostFix: '',
-            loadingRecords: 'Загрузка записей...',
-            zeroRecords: 'Записи отсутствуют.',
-            emptyTable: 'В таблице отсутствуют данные',
-            paginate: {
-                first: 'Первая',
-                previous: 'Предыдущая',
-                next: 'Следующая',
-                last: 'Последняя'
-            },
-            buttons: {
-                colvis: '',
-                copy: '',
-                excel: '',
-                print: ''
-            },
-            aria: {
-                sortAscending: ': активировать для сортировки столбца по возрастанию',
-                sortDescending: ': активировать для сортировки столбца по убыванию'
-            }
-        },
+        language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 2, "desc" ]],
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX:       true,
         //fixedHeader:   true,
        // autoWidth: false
     });
 
-    secondmentJournal.columns().every( function () {
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            secondmentJournal
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
+    secondmentJournal.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                secondmentJournal
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 
@@ -227,8 +171,14 @@ $( document ).ready(function() {
 
     $('.filter').on('change', function () {
         secondmentJournal.ajax.reload()
-        secondmentJournal.draw()
     })
+
+    function reportWindowSize() {
+        secondmentJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()
@@ -300,7 +250,6 @@ $( document ).ready(function() {
     $('#company').on('change', function () {
      //   let companyId = $('#company-hidden').val();
         let companyId = $(this).val();
-        console.log(companyId)
 
         $("[data-js-clients]").val(companyId).change();
       //  $("[data-js-clients]").text("ЗАО \"МПЗК\"")
@@ -372,7 +321,7 @@ $( document ).ready(function() {
             data: function (params) {
                 console.log("succ")
                 return {
-                   searchTerm: params.term || '*'
+                   searchTerm: params.term || ''
                 }
             },
             processResults: function (response) {
@@ -431,7 +380,6 @@ $( document ).ready(function() {
             dataType: "json",
             method: "POST",
             success: function (data) {
-                console.log(data)
                 if (data.ENTITY_ID !== undefined) {
                     $innHelp.text('Найдено в системе').addClass('text-green')
                     $('#company').val(data.ENTITY_ID).change();
@@ -467,8 +415,6 @@ $( document ).ready(function() {
 
     function findCompanyByInn(inn)
     {
-        console.log("FIND")
-        console.log(inn)
         $innHelp = $("#innHelp")
 
         $.ajax({
@@ -477,8 +423,6 @@ $( document ).ready(function() {
             dataType: "json",
             method: "POST",
             success: function (data) {
-
-                //  console.log(data)
                 if (data && data.name_short !== undefined) {
                     $innHelp.text('Найдено в сети Интернет.').addClass('text-green')
                     if ( confirm(`Найдена компания с таким ИНН. Название: ${data.name_short}. Применить данные этой компании?`) ) {
@@ -567,7 +511,6 @@ $( document ).ready(function() {
             method: 'POST',
             dataType: 'json',
             success: function (data) {
-                console.log(data)
                 secondmentJournal.ajax.reload(null, false)
                 $.magnificPopup.close();
             },
@@ -596,6 +539,4 @@ $( document ).ready(function() {
     $("[data-js-close-modal]").click(function (e) {
         $.magnificPopup.close();
     })
-
-
 })

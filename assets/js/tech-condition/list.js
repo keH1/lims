@@ -44,73 +44,13 @@ $(function () {
                 data: 'unit_rus'
             },
         ],
-        language:{
-            processing: 'Подождите...',
-            search: '',
-            searchPlaceholder: "Поиск...",
-            lengthMenu: 'Отображать _MENU_  ',
-            info: 'Записи с _START_ до _END_ из _TOTAL_ записей',
-            infoEmpty: 'Записи с 0 до 0 из 0 записей',
-            infoFiltered: '(отфильтровано из _MAX_ записей)',
-            infoPostFix: '',
-            loadingRecords: 'Загрузка записей...',
-            zeroRecords: 'Записи отсутствуют.',
-            emptyTable: 'В таблице отсутствуют данные',
-            paginate: {
-                first: 'Первая',
-                previous: 'Предыдущая',
-                next: 'Следующая',
-                last: 'Последняя'
-            },
-            buttons: {
-                colvis: '',
-                copy: '',
-                excel: '',
-                print: ''
-            },
-            aria: {
-                sortAscending: ': активировать для сортировки столбца по возрастанию',
-                sortDescending: ': активировать для сортировки столбца по убыванию'
-            }
-        },
+        language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 1, "desc" ]],
         colReorder: false,
         dom: 'frtB<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX:       true,
         fixedHeader:   true,
@@ -138,55 +78,16 @@ $(function () {
 
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()
-    })
-
-    /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $journal.width()
-
-    $('.btnRightTable, .arrowRight').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
-
-    $('.btnLeftTable, .arrowLeft').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: -scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
-
-    $(document).scroll(function() {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height()
-
-        $(".dtfh-floatingparenthead tr:first-child th")
-            .css("padding-inline", "0px")
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
-            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
-        }
     })
 })

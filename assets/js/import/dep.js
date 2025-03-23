@@ -37,6 +37,7 @@ $(function ($) {
             {
                 data: 'control',
                 width: '150px',
+                orderable: false,
                 render: function (data, type, item) {
                     return '<a href="#" class="edit_btn">Редактировать</a>'
                 }
@@ -67,8 +68,14 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     journalDataTable.on('click', '.edit_btn', function () {
         let $form = $('#popup_form')

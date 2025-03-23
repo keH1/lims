@@ -9,12 +9,7 @@
                 </a>
             </li>
             <li class="nav-item me-2">
-                <a class="nav-link" href="<?=URI?>/oborud/sampleCard/" title="Новый образец контроля">
-                    <i class="fa-solid fa-plus"></i>
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="<?=URI?>/help/LIMS_Manual_Stand/VLK/Sample_card/Sample_card.html" title="ПОМОГИТЕ">
+                <a class="nav-link popup-help" href="<?=URI?>/help/LIMS_Manual_Stand/VLK/Sample_card/Sample_card.html" title="Техническая поддержка">
                     <i class="fa-solid fa-question"></i>
                 </a>
             </li>
@@ -90,7 +85,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Назначение <span class="redStars">*</span></label>
                 <div class="col-sm-8">
-                    <textarea name="sample[PURPOSE]" class="form-control" style="height: 80px;"><?=$this->data['sample']['PURPOSE'] ?? ''?></textarea>
+                    <textarea name="sample[PURPOSE]" class="form-control" style="height: 80px;" required><?=$this->data['sample']['PURPOSE'] ?? ''?></textarea>
                 </div>
                 <div class="col-sm-2"></div>
             </div>

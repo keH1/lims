@@ -227,6 +227,10 @@ class TechCondition extends Model
                 if ( isset($filter['search']['reg_doc']) ) {
                     $where .= "tu.reg_doc LIKE '%{$filter['search']['reg_doc']}%' AND ";
                 }
+                // Наименование ТУ
+                if ( isset($filter['search']['name']) ) {
+                    $where .= "tu.name LIKE '%{$filter['search']['name']}%' AND ";
+                }
                 // Год
                 if ( isset($filter['search']['year']) ) {
                     $where .= "tu.year LIKE '%{$filter['search']['year']}%' AND ";

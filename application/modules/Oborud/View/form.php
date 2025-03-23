@@ -48,7 +48,7 @@
                 </li>
             <?php endif; ?>
             <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Equipment_card/Equipment_card.html" title="ПОМОГИТЕ">
+                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Equipment_card/Equipment_card.html" title="Техническая поддержка">
                     <i class="fa-solid fa-question"></i>
                 </a>
             </li>
@@ -59,7 +59,7 @@
 <?php if (!empty($this->data['id'])): ?>
     <h2 class="d-flex mb-3">
         <div class="stage-block rounded <?=$this->data['status']['bgStage']?> me-1 mt-1" title="<?=$this->data['status']['titleStage']?>"></div>
-        <?=$this->data['oborud']['OBJECT']?> <?=$this->data['oborud']['REG_NUM']?>
+        <span><?=$this->data['oborud']['OBJECT']?> <?=$this->data['oborud']['REG_NUM']?></span>
     </h2>
 
     <div class="panel panel-default">
@@ -1219,7 +1219,7 @@
                         Место перемещения
                     </label>
                     <div class="col-sm-8">
-                        <input class="form-control" placeholder="Не перемещался" value="<?=$this->data['moving']['place'] ?? ''?>" readonly>
+                        <input class="form-control moving-place" placeholder="Не перемещался" value="<?=$this->data['moving']['place'] ?? ''?>" disabled>
                     </div>
                     <div class="col-sm-2">
                         <a class="btn btn-square btn-outline-secondary" href="/ulab/oborud/movingJournal/<?=$this->data['id']?>" title="Журнал перемещений">
@@ -1233,7 +1233,7 @@
                         Ответственный за перемещение
                     </label>
                     <div class="col-sm-8">
-                        <select class="form-control" disabled>
+                        <select class="form-control moving-assigned" disabled>
                             <option value="">Не выбран</option>
                             <?php foreach ($this->data['users'] as $user): ?>
                                 <option value="<?=$user['ID']?>" <?=$this->data['moving']['responsible_user_id'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
@@ -1248,7 +1248,7 @@
                         Ответственный за получение
                     </label>
                     <div class="col-sm-8">
-                        <select class="form-control" disabled>
+                        <select class="form-control moving-assigned-get" disabled>
                             <option value="">Не выбран</option>
                             <?php foreach ($this->data['users'] as $user): ?>
                                 <option value="<?=$user['ID']?>" <?=$this->data['moving']['receiver_user_id'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
@@ -1336,8 +1336,7 @@
             <?php endif; ?>
 
             <div class="line-dashed"></div>
-
-            <?php if ($this->data['oborud']['is_decommissioned'] || empty($this->data['id'])): ?>
+            <?php if ($this->data['oborud']['is_decommissioned']): ?>
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">
                         Основание для списания
@@ -1357,7 +1356,7 @@
                     </div>
                     <div class="col-sm-2"></div>
                 </div>
-            <?php else: ?>
+            <?php elseif ((int)$this->data['oborud']['is_decommissioned'] === 0 && $this->data['oborud']['is_decommissioned'] != null): ?>
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label"></label>
                     <div class="col-sm-8">
@@ -1382,7 +1381,7 @@
                     Ответственный сотрудник
                 </label>
                 <div class="col-sm-8">
-                    <select class="form-control select2" name="oborud[ID_ASSIGN1]">
+                    <select class="form-control select2 equipment-assigned" name="oborud[ID_ASSIGN1]">
                         <option value="">Не указан</option>
                         <?php foreach ($this->data['users'] as $user): ?>
                             <option value="<?=$user['ID']?>" <?=$this->data['oborud']['ID_ASSIGN1'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
@@ -1397,7 +1396,7 @@
                     Доп. ответственный сотрудник
                 </label>
                 <div class="col-sm-8">
-                    <select class="form-control select2" name="oborud[ID_ASSIGN2]">
+                    <select class="form-control select2 add-equipment-assigned" name="oborud[ID_ASSIGN2]">
                         <option value="">Не указан</option>
                         <?php foreach ($this->data['users'] as $user): ?>
                             <option value="<?=$user['ID']?>" <?=$this->data['oborud']['ID_ASSIGN2'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
@@ -1482,12 +1481,21 @@
                     Оборудование
                 </label>
                 <div class="col-sm-8">
-                    <select class="form-control select2">
-                        <option value="">Не выбрано</option>
-                        <?php foreach ($this->data['oborud_list'] as $item): ?>
-                            <option value="<?=$item['ID']?>" <?=$this->data['oborud_id'] == $item['ID']? 'selected': ''?>><?=$item['view_name']?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="input-group">
+                        <select class="form-control select2 inter-equipment" name="inter[]">
+                            <option value="">Не выбрано</option>
+                            <?php foreach ($this->data['oborud_list'] as $item): ?>
+                                <?php if ((int)$this->data['id'] == (int)$item['ID']) continue; ?>
+                                <option value="<?=$item['ID']?>" <?=$this->data['interchangeable'][0]['ID'] == $item['ID']? 'selected': ''?>><?=$item['view_name']?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <a class="btn btn-outline-secondary <?=$this->data['interchangeable'][0]['ID'] ?? 'disabled'?>"
+                           target="_blank" title="Перейти в оборудование"
+                           href="/ulab/oborud/edit/<?=$this->data['interchangeable'][0]['ID'] ?? ''?>"
+                        >
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                        </a>
+                    </div>
                 </div>
                 <div class="col-sm-2">
                     <button type="button" class="btn btn-success btn-square add-inter-oborud" title="Добавить оборудование">
@@ -1496,19 +1504,22 @@
                 </div>
             </div>
 
-            <?php foreach ($this->data['interchangeable'] as $item): ?>
-                <div id="inter-oborud<?=$item['ID']?>" class="form-group row block-inter-oborud" data-id="<?=$item['ID']?>">
-                    <label class="col-sm-2 col-form-label">
-
-                    </label>
+            <?php for ($i = 1; $i < count((array)$this->data['interchangeable']); $i++): ?>
+                <div class="form-group row head-inter-oborud border-bottom pb-3">
+                    <label class="col-sm-2 col-form-label"></label>
                     <div class="col-sm-8">
                         <div class="input-group">
-                            <input type="text" class="form-control" value="<?=$item['view_name']?>">
-                            <a class="btn btn-outline-secondary" target="_blank" title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$item['ID']?>">
+                            <select class="form-control select2 inter-equipment" name="inter[]">
+                                <option value="">Не выбрано</option>
+                                <?php foreach ($this->data['oborud_list'] as $item): ?>
+                                    <?php if ((int)$this->data['id'] == (int)$item['ID']) continue; ?>
+                                    <option value="<?=$item['ID']?>" <?=$this->data['interchangeable'][$i]['ID'] == $item['ID']? 'selected': ''?>><?=$item['view_name']?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <a class="btn btn-outline-secondary" target="_blank" title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$this->data['interchangeable'][$i]['ID']?>">
                                 <i class="fa-solid fa-right-to-bracket"></i>
                             </a>
                         </div>
-                        <input type="hidden" name="inter[]" class="form-control" value="<?=$item['ID']?>">
                     </div>
                     <div class="col-sm-2">
                         <button type="button" class="btn btn-danger btn-square delete-inter-oborud" title="Отвязать оборудование">
@@ -1516,31 +1527,31 @@
                         </button>
                     </div>
                 </div>
-            <?php endforeach; ?>
+            <?php endfor; ?>
         </div>
     </div>
 
     <?php if ($this->data['id']): ?>
-    <div class="panel panel-default">
-        <header class="panel-heading">
-            В методиках
-            <span class="tools float-end">
-                <a href="#" class="fa fa-chevron-up"></a>
-            </span>
-        </header>
-        <div class="panel-body">
-            <?php foreach ($this->data['method_list'] as $method): ?>
-                <a href="/ulab/gost/method/<?=$method['id']?>"><?=$method['view_gost']?></a><br>
-            <?php endforeach; ?>
+        <div class="panel panel-default">
+            <header class="panel-heading">
+                В методиках
+                <span class="tools float-end">
+                    <a href="#" class="fa fa-chevron-up"></a>
+                </span>
+            </header>
+            <div class="panel-body">
+                <?php foreach ($this->data['method_list'] as $method): ?>
+                    <a href="/ulab/gost/method/<?=$method['id']?>"><?=$method['view_gost']?></a><br>
+                <?php endforeach; ?>
+            </div>
         </div>
-    </div>
     <?php endif; ?>
 
     <button class="btn btn-primary" type="submit" name="save">Сохранить</button>
 </form>
 
 
-<form id="decommissioned-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/decommissioned/" method="post">
+<form id="decommissioned-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/decommissionedAjax/" method="post">
     <div class="title mb-3 h-2">
         Списание оборудования
     </div>
@@ -1574,7 +1585,7 @@
     <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
 
-<form id="long-storage-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/setLongStorage/" method="post">
+<form id="long-storage-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/setLongStorageAjax/" method="post">
     <div class="title mb-3 h-2">
         Постановка на длительное хранение
     </div>
@@ -1654,7 +1665,7 @@
 </form>
 
 
-<form id="add-moving-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/addOborudMoving/" method="post" enctype="multipart/form-data">
+<form id="add-moving-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/oborud/addOborudMovingAjax/" method="post" enctype="multipart/form-data">
     <div class="title mb-3 h-2">
         Добавление перемещения
     </div>

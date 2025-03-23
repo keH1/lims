@@ -58,35 +58,7 @@ $(function ($) {
             },
 
             ],
-            language: {
-                processing: 'Подождите...',
-                search: '',
-                searchPlaceholder: "Поиск...",
-                lengthMenu: 'Отображать _MENU_  ',
-                info: 'Записи с _START_ до _END_ из _TOTAL_ записей',
-                infoEmpty: 'Записи с 0 до 0 из 0 записей',
-                infoFiltered: '(отфильтровано из _MAX_ записей)',
-                infoPostFix: '',
-                loadingRecords: 'Загрузка записей...',
-                zeroRecords: 'Записи отсутствуют.',
-                emptyTable: 'В таблице отсутствуют данные',
-                paginate: {
-                    first: 'Первая',
-                    previous: 'Предыдущая',
-                    next: 'Следующая',
-                    last: 'Последняя'
-                },
-                buttons: {
-                    colvis: '',
-                    copy: '',
-                    excel: '',
-                    print: ''
-                },
-                aria: {
-                    sortAscending: ': активировать для сортировки столбца по возрастанию',
-                    sortDescending: ': активировать для сортировки столбца по убыванию'
-                }
-            },
+            language: dataTablesSettings.language,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
             pageLength: 25,
             order: [],
@@ -235,16 +207,22 @@ $(function ($) {
         })
 
 
-        /** journal filters */
-        $('.filter-btn-search').on('click', function () {
-            $('#journal_requests_filter').addClass('is-open')
-            $('.filter-btn-search').hide()
-        })
+    /** journal filters */
+    $('.filter-btn-search').on('click', function () {
+        $('#journal_requests_filter').addClass('is-open')
+        $('.filter-btn-search').hide()
+    })
 
-        $('.filter').on('change', function () {
-            mainTable.ajax.reload()
-            mainTable.draw()
-        })
+    $('.filter').on('change', function () {
+        mainTable.ajax.reload()
+    })
+
+    function reportWindowSize() {
+        mainTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
         $('.filter-btn-reset').on('click', function () {
             location.reload()

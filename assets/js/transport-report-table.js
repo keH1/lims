@@ -54,35 +54,7 @@ $(function ($) {
             },
 
         ],
-        language:{
-            processing: 'Подождите...',
-            search: '',
-            searchPlaceholder: "Поиск...",
-            lengthMenu: 'Отображать _MENU_  ',
-            info: 'Записи с _START_ до _END_ из _TOTAL_ записей',
-            infoEmpty: 'Записи с 0 до 0 из 0 записей',
-            infoFiltered: '(отфильтровано из _MAX_ записей)',
-            infoPostFix: '',
-            loadingRecords: 'Загрузка записей...',
-            zeroRecords: 'Записи отсутствуют.',
-            emptyTable: 'В таблице отсутствуют данные',
-            paginate: {
-                first: 'Первая',
-                previous: 'Предыдущая',
-                next: 'Следующая',
-                last: 'Последняя'
-            },
-            buttons: {
-                colvis: '',
-                copy: '',
-                excel: '',
-                print: ''
-            },
-            aria: {
-                sortAscending: ': активировать для сортировки столбца по возрастанию',
-                sortDescending: ': активировать для сортировки столбца по убыванию'
-            }
-        },
+        language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 100,
         order: [[ 0, "desc" ]],
@@ -96,11 +68,16 @@ $(function ($) {
     });
 
     tableJournal.columns().every( function () {
+        let timeout
         $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            tableJournal
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function () {
+                tableJournal
+                    .column( $(this).parent().index() )
+                    .search(searchValue)
+                    .draw();
+            }.bind(this), 1000)
         })
     })
 
@@ -112,8 +89,14 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         tableJournal.ajax.reload()
-        tableJournal.draw()
     })
+
+    function reportWindowSize() {
+        tableJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()
@@ -451,11 +434,6 @@ $(function ($) {
         }
     })
 
-    $('.filter').on('change', function () {
-        tableJournal.ajax.reload()
-        tableJournal.draw()
-    })
-
     let gsmCounter = 0;
 
     $("body").on('click', '#gsm-report-add', function (e) {
@@ -623,35 +601,7 @@ $(function ($) {
             },
 
         ],
-        language:{
-            processing: 'Подождите...',
-            search: '',
-            searchPlaceholder: "Поиск...",
-            lengthMenu: 'Отображать _MENU_  ',
-            info: 'Записи с _START_ до _END_ из _TOTAL_ записей',
-            infoEmpty: 'Записи с 0 до 0 из 0 записей',
-            infoFiltered: '(отфильтровано из _MAX_ записей)',
-            infoPostFix: '',
-            loadingRecords: 'Загрузка записей...',
-            zeroRecords: 'Записи отсутствуют.',
-            emptyTable: 'В таблице отсутствуют данные',
-            paginate: {
-                first: 'Первая',
-                previous: 'Предыдущая',
-                next: 'Следующая',
-                last: 'Последняя'
-            },
-            buttons: {
-                colvis: '',
-                copy: '',
-                excel: '',
-                print: ''
-            },
-            aria: {
-                sortAscending: ': активировать для сортировки столбца по возрастанию',
-                sortDescending: ': активировать для сортировки столбца по убыванию'
-            }
-        },
+        language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 0, "desc" ]],

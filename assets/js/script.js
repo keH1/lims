@@ -27,7 +27,7 @@ function initDataTable(selector, options) {
 window.initDataTable = initDataTable
 
 const dataTablesSettings = {
-    'buttons':[
+    buttons:[
         {
             extend: 'colvis',
             titleAttr: 'Выбрать'
@@ -61,7 +61,7 @@ const dataTablesSettings = {
         }
     ],
     language:{
-        processing: 'Подождите...',
+        processing: '<div class="processing-wrapper">Подождите...</div>',
         search: '',
         searchPlaceholder: "Поиск...",
         lengthMenu: 'Отображать _MENU_  ',
@@ -82,7 +82,12 @@ const dataTablesSettings = {
             colvis: '',
             copy: '',
             excel: '',
-            print: ''
+            print: '',
+            copyTitle: 'Копирование в буфер обмена',
+            copySuccess: {
+                _: 'Скопировано %d строк в буфер обмена',
+                1: 'Скопирована 1 строка в буфер обмена'
+            }
         },
         aria: {
             sortAscending: ': активировать для сортировки столбца по возрастанию',
@@ -131,6 +136,26 @@ $(function ($) {
         focus: '#focus-blur-loop-select',
         midClick: true,
         callbacks: {
+            open: function() {
+                $('.mfp-content').css({
+                    'max-height': '90vh',
+                    'overflow-y': 'auto'
+                })
+
+                $('body').css('overflow', 'hidden')
+
+                $('.mfp-bg').on('click', function() {
+                    $.magnificPopup.close()
+                })
+            },
+            close: function() {
+                $('body').css('overflow', 'auto')
+
+                $('.mfp-content').css({
+                    'max-height': 'none',
+                    'overflow-y': 'visible'
+                })
+            },
             afterClose: function() {
                 $('#add-certificate-modal-form')[0].reset()
             }
@@ -637,10 +662,6 @@ function showSuccessMessage(msg) {
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>`
     )
-
-    window.setTimeout(function () {
-        $(".alert").alert('close');
-    }, 2000)
 }
 
 function bufferToBase64(buf) {

@@ -27,7 +27,9 @@ $(function ($) {
 		fixedContentPos: false
 	})
 
-	$('.upload_pdf').change(function () {
+	$(document).on('change', '.upload_pdf', function () {
+		$('.alert-success, .alert-danger').remove()
+
 		let docId = $(this).data('tz_doc_id')
 		let dogovorId = $(this).data('dogovor_id')
 		let tzId = $(this).data('tz_id')
@@ -47,7 +49,6 @@ $(function ($) {
 		formData.append("file", file, file.name)
 		formData.append("upload_file", true)
 
-
 		$.ajax({
 			url: '/ulab/order/uploadTzDocPdfAjax/',
 			data: formData,
@@ -57,7 +58,22 @@ $(function ($) {
 			cache: false,
 			async: false,
 			success: function (json) {
-				location.reload()
+				const responce = JSON.parse(json)
+
+				if (responce.success) {
+					if (docId != undefined) {
+						journalDataTable.draw()
+					} else {
+						showSuccessMessage(responce.message)
+						$('html, body').animate({scrollTop: $('.alert-success').offset().top - 100}, 500)
+						setTimeout(function() {
+							location.reload()
+						}, 1300)
+					}
+				} else {
+                    showErrorMessage(responce.message)
+					$('html, body').animate({scrollTop: $('.alert-danger').offset().top - 100}, 500)
+				}
 			},
 			error: function () {
 				console.log('error')
@@ -114,11 +130,7 @@ $(function ($) {
 				data: 'ACTUAL_VER',
 				orderable: false,
 				render: function (data, type, item) {
-					if ( !item['ACTUAL_VER'] ) {
-						return `-`
-					} else {
-						return `<a href="/protocol_generator/archive_tz/${item['ID']}/${item['ACTUAL_VER']}.pdf">${item['ID']}</a>`
-					}
+					return `<a href="/ulab/requirement/card_new/${item['ID']}">${item['ID']}</a>`
 				}
 			},
 			{
@@ -133,15 +145,20 @@ $(function ($) {
 								</svg>
 							
 								<input class="d-none upload_pdf" data-tz_id="${item['ID']}"
-									data-tz_doc_id="${item['tz_doc_id']}" type="file" name="upload_pdf">
+									   data-tz_doc_id="${item['tz_doc_id']}" type="file" name="upload_pdf"
+									   accept="application/pdf"
+								>
 								</label>`
 					} else {
 						return `
-								<a href="/protocol_generator/archive_tz/${item['ID']}/${item['tz_pdf']}">${item['tz_pdf']}</a>  
-								<a data-tz_doc_id="${item['tz_doc_id']}" class="del-tz-pdf"><i class="fa-solid fa-xmark"></i></a>`
+							<div class="pdf-links-container">
+								<a href="/protocol_generator/archive_tz/${item['ID']}/${item['tz_pdf']}" 
+								   title="${item['tz_pdf']}" 
+								   class="pdf-link">${item['tz_pdf']}</a>  
+								<a data-tz_doc_id="${item['tz_doc_id']}" class="del-tz-pdf"><i class="fa-solid fa-xmark"></i></a>
+							</div>`
 					}
 				}
-
 			},
 			{
 				data: 'DISCOUNT',
@@ -172,7 +189,7 @@ $(function ($) {
 						return `<a href="#" class="btn btn-primary disabled">Переплата</a>`
 					}
 					if ( p > o ) {
-						return `<a href="#" class="btn btn-primary disabled">Не оплач.</a>`
+						return `<a href="#" class="btn btn-primary disabled">Не оплачено</a>`
 					}
 
 					// if ( !item['is_show_finance'] ) {
@@ -203,7 +220,6 @@ $(function ($) {
 				},
 				method: 'POST',
 				success: function (json) {
-					journalDataTable.ajax.reload()
 					journalDataTable.draw()
 				},
 				error: function () {
@@ -212,48 +228,6 @@ $(function ($) {
 			})
 		}
 	})
-
-
-	journalDataTable.on('change', '.upload_pdf', function () {
-		let docId = $(this).data('tz_doc_id')
-		let dogovorId = $(this).data('dogovor_id')
-		let tzId = $(this).data('tz_id')
-		let file = $(this)[0].files[0]
-
-		let formData = new FormData()
-
-		if ( tzId !== undefined ) {
-			formData.append("tz_id", tzId)
-		}
-		if ( docId !== undefined ) {
-			formData.append("doc_id", docId)
-		}
-		if ( dogovorId !== undefined ) {
-			formData.append("dogovor_id", dogovorId)
-		}
-		formData.append("file", file, file.name)
-		formData.append("upload_file", true)
-
-
-		$.ajax({
-			url: '/ulab/order/uploadTzDocPdfAjax/',
-			data: formData,
-			method: 'POST',
-			contentType: false,
-			processData: false,
-			cache: false,
-			async: false,
-			success: function (json) {
-				console.log('ok2')
-				journalDataTable.ajax.reload()
-				journalDataTable.draw()
-			},
-			error: function () {
-				console.log('error')
-			}
-		})
-	})
-
 
 	journalDataTable.on('click', '.popup-with-form', function () {
 		const dealId = $(this).data('deal_id')
@@ -297,8 +271,14 @@ $(function ($) {
 
 	$('.filter').on('change', function () {
 		journalDataTable.ajax.reload()
-		journalDataTable.draw()
 	})
+
+	function reportWindowSize() {
+		journalDataTable
+			.columns.adjust()
+	}
+
+	window.onresize = reportWindowSize
 
 	$('.search').on('keydown', function (event) {
         if (event.key === 'Enter') {

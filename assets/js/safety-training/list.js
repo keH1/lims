@@ -53,9 +53,7 @@ $(function ($) {
                 className: 'no-sort',
                 render: function (data, type, item, meta) {
                     // Порядковый номер
-                    let displayIndex = meta.row + meta.settings._iDisplayStart + 1;
-
-                    return displayIndex;
+                    return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
             {
@@ -98,8 +96,14 @@ $(function ($) {
      */
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload();
-        journalDataTable.draw();
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.assign(location.pathname);

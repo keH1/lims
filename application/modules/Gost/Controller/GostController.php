@@ -199,8 +199,6 @@ class GostController extends Controller
 //        $this->data['assigned_list'] = $userModel->getAssignedUserListByLab($this->data['lab']);
 //        $this->data['lab_user_list'] = $labModel->getLabAndUser();
         $this->data['user_list'] = $userModel->getUserList1();
-        ///\ заполение формы
-//        $userModel->pre($this->data['user_list']);
 
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");

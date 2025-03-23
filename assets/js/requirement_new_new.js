@@ -279,12 +279,11 @@ $(function ($) {
     })
 
     $(window).on('resize', function () {
-        $('#journal_material_2').DataTable().columns.adjust();
-    });
+        $('#journal_material_2').DataTable().columns.adjust()
+    })
 
     $('.filter').on('input', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
 
         let $btnGroupEdit = $('.btn-group-edit')
         let $btnAddMethods = $('.btn-add-methods')
@@ -340,7 +339,6 @@ $(function ($) {
                 material_id: data.material_id,
             },
             success: function (json) {
-                console.log(json)
                 htmlOptionsGroup += getHtmlOptions(json, data.group)
 
                 $selectGroup.html(htmlOptionsGroup)
@@ -412,7 +410,6 @@ $(function ($) {
                 material_id: materialId,
             },
             success: function (json) {
-                console.log(json)
                 htmlOptionsScheme += getHtmlOptions(json)
 
                 $selectScheme.html(htmlOptionsScheme)
@@ -451,7 +448,6 @@ $(function ($) {
                     scheme_id: schemeId
                 },
                 success: function (json) {
-                    console.log(json)
                     $.each(json, function (i, item) {
                         $methodContainer.append(getHtmlMethod(methodList, normDocList, i + countMethod, item.method_id, item.nd_id))
 
@@ -645,6 +641,92 @@ $(function ($) {
             $.magnificPopup.close()
             location.reload()
         })
+    })
+
+    // Добавление объекта испытаний
+    $('#add-material-modal-form').on('submit', function () {
+        let $form = $(this)
+        let $button = $form.find(`button[type="submit"]`)
+        let btnHtml = $button.html()
+
+        $button.html(`<i class="fa-solid fa-arrows-rotate spinner-animation"></i>`)
+        $button.addClass('disabled')
+
+        $.ajax({
+            url: "/ulab/requirement/addMaterialToTzAjax/",
+            data: $form.serialize(),
+            dataType: "json",
+            async: true,
+            method: "POST",
+            complete: function () {
+                journalDataTable.ajax.reload()
+
+                $button.html(btnHtml)
+                $button.removeClass('disabled')
+
+                $.magnificPopup.close()
+            }
+        })
+
+        return false
+    })
+
+    // Добавление проб
+    $('#add-probe-modal-form').on('submit', function () {
+        let $form = $(this)
+        let $button = $form.find(`button[type="submit"]`)
+        let btnHtml = $button.html()
+
+        $button.html(`<i class="fa-solid fa-arrows-rotate spinner-animation"></i>`)
+        $button.addClass('disabled')
+
+        $.ajax({
+            url: "/ulab/requirement/addProbeToMaterialAjax/",
+            data: $form.serialize(),
+            dataType: "json",
+            async: true,
+            method: "POST",
+            complete: function () {
+                journalDataTable.ajax.reload()
+
+                $button.html(btnHtml)
+                $button.removeClass('disabled')
+
+                $.magnificPopup.close()
+            }
+        })
+
+        return false
+    })
+
+    // Добавление методик
+    $('#add-methods-modal-form').on('submit', function () {
+        let $form = $(this)
+        let $button = $form.find(`button[type="submit"]`)
+        let btnHtml = $button.html()
+
+        $button.html(`<i class="fa-solid fa-arrows-rotate spinner-animation"></i>`)
+        $button.addClass('disabled')
+
+        $.ajax({
+            url: "/ulab/requirement/addMethodsToProbeAjax/",
+            data: $form.serialize(),
+            dataType: "json",
+            async: true,
+            method: "POST",
+            complete: function () {
+                $form.find('.method-container').empty()
+
+                journalDataTable.ajax.reload()
+
+                $button.html(btnHtml)
+                $button.removeClass('disabled')
+
+                $.magnificPopup.close()
+            }
+        })
+
+        return false
     })
 })
 
@@ -998,7 +1080,6 @@ function createChild(row) {
                 method: "POST",
                 success: function (json) {
                     journal.ajax.reload()
-                    journal.draw()
                 }
             })
         }
@@ -1023,7 +1104,6 @@ function createChild(row) {
                 success: function (json) {
                     if ( json.success ) {
                         journal.ajax.reload()
-                        journal.draw()
 
                         $spanMethodCount.text(--rowData.count_methods)
 
@@ -1105,7 +1185,6 @@ function createChild(row) {
             success: function (json) {
                 if ( json.success ) {
                     journal.ajax.reload()
-                    journal.draw()
 
                     $strTotal.text(json.data.price_ru)
                     $inputTotal.val(json.data.price)
@@ -1115,6 +1194,5 @@ function createChild(row) {
                 }
             }
         })
-
     })
 }

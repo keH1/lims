@@ -33,7 +33,7 @@
                 </a>
             </li>
             <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Technical_spec_int/Tec_spec_int.html" title="ПОМОГИТЕ">
+                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Technical_spec_int/Tec_spec_int.html" title="Техническая поддержка">
                     <i class="fa-solid fa-question"></i>
                 </a>
             </li>
@@ -496,14 +496,6 @@
 
         <select class="form-control select2 select_group clear_confirm_change" name="form[group]">
             <option value="">Без группы</option>
-        </select>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Карьер</label>
-
-        <select class="form-control select2 clear_confirm_change" name="form[quarry_id]">
-            <option value="">Нет карьера</option>
         </select>
     </div>
 

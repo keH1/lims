@@ -371,6 +371,13 @@ class Controller
         return $filter;
     }
 
+
+    /**
+     * @desc Выводит сообщение от ошибке или сообщение об удаче при добавлении данных
+     * @param int $isAdd
+     * @param string $successMsg
+     * @param string $unsuccessfulMsg
+     */
     function checkAndShowSuccessOrErrorMessage(int $isAdd, string $successMsg, string $unsuccessfulMsg): void
     {
         if (!$isAdd) {

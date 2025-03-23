@@ -273,7 +273,6 @@ class ProbeController extends Controller
 		$probe = $probeModel->getProbeByDealId($dealId);
 
 		$this->data['probe'] = $probe;
-		$this->data['test'] = $probe;
 
 		$this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
 

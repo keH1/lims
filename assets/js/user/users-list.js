@@ -197,7 +197,7 @@ $(function ($) {
                 }
             ],
             language:{
-                processing: 'Подождите...',
+                processing: '<div class="processing-wrapper">Подождите...</div>',
                 search: '',
                 searchPlaceholder: "Поиск...",
                 lengthMenu: 'Отображать _MENU_  ',
@@ -320,9 +320,16 @@ $(function ($) {
            clearTimeout(debounceTimeout);
 
             debounceTimeout = setTimeout(function () {
-                journalDataTable.draw()
+                journalDataTable.ajax.reload()
             }, 350);
         })
+
+        function reportWindowSize() {
+            journalDataTable
+                .columns.adjust()
+        }
+
+        window.onresize = reportWindowSize
 
         $('.filter-btn-reset').on('click', function () {
             location.reload()

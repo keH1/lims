@@ -16,7 +16,7 @@
 				</a>
 			</li>
 			<li class="nav-item me-2">
-				<a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Create_request_card/Create_request_card.html" title="ПОМОГИТЕ">
+				<a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Create_request_card/Create_request_card.html" title="Техническая поддержка">
 					<i class="fa-solid fa-question"></i>
 				</a>
 			</li>
@@ -116,14 +116,12 @@
 			</div>
 			<div class="form-group col-sm-4">
 				<label class="form-label mb-1">Карьер</label>
-				<div class="input-group">
-					<select class="form-control select2" id="quarry_all" name="">
-						<option value="">Нет карьера</option>
-						<?php foreach($this->data['quarry_list'] as $quarry): ?>
-							<option value="<?=$quarry['id']?>"><?=$quarry['name']?></option>
-						<?php endforeach; ?>
-					</select>
-				</div>
+                <select class="form-control select2" id="quarry_all" name="">
+                    <option value="">Нет карьера</option>
+                    <?php foreach($this->data['quarry_list'] as $quarry): ?>
+                        <option value='<?=$quarry['ID']?>'><?=$quarry['NAME']?></option>
+                    <?php endforeach; ?>
+                </select>
 			</div>
 		</div>
 		<table class="table">
@@ -136,7 +134,7 @@
 				<th>Карьер</th>
 			</thead>
 			<tbody>
-			<? $i = 1;
+			<?php $i = 1;
 			foreach ($this->data['material_probe'] as $val):
 				foreach ($val['probe'] as $k => $item):?>
 					<tr>
@@ -159,12 +157,12 @@
 							<select class="form-control select2 quarry w-100" name="act[probe][<?=$k?>][quarry_id]">
 								<option value="">Нет карьера</option>
 								<?php foreach($this->data['quarry_list'] as $quarry): ?>
-									<option value="<?=$quarry['id']?>" <?=$item['quarry_id'] == $quarry['id'] ? 'selected' : ''?>><?=$quarry['name']?></option>
+									<option value="<?=$quarry['ID']?>" <?=$item['quarry_id'] == $quarry['ID'] ? 'selected' : ''?>><?=$quarry['NAME']?></option>
 								<?php endforeach; ?>
 							</select>
 						</td>
 					</tr>
-				<? $i++;
+				<?php $i++;
 				endforeach;
 			endforeach;?>
 			</tbody>

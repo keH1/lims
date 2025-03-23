@@ -68,8 +68,14 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     journalDataTable.on('click', '.edit_btn', function () {
         let $form = $('#popup_form')

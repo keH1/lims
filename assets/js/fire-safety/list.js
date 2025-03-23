@@ -31,7 +31,8 @@ $(function ($) {
             },
         });
     });
-
+   
+    let sortMode = 'maxDate'
     let journalDataTable = journal.DataTable({
         bAutoWidth: false,
         autoWidth: false,
@@ -47,6 +48,12 @@ $(function ($) {
             data: function (d) {
                 d.dateStart = $('#inputDateStart').val();
                 d.dateEnd = $('#inputDateEnd').val();
+                
+                if (sortMode === 'maxDate') {
+                    d.sortByMaxDate = 1
+                } else {
+                    d.sortByMaxDate = 0
+                }
             },
             url: '/ulab/fireSafety/getFireSafetyLogAjax/',
             dataSrc: function (json) {
@@ -84,13 +91,19 @@ $(function ($) {
                 orderable: false,
             },
         ],
-        order: [[ 1, "desc" ]],
+        order: [[ 0, "desc" ]],
         language: dataTablesSettings.language,
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttons,
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
         pageLength: 25,
     });
+
+    journal.on('order.dt', function() {
+        if (sortMode === 'maxDate') {
+            sortMode = 'normal'
+        }
+    })
 
     journalDataTable.columns().every(function () {
         let timeout
@@ -106,13 +119,16 @@ $(function ($) {
         })
     });
 
-    /**
-     * фильтры журнала
-     */
     $('.filter').on('change', function () {
-        journalDataTable.ajax.reload();
-        journalDataTable.draw();
+        journalDataTable.ajax.reload()
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.assign(location.pathname);

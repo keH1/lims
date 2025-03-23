@@ -149,7 +149,7 @@ Class ProtocolController extends Controller
     /**
      * @desc Проверяет данные у протокола перед формированием
      */
-    public function cc()
+    public function validateProtocolAjax()
     {
         global $APPLICATION;
 

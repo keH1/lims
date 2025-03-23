@@ -6,16 +6,14 @@
                     <i class="fa-solid fa-list"></i>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link" href="<?=URI?>/techCondition/new/" title="Новое ТУ">
-                    <i class="fa-solid fa-plus"></i>
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link disable-after-click" href="<?=URI?>/techCondition/copy/<?=$this->data['form']['id']?>" title="Скопировать ТУ">
-                    <i class="fa-regular fa-copy icon-fix"></i>
-                </a>
-            </li>
+
+            <?php if (!empty($this->data['form']['id'])): ?>
+                <li class="nav-item me-2">
+                    <a class="nav-link disable-after-click" href="<?=URI?>/techCondition/copy/<?=$this->data['form']['id']?>" title="Скопировать ТУ">
+                        <i class="fa-regular fa-copy icon-fix"></i>
+                    </a>
+                </li>
+            <?php endif; ?>
         </ul>
     </nav>
 </header>
@@ -86,7 +84,7 @@
 
             <div class="result-block">
                 <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Единица измерения</label>
+                    <label class="col-sm-2 col-form-label">Единица измерения <span class="redStars">*</span></label>
                     <div class="col-sm-8">
                         <select class="form-control select2" name="form[unit_id]" required>
                             <option value="">Выбрать</option>

@@ -44,36 +44,82 @@ $(function ($) {
     })
 
     $('.add-inter-oborud').click(function () {
-        const $block = $(this).closest('.head-inter-oborud')
-        const id = $block.find('select').val()
-        const name = $block.find('select option:selected').text()
-        const count = $body.find(`#inter-oborud${id}`).length
+        const $block = $('.head-inter-oborud').last()
+        let optionEquipment = ''
 
-        if ( id !== '' && count === 0) {
-            $block.after(`
-                <div id="inter-oborud${id}" class="form-group row block-inter-oborud">
-                    <label class="col-sm-2 col-form-label"></label>
-                    <div class="col-sm-8">
-                        <div class="input-group">
-                            <input type="text" class="form-control" value="${name}">
-                            <a class="btn btn-outline-secondary" target="_blank" title="Перейти в оборудование" href="/ulab/oborud/edit/${id}">
-                                <i class="fa-solid fa-right-to-bracket"></i>
-                            </a>
+        const url = window.location.pathname,
+              urlParts = url.split('/'),
+              excludeId = urlParts[urlParts.length - 1],
+              isNewEquipment = url.includes('/new/')
+
+        $.ajax({
+            method: 'POST',
+            url: '/ulab/Oborud/getListEquipmentAjax',
+            dataType: 'json',
+            success: function (equipmentList) {
+                if (!isNewEquipment) {
+                    const isValidId = /^\d+$/.test(excludeId),
+                          isIdInList = equipmentList.some(equipment => equipment.ID == excludeId)
+    
+                    if (!isValidId || !isIdInList) {
+                        return
+                    }
+                }
+
+                equipmentList.forEach(function (equipment) {
+                    if (equipment.ID != excludeId) { 
+                        optionEquipment += `
+                            <option value="${equipment.ID}">
+                                ${equipment.view_name}
+                            </option>`
+                    }
+                })
+
+                $block.after(`
+                    <div class="form-group row head-inter-oborud border-bottom pb-3">
+                        <label class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <select class="form-control select2 inter-equipment" name="inter[]">
+                                    <option value="">Не выбрано</option>
+                                    ${optionEquipment}
+                                </select>
+                                <a class="btn btn-outline-secondary disabled" target="_blank" title="Перейти в оборудование">
+                                    <i class="fa-solid fa-right-to-bracket"></i>
+                                </a>
+                            </div>
                         </div>
-                        <input type="hidden" name="inter[]" class="form-control" value="${id}">
+                        <div class="col-sm-2">
+                            <button type="button" class="btn btn-danger btn-square delete-inter-oborud" title="Отвязать оборудование">
+                                <i class="fa-solid fa-minus icon-fix"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-sm-2">
-                        <button type="button" class="btn btn-danger btn-square delete-inter-oborud" title="Отвязать оборудование">
-                            <i class="fa-solid fa-minus icon-fix"></i>
-                        </button>
-                    </div>
-                </div>
-            `)
+                `)
+
+                $('.select2').select2({
+                    theme: 'bootstrap-5'
+                })
+            }
+        })
+    })
+
+    $body.on('change', '.inter-equipment', function () {
+        const $select = $(this),
+              selectedValue = $select.val(),
+              $link = $select.closest('.input-group').find('a.btn-outline-secondary')
+
+        if (selectedValue) {
+            $link.removeClass('disabled')
+            $link.attr('href', `/ulab/oborud/edit/${selectedValue}`)
+        } else {
+            $link.addClass('disabled')
+            $link.removeAttr('href')
         }
     })
 
     $body.on('click', '.delete-inter-oborud', function () {
-        $(this).closest('.block-inter-oborud').remove()
+        $(this).closest('.head-inter-oborud').remove()
     })
 
     $body.on('click', '.delete-precision', function () {
@@ -159,12 +205,20 @@ $(function ($) {
         )
     })
 
-    $('#add-certificate-modal-form').on('submit', function(event) {
-        event.preventDefault()
-        let formData = new FormData(this)
+    $('#add-certificate-modal-form')
+        .add('#add-moving-modal-form')
+        .add('#long-storage-modal-form')
+        .add('#decommissioned-modal-form')
+        .on('submit', handleModalFormSubmit)
 
+    function handleModalFormSubmit(event) {
+        event.preventDefault()
+        const $form = $(this),
+                formId = $form.attr('id'),
+                formData = new FormData(this)
+    
         $.ajax({
-            url: $(this).attr('action'),
+            url: $form.attr('action'),
             type: 'POST',
             data: formData,
             contentType: false,
@@ -172,18 +226,77 @@ $(function ($) {
             success: function(response) {
                 if (response.success) {
                     $.magnificPopup.close()
-
-                    let $lastDashedLine = $('#certificate-block .line-dashed').last(),
-                        html = addNewCertificateFields(response.data)
-
-                    $lastDashedLine.after(html)
+    
+                    const $formGroup = $(`a[href="#${formId}"]`).closest('.form-group')
+                    let html = ''
+    
+                    switch (formId) {
+                        case 'add-certificate-modal-form':
+                            const $lastDashedLine = $('#certificate-block .line-dashed').last()
+                            html = addNewCertificateFields(response.data)
+                            $lastDashedLine.after(html)
+                            break
+                        case 'add-moving-modal-form':
+                            $('.moving-place').val(response.data.place)
+    
+                            const $selectAssigned = $('.moving-assigned'),
+                                    $selectAssignedGet = $('.moving-assigned-get')
+    
+                            if ($selectAssigned.length && response.data.responsible_user_id) {
+                                $selectAssigned.val(response.data.responsible_user_id).trigger('change')
+                            }
+    
+                            if ($selectAssignedGet.length && response.data.receiver_user_id) {
+                                $selectAssignedGet.val(response.data.receiver_user_id).trigger('change')
+                            }
+                            break
+                        case 'long-storage-modal-form':
+                            $formGroup.empty()
+                            html = `
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">На длительном хранении</label>
+                                    <div class="col-sm-8 pt-2">
+                                        <input type="checkbox" name="oborud[LONG_STORAGE]" class="form-check-input" value="1" checked="">
+                                    </div>
+                                    <div class="col-sm-2"></div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Дата постановки на длительное хранение</label>
+                                    <div class="col-sm-8">
+                                        <input type="date" name="oborud[LONG_STORAGE_DATE]"
+                                               class="form-control" value="${response.data.LONG_STORAGE_DATE}">
+                                    </div>
+                                    <div class="col-sm-2"></div>
+                                </div>`
+                            $formGroup.append(html)
+                            break
+                        case 'decommissioned-modal-form':
+                            $formGroup.empty()
+                            html = `
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Основание для списания</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" value="${response.data.SPISANIE}" readonly>
+                                    </div>
+                                    <div class="col-sm-2"></div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Дата списания</label>
+                                    <div class="col-sm-8">
+                                        <input type="date" class="form-control" value="${response.data.DATE_SP}" readonly>
+                                    </div>
+                                    <div class="col-sm-2"></div>
+                                </div>`
+                            $formGroup.append(html)
+                            break
+                    }
                 }
             },
             error: function(xhr, status, error) {
                 alert('Произошла ошибка: ' + error)
             }
         })
-    })
+    }
 
     function addNewCertificateFields(data) {
         let html = `
@@ -289,4 +402,97 @@ $(function ($) {
 
         return html
     }
+
+    const $firstSelect = $('.equipment-assigned')
+    const $secondSelect = $('.add-equipment-assigned')
+    const removedOptions = {
+        first: {},
+        second: {}
+    }
+   
+    function removeOption(value, $targetSelect, storageKey) {
+        if (!value) 
+            return
+        
+        const $option = $targetSelect.find(`option[value="${value}"]`)
+        if ($option.length) {
+            removedOptions[storageKey][value] = {
+                text: $option.text(),
+                index: $option.index()
+            }
+            $option.remove()
+        }
+    }
+    
+    function restoreOption(value, storageKey) {
+        if (!value) 
+            return
+        
+        const optionData = removedOptions[storageKey][value]
+        if (optionData) {
+            const $targetSelect = storageKey === 'first' ? $firstSelect : $secondSelect
+            const $newOption = $(`<option value="${value}">${optionData.text}</option>`)
+            
+            const $options = $targetSelect.find('option')
+            if (optionData.index < $options.length)
+                $options.eq(optionData.index).before($newOption)
+            else
+                $targetSelect.append($newOption)
+            
+            delete removedOptions[storageKey][value]
+        }
+    }
+    
+    function restoreAll(storageKey) {
+        Object.keys(removedOptions[storageKey]).forEach(value => {
+            restoreOption(value, storageKey)
+        })
+    }
+    
+    function initSelects() {
+        const firstVal = $firstSelect.val()
+        if (firstVal)
+            removeOption(firstVal, $secondSelect, 'second')
+        
+        const secondVal = $secondSelect.val()
+        if (secondVal)
+            removeOption(secondVal, $firstSelect, 'first')
+        
+        $firstSelect.data('prev-val', firstVal)
+        $secondSelect.data('prev-val', secondVal)
+    }
+    
+    initSelects()
+    
+    $firstSelect.on('change', function() {
+        const prevVal = $(this).data('prev-val')
+        const newVal = $(this).val()
+        
+        if (prevVal && prevVal !== newVal)
+            restoreOption(prevVal, 'second')
+        
+        if (newVal)
+            removeOption(newVal, $secondSelect, 'second')
+        else
+            restoreAll('second')
+        
+        $(this).data('prev-val', newVal)
+        $secondSelect.trigger('change.select2')
+    })
+    
+    $secondSelect.on('change', function() {
+        const prevVal = $(this).data('prev-val')
+        const newVal = $(this).val()
+        
+        if (prevVal && prevVal !== newVal)
+            restoreOption(prevVal, 'first')
+        
+        if (newVal)
+            removeOption(newVal, $firstSelect, 'first')
+        else
+            restoreAll('first')
+        
+        $(this).data('prev-val', newVal)
+        $firstSelect.trigger('change.select2')
+    })
 })

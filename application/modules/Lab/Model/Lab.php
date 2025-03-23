@@ -249,12 +249,6 @@ class Lab extends Model
         ];
 
         if (!empty($filter)) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
-
-            // работа с фильтрами
             if (!empty($filter['search'])) {
                 // соответствие
                 if (isset($filter['search']['is_match']) && $filter['search']['is_match'] === '0') {
@@ -263,13 +257,6 @@ class Lab extends Model
                 if (isset($filter['search']['is_match']) && $filter['search']['is_match'] === '1') {
                     $where .= "(u_c.is_method_match = '{$filter['search']['is_match']}' AND u_c.is_oborud_match = '{$filter['search']['is_match']}') AND ";
                 }
-//                // дата
-//                if (isset($filter['search']['updated_at'])) {
-//                    $where .= "LOCATE('{$filter['search']['updated_at']}', DATE_FORMAT(u_c.updated_at, '%d.%m.%Y %H:%i:%s')) > 0 AND ";
-//                }
-//                if ( isset($filter['search']['dateStart']) ) {
-//                    $where .= "(u_c.updated_at >= '{$filter['search']['dateStart']}' AND u_c.updated_at <= '{$filter['search']['dateEnd']}') AND ";
-//                }
                 // дата
                 if (isset($filter['search']['created_at'])) {
                     $where .= "LOCATE('{$filter['search']['created_at']}', DATE_FORMAT(u_c.created_at, '%d.%m.%Y %H:%i:%s')) > 0 AND ";
@@ -289,14 +276,9 @@ class Lab extends Model
                 if (isset($filter['search']['pressure'])) {
                     $where .= "u_c.pressure LIKE '%{$filter['search']['pressure']}%' AND ";
                 }
-
-
                 // помещение
                 if (isset($filter['search']['room'])) {
-                    if ($filter['search']['room'] > 100) {
-                        $roomId = (int)$filter['search']['room'] - 100;
-                        $where .= "u_c.`room_id` = {$roomId} AND ";
-                    }
+                    $where .= "u_c.room_id IN (SELECT r.ID FROM ROOMS r WHERE CONCAT(r.NAME, ' ', r.NUMBER) COLLATE utf8mb3_unicode_ci LIKE '%{$filter['search']['room']}%') AND ";
                 }
             }
 
@@ -307,17 +289,12 @@ class Lab extends Model
             }
         }
 
-
-        // работа с сортировкой
         if (!empty($filter['order'])) {
             if ($filter['order']['dir'] === 'asc') {
                 $order['dir'] = 'ASC';
             }
 
             switch ($filter['order']['by']) {
-//                case 'updated_at':
-//                    $order['by'] = 'u_c.updated_at';
-//                    break;
                 case 'created_at':
                     $order['by'] = 'u_c.created_at';
                     break;
@@ -335,11 +312,8 @@ class Lab extends Model
             }
         }
 
-
-        // работа с пагинацией
         if (isset($filter['paginate'])) {
             $offset = 0;
-            // количество строк на страницу
             if (isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0) {
                 $length = $filter['paginate']['length'];
 
@@ -356,22 +330,24 @@ class Lab extends Model
 
         $data = $this->DB->Query(
             "SELECT u_c.*, u_c.id u_c_id, CONCAT(r.NAME, ' ', r.NUMBER) room  
-                    FROM ulab_conditions u_c 
-                    LEFT JOIN ROOMS as r ON r.ID = u_c.room_id 
-                    WHERE {$where}
-                    ORDER BY {$order['by']} {$order['dir']} {$limit}"
+             FROM ulab_conditions u_c 
+             LEFT JOIN ROOMS AS r
+             ON r.ID = u_c.room_id 
+             WHERE {$where}
+             ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
             "SELECT u_c.*, u_c.id u_c_id, CONCAT(r.NAME, ' ', r.NUMBER) room
                     FROM ulab_conditions u_c 
-                    LEFT JOIN ROOMS as r ON r.ID = u_c.room_id 
+                    LEFT JOIN ROOMS AS r ON r.ID = u_c.room_id 
                     WHERE {$where}"
         )->SelectedRowsCount();
+
         $dataFiltered = $this->DB->Query(
             "SELECT u_c.*, u_c.id u_c_id, CONCAT(r.NAME, ' ', r.NUMBER) room
                     FROM ulab_conditions u_c 
-                    LEFT JOIN ROOMS as r ON r.ID = u_c.room_id 
+                    LEFT JOIN ROOMS AS r ON r.ID = u_c.room_id 
                     WHERE {$where}"
         )->SelectedRowsCount();
 
@@ -379,7 +355,6 @@ class Lab extends Model
         $isCanEdit = in_array($_SESSION['SESS_AUTH']['USER_ID'], self::USERS_CAN_EDIT_CONDITIONS);
 
         while ($row = $data->Fetch()) {
-            //$row['ru_updated_at'] = date('d.m.Y H:i:s', strtotime($row['updated_at']));
             $row['ru_created_at'] = date('d.m.Y H:i:s', strtotime($row['created_at']));
             $row['is_can_edit'] = $isCanEdit;
 

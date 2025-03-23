@@ -79,24 +79,29 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($this->data['gost_to_material'] as $arrGost): ?>
-                        <tr class="trGost">
-                            <input type="hidden" class="gost-to-material-id" value="<?= $arrGost['id'] ?>">
-                            <td>
-                                <a href="/obl_acc.php?ID=<?= $arrGost['id'] ?>"
-                                   target="_blank"><?= $arrGost['view_gost'] ?></a>
-                                <input class="gostId"
-                                       type="hidden" value="<?= $arrGost['id'] ?>"
-                                       name="arrGost[]">
-                            </td>
-                            <td><?= $arrGost['name'] ?></td>
-                            <td>
-                                <button type="button" class="btn btn-outline-danger del-gost btn-square-new">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
+                        <?php foreach ($this->data['gost_to_material'] as $arrGost): ?>
+                            <tr class="trGost">
+                                <input type="hidden" class="gost-to-material-id" value="<?= $arrGost['id'] ?>">
+                                <td>
+                                    <a href="/obl_acc.php?ID=<?= $arrGost['id'] ?>"
+                                    target="_blank"><?= $arrGost['view_gost'] ?></a>
+                                    <input class="gostId"
+                                        type="hidden" value="<?= $arrGost['id'] ?>"
+                                        name="arrGost[]">
+                                </td>
+                                <td><?= $arrGost['name'] ?></td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-danger del-gost btn-square-new">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        <tr class="method-not-found" <?= !empty($this->data['gost_to_material']) ? 'style="display: none;"' : '' ?>>
+                            <td colspan="3" class="text-center">
+                                Нет методик
                             </td>
                         </tr>
-                    <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
@@ -302,7 +307,7 @@
                                 <button type="button" class="btn btn-danger float-end mb-1 delete-scheme"><i
                                             class="fa-solid fa-minus"></i> Удалить схему
                                 </button>
-                                <label for="scheme-name-<?= $scheme['id'] ?>" class="form-label">Название схемы:</label>
+                                <label for="scheme-name-<?= $scheme['id'] ?>" class="form-label">Название схемы: <span class="redStars">*</span></label>
                                 <input type="text" name="scheme-param" class="form-control"
                                        id="scheme-name-<?= $scheme['id'] ?>" placeholder="Введите название схемы"
                                        value="<?= $scheme['name'] ?>">
@@ -311,7 +316,7 @@
                             <div class="line-dashed-small"></div>
                             <div class="row justify-content-between">
                                 <div class="col-5">
-                                    <label class="form-label mb-1">Методика испытаний <span class="redStars">*</span></label>
+                                    <label class="form-label mb-1">Методика испытаний</label>
                                 </div>
                                 <div class="col-5">
                                     <label class="form-label mb-1">Нормативная документация</label>
@@ -389,15 +394,14 @@
                         <input type="hidden" name="scheme_id" value="">
                         <input type="hidden" name="material_id" value="<?= $this->data['id'] ?>">
                         <div class="mb-3">
-                            <label for="scheme-name-new" class="form-label">Название схемы:</label>
+                            <label for="scheme-name-new" class="form-label">Название схемы: <span class="redStars">*</span></label>
                             <input type="text" class="form-control" id="scheme-name-new" name="scheme-param"
                                    placeholder="Введите название схемы">
                         </div>
                         <div class="line-dashed-small"></div>
                         <div class="row justify-content-between">
                             <div class="col-5">
-                                <label class="form-label mb-1">Методика испытаний <span
-                                            class="redStars">*</span></label>
+                                <label class="form-label mb-1">Методика испытаний</label>
                             </div>
                             <div class="col-5">
                                 <label class="form-label mb-1">Нормативная документация</label>

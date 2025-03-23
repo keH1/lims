@@ -37,6 +37,8 @@ class RequestController extends Controller
         $this->data['is_edit'] = false;
 
         if ( isset($_SESSION['request_post']) ) {
+            $_SESSION['request_post']['CompanyFullName'] = htmlspecialchars($_SESSION['request_post']['CompanyFullName']);
+
             $this->data['request'] = $_SESSION['request_post'];
 
             unset($_SESSION['request_post']);
@@ -158,7 +160,7 @@ class RequestController extends Controller
 
             $this->data['request']['assign']            = $user->getAssignedByDealId($dealId);
             $this->data['request']['material']          = $material->getMaterialsToRequest($dealId);
-
+            $this->data['request']['act_information']   = $requestData['act_information'];
             //// конец блока заполения формы
         }
 
@@ -496,6 +498,7 @@ class RequestController extends Controller
             }
         }
 
+        $actInformation = json_encode($_POST['information'], JSON_UNESCAPED_UNICODE);
         $dataTz = [
             'COMPANY_TITLE' => htmlspecialchars($_POST['company']), //TODO: надо убрать из таблицы это поле
             'COMPANY_ID' => $companyId,
@@ -1217,15 +1220,6 @@ class RequestController extends Controller
         $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
 
         $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-
-        $this->addCSS("/assets/plugins/stu-sdk-sigcaptx/demoButtons.css");
-
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/BigInt.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/sjcl.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/demoButtons_encryption.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/q.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/wgssStuSdk.js");
-        $this->addJS("/assets/plugins/stu-sdk-sigcaptx/sign.js");
 
         $this->addCSS("/assets/plugins/dropzone/css/basic.css");
         $this->addCSS("/assets/plugins/dropzone/dropzone3.css");

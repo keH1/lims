@@ -34,7 +34,7 @@ class LabController extends Controller
 
         if (isset($_SESSION['room_id'])) {
             $this->data['room'] = $_SESSION['room_id'] + 100;
-            $this->data['room_id'] = $_SESSION['room_id'];
+            // $this->data['room_id'] = $_SESSION['room_id'];
             unset($_SESSION['room_id']);
         }
 
@@ -90,7 +90,6 @@ class LabController extends Controller
     public function getJournalConditionAjax()
     {
         global $APPLICATION;
-
         $APPLICATION->RestartBuffer();
 
         /** @var Lab $labModel */

@@ -179,7 +179,7 @@
 
     <div class="mb-3">
         <label class="form-label">Карьер</label>
-        <select name="form[quarry_id]" class="form-control probe_quarry_id">
+        <select name="form[quarry_id]" class="form-control probe_quarry_id select2">
             <?php foreach($this->data['quarry'] as $key => $value): ?>
                 <option value='<?=$value['ID']?>'><?=$value['NAME']?></option>
             <?php endforeach;?>

@@ -1,13 +1,7 @@
 $(function ($) {
-
     let body = $('body')
-    /*recipe journal*/
+
     let precursorJournal = $('#scales_journal').DataTable({
-        processing: true,
-        serverSide: true,
-        bAutoWidth: false,
-        autoWidth: false,
-        fixedColumns: false,
         ajax: {
             type: 'POST',
             data: function (d) {
@@ -18,7 +12,6 @@ $(function ($) {
             },
             url: '/ulab/scale/getListProcessingAjax/',
             dataSrc: function (json) {
-                console.log(json);
                 return json.data
             },
         },
@@ -44,7 +37,7 @@ $(function ($) {
             },
             {
                 data: 'number',
-                orderable: false
+                // orderable: false
             },
             {
                 data: 'date_calibration'
@@ -83,96 +76,36 @@ $(function ($) {
             }
 
         ],
-
-        columnDefs: [{
-            className: 'control',
-            /*'targets': */
-            'orderable': false,
-        }],
-        language: {
-            processing: 'Подождите...',
-            search: '',
-            searchPlaceholder: "Поиск...",
-            lengthMenu: 'Отображать _MENU_  ',
-            info: 'Записи с _START_ до _END_ из _TOTAL_ записей',
-            infoEmpty: 'Записи с 0 до 0 из 0 записей',
-            infoFiltered: '(отфильтровано из _MAX_ записей)',
-            infoPostFix: '',
-            loadingRecords: 'Загрузка записей...',
-            zeroRecords: 'Записи отсутствуют.',
-            emptyTable: 'В таблице отсутствуют данные',
-            paginate: {
-                first: 'Первая',
-                previous: 'Предыдущая',
-                next: 'Следующая',
-                last: 'Последняя'
-            },
-            buttons: {
-                colvis: '',
-                copy: '',
-                excel: '',
-                print: ''
-            },
-            aria: {
-                sortAscending: ': активировать для сортировки столбца по возрастанию',
-                sortDescending: ': активировать для сортировки столбца по убыванию'
-            }
-        },
+        // columnDefs: [{
+        //     className: 'control',
+        //     'orderable': false,
+        // }],
+        language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
         pageLength: 25,
         order: [],
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX: true,
         fixedHeader: false,
-
     })
 
-    precursorJournal.columns().every( function () {
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            precursorJournal
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
+    precursorJournal.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                precursorJournal
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 
-
-    /*journal buttons*/
     let container = $('div.dataTables_scrollBody'),
         scroll = $('#fridgecontrol_journal').width()
 
@@ -198,9 +131,6 @@ $(function ($) {
         }
     })
 
-
-
-
     /** modal */
     $('.popup-first').magnificPopup({
         items: {
@@ -219,8 +149,14 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         precursorJournal.ajax.reload()
-        precursorJournal.draw()
     })
+
+    function reportWindowSize() {
+        precursorJournal
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()

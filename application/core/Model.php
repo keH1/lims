@@ -8,6 +8,7 @@ class Model
 {
     /** @var CDatabase $DB */
     protected $DB;
+    protected string $DBName;
     protected int $dayInYear = 360;
 
     protected array $filtersForGetListDefault = [
@@ -278,6 +279,7 @@ class Model
     {
         global $DB;
         $this->DB = $DB;
+        $this->DBName = $this->DB->DBName;
     }
 
 
@@ -510,5 +512,77 @@ class Model
         return $data;
     }
 
+    /**
+     * Получает максимальное значение по указанным полям в таблице
+     * 
+     * @param string $table Имя таблицы
+     * @param string|array $fields Имя поля или массив полей
+     * @return string|int|float|double|decimal|null Максимальное значение (строка для дат, число для числовых полей) или null, если данных нет
+     */
+    public function getMaxValueByFields(string $table, $fields): mixed
+    {
+        $fields = is_array($fields) ? $fields : [$fields];
 
+        $sql = $this->DB->Query("
+            SELECT TABLE_NAME 
+            FROM INFORMATION_SCHEMA.TABLES 
+            WHERE TABLE_SCHEMA = '{$this->DBName}'
+              AND TABLE_NAME = '{$table}'
+        ")->Fetch();
+
+        if (!$sql) {
+            throw new InvalidArgumentException("Таблица {$table} не существует в базе данных {$this->DBName}");
+        }
+
+        $maxValues = [];
+        $fieldTypes = [];
+
+        foreach ($fields as $field) {
+            $sql = $this->DB->Query("
+                SELECT COLUMN_NAME, DATA_TYPE 
+                FROM INFORMATION_SCHEMA.COLUMNS 
+                WHERE TABLE_SCHEMA = '{$this->DBName}'
+                  AND TABLE_NAME = '{$table}' 
+                  AND COLUMN_NAME = '{$field}'
+            ")->Fetch();
+
+            if (!$sql) {
+                throw new InvalidArgumentException("Поле {$field} не существует в таблице {$table}");
+            }
+
+            $invalidTypes = ['tinyint', 'boolean', 'text', 'blob', 'json'];
+            if (in_array(strtolower($sql['DATA_TYPE']), $invalidTypes)) {
+                throw new InvalidArgumentException("Тип поля '{$sql['DATA_TYPE']}' не подходит для оператора MAX");
+            }
+
+            $maxValue = $this->DB->Query("
+                SELECT MAX(`{$field}`) as max_value
+                FROM `{$table}`
+            ")->Fetch()['max_value'];
+
+            if ($maxValue) {
+                $maxValues[$field] = $maxValue;
+                $fieldTypes[$field] = strtolower($sql['DATA_TYPE']);
+            }
+        }
+
+        if (empty($maxValues)) {
+            return null;
+        }
+
+        $maxField = array_keys($maxValues, max($maxValues))[0];
+        $maxValue = $maxValues[$maxField];
+        $maxFieldType = $fieldTypes[$maxField];
+
+        switch ($maxFieldType) {
+            case 'int':
+                return (int)$maxValue;
+            case 'float':
+            case 'double':
+            case 'decimal':
+                return (float)$maxValue;
+            default:
+                return $maxValue;
+        }
+    }
 }

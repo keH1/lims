@@ -65,7 +65,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Полное наименование компании</label>
                 <div class="col-sm-8">
-                    <input type="text" name="CompanyFullName" class="form-control clearable" value="<?= htmlspecialchars($this->data['request']['CompanyFullName']) ?? '' ?>">
+                    <input type="text" name="CompanyFullName" class="form-control clearable" value="<?= $this->data['request']['CompanyFullName'] ?? '' ?>">
                 </div>
                 <div class="col-sm-2"></div>
             </div>
@@ -249,6 +249,178 @@
                 <div class="col-sm-2"></div>
             </div>
 
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <header class="panel-heading">
+            Акт отбора проб
+            <span class="tools float-end">
+                <a href="#" class="fa fa-chevron-down"></a>
+            </span>
+        </header>
+        <div class="panel-body panel-hidden" style="display: none;">
+
+            <!-- <h6 class="d-flex mb-3">
+                Заказчик: <?= $this->data['company'] ?>
+            </h6>
+
+            <h6 class="d-flex mb-3">
+                Адрес отбора проб: <?= $this->data['object'] ?>
+            </h6> -->
+
+            <!-- <div class="mb-3 row">
+                <div class="col-6">
+                    <label class="form-label">Наименование проб:</label>
+                    <select class="form-select" name="name_probe" style="max-width: 100%">
+                        <?php if ($this->data['id_material'] == 1): ?>
+                            <option value="Вода">Вода</option>
+                        <?php elseif ($this->data['id_material'] == 3): ?>
+                            <option value="Почва">Почва</option>
+                            <option value="Грунт">Грунт</option>
+                            <option value="Донные отложения">Донные отложения</option>
+                        <?php elseif ($this->data['id_material'] == 5): ?>
+                            <option value="Атмосферный воздух">Атмосферный воздух</option>
+                        <?php else:?>
+                            <option value="<?=$this->data['material']['NAME']?>"><?=$this->data['material']['NAME']?></option>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <input type="hidden" name="id_act" value="<?=$this->data['id_act']?>">
+
+                <div class="col-6">
+                    <label class="form-label">НД на отбор проб:</label>
+                    <select name="ND" class="form-select" style="max-width: 100%">
+                        <?php foreach ($this->data['ND'] as $ND):?>
+                            <option value="<?=$ND['id']?>"
+                                <?= $this->data['information']['ND'] == $ND['id'] ? 'selected' : ''?>>
+                                <?=$ND['name']?>
+                            </option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+            </div> -->
+            <div class="mb-3 row">
+                <div class="col-6">
+                    <label class="form-label">Дата и время отбора проб:</label>
+                    <input type="datetime-local" class="form-control" name="information[date_sample_all]" value="<?=$this->data['request']['act_information']['date_sample_all']?>">
+                </div>
+
+                <div class="col-6">
+                    <label class="form-label">Дата и время доставки проб в ИЛЦ:</label>
+                    <input type="datetime-local" class="form-control" name="information[datetime_arrive]" value="<?=$this->data['request']['act_information']['datetime_arrive']?>">
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <div class="col-6">
+                    <label class="form-label">Условия доставки проб:</label>
+                    <input type="text" class="form-control" name="information[delivery_terms]" value="<?=$this->data['request']['act_information']['delivery_terms']?>">
+                </div>
+                <div class="col-3">
+                    <label class="form-label">Упаковка:</label>
+                    <input type="text" class="form-control" name="information[package]" value="<?=$this->data['request']['act_information']['package']?>">
+                </div>
+                <div class="col-3">
+                    <label class="form-label">Масса (объём):</label>
+                    <input type="text" class="form-control" name="information[weight]" value="<?=$this->data['request']['act_information']['weight']?>">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-6">
+                    <label for="sampler" class="form-label">Отбор проб произвел:</label>
+                    <select class="form-control assigned-select"
+                            name="information[sampler]" id="sampler"
+                    >
+                        <option value="" <?= empty($this->data['request']['act_information']['sampler']) ? "selected" : "" ?> disabled>Выберите отборщика</option>
+                        <?php foreach ($this->data['clients'] as $user): ?>
+                            <option value="<?=$user['ID']?>" <?= ((int)$this->data['request']['act_information']['sampler'] == (int)$user['ID']) ? "selected" : ""?>>
+                                <?=$user['LAST_NAME']?> <?=$user['NAME']?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <!-- <input type="text" class="form-control" name="information[sampler]" value="<?= $this->data['request']['act_information']['sampler'] ?>"> -->
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Цель проведения испытаний:</label>
+                    <input type="text" class="form-control" name="information[objective]" value="<?=$this->data['request']['act_information']['objective']?>">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-6">
+                    <label for="sample_come" class="form-label">Пробы принял:</label>
+                    <select name="information[sample_come]" id="sample_come"
+                            class="form-select" style="max-width: 100%"
+                    >
+                        <option value="" <?= empty($this->data['request']['act_information']['sample_come']) ? "selected" : "" ?> disabled>Выберите приемщика</option>
+                        <?php foreach ($this->data['clients'] as $user):?>
+                            <option value="<?=$user['ID']?>" <?= ((int)$this->data['request']['act_information']['sample_come'] == (int)$user['ID']) ? "selected" : ""?>>
+                                <?=$user['LAST_NAME']?> <?=$user['NAME']?>
+                            </option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+            </div>
+            <!-- <div class="mb-3 row">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Шифр в ИЛЦ</th>
+                            <th>Наим. пробы</th>
+                            <th>Время отбора</th>
+                            <th>Точка отбора</th>
+                            <th>Глубина отбора, м</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $i = 0;
+                            foreach ($this->data['probe'] as $probe): ?>
+                                <tr>
+                                    <td><input class="form-control" type="text" value="<?= $probe ?>" name="probe[]"
+                                            readonly></td>
+                                    <td><?= $this->data['material']['NAME'] ?></td>
+                                    <td>
+                                        <input type="time" class="form-control date_time_otbor"
+                                            name="datetime_sample[<?= $i ?>]"
+                                            value="<?= date('H:i', strtotime($this->data['information']['datetime_sample'][$i]))?>">
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" name="point_sample[<?= $i ?>]"
+                                            value="<?= $this->data['information']['point_sample'][$i] ?>">
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" name="deep[<?= $i ?>]"
+                                            value="<?= $this->data['information']['deep'][$i] ?>">
+                                    </td>
+                                </tr>
+                        <?php $i++; endforeach; ?>
+                    </tbody>
+                </table>
+            </div> -->
+            <!-- <div class="mb-3 row">
+                <div class="accordion" id="accordionPanelsStayOpenExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                                    aria-controls="panelsStayOpen-collapseOne">
+                                Перечень определяемых показателей:
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse"
+                            aria-labelledby="panelsStayOpen-headingOne">
+                            <div class="accordion-body w-100">
+                                <ul class="list-group list-group-flush">
+                                    <?php foreach ($this->data['gosts'] as $gosts): ?>
+                                        <li class="list-group-item"><?= $gosts ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
         </div>
     </div>
 

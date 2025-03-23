@@ -9,14 +9,7 @@ $(function ($) {
         })
     }
 
-    /*journal requests*/
-    // let journalRequests = $('#journal_requests').DataTable({
     let journalDataTable = window.initDataTable('#journal_requests', {
-        // processing: true,
-        // serverSide: true,
-        // bSortCellsTop: true,
-        // scrollX:       true,
-        // fixedHeader:   true,
         ajax: {
             type : 'POST',
             data: function ( d ) {
@@ -105,7 +98,7 @@ $(function ($) {
                 data: 'NUM_ACT_TABLE',
                 render: function (data, type, item) {
                     if (type === 'display' || type === 'filter') {
-                        return `<a class="number-act" href="/probe.php?ID=${item['ID_Z']}&1" target="_blank">
+                        return `<a class="number-act" href="/ulab/probe/card/${item['ID_Z']}" target="_blank">
                                 ${item['NUM_ACT_TABLE']}
                             </a>`
                     }
@@ -220,73 +213,13 @@ $(function ($) {
             $('td:eq(6)', row).addClass(data.bgPdf);
             $(row).addClass(data.bgCheck);
         },
-        language:{
-            processing: 'Подождите...',
-            search: '',
-            searchPlaceholder: "Поиск...",
-            lengthMenu: 'Отображать _MENU_  ',
-            info: 'Записи с _START_ до _END_ из _TOTAL_ записей',
-            infoEmpty: 'Записи с 0 до 0 из 0 записей',
-            infoFiltered: '(отфильтровано из _MAX_ записей)',
-            infoPostFix: '',
-            loadingRecords: 'Загрузка записей...',
-            zeroRecords: 'Записи отсутствуют.',
-            emptyTable: 'В таблице отсутствуют данные',
-            paginate: {
-                first: 'Первая',
-                previous: 'Предыдущая',
-                next: 'Следующая',
-                last: 'Последняя'
-            },
-            buttons: {
-                colvis: '',
-                copy: '',
-                excel: '',
-                print: ''
-            },
-            aria: {
-                sortAscending: ': активировать для сортировки столбца по возрастанию',
-                sortDescending: ': активировать для сортировки столбца по убыванию'
-            }
-        },
+        language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 2, "desc" ]],
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        buttons: dataTablesSettings.buttons,
     });
 
     journalDataTable.columns().every(function () {
@@ -311,8 +244,14 @@ $(function ($) {
 
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()

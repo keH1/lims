@@ -49,7 +49,6 @@ class DisinfectionConditionersController extends Controller
     public function getListProcessingAjax()
     {
         global $APPLICATION;
-
         $APPLICATION->RestartBuffer();
 
         $usedModel = $this->model($this->nameModel);
@@ -57,7 +56,6 @@ class DisinfectionConditionersController extends Controller
         $filter = $usedModel->prepareFilter($_POST ?? []);
 
         $data = $usedModel->getList($filter);
-
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];

@@ -6,11 +6,6 @@
                     <i class="fa-solid fa-list"></i>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link" href="<?=URI?>/gost/new/" title="Новый ГОСТ">
-                    <i class="fa-solid fa-plus"></i>
-                </a>
-            </li>
             <?php if ( !empty($this->data['id']) ): ?>
                 <li class="nav-item me-2">
                     <a class="nav-link disable-after-click" href="<?=URI?>/gost/copyGost/<?=$this->data['id']?>" title="Скопировать ГОСТ">
@@ -63,7 +58,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Наименование объекта <span class="redStars">*</span></label>
                 <div class="col-sm-8">
-                    <textarea name="form[materials]" class="form-control" style="height: 80px;"><?=$this->data['form']['materials'] ?? ''?></textarea>
+                    <textarea name="form[materials]" class="form-control" required style="height: 80px;"><?=$this->data['form']['materials'] ?? ''?></textarea>
                 </div>
                 <div class="col-sm-2"></div>
             </div>
@@ -93,7 +88,7 @@
                     <a class="btn btn-danger"
                        href="<?=URI?>/gost/nonActualGost/<?=$this->data['id']?>"
                        title="Отметить все методики в ГОСТе как неактуальные"
-                       onclick="confirm('Отметить все методики в ГОСТе как неактуальные?')"
+                       onclick="return confirm('Отметить все методики в ГОСТе как неактуальные?')"
                     >Не актуально</a>
                 <?php endif; ?>
             </div>

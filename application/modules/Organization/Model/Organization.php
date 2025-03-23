@@ -783,7 +783,7 @@ class Organization extends Model
         $where = "";
         $limit = "";
         $order = [
-            'by' => 'ID',
+            'by' => 'u.ID',
             'dir' => 'DESC'
         ];
 
@@ -807,7 +807,10 @@ class Organization extends Model
 
             switch ($filter['order']['by']) {
                 case 'NAME':
-                    $order['by'] = "`NAME`";
+                    $order['by'] = "u.`LAST_NAME`";
+                    break;
+                case 'WORK_POSITION':
+                    $order['by'] = "u.`WORK_POSITION`";
                     break;
             }
         }

@@ -145,7 +145,7 @@
                         <?php if ($item['id'] < 100): ?>
                             <option class="font-bold" value="<?= $item['id'] ?>" disabled><?= $item['name'] ?></option>
                         <?php else: ?>
-                            <option value="<?= $item['id'] ?>" <?= $item['id'] === $this->data['room'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>" <?//= $item['id'] === $this->data['room'] ? 'selected' : '' ?>>
                                 -- <?= $item['name'] ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>
@@ -160,38 +160,38 @@
 
     <table id="journalCondition" class="table table-striped journal text-center">
         <thead>
-        <tr class="table-light align-middle">
-            <th scope="col"></th>
-            <th scope="col">Дата</th>
-            <th scope="col">Температура, ºC</th>
-            <th scope="col">Влажность, %</th>
-            <th scope="col">Давление, кПа</th>
-            <th scope="col">Помещение</th>
-        </tr>
-        <tr class="header-search">
-            <th scope="col">
-                <select class="form-control bg-white search">
-                    <option value="">Все</option>
-                    <option value="1">Соответствуют</option>
-                    <option value="0">Не соответствуют</option>
-                </select>
-            </th>
-            <th scope="col">
-                <input type="text" class="form-control search">
-            </th>
-            <th scope="col">
-                <input type="text" class="form-control search">
-            </th>
-            <th scope="col">
-                <input type="text" class="form-control search">
-            </th>
-            <th scope="col">
-                <input type="text" class="form-control search">
-            </th>
-            <th scope="col">
-                <input type="text" class="form-control search" disabled>
-            </th>
-        </tr>
+            <tr class="table-light align-middle">
+                <th scope="col"></th>
+                <th scope="col">Дата</th>
+                <th scope="col">Температура, ºC</th>
+                <th scope="col">Влажность, %</th>
+                <th scope="col">Давление, кПа</th>
+                <th scope="col">Помещение</th>
+            </tr>
+            <tr class="header-search">
+                <th scope="col">
+                    <select class="form-control bg-white search">
+                        <option value="">Все</option>
+                        <option value="1">Соответствуют</option>
+                        <option value="0">Не соответствуют</option>
+                    </select>
+                </th>
+                <th scope="col">
+                    <input type="text" class="form-control search">
+                </th>
+                <th scope="col">
+                    <input type="text" class="form-control search">
+                </th>
+                <th scope="col">
+                    <input type="text" class="form-control search">
+                </th>
+                <th scope="col">
+                    <input type="text" class="form-control search">
+                </th>
+                <th scope="col">
+                    <input type="text" class="form-control search">
+                </th>
+            </tr>
         </thead>
         <tbody>
         </tbody>

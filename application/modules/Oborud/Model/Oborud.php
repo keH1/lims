@@ -343,7 +343,7 @@ class Oborud extends Model {
 
                     if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
                         $result['bgStage'] = 'bg-light-green';
-                        $result['titleStage'] = 'С оборудованием все ОК';
+                        $result['titleStage'] = 'Нет замечаний';
                     } else if (($poverka <= 0) && !$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
                         $result['bgStage'] = 'bg-red';
                         $result['titleStage'] = 'Истек срок поверки!';
@@ -359,7 +359,7 @@ class Oborud extends Model {
         } else {
             if ( $data['CHECKED'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned'])) ) {
                 $result['bgStage'] = 'bg-light-green';
-                $result['titleStage'] = 'С оборудованием все ОК';
+                $result['titleStage'] = 'Нет замечаний';
             } else if ( $data['CHECKED'] == '0' && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned'])) ) {
                 $result['bgStage'] = 'bg-light-blue';
                 $result['titleStage'] = 'Оборудование не проверено отделом метрологии!';
@@ -385,12 +385,6 @@ class Oborud extends Model {
             'dir' => 'DESC'
         ];
         if ( !empty($filter) ) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
-
-            // работа с фильтрами
             if ( !empty($filter['search']) ) {
                 if ( isset($filter['search']['oborud_id']) ) {
                     $where .= "b.ID = '{$filter['search']['oborud_id']}' AND ";
@@ -401,11 +395,18 @@ class Oborud extends Model {
                 }
 
                 if ( isset($filter['search']['place']) ) {
-                    $where .= "m.place LIKE '%{$filter['search']['place']}%' AND ";
+                    $placeFilter = trim($filter['search']['place']);
+                    $placeLower = mb_strtolower($placeFilter);
+                    
+                    $isNonMoved = preg_match('/(н[её]|п[еере])/ui', $placeLower);
+                    if ($isNonMoved) {
+                        $where .= "(m.place IS NULL OR m.place = '') AND ";
+                    } else {
+                        $where .= "m.place LIKE '%{$placeFilter}%' AND ";
+                    }
                 }
             }
 
-            // работа с сортировкой
             if ( !empty($filter['order']) ) {
                 if ( $filter['order']['dir'] === 'asc' ) {
                     $order['dir'] = 'ASC';
@@ -425,10 +426,8 @@ class Oborud extends Model {
                 }
             }
 
-            // работа с пагинацией
             if ( isset($filter['paginate']) ) {
                 $offset = 0;
-                // количество строк на страницу
                 if ( isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0 ) {
                     $length = $filter['paginate']['length'];
 
@@ -739,6 +738,8 @@ class Oborud extends Model {
         $sqlData = $this->prepearTableData('ba_oborud_moving', $data);
 
         $this->DB->Insert('ba_oborud_moving', $sqlData);
+
+        return $data;
     }
 
 
@@ -1083,11 +1084,23 @@ class Oborud extends Model {
         if ( !empty($newOborudId) ) {
             $this->DB->Update('ulab_methods_oborud', ['id_oborud' => $newOborudId], "where id_oborud = {$oborudId}");
         }
+
+        return $data;
     }
 
     /**
      * на длительное хранение
      */
+    // public function setLongStorage($oborudId, $data, $newOborudId = '')
+    // {
+    //     $sqlData = $this->prepearTableData('ba_oborud', $data);
+
+    //     $this->DB->Update('ba_oborud', $sqlData, "where id = {$oborudId}");
+
+    //     if ( !empty($newOborudId) ) {
+    //         $this->DB->Update('ulab_methods_oborud', ['id_oborud' => $newOborudId], "where id_oborud = {$oborudId}");
+    //     }
+    // }
     public function setLongStorage($oborudId, $data, $newOborudId = '')
     {
         $sqlData = $this->prepearTableData('ba_oborud', $data);
@@ -1097,6 +1110,8 @@ class Oborud extends Model {
         if ( !empty($newOborudId) ) {
             $this->DB->Update('ulab_methods_oborud', ['id_oborud' => $newOborudId], "where id_oborud = {$oborudId}");
         }
+
+        return $data;
     }
 
 
@@ -2026,4 +2041,14 @@ class Oborud extends Model {
         return $result;
     }
 
+    /**
+     * Проверяет существование оборудования по ID
+     * @param int $oborudId
+     * @return bool
+     */
+    public function isExistEquipment(int $oborudId): bool
+    {
+        $result = $this->DB->Query("SELECT COUNT(*) FROM ba_oborud WHERE ID = {$oborudId}");
+        return $result->Fetch()['COUNT(*)'] > 0;
+    }
 }

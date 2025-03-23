@@ -17,7 +17,7 @@
 			</li>
 			<li class="nav-item me-2">
 				<a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Contract_card/Contract_card.html"
-				   title="ПОМОГИТЕ">
+				   title="Техническая поддержка">
 					<i class="fa-solid fa-question"></i>
 				</a>
 			</li>
@@ -91,7 +91,9 @@
 									<use xlink:href="<?= URI ?>/assets/images/icons.svg#upload"/>
 								</svg>
 								<input class="d-none upload_pdf" type="file" name="upload_pdf"
-									   data-dogovor_id="<?= $this->data['order']['id'] ?>">
+									   data-dogovor_id="<?= $this->data['order']['id'] ?>"
+									   accept="application/pdf"
+								>
 							</label>
 						<?php endif; ?>
 					</li>
@@ -318,6 +320,8 @@
 				<tbody>
 				</tbody>
 			</table>
+
+			<div class="line-dashed"></div>
 
 			<?php if ($this->data['order']['longterm'] == 1):?>
 				<div class="mb-3">

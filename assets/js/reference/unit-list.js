@@ -57,7 +57,7 @@ $(function ($) {
             language: dataTablesSettings.language,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
             pageLength: 25,
-            order: [[0, "asc"]],
+            order: [[1, "asc"]],
             colReorder: true,
             dom: 'fBrt<"bottom"lip>',
             buttons: [],
@@ -88,8 +88,14 @@ $(function ($) {
 
         $('.filter').on('change', function () {
             journalDataTable.ajax.reload()
-            journalDataTable.draw()
         })
+
+        function reportWindowSize() {
+            journalDataTable
+                .columns.adjust()
+        }
+
+        window.onresize = reportWindowSize
 
         $('.filter-btn-reset').on('click', function () {
             location.reload()
@@ -132,7 +138,7 @@ $(function ($) {
                             showSuccessMessage(data['msg'])
 
                             journalDataTable.ajax.reload()
-                            journalDataTable.draw()
+                            // journalDataTable.draw()
                         } else {
                             showErrorMessage(data['error'])
                         }

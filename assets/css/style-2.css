@@ -772,7 +772,7 @@ table.table-confirm tbody td {
     display: none;
 }
 table.dataTable tbody th, table.dataTable tbody td {
-   // white-space: nowrap !important;
+    /* white-space: nowrap !important; */
     padding: 4px 4px !important;
     /*overflow: hidden !important; !* Обрезаем всё за пределами блока *!*/
     /*text-overflow: ellipsis !important; !* Добавляем многоточие *!*/
@@ -1084,7 +1084,7 @@ table .bg-green {
 .cell-overflow {
     overflow: hidden !important;
     white-space: nowrap !important;
-   // text-overflow: ellipsis !important;
+    /* text-overflow: ellipsis !important; */
 }
 
 .cursor-pointer {

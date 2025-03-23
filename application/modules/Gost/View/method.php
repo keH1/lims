@@ -408,7 +408,7 @@
                 <div class="col-sm-8">
                     <select id="select-assigned" class="form-control select2" name="form[assigned][]" multiple="multiple">
                         <?php foreach ($this->data['user_list'] as $user): ?>
-                            <option value="<?=$user['ID']?>" <?=in_array($user['id'], $this->data['assigned'])? 'selected' : ''?>><?=$user['last_name']?> <?=$user['name']?></option>
+                            <option value="<?=$user['user_id']?>" <?=in_array($user['user_id'], $this->data['assigned'])? 'selected' : ''?>><?=$user['last_name']?> <?=$user['name']?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -901,7 +901,7 @@
 <!--    --><?php //endif; ?>
 
     <?php if ($_SESSION['SESS_AUTH']['USER_ID'] == 1): ?>
-        <a class="btn btn-dark me-3" href="<?=URI?>/gost/deletePermanentlyMethod/<?=$this->data['form']['id']?>" onclick="confirm('Удаляем?')">
+        <a class="btn btn-dark me-3" href="<?=URI?>/gost/deletePermanentlyMethod/<?=$this->data['form']['id']?>" onclick="return confirm('Удаляем?')">
             <i class="fa-solid fa-skull-crossbones"></i>
             Удалить
         </a>

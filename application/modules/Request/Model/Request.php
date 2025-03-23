@@ -172,6 +172,7 @@ class Request extends Model
             $row['DOGOVOR_NUM'] = $match[1] ?? '';
 
 			$row['price_ru'] = StringHelper::priceFormatRus($row['price_discount']);
+            $row['act_information'] = json_decode($row['act_information'], true);
 
             $result = $row;
         }
@@ -779,7 +780,9 @@ class Request extends Model
             if ( !empty($filter['search']) ) {
                 // Заявка
                 if ( isset($filter['search']['requestTitle']) ) {
-                    $where .= "b.REQUEST_TITLE LIKE '%{$filter['search']['requestTitle']}%' AND ";
+                    $text = htmlentities($filter['search']['requestTitle']);
+
+                    $where .= "b.REQUEST_TITLE LIKE '%{$text}%' AND ";
                 }
                 // ID заявки
 				if ( isset($filter['search']['deal_id']) ) {
@@ -794,7 +797,9 @@ class Request extends Model
                 }
                 // Клиент
                 if ( isset($filter['search']['COMPANY_TITLE']) ) {
-                    $where .= "b.COMPANY_TITLE LIKE '%{$filter['search']['COMPANY_TITLE']}%' AND ";
+                    $text = htmlentities($filter['search']['COMPANY_TITLE']);
+
+                    $where .= "b.COMPANY_TITLE LIKE '%{$text}%' AND ";
                 }
                 // Крайний срок
                 if ( isset($filter['search']['DEADLINE_TABLE']) ) {
@@ -806,7 +811,9 @@ class Request extends Model
                 }
                 // Объект испытаний
                 if ( isset($filter['search']['MATERIAL']) ) {
-                    $where .= "b.MATERIAL LIKE '%{$filter['search']['MATERIAL']}%' AND ";
+                    $text = htmlentities($filter['search']['MATERIAL']);
+
+                    $where .= "b.MATERIAL LIKE '%{$text}%' AND ";
                 }
                 // Ответственный
                 if ( isset($filter['search']['ASSIGNED']) ) {
@@ -832,7 +839,7 @@ class Request extends Model
                 }
                 // Стоимость
                 if ( isset($filter['search']['price_discount']) ) {
-                    $where .= "b.price_discount = '{$filter['search']['price_discount']}' AND ";
+                    $where .= "b.price_discount like '%{$filter['search']['price_discount']}%' AND ";
                 }
                 // Дата оплаты
                 if ( isset($filter['search']['DATE_OPLATA']) ) {
@@ -840,7 +847,9 @@ class Request extends Model
                 }
                 // Производитель
                 if ( isset($filter['search']['MANUFACTURER_TITLE']) ) {
-                    $where .= "b.MANUFACTURER_TITLE LIKE '%{$filter['search']['MANUFACTURER_TITLE']}%' AND ";
+                    $text = htmlentities($filter['search']['MANUFACTURER_TITLE']);
+
+                    $where .= "b.MANUFACTURER_TITLE LIKE '%{$text}%' AND ";
                 }
                 // Последнее изменение (пользователь)
                 if ( isset($filter['search']['USER_HISTORY']) ) {
@@ -1099,7 +1108,7 @@ class Request extends Model
 
 			if ($row['TAKEN_ID_DEAL'] || $row['TYPE_ID'] == 7) {
 				$row['bgPrice'] = 'bg-green-transp';
-			} elseif ($price && $row['OPLATA'] >= $price || !$price) {
+			} elseif ($row['price_discount'] && $row['OPLATA'] >= $row['price_discount'] || !$row['price_discount']) {
 				$row['bgPrice'] = 'bg-transparent';
 			} else {
 				$row['bgPrice'] = 'bg-light-red';
@@ -1689,12 +1698,6 @@ class Request extends Model
         ];
 
         if ( !empty($filter) ) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
-
-            // работа с фильтрами
             if ( !empty($filter['search']) ) {
                 // Заявка
                 if ( isset($filter['search']['REQUEST_TITLE']) ) {
@@ -1732,8 +1735,39 @@ class Request extends Model
                     $where .= "b.MATERIAL LIKE '%{$filter['search']['MATERIAL']}%' AND ";
                 }
                 // Ответственный
-                if ( isset($filter['search']['ASSIGNED']) ) {
-                    $where .= "b.ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
+                if (isset($filter['search']['ASSIGNED'])) {
+                    $searchText = $filter['search']['ASSIGNED'];
+                    
+                    $searchNames = explode(',', $searchText);
+                    $whereNames = [];
+                    
+                    foreach ($searchNames as $searchName) {
+                        $searchName = trim($searchName);
+                        if (empty($searchName)) continue;
+                        
+                        if (mb_strlen($searchName, 'UTF-8') === 1) {
+                            $whereNames[] = "(EXISTS (
+                                SELECT 1 FROM assigned_to_request AS atr 
+                                JOIN b_user AS u ON atr.user_id = u.ID 
+                                WHERE atr.deal_id = b.ID_Z AND
+                                (u.NAME LIKE '{$searchName}%' OR 
+                                 u.LAST_NAME LIKE '{$searchName}%')
+                            ))";
+                        } else {
+                            $whereNames[] = "(EXISTS (
+                                SELECT 1 FROM assigned_to_request AS atr 
+                                JOIN b_user AS u ON atr.user_id = u.ID 
+                                WHERE atr.deal_id = b.ID_Z AND
+                                (u.NAME LIKE '%{$searchName}%' OR 
+                                 u.LAST_NAME LIKE '%{$searchName}%' OR
+                                 CONCAT(SUBSTRING(u.NAME, 1, 1), '. ', u.LAST_NAME) LIKE '%{$searchName}%')
+                            ))";
+                        }
+                    }
+                    
+                    if (!empty($whereNames)) {
+                        $where .= "(" . implode(' OR ', $whereNames) . ") AND ";
+                    }
                 }
                 // Акт ПП
                 if ( isset($filter['search']['NUM_ACT_TABLE']) ) {
@@ -1801,7 +1835,12 @@ class Request extends Model
                         $order['by'] = 'b.MATERIAL';
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = 'b.ASSIGNED';
+                        $order['by'] = "(SELECT SUBSTRING(u.NAME, 1, 1) 
+                                        FROM assigned_to_request AS atr 
+                                        JOIN b_user AS u ON atr.user_id = u.ID 
+                                        WHERE atr.deal_id = b.ID_Z 
+                                        ORDER BY atr.is_main DESC
+                                        LIMIT 1)";
                         break;
                     case 'REQUEST_TITLE':
                         $order['by'] = 'b.REQUEST_TITLE';

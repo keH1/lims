@@ -74,8 +74,8 @@
         </th>
         <th scope="col">
             <select class="form-control search select2 select2-users">
-                <option value="">Выбрать должность</option>
-                <option value="Должность не указана">Должность не указана</option>
+                <option value="-1">Все должности</option>
+                <option value="-2">Должность не указана</option>
                 <?php foreach ($this->data['position_list'] as $row): ?>
                     <option value="<?=$row?>"><?=$row?></option>
                 <?php endforeach; ?>

@@ -85,19 +85,22 @@ class Permission extends Model
      */
     public function getControllerMethod()
     {
-        $controllers = $this->getFilesFromDir(APP_PATH . '/controllers/');
+        $modules = $this->getFilesFromDir(APP_PATH . 'modules/');
 
         $result = [];
 
-        foreach ($controllers as $file) {
-            require_once(APP_PATH . '/controllers/' . $file);
+        foreach ($modules as $module) {
+            $fullPathFile = APP_PATH . "/modules/{$module}/Controller/{$module}Controller.php";
 
-            $match = [];
-            preg_match('#((.*)Controller)\.php$#', $file, $match);
+            if ( !is_file($fullPathFile) ) {
+                continue;
+            }
 
-            $reflector = new ReflectionClass($match[1]);
+            require_once($fullPathFile);
 
-            $methods = get_class_methods($match[1]);
+            $reflector = new ReflectionClass("{$module}Controller");
+
+            $methods = get_class_methods("{$module}Controller");
 
             $resultMethods = [];
             foreach ($methods as $method) {
@@ -110,7 +113,7 @@ class Permission extends Model
 
             $descClass = $this->getDescFromDocDocumentByObject($reflector);
             $result[] = [
-                'name' => $match[2],
+                'name' => $module,
                 'desc' => $descClass,
                 'methods' => $resultMethods,
             ];
@@ -272,8 +275,12 @@ class Permission extends Model
                 $where .= "EMAIL LIKE '%{$filter['search']['EMAIL']}%' AND ";
             }
             // Должность
-            if (isset($filter['search']['WORK_POSITION'])) {
-                $where .= "(u.WORK_POSITION LIKE '%{$filter['search']['WORK_POSITION']}%' OR u.WORK_POSITION IS NULL OR u.WORK_POSITION = '') AND ";
+            if (isset($filter['search']['WORK_POSITION']) && $filter['search']['WORK_POSITION'] != '-1') {
+                if ( $filter['search']['WORK_POSITION'] == '-2' ) {
+                    $where .= "u.WORK_POSITION IS NULL OR u.WORK_POSITION = '' AND ";
+                } else {
+                    $where .= "u.WORK_POSITION LIKE '{$filter['search']['WORK_POSITION']}' AND ";
+                }
             }
             // Роль
             if (isset($filter['search']['permission_name'])) {

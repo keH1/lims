@@ -21,6 +21,8 @@ $(function ($) {
     body.on('click', '.add-conditions', function () {
         const conditionsModalForm = $('#conditionsModalForm');
 
+        conditionsModalForm[0].reset()
+
         let roomId = +$('#selectRoom').val();
             roomId = roomId > 0 ? roomId : '';
 
@@ -396,19 +398,6 @@ $(function ($) {
                     return '';
                 }
             },
-            // {
-            //     data: 'updated_at',
-            //     render: function (data, type, item) {
-            //         if (item.is_can_edit) {
-            //             return `<span class="text-primary cursor-pointer update-conditions"
-            //                     title="Редактировать показатели измерений" data-condition-id="${item.u_c_id}">
-            //                         ${item.ru_updated_at}
-            //                 </span>`;
-            //         } else {
-            //             return `<span>${item.ru_updated_at}</span>`;
-            //         }
-            //     }
-            // },
             {
                 data: 'created_at',
                 render: function (data, type, item) {
@@ -437,7 +426,6 @@ $(function ($) {
                 orderable: false,
             },
         ],
-        columnDefs: [{ visible: false, targets: 0 }],
         order: [[ 1, "desc" ]],
         language: dataTablesSettings.language,
         dom: 'frtB<"bottom"lip>',
@@ -465,8 +453,14 @@ $(function ($) {
      */
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
-        journalDataTable.draw()
     })
+
+    function reportWindowSize() {
+        journalDataTable
+            .columns.adjust()
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.assign(location.pathname)
@@ -741,7 +735,7 @@ $(function ($) {
 
                     conditionsModalForm.find('#temp').val(data['data']['random_temp']);
                     conditionsModalForm.find('#humidity').val(data['data']['random_wet']);
-                    //conditionsModalForm.find('#pressure').val(data['data']['random_pressure']);
+                    conditionsModalForm.find('#pressure').val(data['data']['random_pressure']);
                 }
             },
             error: function (jqXHR, exception) {

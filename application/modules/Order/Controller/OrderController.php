@@ -55,6 +55,20 @@ Class OrderController extends Controller
 
 
     /**
+     * @desc Журнал Сверки
+     * route /order/reviseList/
+     */
+    public function reviseList()
+    {
+        $this->data['title'] = 'Журнал Сверки';
+
+        $this->addJs('/assets/js/order-revise-list.js');
+
+        $this->view('revise_list', '', 'template_journal');
+    }
+
+
+    /**
      * @desc Получает данные для журнала договоров
      */
     public function getListProcessingAjax()
@@ -78,6 +92,57 @@ Class OrderController extends Controller
 
         $jsonData = [
             "draw" => (int)$_POST['draw'],
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data
+        ];
+
+        echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
+    }
+
+
+    /**
+     * @desc Получает данные для журнала договоров
+     */
+    public function getReviseDataJournalAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        /** @var Order $order */
+        $order = $this->model('Order');
+
+        $filter = [
+            'paginate' => [
+                'length'    => $_POST['length'], // кол-во строк на страницу
+                'start'     => $_POST['start'],  // текущая страница
+            ],
+            'search' => [],
+            'order' => []
+        ];
+
+        foreach ($_POST['columns'] as $column) {
+            if ( $column['search']['value'] !== '' ) {
+                $filter['search'][$column['data']] = $column['search']['value'];
+            }
+        }
+
+        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
+            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
+            $filter['order']['dir'] = $_POST['order'][0]['dir'];
+        }
+
+        $data = $order->getReviseDataToJournal($filter);
+
+        $recordsTotal = $data['recordsTotal'];
+        $recordsFiltered = $data['recordsFiltered'];
+
+        unset($data['recordsTotal']);
+        unset($data['recordsFiltered']);
+
+        $jsonData = [
+            "draw" => $_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -354,11 +419,23 @@ Class OrderController extends Controller
     public function uploadTzDocPdfAjax()
     {
         global $APPLICATION;
-
         $APPLICATION->RestartBuffer();
+
+        if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($fileInfo, $_FILES['file']['tmp_name']);
+            finfo_close($fileInfo);
+    
+            if ($mimeType !== 'application/pdf') {
+                echo json_encode(['success' => false, 'message' => 'Ошибка: Загружаемый файл должен быть в формате PDF'], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+        }
 
         /** @var Order $orderModel */
         $orderModel = $this->model('Order');
+
+        $message = '';
 
         if ( !empty($_POST['tz_id']) ) {
             $resultUpload = $orderModel->uploadTzDocPdf($_FILES["file"], (int)$_POST['tz_id']);
@@ -375,13 +452,13 @@ Class OrderController extends Controller
             if ( !empty($_POST['dogovor_id']) ) {
                 $orderModel->saveDogovorPdf($resultUpload['data'], (int)$_POST['dogovor_id']);
             }
-
-            $this->showSuccessMessage("Файл загружен");
+            $message = 'Файл загружен';
         } else {
-            $this->showErrorMessage($resultUpload['error']);
+            $message = $resultUpload['error'];
         }
 
-        echo json_encode(['success' => $resultUpload], JSON_UNESCAPED_UNICODE);
+        echo json_encode(['success' => $resultUpload['success'], 'message' => $message], JSON_UNESCAPED_UNICODE);
+        return;
     }
 
 

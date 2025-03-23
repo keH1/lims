@@ -1504,4 +1504,71 @@ class RequirementController extends Controller
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
+
+
+    /**
+     * @desc добавление материала в новом тз аяксом
+     */
+    public function addMaterialToTzAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        /** @var Requirement $requirementModel */
+        $requirementModel = $this->model('Requirement');
+
+        $requirementModel->addMaterialToTz((int)$_POST['deal_id'], (int)$_POST['material_id'], (int)$_POST['number']);
+    }
+
+    /**
+     * @desc добавление материала в новом тз аяксом
+     */
+    public function addProbeToMaterialAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        /** @var Requirement $requirementModel */
+        $requirementModel = $this->model('Requirement');
+
+        $requirementModel->addProbeToMaterial((int)$_POST['deal_id'], (array)$_POST['material_id'], (int)$_POST['number']);
+    }
+
+    /**
+     * @desc добавление методик выбранным пробам в новом тз аяксом
+     */
+    public function addMethodsToProbeAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        if ( empty($_POST['probe_id_list']) ) {
+            return false;
+        }
+
+        if ( empty($_POST['form']) ) {
+            return false;
+        }
+
+        $probeIdList = explode(',', $_POST['probe_id_list']);
+
+        /** @var Requirement $requirementModel */
+        $requirementModel = $this->model('Requirement');
+        /** @var Request $requestModel */
+        $requestModel = $this->model('Request');
+
+        // обновляем схему у заявки (позже обновить)
+        $requestModel->updateDealScheme((int)$_POST['deal_id'], (int)$_POST['scheme_id']);
+
+        // добавляем методики
+        $requirementModel->addMethodsToProbe($probeIdList, $_POST['form']);
+
+        // обновляем цены у заявки
+        $requirementModel->updatePrice($_POST['deal_id']);
+
+        return true;
+    }
 }

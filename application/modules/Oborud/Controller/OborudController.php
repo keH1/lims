@@ -71,8 +71,11 @@ class OborudController extends Controller
         /** @var Methods $methodModel */
         $methodModel = $this->model('Methods');
 
-        $this->data['title'] = 'Редактировать оборудование';
+        if (!is_numeric($oborudId) || !$oborudModel->isExistEquipment($oborudId)) {
+            $this->redirect('/oborud/list/');
+        }
 
+        $this->data['title'] = 'Редактировать оборудование';
         $this->data['id'] = $oborudId;
         $this->data['oborud'] = $oborudModel->getOborudById($oborudId);
         $this->data['status'] = $oborudModel->getStatus($this->data['oborud']);
@@ -105,46 +108,6 @@ class OborudController extends Controller
 
         $this->data['oborud_list'] = $oborudModel->getList();
 
-
-        $this->data['commissioning_user'] = [
-            [
-                'id' => 10,
-                'short_name' => 'Е. Апанович',
-            ],
-            [
-                'id' => 137,
-                'short_name' => 'Е. Байгазова',
-            ],
-            [
-                'id' => 15,
-                'short_name' => 'В. Шингарев',
-            ],
-            [
-                'id' => 13,
-                'short_name' => 'Т. Велютич',
-            ],
-            [
-                'id' => 11,
-                'short_name' => 'Т. Овчинникова',
-            ],
-            [
-                'id' => 58,
-                'short_name' => 'Р. Живцова',
-            ],
-            [
-                'id' => 27,
-                'short_name' => 'А. Шишкина',
-            ],
-            [
-                'id' => 95,
-                'short_name' => 'Т. Хеленюк',
-            ],
-            [
-                'id' => 123,
-                'short_name' => 'Н. Турьева',
-            ],
-        ];
-
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
@@ -159,18 +122,43 @@ class OborudController extends Controller
     /**
      *
      */
-    public function addOborudMoving()
+    // public function addOborudMoving()
+    // {
+    //     /** @var Oborud $oborudModel */
+    //     $oborudModel = $this->model('Oborud');
+
+    //     $oborudModel->addOborudMoving($_POST['form']);
+
+    //     if ( isset($_POST['journal_page']) ) {
+    //         $this->redirect("/oborud/movingJournal/{$_POST['form']['oborud_id']}");
+    //     } else {
+    //         $this->redirect("/oborud/edit/{$_POST['form']['oborud_id']}#moving-block");
+    //     }
+    // }
+
+    public function addOborudMovingAjax()
     {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $oborudModel->addOborudMoving($_POST['form']);
+        $result = $oborudModel->addOborudMoving($_POST['form']);
 
-        if ( isset($_POST['journal_page']) ) {
-            $this->redirect("/oborud/movingJournal/{$_POST['form']['oborud_id']}");
+        if ($result) {
+            $response = [
+                'success' => true,
+                'data' => $result,
+            ];
         } else {
-            $this->redirect("/oborud/edit/{$_POST['form']['oborud_id']}#moving-block");
+            $response = [
+                'success' => false,
+            ];
         }
+
+        header('Content-Type: application/json');
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
 
@@ -441,32 +429,81 @@ class OborudController extends Controller
     /**
      * @desc списание оборудования
      */
-    public function decommissioned()
+    // public function decommissioned()
+    // {
+    //     /** @var Oborud $oborudModel */
+    //     $oborudModel = $this->model('Oborud');
+
+    //     $oborudModel->setDecommissioned((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
+
+    //     $this->showSuccessMessage("Оборудование списано");
+
+    //     $this->redirect("/oborud/edit/{$_POST['oborud_id']}");
+    // }
+
+    public function decommissionedAjax()
     {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $oborudModel->setDecommissioned((int)$_POST['oborud_id'], $_POST['form'], (int)$_POST['change_oborud_id']);
+        $result = $oborudModel->setDecommissioned((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
 
-        $this->showSuccessMessage("Оборудование списано");
+        if ($result) {
+            $response = [
+                'success' => true,
+                'data' => $result,
+            ];
+        } else {
+            $response = [
+                'success' => false,
+            ];
+        }
 
-        $this->redirect("/oborud/edit/{$_POST['oborud_id']}");
+        header('Content-Type: application/json');
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
 
     /**
      * @desc списание оборудования
      */
-    public function setLongStorage()
+    // public function setLongStorage()
+    // {
+    //     /** @var Oborud $oborudModel */
+    //     $oborudModel = $this->model('Oborud');
+
+    //     $oborudModel->setLongStorage((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
+
+    //     $this->showSuccessMessage("Оборудование на длительном хранении");
+
+    //     $this->redirect("/oborud/edit/{$_POST['oborud_id']}");
+    // }
+    public function setLongStorageAjax()
     {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $oborudModel->setLongStorage((int)$_POST['oborud_id'], $_POST['form'], (int)$_POST['change_oborud_id']);
+        $result = $oborudModel->setLongStorage((int)$_POST['oborud_id'], $_POST['form'], $_POST['change_oborud_id']);
 
-        $this->showSuccessMessage("Оборудование на длительном хранении");
+        if ($result) {
+            $response = [
+                'success' => true,
+                'data' => $result,
+            ];
+        } else {
+            $response = [
+                'success' => false,
+            ];
+        }
 
-        $this->redirect("/oborud/edit/{$_POST['oborud_id']}");
+        header('Content-Type: application/json');
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
 
@@ -1026,6 +1063,21 @@ class OborudController extends Controller
         $result = $oborudModel->removeComponent($id);
         $oborudModel->addHistorySample($sampleId, $action);
 
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @desc Удалить данные компонента Ajax запросом
+     */
+    public function getListEquipmentAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var Oborud $oborudModel */
+        $oborudModel = $this->model('Oborud');
+
+        $result = $oborudModel->getList();
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
 }
