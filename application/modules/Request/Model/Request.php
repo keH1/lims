@@ -1654,6 +1654,8 @@ class Request extends Model
      */
     public function getDatatoJournalInvoice(array $filter = [])
     {
+        $userModel = new User();
+        
         $where = "";
         $limit = "";
         $order = [
@@ -1828,7 +1830,8 @@ class Request extends Model
                 }
             }
         }
-        $where .= "1 ";
+
+        $where .= "1";
 
         $result = [];
 
@@ -1841,7 +1844,7 @@ class Request extends Model
                         a.DATE AS DATE_ACT_VR, a.SEND_DATE AS SEND_DATE_ACT_VR, a.NUMBER AS ACT_VR 
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
-                    INNER JOIN `AKT_VR` a ON b.ID=a.TZ_ID
+                    LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
                     GROUP BY b.ID ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
@@ -1851,7 +1854,7 @@ class Request extends Model
                         b.ID val 
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
-                    INNER JOIN `AKT_VR` a ON b.ID=a.TZ_ID
+                    LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''
                     GROUP BY b.ID"
         )->SelectedRowsCount();
@@ -1860,7 +1863,7 @@ class Request extends Model
                         b.ID val 
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
-                    INNER JOIN `AKT_VR` a ON b.ID=a.TZ_ID
+                    LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
@@ -1871,7 +1874,9 @@ class Request extends Model
             $row['DATE_ACT_VR'] = !empty($row['DATE_ACT_VR']) ? date('d.m.Y',  strtotime($row['DATE_ACT_VR'])) : '';
             $row['SEND_DATE_ACT_VR'] = !empty($row['SEND_DATE_ACT_VR']) ? date('d.m.Y',  strtotime($row['SEND_DATE_ACT_VR'])) : '';
             
-            $assigned = $this->getAssignedByDealId($row['ID_Z']);
+            // $assigned = $this->getAssignedByDealId($row['ID_Z']);
+            $assigned = $userModel->getAssignedByDealId($row['ID_Z']);
+
             $arrAss = [];
             foreach ($assigned as $item) {
                 $arrAss[] = $item['short_name'];
