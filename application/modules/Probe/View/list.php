@@ -1,17 +1,5 @@
 <div class="filters mb-4">
     <div class="row">
-<!--        <div class="col-auto filter-search" id="filter_search">-->
-<!--            <button class="filter-btn-search">-->
-<!--                <svg class="bi" width="20" height="20">-->
-<!--                    <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#icon-search"/>-->
-<!--                </svg>-->
-<!--            </button>-->
-<!--            <div id="journal_filter" class="dataTables_filter">-->
-<!--                <label>-->
-<!--                    <input id="filter_everywhere" type="search" class="form-control filter" placeholder="Поиск..." aria-controls="journal_requests">-->
-<!--                </label>-->
-<!--            </div>-->
-<!--        </div>-->
         <div class="col">
             <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="<?= $this->data['date_start'] ?? '' ?>" placeholder="Введите дату начала:">
         </div>

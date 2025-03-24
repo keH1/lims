@@ -1500,6 +1500,22 @@ class Request extends Model
                 if ( isset($filter['search']['lab']) ) {
                     $where .= "b.LABA_ID LIKE '%{$filter['search']['lab']}%' AND ";
                 }
+                if ( isset($filter['search']['LAB']) ) {
+                    $sql = $this->DB->Query("select `id_dep` from ba_laba where (`NAME` like '%{$filter['search']['LAB']}%' or `short_name` like '%{$filter['search']['LAB']}%' )");
+
+                    $depsId = [];
+
+                    $tmpWhere = "(";
+                    while ($row = $sql->Fetch()) {
+                        $tmpWhere .= "b.LABA_ID LIKE '%{$row['id_dep']}%' or ";
+                        $depsId[] = $row['id_dep'];
+                    }
+                    $tmpWhere .= " 0 ) and ";
+
+                    if ( !empty($depsId) ) {
+                        $where .= $tmpWhere;
+                    }
+                }
             }
 
             // работа с сортировкой
@@ -1556,9 +1572,9 @@ class Request extends Model
 
 
         $data = $this->DB->Query(
-            "SELECT DISTINCT b.ID b_id, b.TZ, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
+            "SELECT b.ID b_id, b.TZ, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
                         b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, b.ASSIGNED, a.ACT_NUM,
-                        GROUP_CONCAT(umtr.cipher SEPARATOR ', ') as CIPHER
+                        GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
@@ -1592,28 +1608,27 @@ class Request extends Model
         while ($row = $data->Fetch()) {
             $row['DATE_ACT'] = !empty($row['DATE_ACT']) ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
 
-            $assigned = $this->getAssignedByDealId($row['ID_Z']);
-            $arrAss = [];
-            $headLab = '';
-            foreach ($assigned as $item) {
-                $arrAss[] = $item['short_name'];
-                if ($item['is_main'] == 1) {
-					$headLab = $item['department'][0];
-				}
-            }
-
             if ( !empty($arrAss) ) {
                 $row['ASSIGNED'] = implode(', ', $arrAss);
             }
 
-//            $labs = [];
-//            if (!empty($row['LABA_ID'])) {
-//                $labs = implode(',', $row['LABA_ID']);
-//            }
-//
-//            foreach ($labs as $lab) {
-//                $labModel->getLabByUserId()
-//            }
+            $arrNameLabs = [];
+            $labs = [];
+            if (!empty($row['LABA_ID'])) {
+                $labs = explode(',', $row['LABA_ID']);
+            }
+
+            foreach ($labs as $lab) {
+                $objLab = $labModel->getLabByDepartment($lab);
+                if ( empty($objLab) ) { continue; }
+                $arrNameLabs[] = !empty($objLab['short_name'])? $objLab['short_name'] : $objLab['NAME'];
+            }
+
+            if ( !empty($arrNameLabs) ) {
+                $row['LAB'] = implode(', ', $arrNameLabs);
+            } else {
+                $row['LAB'] = '';
+            }
 
 			$protocols = $this->getProtocolsByTzId($row['b_id']);
 			$protocolsData = [];
@@ -1645,19 +1660,6 @@ class Request extends Model
 			$row['firstProtocolId'] = $firstProtocol['ID'] ?? null;
 
 			$row['PROTOCOLS'] = $protocolsData;
-
-			$department = [
-				'54' => 'ЛФХИ',
-				'55' => 'ДСЛ',
-				'56' => 'ЛФМИ',
-				'57' => 'ЛСМ',
-				'58' => 'ОСК',
-				'59' => 'Бухгалтерия',
-			];
-
-			$lab = $department[$headLab];
-
-			$row['LAB'] = $lab;
 
             $result[] = $row;
         }
