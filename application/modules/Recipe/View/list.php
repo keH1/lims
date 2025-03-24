@@ -252,7 +252,7 @@
             <input type="text" name="toSQL[reactive_lab][name]" class="form-control name-recipe"
                    value="" required>
         </div>
-    </div>поправ
+    </div>
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Рецепт</label>
