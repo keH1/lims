@@ -1516,6 +1516,10 @@ class Request extends Model
                         $where .= $tmpWhere;
                     }
                 }
+                // Протокол
+                if ( isset($filter['search']['PROTOCOLS']) ) {
+                    $where .= "prtcl.NUMBER_AND_YEAR LIKE '%{$filter['search']['PROTOCOLS']}%' AND ";
+                }
             }
 
             // работа с сортировкой
@@ -1574,10 +1578,12 @@ class Request extends Model
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.TZ, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
                         b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, b.ASSIGNED, a.ACT_NUM,
-                        GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER
+                        GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER,
+                        GROUP_CONCAT(distinct IF(prtcl.NUMBER_AND_YEAR='', null, prtcl.NUMBER_AND_YEAR) SEPARATOR ', ') as PROTOCOLS
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
+                    LEFT JOIN protocols as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
@@ -1599,6 +1605,7 @@ class Request extends Model
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
+                    LEFT JOIN protocols as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
@@ -1629,37 +1636,6 @@ class Request extends Model
             } else {
                 $row['LAB'] = '';
             }
-
-			$protocols = $this->getProtocolsByTzId($row['b_id']);
-			$protocolsData = [];
-			$firstProtocol = [];
-
-			if (count($protocols) > 0) {
-				$firstProtocol = current($protocols);
-				foreach ($protocols as $key => $value) {
-					$numberAndYear = !empty($value['NUMBER_AND_YEAR']) ? $value['NUMBER_AND_YEAR'] : '';
-					$protocolsData[$key] = [
-						'ID' => $value['ID'],
-						'NUMBER_AND_YEAR' => $numberAndYear,
-						'ACTUAL_VERSION' => unserialize($value['ACTUAL_VERSION']),
-						'PDF' => $value['PDF'],
-						'PROTOCOL_OUTSIDE_LIS' => $value['PROTOCOL_OUTSIDE_LIS'],
-						'YEAR' => !empty($value['DATE']) ? date('Y', strtotime($value['DATE'])) : ''
-					];
-
-					if (empty($value['PDF'])) {
-						$files = scandir($_SERVER['DOCUMENT_ROOT'] . '/protocol_generator/archive/' . $row['b_id'] . $protocolsData[$key]['YEAR'] . '/' . $protocolsData[$key]['ID'] . '/');
-
-						$protocolsData[$key]['FILES'] = !empty($files) ? $files : [];
-					} else {
-						$protocolsData[$key]['FILES'] = [];
-					}
-				}
-			}
-
-			$row['firstProtocolId'] = $firstProtocol['ID'] ?? null;
-
-			$row['PROTOCOLS'] = $protocolsData;
 
             $result[] = $row;
         }
