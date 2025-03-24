@@ -54,40 +54,8 @@ $(function ($) {
         pageLength: 25,
         order: [],
         colReorder: true,
-        dom: 'fBrt<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        dom: 'frtB<"bottom"lip>',
+        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX: true,
         fixedHeader: false,
@@ -172,7 +140,9 @@ $(function ($) {
         cloneReactive.find('input').attr('name', `reactives[unit_reactive_id` + countReactivePlusOne + `][quantity]`)
         $(`.reactives[data-id="${countReactive}"]`).after(cloneReactive)
         $.each($('.select-reactive'), function () {
-            $(this).select2();
+            $(this).select2({
+                theme: 'bootstrap-5',
+            });
         });
     })
 
@@ -222,18 +192,22 @@ $(function ($) {
     })
 
     $('.select-doc').select2({
+        theme: 'bootstrap-5',
         placeholder: 'Выберете документ',
         width: '100%',
     })
     $('.select-reactive').select2({
+        theme: 'bootstrap-5',
         placeholder: 'Выберете реактив',
         width: '100%',
     })
     $('.select-solution').select2({
+        theme: 'bootstrap-5',
         placeholder: 'Выберете растворитель',
         width: '100%',
     })
     $('.select-recipe').select2({
+        theme: 'bootstrap-5',
         placeholder: 'Выберете рецепт',
         width: '100%',
     })

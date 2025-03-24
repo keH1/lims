@@ -3,11 +3,11 @@
         <div class="col-auto">
             <div class="two-button">
                 <button type="button" name="add_entry"
-                        class="btn btn-primary popup-first btn-add-entry w-100 mw-100 mt-0 btn-reactive">
+                        class="btn btn-primary popup-first btn-add-entry mt-0 btn-reactive">
                     Добавить рецепт
                 </button>
                 <button type="button" name="add_entry"
-                        class="btn btn-primary popup-second btn-add-entry w-100 mw-100 mt-0 btn-reactive">
+                        class="btn btn-primary popup-second btn-add-entry mt-0 btn-reactive">
                     Раствор как реактив
                 </button>
             </div>
@@ -149,8 +149,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label" for="nameRecipe">Индивидуальные особенности годности</label>
-            <input type="text" name="recipe_model[check_property]" class="form-control"
-                   value="" >
+            <input type="text" name="recipe_model[check_property]" class="form-control" value="" >
         </div>
     </div>
     <div class="row mb-3">
@@ -158,11 +157,9 @@
             <label class="form-label">Нормативный документ </label>
             <select name="recipe_model[id_doc]" class="form-control bg-white select-doc" required>
                 <option value="" selected disabled></option>
-                <?php
-                foreach ($this->data['doc'] as $val): ?>
-                    <option value="<?= $val['ID'] ?? '' ?>"><?= $val['GOST'] . " " . $val['SPECIFICATION'] ?></option>
-                <?php
-                endforeach; ?>
+                <?php foreach ($this->data['doc'] as $val): ?>
+                    <option value="<?= $val['id'] ?>"><?= $val['view_gost'] ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
     </div>
