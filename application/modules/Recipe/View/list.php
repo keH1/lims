@@ -154,8 +154,8 @@
     </div>
     <div class="row mb-3">
         <div class="col">
-            <label class="form-label">Нормативный документ </label>
-            <select name="recipe_model[id_doc]" class="form-control bg-white select-doc" required>
+            <label class="form-label">Нормативный документ</label>
+            <select name="recipe_model[id_doc]" class="form-control bg-white select2" data-placeholder="Выберете документ" required >
                 <option value="" selected disabled></option>
                 <?php foreach ($this->data['doc'] as $val): ?>
                     <option value="<?= $val['id'] ?>"><?= $val['view_gost'] ?></option>
@@ -175,7 +175,7 @@
                 <div class="col">
                     <label class="form-label">Реактив</label>
                     <select name="reactives1[unit_reactive_id1][id_library_reactive]"
-                            class="form-control select-reactive">
+                            class="form-control select2" data-placeholder="Выберете реактив">
                         <option value="" selected disabled></option>
                         <?php
                         foreach ($this->data['reactive'] as $val): ?>
@@ -205,7 +205,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Растворитель</label>
-            <select name="solvent[id_library_reactive]" class="form-control select-solution" required>
+            <select name="solvent[id_library_reactive]" class="form-control select2" data-placeholder="Выберете растворитель" required>
                 <option value="" selected disabled></option>
                 <?php
                 foreach ($this->data['solvent'] as $val): ?>
@@ -252,11 +252,11 @@
             <input type="text" name="toSQL[reactive_lab][name]" class="form-control name-recipe"
                    value="" required>
         </div>
-    </div>
+    </div>поправ
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Рецепт</label>
-            <select name="toSQL[reactive_lab][id_recipe_model]" class="form-control select-recipe h-auto" required>
+            <select name="toSQL[reactive_lab][id_recipe_model]" class="form-control select2" data-placeholder="Выберете рецепт" required>
                 <option value="" selected disabled></option>
                 <?php
                 foreach ($this->data['recipe'] as $val): ?>

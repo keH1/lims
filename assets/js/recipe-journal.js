@@ -191,25 +191,9 @@ $(function ($) {
         fixedContentPos: false
     })
 
-    $('.select-doc').select2({
+    $('.select2').select2({
         theme: 'bootstrap-5',
-        placeholder: 'Выберете документ',
-        width: '100%',
-    })
-    $('.select-reactive').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Выберете реактив',
-        width: '100%',
-    })
-    $('.select-solution').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Выберете растворитель',
-        width: '100%',
-    })
-    $('.select-recipe').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Выберете рецепт',
-        width: '100%',
+        placeholder: $(this).data('placeholder'),
     })
 
     /** journal filters */
