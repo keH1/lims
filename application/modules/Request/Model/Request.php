@@ -1949,10 +1949,6 @@ class Request extends Model
             $result[] = $row;
         }
 
-        // echo '<pre>';
-        // print_r($result);
-        // die;
-
         $result['recordsTotal'] = $dataTotal;
         $result['recordsFiltered'] = $dataFiltered;
 
