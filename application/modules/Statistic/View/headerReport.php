@@ -19,113 +19,36 @@
 			<thead>
 				<tr>
 					<th style="width: 30%"></th>
-					<th>Всего</th>
-					<th>ЛФХИ</th>
-					<th>ДСЛ</th>
-					<th>ЛФМИ</th>
-					<th>ЛСМ</th>
-<!--					<th>ОСК</th>-->
+                    <th>Всего</th>
+                    <?php foreach ($this->data['lab_list'] as $lab): ?>
+                        <th><?=(empty($lab['short_name']))? $lab['NAME'] : $lab['short_name']?></th>
+                    <?php endforeach; ?>
 				</tr>
 			</thead>
 			<tbody>
-			<tr>
-				<th colspan="6">Протоколы</th>
-			</tr>
-				<tr>
-					<td>
-						Общее количество протоколов (смежные), шт
-					</td>
-					<td><?=$this->data['protocols']['count']?></td>
-					<td><?=$this->data['protocols']['labs'][54] . '(' . $this->data['protocols']['labs_dop'][54]?>)</td>
-					<td><?=$this->data['protocols']['labs'][55] . '(' .  $this->data['protocols']['labs_dop'][55]?>)</td>
-					<td><?=$this->data['protocols']['labs'][56] . '(' .  $this->data['protocols']['labs_dop'][56]?>)</td>
-					<td><?=$this->data['protocols']['labs'][57] . '(' .  $this->data['protocols']['labs_dop'][57]?>)</td>
-					<!--					<td>--><?//=$this->data['protocols']['labs'][58] . '(' .  $this->data['protocols']['labs_dop'][58]?><!--)</td>-->
-				</tr>
-				<tr>
-					<td>
-						Выдано протоколов, шт
-					</td>
-					<td><?=$this->data['protocols']['labs_won'][54]['count']+$this->data['protocols']['labs_won'][55]['count']+$this->data['protocols']['labs_won'][56]['count']+$this->data['protocols']['labs_won'][57]['count']?></td>
-					<td><?=$this->data['protocols']['labs_won'][54]['count']?></td>
-					<td><?=$this->data['protocols']['labs_won'][55]['count']?></td>
-					<td><?=$this->data['protocols']['labs_won'][56]['count']?></td>
-					<td><?=$this->data['protocols']['labs_won'][57]['count']?></td>
-<!--					<td>--><?//=$this->data['protocols']['labs_won'][58] . '(' .  $this->data['protocols']['labs_Won_dop'][58]?><!--)</td>-->
-				</tr>
-				<tr>
-					<td>
-						Незавершенные протоколы, шт
-					</td>
-					<td><?=$this->data['protocols']['in_work']?></td>
-					<td><?=$this->data['protocols']['labs_work'][54] ?? '0'?></td>
-					<td><?=$this->data['protocols']['labs_work'][55] ?? '0'?></td>
-					<td><?=$this->data['protocols']['labs_work'][56] ?? '0'?></td>
-					<td><?=$this->data['protocols']['labs_work'][57] ?? '0'?></td>
-<!--					<td>--><?//=$this->data['protocols']['labs_work'][58] ?? '0'?><!--(--><?//=$this->data['protocols']['labs_Work_dop'][58]?><!--)</td>-->
-				</tr>
-				<tr>
-					<td>
-						Выдано протоколов на сумму, руб
-					</td>
-					<td><?= array_sum($this->data['protocols']['labs_won'][54]['price']) +
-						array_sum($this->data['protocols']['labs_won'][55]['price']) +
-						array_sum($this->data['protocols']['labs_won'][56]['price']) +
-						array_sum($this->data['protocols']['labs_won'][57]['price']) ?></td>
-					<td><?= array_sum($this->data['protocols']['labs_won'][54]['price']) ?? '0' ?></td>
-					<td><?= array_sum($this->data['protocols']['labs_won'][55]['price']) ?? '0' ?></td>
-					<td><?= array_sum($this->data['protocols']['labs_won'][56]['price']) ?? '0' ?></td>
-					<td><?= array_sum($this->data['protocols']['labs_won'][57]['price']) ?? '0' ?></td>
-					<!--					<td>--><? //=$this->data['protocols']['labs_work'][58] ?? '0'?><!--(-->
-					<? //=$this->data['protocols']['labs_Work_dop'][58]?><!--)</td>-->
-				</tr>
-				<tr>
-					<th colspan="6">Методики</th>
-				</tr>
-				<tr>
-					<td>
-						Количество завершенных испытаний, шт
-					</td>
-					<td><?=$this->data['protocols']['count_tests']?></td>
-					<td><?=$this->data['protocols']['all_methodic_in_labs'][54]?></td>
-					<td><?=$this->data['protocols']['all_methodic_in_labs'][55]?></td>
-					<td><?=$this->data['protocols']['all_methodic_in_labs'][56]?></td>
-					<td><?=$this->data['protocols']['all_methodic_in_labs'][57]?></td>
-<!--					<td>--><?//=$this->data['protocols']['all_methodic_in_labs'][58]?><!--</td>-->
-				</tr>
-				<tr>
-					<td>
-						Использовано методик, шт
-					</td>
-					<td><?=$this->data['protocols']['count_method']?></td>
-					<td><?=$this->data['protocols']['methodic_in_labs'][54]?></td>
-					<td><?=$this->data['protocols']['methodic_in_labs'][55]?></td>
-					<td><?=$this->data['protocols']['methodic_in_labs'][56]?></td>
-					<td><?=$this->data['protocols']['methodic_in_labs'][57]?></td>
-<!--					<td>--><?//=$this->data['protocols']['methodic_in_labs'][58]?><!--</td>-->
-				</tr>
-<!--				<tr>-->
-<!--					<td>-->
-<!--						более 50 %-->
-<!--					</td>-->
-<!--					<td>--><?//=$this->data['protocols']['count_value']?><!--</td>-->
-<!--					<td>--><?//=$this->data['protocols']['methodic_in_labs_more'][54]?><!--</td>-->
-<!--					<td>--><?//=$this->data['protocols']['methodic_in_labs_more'][55]?><!--</td>-->
-<!--					<td>--><?//=$this->data['protocols']['methodic_in_labs_more'][56]?><!--</td>-->
-<!--					<td>--><?//=$this->data['protocols']['methodic_in_labs_more'][57]?><!--</td>-->
-<!--					<td>--><?//=$this->data['protocols']['methodic_in_labs_more'][58]?><!--</td>-->
-<!--				</tr>-->
-<!--				<tr>-->
-<!--					<td>-->
-<!--						Всего актов выполненных работ-->
-<!--					</td>-->
-<!--					<td></td>-->
-<!--					<td></td>-->
-<!--					<td></td>-->
-<!--					<td></td>-->
-<!--					<td></td>-->
-<!--					<td></td>-->
-<!--				</tr>-->
+                <?php foreach ($this->data['field_report_protocol'] as $key => $field): ?>
+                    <?php if ( is_numeric($key) ): ?>
+                        <tr>
+                            <th colspan="<?=2 + count($this->data['lab_list']?? [])?>"><?=$field?></th>
+                        </tr>
+                    <?php else: ?>
+                        <tr>
+                            <td>
+                                <?=$field?>
+                            </td>
+                            <td><?=$this->data['protocols']["all_{$key}"]?></td>
+                            <?php foreach ($this->data['lab_list'] as $lab): ?>
+                                <td>
+                                    <?php if (isset($this->data['protocols']['dep'][$lab['id_dep']][$key])): ?>
+                                        <?=$this->data['protocols']['dep'][$lab['id_dep']][$key]?>
+                                    <?php else: ?>
+                                        0
+                                    <?php endif; ?>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
+                    <?php endif; ?>
+                <?php endforeach; ?>
 			</tbody>
 		</table>
 	</div>
@@ -142,23 +65,31 @@
 			<thead>
 				<tr>
 					<td rowspan="2" class="align-middle">Показатель</td>
-					<td colspan="<?=count($this->data['Staff']['lfhi'])?>" class="text-center">ЛФХИ</td>
-					<td colspan="<?=count($this->data['Staff']['dsl'])?>" class="text-center">ДСЛ</td>
-					<td colspan="<?=count($this->data['Staff']['lfmi'])?>" class="text-center">ЛФМИ</td>
-					<td colspan="<?=count($this->data['Staff']['lsm'])?>" class="text-center">ЛСМ</td>
-<!--					<td colspan="--><?//=count($this->data['Staff']['osk'])?><!--" class="text-center">ОСК</td>-->
+                    <?php $i = 0;?>
+                    <?php foreach ($this->data['lab_list'] as $lab): ?>
+                        <?php $colspan = count($this->data['users_from_dep'][$lab['id_dep']]??[]); ?>
+                        <?php $colspan = $colspan == 0? 1 : $colspan; ?>
+                        <?php $i += $colspan;?>
+                        <th class="text-center" colspan="<?=$colspan?>"><?=(empty($lab['short_name']))? $lab['NAME'] : $lab['short_name']?></th>
+                    <?php endforeach; ?>
 				</tr>
 				<tr>
-					<?php foreach ($this->data['Staff'] as $lab):?>
-						<?php foreach ($lab as $user):?>
-							<td class="text-center" nowrap><a href="/ulab/statistic/headerReportByUser/<?=$user['id']?>"><?=$user['short_name']?></a></</td>
-						<?php endforeach;?>
-					<?php endforeach;?>
+                    <?php foreach ($this->data['lab_list'] as $lab): ?>
+                        <?php if (!empty($this->data['users_from_dep'][$lab['id_dep']])): ?>
+                            <?php foreach ($this->data['users_from_dep'][$lab['id_dep']] as $user): ?>
+                                <td class="text-center" nowrap>
+                                    <a href="/ulab/statistic/headerReportByUser/<?=$user['ID']?>"><?=$user['short_name']?></a>
+                                </td>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <td class="text-center"></td>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
 				</tr>
 			</thead>
 			<tbody>
 			<tr>
-				<th colspan="23">Испытания</th>
+				<th colspan="<?=$i + 1?>">Испытания</th>
 			</tr>
 				<tr>
 					<td nowrap>Количество завершенных испытаний, шт:</td>
@@ -200,66 +131,6 @@
 						<?php endforeach;?>
 					<?php endforeach;?>
 				</tr>
-<!--				<tr>-->
-<!--					<td>-->
-<!--						Участие в общем количестве заявок:-->
-<!--					</td>-->
-<!--                    --><?php //foreach ($this->data['Staff'] as $lab):?>
-<!--                        --><?php //foreach ($lab as $user):?>
-<!--                            <td class="text-center align-middle" nowrap>--><?//=$user['count_requests']?><!--%</td>-->
-<!--                        --><?php //endforeach;?>
-<!--                    --><?php //endforeach;?>
-<!--				</tr>-->
-<!--				<tr>-->
-<!--					<td>-->
-<!--						Из них завершенных:-->
-<!--					</td>-->
-<!--					--><?php //foreach ($this->data['Staff'] as $lab):?>
-<!--						--><?php //foreach ($lab as $user):?>
-<!--							<td class="text-center align-middle" nowrap>--><?//=$user['stage_request']?><!--</td>-->
-<!--						--><?php //endforeach;?>
-<!--					--><?php //endforeach;?>
-<!--				</tr>-->
-<!--				<tr>-->
-<!--					<td>-->
-<!--						Общее количество проб в месяц-->
-<!--					</td>-->
-<!--                    --><?php //foreach ($this->data['Staff'] as $lab):?>
-<!--                        --><?php //foreach ($lab as $user):?>
-<!--                            <td class="text-center align-middle" nowrap>--><?//=$user['all_probe']?><!--</td>-->
-<!--                        --><?php //endforeach;?>
-<!--                    --><?php //endforeach;?>
-<!--				</tr>-->
-<!--				<tr>-->
-<!--					<td>-->
-<!--						в работе-->
-<!--					</td>-->
-<!--				</tr>-->
-<!--				<tr>-->
-<!--					<td>-->
-<!--						выдан результат-->
-<!--					</td>-->
-<!--				</tr>-->
-<!--				<tr>-->
-<!--					<td>-->
-<!--						не доставлено в ИЦ-->
-<!--					</td>-->
-<!--                    --><?php //foreach ($this->data['Staff'] as $lab):?>
-<!--                        --><?php //foreach ($lab as $user):?>
-<!--                            <td class="text-center align-middle" nowrap>--><?//=$user['non_probe']?><!--</td>-->
-<!--                        --><?php //endforeach;?>
-<!--                    --><?php //endforeach;?>
-<!--				</tr>-->
-<!--				<tr>-->
-<!--					<td nowrap>-->
-<!--						Количество испытаний <br>в которых принимал участие-->
-<!--					</td>-->
-<!--                    --><?php //foreach ($this->data['Staff'] as $lab):?>
-<!--                        --><?php //foreach ($lab as $user):?>
-<!--                            <td class="text-center align-middle" nowrap>--><?//=$user['count_gosts']?><!--</td>-->
-<!--                        --><?php //endforeach;?>
-<!--                    --><?php //endforeach;?>
-<!--				</tr>-->
 			</tbody>
 		</table>
 		<button class="btn btn-success" id="view-chart">Посмотреть график</button>

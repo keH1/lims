@@ -909,6 +909,11 @@ class Protocol extends Model
         return $response;
     }
 
+    /**
+     * @deprecated
+     * @param $id
+     * @return array
+     */
     public function getProtocolPrice($id)
     {
         $protPrice = [];
@@ -941,6 +946,30 @@ class Protocol extends Model
         $allPrice['allPrice'] = array_sum($protPrice['allPrice']);
         return $allPrice;
     }
+
+
+    /**
+     * получает цены у протокола по методикам, привязанным к протоколу. протоколы с номером
+     * @param int $protocolId
+     * @return int|float
+     */
+    public function getPriceWonProtocol(int $protocolId)
+    {
+        $sql = $this->DB->Query(
+            "
+                SELECT sum(price) as price from ulab_gost_to_probe as ugtp
+                inner join protocols as p on ugtp.protocol_id = p.ID
+                where p.ID = {$protocolId} and p.NUMBER is not null
+            "
+        )->Fetch();
+
+        if ( empty($sql) ) {
+            return 0;
+        }
+
+        return $sql['price'];
+    }
+
 
 	/**
 	 * @param $id
