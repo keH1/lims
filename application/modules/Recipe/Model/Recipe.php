@@ -17,20 +17,19 @@ class Recipe extends Model
             'name' => 'name',
             'concentration_full' => 'concentration_full',
             'type_name' => 'type_name',
-            'GOST' => 'GOST',
             'reactives_full' => 'reactives_full',
             'solvent_full' => 'solvent_full',
             'quantity_solution_full' => 'quantity_solution_full',
             'storage_life' => 'storage_life',
             'check_in_day' => 'check_in_day',
-            'global_assigned_name'=>'global_assigned_name'
+            'global_assigned_name' => 'global_assigned_name'
         ];
 
         function addHaving($filter, $key, $value): string
         {
             $filterUsed = $filter['search'][$key];
             if (isset($filterUsed)) {
-                return "$value LIKE '%$filterUsed%' AND ";
+                return "{$value} LIKE '%{$filterUsed}%' AND ";
             }
             return '';
         }
@@ -38,6 +37,10 @@ class Recipe extends Model
         if (!empty($filter)) {
             foreach ($tableColumnForFilter as $key => $value) {
                 $having .= addHaving($filter, $key, $value);
+            }
+
+            if ( $filter['search']['GOST'] != '' ) {
+                $having .= "(ulab_gost.reg_doc like '%{$filter['search']['GOST']}%' or ulab_methods.name like '%{$filter['search']['GOST']}%') and ";
             }
 
             if (isset($filter['paginate'])) {
@@ -71,7 +74,7 @@ class Recipe extends Model
         $having .= "1 ";
         $result = $this->getFromSQL('getList', $having, $order, $limit);
         $dataTotal = count($this->getFromSQL('allRecord'));
-        $dataFiltered = count($result);
+        $dataFiltered = count($this->getFromSQL('getList', $having, $order, ''));
 
         $result['recordsTotal'] = $dataTotal;
         $result['recordsFiltered'] = $dataFiltered;
@@ -145,8 +148,9 @@ class Recipe extends Model
 
     public function getFromSQL(string $name, string $having = null, string $order = null, string $limit = null): array
     {
+        $methodModel = new Methods();
+
         $nameArray = [
-            'doc' => 'ba_gost',
             'unit_of_concentration' => 'unit_of_concentration',
             'allRecord' => 'recipe_model',
             'unit_of_quantity' => 'unit_of_quantity',
@@ -155,28 +159,29 @@ class Recipe extends Model
         ];
         $response = [];
         if (isset($nameArray[$name])) {
-            $requestFromSQL = $this->DB->Query("select * from $nameArray[$name]");
+            $requestFromSQL = $this->DB->Query("select * from {$nameArray[$name]}");
         }
         if ($name == 'getList') {
             $requestFromSQL = $this->DB->Query(
                 "SELECT recipe_model.*
-       ,CONCAT(storage_life_in_day,'<br>',IFNULL(check_property,'')) AS storage_life
-       ,ba_gost.GOST,recipe_type.name AS type_name,
-       CONCAT (IFNULL(b_user.LAST_NAME,'-'),' ',IFNULL(b_user.NAME,'')) as global_assigned_name,
-             GROUP_CONCAT( CASE  WHEN is_solvent = 0 THEN
+                ,CONCAT(storage_life_in_day,'<br>',IFNULL(check_property,'')) AS storage_life,recipe_type.name AS type_name,
+                CONCAT (IFNULL(b_user.LAST_NAME,'-'),' ',IFNULL(b_user.NAME,'')) as global_assigned_name,
+                GROUP_CONCAT( CASE  WHEN is_solvent = 0 THEN
                             CONCAT( react.name ,' <br> К-во = ',unit_reactive .quantity,' ', react.unit_name  ,'<br>')
                             END SEPARATOR ' ') reactives_full,
-            GROUP_CONCAT( CASE WHEN is_solvent = 1 THEN
+                GROUP_CONCAT( CASE WHEN is_solvent = 1 THEN
                             CONCAT( react.name ,' <br> К-во = ',unit_reactive .quantity,' ', react.unit_name  ,'<br>') 
                             END SEPARATOR ' ') solvent_full,
-            GROUP_CONCAT( CASE WHEN is_solvent = 1 THEN
+                GROUP_CONCAT( CASE WHEN is_solvent = 1 THEN
                             CONCAT(recipe_model.quantity_solution, ' ', react.unit_name) 
                             END SEPARATOR ' ') quantity_solution_full,
-            CONCAT(recipe_model.concentration,'  ',unit_of_concentration.name) AS concentration_full
-            FROM recipe_model
-            JOIN ba_gost ON recipe_model.id_doc = ba_gost.ID
-            JOIN unit_reactive ON unit_reactive.id_recipe_model=recipe_model.id
-            JOIN (  SELECT gso.id,id_library_reactive,gso.name,
+                CONCAT(recipe_model.concentration,'  ',unit_of_concentration.name) AS concentration_full,
+                ulab_gost.reg_doc, ulab_methods.name
+                FROM recipe_model
+                left JOIN ulab_methods ON recipe_model.id_doc=ulab_methods.id
+                left JOIN ulab_gost ON ulab_methods.gost_id=ulab_gost.id
+                JOIN unit_reactive ON unit_reactive.id_recipe_model=recipe_model.id
+                JOIN (  SELECT gso.id,id_library_reactive,gso.name,
                                     unit_of_quantity.name as unit_name 
                                     FROM gso
                                     JOIN unit_of_quantity ON gso.id_unit_of_quantity = unit_of_quantity.id
@@ -201,16 +206,71 @@ class Recipe extends Model
                                 JOIN reactive_pure ON reactive.id_pure = reactive_pure.id 
                                 JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity = unit_of_quantity.id                   
                 ) react ON  react.id_library_reactive= unit_reactive.id_library_reactive
-            JOIN unit_of_concentration ON recipe_model.id_unit_of_concentration = unit_of_concentration.id
-            JOIN recipe_type ON  recipe_model.id_recipe_type= recipe_type.id
-            LEFT JOIN b_user ON  recipe_model.global_assigned =b_user.ID
-            GROUP BY recipe_model.id
-            HAVING $having
-            ORDER BY $order
-            $limit
+                JOIN unit_of_concentration ON recipe_model.id_unit_of_concentration = unit_of_concentration.id
+                JOIN recipe_type ON  recipe_model.id_recipe_type= recipe_type.id
+                LEFT JOIN b_user ON  recipe_model.global_assigned =b_user.ID
+                GROUP BY recipe_model.id
+                HAVING {$having}
+                ORDER BY {$order}
+                {$limit}
         "
             );
         }
+
+        if ($name == 'allRecord') {
+            $requestFromSQL = $this->DB->Query(
+                "SELECT recipe_model.*
+                ,CONCAT(storage_life_in_day,'<br>',IFNULL(check_property,'')) AS storage_life,recipe_type.name AS type_name,
+                CONCAT (IFNULL(b_user.LAST_NAME,'-'),' ',IFNULL(b_user.NAME,'')) as global_assigned_name,
+                GROUP_CONCAT( CASE  WHEN is_solvent = 0 THEN
+                            CONCAT( react.name ,' <br> К-во = ',unit_reactive .quantity,' ', react.unit_name  ,'<br>')
+                            END SEPARATOR ' ') reactives_full,
+                GROUP_CONCAT( CASE WHEN is_solvent = 1 THEN
+                            CONCAT( react.name ,' <br> К-во = ',unit_reactive .quantity,' ', react.unit_name  ,'<br>') 
+                            END SEPARATOR ' ') solvent_full,
+                GROUP_CONCAT( CASE WHEN is_solvent = 1 THEN
+                            CONCAT(recipe_model.quantity_solution, ' ', react.unit_name) 
+                            END SEPARATOR ' ') quantity_solution_full,
+                CONCAT(recipe_model.concentration,'  ',unit_of_concentration.name) AS concentration_full,
+                ulab_gost.reg_doc, ulab_methods.name
+                FROM recipe_model
+                left JOIN ulab_methods ON recipe_model.id_doc=ulab_methods.id
+                left JOIN ulab_gost ON ulab_methods.gost_id=ulab_gost.id
+                JOIN unit_reactive ON unit_reactive.id_recipe_model=recipe_model.id
+                JOIN (  SELECT gso.id,id_library_reactive,gso.name,
+                                    unit_of_quantity.name as unit_name 
+                                    FROM gso
+                                    JOIN unit_of_quantity ON gso.id_unit_of_quantity = unit_of_quantity.id
+                            UNION
+                            SELECT reactive_lab.id,id_library_reactive,
+                                    CONCAT('Лаб реактив ', reactive_lab.name) as name,
+                                    unit_of_quantity.name as unit_name 
+                            FROM reactive_lab
+                                JOIN unit_of_quantity ON reactive_lab.id_unit_of_quantity = unit_of_quantity.id
+                            UNION
+                                SELECT standart_titr.id,id_library_reactive,
+                                        CONCAT('Титр ', standart_titr.name)  AS name,
+                                        unit_of_quantity.name as unit_name  
+                                 FROM standart_titr
+                                JOIN unit_of_quantity ON standart_titr.id_unit_of_quantity = unit_of_quantity.id
+                            UNION
+                                SELECT reactive.id, reactive.id_library_reactive,
+                                        CONCAT( reactive_model.name,' (',reactive_pure.short_name,') - ', reactive.doc_name) as name,
+                                         unit_of_quantity.name as unit_name 
+                                FROM reactive
+                                JOIN reactive_model ON reactive.id_reactive_model = reactive_model.id
+                                JOIN reactive_pure ON reactive.id_pure = reactive_pure.id 
+                                JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity = unit_of_quantity.id                   
+                ) react ON  react.id_library_reactive= unit_reactive.id_library_reactive
+                JOIN unit_of_concentration ON recipe_model.id_unit_of_concentration = unit_of_concentration.id
+                JOIN recipe_type ON  recipe_model.id_recipe_type= recipe_type.id
+                LEFT JOIN b_user ON  recipe_model.global_assigned =b_user.ID
+                GROUP BY recipe_model.id
+                HAVING 1
+        "
+            );
+        }
+
         if ($name == 'reactive') {
             $requestFromSQL = $this->DB->Query(
                 "
@@ -269,11 +329,12 @@ class Recipe extends Model
 "
             );
         }
+
         if ($name == 'solvent') {
             $requestFromSQL = $this->DB->Query(
                 "SELECT library_reactive.id ,react.name,react.unit
- FROM library_reactive
- JOIN (   SELECT reactive_lab.id,id_library_reactive,
+                 FROM library_reactive
+                 JOIN (   SELECT reactive_lab.id,id_library_reactive,
                                     CONCAT('Лаб реактив ', reactive_lab.name) as name,
                                     unit_of_quantity.name as unit
                             FROM reactive_lab
@@ -290,6 +351,7 @@ class Recipe extends Model
              "
             );
         }
+
         if ($name == 'recipe') {
             $requestFromSQL = $this->DB->Query(
                 "SELECT recipe_model.id,
@@ -299,7 +361,14 @@ class Recipe extends Model
              "
             );
         }
+
         while ($row = $requestFromSQL->Fetch()) {
+            $row['GOST'] = '';
+
+            if ( !empty($row['id_doc']) ) {
+                $row['GOST'] = $methodModel->get($row['id_doc'])['view_gost'];
+            }
+
             $response[] = $row;
         }
 
