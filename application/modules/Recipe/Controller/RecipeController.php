@@ -17,6 +17,7 @@ class RecipeController extends Controller
 
         /** @var Request $request */
         $request = $this->model('Request');
+        $methodModel = new Methods();
 
         /** @var  Recipe $usedModel */
         $usedModel = $this->model($this->nameModel);
@@ -25,16 +26,15 @@ class RecipeController extends Controller
         $this->data['param'] = urldecode($param);
         $this->data['reactive'] = $usedModel->getFromSQL('reactive');
         $this->data['solvent'] = $usedModel->getFromSQL('solvent');
-        $this->data['doc'] = $usedModel->getFromSQL('doc');
+        $this->data['doc'] = $methodModel->getList();
         $this->data['recipe'] = $usedModel->getFromSQL('recipe');
         $this->data['unit_of_concentration'] = $usedModel->getFromSQL('unit_of_concentration');
         $this->data['unit_of_quantity'] = $usedModel->getFromSQL('unit_of_quantity');
         $this->data['recipe_type'] = $usedModel->getFromSQL('recipe_type');
-        $this->addCSS("/assets/plugins/select2/css/select2.min.css");
-        $this->addJs("/assets/plugins/select2/js/select2.min.js");
 
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
+        $this->addCSS("/assets/plugins/select2/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/css/select2-bootstrap-5-theme.min.css");
+        $this->addJs("/assets/plugins/select2/js/select2.min.js");
 
         $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
         $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
