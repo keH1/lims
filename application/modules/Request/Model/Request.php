@@ -1583,7 +1583,7 @@ class Request extends Model
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
-                    LEFT JOIN protocols as prtcl ON prtcl.ID_TZ = b.ID
+                    LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
@@ -1605,7 +1605,7 @@ class Request extends Model
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
-                    LEFT JOIN protocols as prtcl ON prtcl.ID_TZ = b.ID
+                    LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
