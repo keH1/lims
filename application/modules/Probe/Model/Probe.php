@@ -221,6 +221,24 @@ class Probe extends Model
     }
 
 
+    /**
+     * @param $dealId
+     * @return array
+     */
+    public function getCipher($dealId)
+    {
+        $result = [];
+
+        $sql = $this->DB->Query("select `cipher` from ulab_material_to_request where `deal_id` = {$dealId}");
+
+        while ($row = $sql->Fetch()) {
+            $result[] = $row['cipher'];
+        }
+
+        return $result;
+    }
+
+
 	public function getCipherByMtrID($mtrID) {
 
 		$result = [];
