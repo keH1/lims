@@ -1140,7 +1140,7 @@ function getHtmlMethod(materialId, probeId = 'new', methodId = 'new', gostNumber
                             <option value=""></option>
                             ${optionMethod}
                         </select>
-                        <a class="btn btn-outline-secondary method-link ${disabledMethod}" target="_blank" title="Перейти в методику" href="/ulab/gost/method/${defaultMethod}">
+                        <a class="btn btn-outline-secondary method-link ${disabledMethod}"  title="Перейти в методику" href="/ulab/gost/method/${defaultMethod}">
                             <i class="fa-solid fa-right-to-bracket"></i>
                         </a>
                     </div>
@@ -1151,7 +1151,7 @@ function getHtmlMethod(materialId, probeId = 'new', methodId = 'new', gostNumber
                             <option value="">--</option>
                             ${optionCondition}
                         </select>
-                        <a class="btn btn-outline-secondary tu-link ${disabledTu}" target="_blank" title="Перейти в ТУ" href="/ulab/techCondition/edit/${defaultTu}">
+                        <a class="btn btn-outline-secondary tu-link ${disabledTu}"  title="Перейти в ТУ" href="/ulab/techCondition/edit/${defaultTu}">
                             <i class="fa-solid fa-right-to-bracket"></i>
                         </a>
                     </div>

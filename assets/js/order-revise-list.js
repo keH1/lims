@@ -27,7 +27,7 @@ $(function ($) {
                 width: '100px',
                 render: function (data, type, item) {
                     return `<a class="results-link"
-                               href="/ulab/order/card/${item['ID']}" target="_blank">
+                               href="/ulab/order/card/${item['ID']}" >
                                ${item['NUMBER']}
                             </a>`
                 }

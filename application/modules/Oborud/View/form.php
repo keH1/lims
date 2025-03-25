@@ -1490,7 +1490,7 @@
                             <?php endforeach; ?>
                         </select>
                         <a class="btn btn-outline-secondary <?=$this->data['interchangeable'][0]['ID'] ?? 'disabled'?>"
-                           target="_blank" title="Перейти в оборудование"
+                            title="Перейти в оборудование"
                            href="/ulab/oborud/edit/<?=$this->data['interchangeable'][0]['ID'] ?? ''?>"
                         >
                             <i class="fa-solid fa-right-to-bracket"></i>
@@ -1516,7 +1516,7 @@
                                     <option value="<?=$item['ID']?>" <?=$this->data['interchangeable'][$i]['ID'] == $item['ID']? 'selected': ''?>><?=$item['view_name']?></option>
                                 <?php endforeach; ?>
                             </select>
-                            <a class="btn btn-outline-secondary" target="_blank" title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$this->data['interchangeable'][$i]['ID']?>">
+                            <a class="btn btn-outline-secondary"  title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$this->data['interchangeable'][$i]['ID']?>">
                                 <i class="fa-solid fa-right-to-bracket"></i>
                             </a>
                         </div>

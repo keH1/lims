@@ -739,7 +739,7 @@
                         <img src="<?=$file['img']?>" alt="ico" width="90">
                     </div>
                     <div class="file-preview-title align-center">
-                        <a class="text-decoration-none" href="/ulab/upload/request/<?=$this->data['deal_id']?>/<?=$file['name']?>" target="_blank"><?=$file['name']?></a>
+                        <a class="text-decoration-none" href="/ulab/upload/request/<?=$this->data['deal_id']?>/<?=$file['name']?>" ><?=$file['name']?></a>
                     </div>
                     <?php if ($this->data['is_managers']): ?>
                         <div class="file-preview-back flex-column">
@@ -792,34 +792,34 @@
                         <span><strong>Данные протокола №<?=$item['number']?></strong></span>
                         <br>
                         <?php foreach ($item['files'] as $file): ?>
-                            <a target="_blank" href="<?=$item['dir']?><?=$file?>?v=<?=rand()?>"><?=$file?></a><br>
+                            <a  href="<?=$item['dir']?><?=$file?>?v=<?=rand()?>"><?=$file?></a><br>
                         <?php endforeach; ?>
                         <br>
                     <?php endforeach; ?>
                 </td>
                 <td class="align-top">
                     <?php foreach ($this->data['file']['kp']['files'] as $item): ?>
-                        <a target="_blank" href="<?=$this->data['file']['kp']['dir']?><?=$item?>"><?=$item?></a><br>
+                        <a  href="<?=$this->data['file']['kp']['dir']?><?=$item?>"><?=$item?></a><br>
                     <?php endforeach; ?>
                 </td>
                 <td class="align-top">
                     <?php foreach ($this->data['file']['order']['files'] as $item): ?>
-                        <a target="_blank" href="<?=$this->data['file']['order']['dir']?><?=$item?>"><?=$item?></a><br>
+                        <a  href="<?=$this->data['file']['order']['dir']?><?=$item?>"><?=$item?></a><br>
                     <?php endforeach; ?>
                 </td>
                 <td class="align-top">
                     <?php foreach ($this->data['file']['tz']['files'] as $item): ?>
-                        <a target="_blank" href="<?=$this->data['file']['tz']['dir']?><?=$item?>"><?=$item?></a><br>
+                        <a  href="<?=$this->data['file']['tz']['dir']?><?=$item?>"><?=$item?></a><br>
                     <?php endforeach; ?>
                 </td>
                 <td class="align-top">
                     <?php foreach ($this->data['file']['invoice']['files'] as $item): ?>
-                        <a target="_blank" href="<?=$this->data['file']['invoice']['dir']?><?=$item?>"><?=$item?></a><br>
+                        <a  href="<?=$this->data['file']['invoice']['dir']?><?=$item?>"><?=$item?></a><br>
                     <?php endforeach; ?>
                 </td>
                 <td class="align-top">
                     <?php foreach ($this->data['file']['act']['files'] as $item): ?>
-                        <a target="_blank" href="<?=$this->data['file']['act']['dir']?><?=$item?>"><?=$item?></a><br>
+                        <a  href="<?=$this->data['file']['act']['dir']?><?=$item?>"><?=$item?></a><br>
                     <?php endforeach; ?>
                 </td>
             </tr>

@@ -1200,7 +1200,7 @@ function getHtmlMethod(materialId = 'new', probeId = 'new', methodId = 'new', go
                                         <div class="input-group mb-1">
                                             <input type="text" class="form-control" value="${data.GOST + '-' + data.GOST_YEAR + ' | ' + data.SPECIFICATION}" readonly>
                                             <input type="hidden" name="material[${materialId}][probe][${probeId}][method][${methodId}][new_method_id]" class ="idMethod" value="${defaultMethod}">       
-                                            <a class="btn btn-outline-secondary method-link ${defaultMethod}" target="_blank" title="Перейти в методику" href="/obl_acc.php?ID=${defaultMethod}">
+                                            <a class="btn btn-outline-secondary method-link ${defaultMethod}"  title="Перейти в методику" href="/obl_acc.php?ID=${defaultMethod}">
                                                 <i class="fa-solid fa-right-to-bracket"></i>
                                             </a>
                                             <div class="col-auto">
@@ -1246,7 +1246,7 @@ function getHtmlMethod(materialId = 'new', probeId = 'new', methodId = 'new', go
     //                         <option value=""></option>
     //                         ${optionMethod}
     //                     </select>
-    //                     <a class="btn btn-outline-secondary method-link ${disabledMethod}" target="_blank" title="Перейти в методику" href="/ulab/gost/method/${defaultMethod}">
+    //                     <a class="btn btn-outline-secondary method-link ${disabledMethod}"  title="Перейти в методику" href="/ulab/gost/method/${defaultMethod}">
     //                         <i class="fa-solid fa-right-to-bracket"></i>
     //                     </a>
     //                 </div>
@@ -1257,7 +1257,7 @@ function getHtmlMethod(materialId = 'new', probeId = 'new', methodId = 'new', go
     //                         <option value="">--</option>
     //                         ${optionCondition}
     //                     </select>
-    //                     <a class="btn btn-outline-secondary tu-link ${disabledTu}" target="_blank" title="Перейти в ТУ" href="/ulab/techCondition/edit/${defaultTu}">
+    //                     <a class="btn btn-outline-secondary tu-link ${disabledTu}"  title="Перейти в ТУ" href="/ulab/techCondition/edit/${defaultTu}">
     //                         <i class="fa-solid fa-right-to-bracket"></i>
     //                     </a>
     //                 </div>
@@ -1354,7 +1354,7 @@ function getHtmlMethod(materialId = 'new', probeId = 'new', methodId = 'new', go
 //                             <option value=""></option>
 //                             ${optionMethod}
 //                         </select>
-//                         <a class="btn btn-outline-secondary method-link ${disabledMethod}" target="_blank" title="Перейти в методику" href="/ulab/gost/method/${defaultMethod}">
+//                         <a class="btn btn-outline-secondary method-link ${disabledMethod}"  title="Перейти в методику" href="/ulab/gost/method/${defaultMethod}">
 //                             <i class="fa-solid fa-right-to-bracket"></i>
 //                         </a>
 //                     </div>
@@ -1365,7 +1365,7 @@ function getHtmlMethod(materialId = 'new', probeId = 'new', methodId = 'new', go
 //                             <option value="">--</option>
 //                             ${optionCondition}
 //                         </select>
-//                         <a class="btn btn-outline-secondary tu-link ${disabledTu}" target="_blank" title="Перейти в ТУ" href="/ulab/techCondition/edit/${defaultTu}">
+//                         <a class="btn btn-outline-secondary tu-link ${disabledTu}"  title="Перейти в ТУ" href="/ulab/techCondition/edit/${defaultTu}">
 //                             <i class="fa-solid fa-right-to-bracket"></i>
 //                         </a>
 //                     </div>
