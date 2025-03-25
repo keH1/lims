@@ -61,23 +61,19 @@
     </div>
 
     <div class="row mb-3">
-        <label class="form-label">Расположение оборудования, № помещения</label>
+        <label class="form-label">Расположение оборудования, № помещения <span class="redStars">*</span></label>
         <div class="col">
             <select name="toSQL[disinfection_conditioners][room_id]" class="form-control select-room" required>
                 <option value=""></option>
-                <option value="12">216</option>
-                <option value="13">218</option>
-                <option value="11">213</option>
-                <option value="10">212</option>
-                <option value="-1">209</option>
-                <option value="7">210б</option>
-                <option value="-1">224</option>
+                <?php foreach ($this->data['rooms'] as $room): ?>
+                    <option value="<?= $room['ID'] ?>"><?= $room['NAME'] . " " .  $room['NUMBER'] ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
     </div>
 
     <div class="row mb-3">
-        <label class="form-label">Номер и марка кондиционера</label>
+        <label class="form-label">Номер и марка кондиционера <span class="redStars">*</span></label>
         <div class="col">
             <input type="text" name="toSQL[disinfection_conditioners][conditioner]"
                    class="form-control bg-white conditioner" maxlength="256" required>
@@ -85,7 +81,7 @@
     </div>
 
     <div class="row mb-3">
-        <label class="form-label">Дезинфицирующее средство, концентрация</label>
+        <label class="form-label">Дезинфицирующее средство, концентрация <span class="redStars">*</span></label>
         <div class="col">
             <input type="text" name="toSQL[disinfection_conditioners][disinfectant]" class="form-control bg-white"
                    maxlength="256" required>
