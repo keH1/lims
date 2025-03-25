@@ -1,3 +1,7 @@
+$(function () {
+    $('.select2').select2({
+        theme: 'bootstrap-5'
+    })
 
     let body = $('body'),
         secondmentStage = $('.secondment-stage').text();
@@ -12,15 +16,14 @@
     $("#contract-file").attr("href", $("#contract-select option:selected").attr("data-js-dir") + $("#contract-select option:selected").attr("data-js-file"));
 
 
-
     const INFORMATION_EDITING_STAGES = ['Новая', 'Нужна доработка'];
     const REPORT_EDITING_STAGES = ['Подготовка отчета', 'Затраты не подтверждены'];
 
     //общая информация
     if ($.inArray(secondmentStage, INFORMATION_EDITING_STAGES) === -1) {
-       $("#formInfo :input").not('button').prop("disabled", true);
-       $("#formInfo .dropzone").addClass('disabled-upload');
-       $("#formInfo [data-js-fact]").prop("disabled", false)
+        $("#formInfo :input").not('button').prop("disabled", true);
+        $("#formInfo .dropzone").addClass('disabled-upload');
+        $("#formInfo [data-js-fact]").prop("disabled", false)
 
     }
 
@@ -30,7 +33,7 @@
         // $("#formReport .dropzone").addClass('disabled-upload');
 
         $("#formInfo [data-js-fact]").prop("disabled", true)
-     //   $("#formInfo [data-js-fact]").prop("disabled", false)
+        //   $("#formInfo [data-js-fact]").prop("disabled", false)
         // console.log($("[data-js-fact]"))
         // console.log("ОТЧЕТ!!!")
     }
@@ -119,7 +122,7 @@
     }
 
     function textFormat(elem) {
-        let num =  elem.val().toString();
+        let num = elem.val().toString();
         const format = new Intl.NumberFormat('ru-RU').format(num);
         elem.attr("type", "text")
         elem.val(format)
@@ -127,10 +130,9 @@
     }
 
 
-
-    setMoneyFormat($("[data-js-plan-card] [data-js-format-money]"), $('#plannedExpenses'),  $("#formInfo"));
-    setMoneyFormat($("[data-js-plan-card-result] [data-js-format-money]"), $('#plannedExpenses'),  $("#formInfo"));
-   // setMoneyFormat($("[data-js-extend-card] [data-js-format-money]"), $('#extendExpenses'),  $("#formInfo"));
+    setMoneyFormat($("[data-js-plan-card] [data-js-format-money]"), $('#plannedExpenses'), $("#formInfo"));
+    setMoneyFormat($("[data-js-plan-card-result] [data-js-format-money]"), $('#plannedExpenses'), $("#formInfo"));
+    // setMoneyFormat($("[data-js-extend-card] [data-js-format-money]"), $('#extendExpenses'),  $("#formInfo"));
 
     getPlannedSum($('[data-js-plan-card] .cost'), $('#plannedExpenses'))
     getPlannedSum($('[data-js-extend-card] .cost'), $('#extendExpenses'))
@@ -139,9 +141,9 @@
     setMoneyFormat($("[data-js-result-card] [data-js-format-money]"), $('#totalSpent'), $("#formReport"));
 
 
-   // textFormat($("#plannedExpenses"))
-   // textFormat($("[name=\"planned_expenses\"]"))
- //   textFormat($("#totalSpent"))
+    // textFormat($("#plannedExpenses"))
+    // textFormat($("[name=\"planned_expenses\"]"))
+    //   textFormat($("#totalSpent"))
 
     body.on('change', '#transport', function (e) {
         const $option = $(this).find("option:selected")
@@ -165,12 +167,11 @@
     })
 
 
-
     body.on('change', '#object', function () {
         let city_id = $(this).find(":selected").attr("data-js-city-id");
         let city_title = $(this).find(":selected").attr("data-js-city");
 
-       // $("#city").val($(this).find(":selected").attr("data-js-city"))
+        // $("#city").val($(this).find(":selected").attr("data-js-city"))
         $("#kilometer").val($(this).find(":selected").attr("data-js-km"))
 
         $("#city").append(`<option value="${city_id}">${city_title}</option>`)
@@ -257,7 +258,7 @@
 
         getPlannedSum($('[data-js-plan-card] .cost'), $('#plannedExpenses'))
 
-        let num =  $("#plannedExpenses").val().toString();
+        let num = $("#plannedExpenses").val().toString();
         const format = new Intl.NumberFormat('ru-RU').format(num);
         $("#plannedExpenses").attr("type", "text")
         $("#plannedExpenses").val(format)
@@ -272,13 +273,12 @@
 
         getPlannedSum($('[data-js-extend-card] .cost'), $('#extendExpenses'))
 
-        let num =  $("#extendExpenses").val().toString();
+        let num = $("#extendExpenses").val().toString();
         const format = new Intl.NumberFormat('ru-RU').format(num);
         $("#extendExpenses").attr("type", "text")
         $("#extendExpenses").val(format)
         $("#extendExpenses").val()
     });
-
 
 
     //Фактические затраты(Итого)
@@ -304,14 +304,14 @@
                 if (!$('#overspending').hasClass('border-red')) {
                     $('#overspending').addClass('border-red');
                 }
-            }else {
+            } else {
                 $('#overspending').removeClass('border-red');
             }
         } else {
             inputOverspending.val('');
         }
 
-        let num =  $("#totalSpent").val().toString();
+        let num = $("#totalSpent").val().toString();
         const format = new Intl.NumberFormat('ru-RU').format(num);
         $("#totalSpent").attr("type", "text")
         $("#totalSpent").val(format)
@@ -331,9 +331,8 @@
         if (numberOfDays === 0) {
             $("#perDiem").val(0)
         } else {
-            $("#perDiem").val((numberOfDays + 1 )* 700 )
+            $("#perDiem").val((numberOfDays + 1) * 700)
         }
-
 
 
         if (numberOfDays < 0) {
@@ -386,7 +385,7 @@
         let count = $(input).prop('files').length;
         $(countElem).text(count).show(300)
 
-       // uploadEdict.text(fileName);
+        // uploadEdict.text(fileName);
     });
 
     body.on('change', '#serviceAssignmentBtn', function () {
@@ -407,7 +406,7 @@
         let count = $(input).prop('files').length;
         $(countElem).text(count).show(300)
 
-       // uploadServiceAssignment.text(fileName);
+        // uploadServiceAssignment.text(fileName);
     });
 
     /*body.on('change', '#memoBtn', function () {
@@ -455,7 +454,6 @@
             !confirm('Выдействительно хотите подтвердить отчёт? После подтверждения, отчет нельзя изменить')) {
             return false;
         }
-
 
 
         $.ajax({
@@ -514,7 +512,7 @@
                 if (!$('#overspending').hasClass('border-red')) {
                     $('#overspending').addClass('border-red');
                 }
-            }else {
+            } else {
                 $('#overspending').removeClass('border-red');
             }
         } else {
@@ -523,149 +521,80 @@
     });
 
 
-let secondmentId = $('.form-info .secondment-id').val();
-// Dropzone.options.checks = {
-//     url: `/ulab/secondment/uploadChecksFilesAjax/${secondmentId}`,
-//     paramName: "file",
-//     maxFilesize: 15,
-//     init: function () {
-//         this.on("complete", function (file) {
-//             if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
-//                 $('.checks-wrapper .dropzone-msg').append(
-//                     `<div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
-//                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
-//                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-//                     </svg>
-//                     <div>
-//                         Файлы сохранены.
-//                     </div>
-//                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-//                 </div>`
-//                 )
-//             }
-//         });
-//     },
-//     error: function (file, message) {
-//         $('.checks-wrapper .dropzone-msg').append(
-//             `<div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
-//                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
-//                     <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-//                 </svg>
-//                 <div>
-//                     Ошибка: ${message}
-//                 </div>
-//                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-//             </div>`
-//         )
-//     }
-// }
-//
-// Dropzone.options.ticketPayment = {
-//     url: `/ulab/secondment/uploadTicketPaymentFileAjax/${secondmentId}`,
-//     paramName: "file", // The name that will be used to transfer the file
-//     maxFilesize: 15, // MB
-//     init: function () {
-//         this.on("complete", function (file) {
-//             if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
-//                 $('.ticket-payment-wrapper .dropzone-msg').append(
-//                     `<div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
-//                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
-//                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-//                     </svg>
-//                     <div>
-//                         Файлы сохранены.
-//                     </div>
-//                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-//                 </div>`
-//                 )
-//             }
-//         });
-//     },
-//     error: function (file, message) {
-//         $('.ticket-payment-wrapper .dropzone-msg').append(
-//             `<div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
-//                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
-//                     <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-//                 </svg>
-//                 <div>
-//                     Ошибка: ${message}
-//                 </div>
-//                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-//             </div>`
-//         )
-//     }
-// }
+    let secondmentId = $('.form-info .secondment-id').val();
 
-$("[data-js-download]").click(function (e) {
-    let wrap = $(this).closest("[data-js-btn-group]")
-    let hrefs = [...$(wrap).find("[data-js-file-download]")]
+    $("[data-js-download]").click(function (e) {
+        let wrap = $(this).closest("[data-js-btn-group]")
+        let hrefs = [...$(wrap).find("[data-js-file-download]")]
 
-    hrefs.forEach(function (href) {
-       href.click()
+        hrefs.forEach(function (href) {
+            href.click()
 
+        })
     })
-})
 
-$("[data-js-delete-payment-file]").click(function (e) {
-    let inputDelete = $(this).closest("form").find($("[name=\"file_payment_delete\"]"));
+    $("[data-js-delete-payment-file]").click(function (e) {
+        let inputDelete = $(this).closest("form").find($("[name=\"file_payment_delete\"]"));
 
-    $(inputDelete).val($(inputDelete).val() + "," + $(this).attr("data-js-delete-payment-file"))
+        $(inputDelete).val($(inputDelete).val() + "," + $(this).attr("data-js-delete-payment-file"))
 
-    let filesWrap = $(this).parent();
-    let fileButton = $(filesWrap).find("[data-js-file-wrap]");
+        let filesWrap = $(this).parent();
+        let fileButton = $(filesWrap).find("[data-js-file-wrap]");
 
-    $(filesWrap).hide(300)
-    //console.log(fileButton)
-})
+        $(filesWrap).hide(300)
+        //console.log(fileButton)
+    })
 
-$("[data-js-delete-file]").click(function (e) {
-    let inputDelete = $("[name=\"file_delete\"]");
+    $("[data-js-delete-file]").click(function (e) {
+        let inputDelete = $("[name=\"file_delete\"]");
 
-    $(inputDelete).val($(inputDelete).val() + "," + $(this).attr("data-js-delete-file"))
+        $(inputDelete).val($(inputDelete).val() + "," + $(this).attr("data-js-delete-file"))
 
-   // let filesWrap = $(this).closest("[data-js-files]");
-    let filesWrap = $(this).parent();
-  //  let addButton = $(filesWrap).find("[data-js-upload-wrap]");
-    let fileButton = $(filesWrap).find("[data-js-file-wrap]");
-    $(filesWrap).hide(300)
-    $(fileButton).hide(300)
-  //  $(addButton).show(300)
-   // console.log(fileButton)
-})
+        // let filesWrap = $(this).closest("[data-js-files]");
+        let filesWrap = $(this).parent();
+        //  let addButton = $(filesWrap).find("[data-js-upload-wrap]");
+        let fileButton = $(filesWrap).find("[data-js-file-wrap]");
+        $(filesWrap).hide(300)
+        $(fileButton).hide(300)
+        //  $(addButton).show(300)
+        // console.log(fileButton)
+    })
 
-$('#city').select2({
-    ajax: {
-        url: "/ulab/secondment/getSettlementsAjax",
-        type: "post",
-        dataType: 'json',
-        delay: 250,
-        data: function (params) {
-            return {
-                searchTerm: params.term || '' // search term
-            };
-        },
-        processResults: function (response) {
-            return {
-                results: response
-            };
-        },
-        cache: true
-    }
-})
+    $('#city').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Для поиска города, начните писать название',
+        ajax: {
+            url: "/ulab/secondment/getSettlementsAjax",
+            type: "post",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    searchTerm: params.term || '*' // search term
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response
+                };
+            },
+            cache: true
+        }
+    })
 
-$("[data-js-delete-card]").click(function (e) {
-    $.ajax({
-        url: '/ulab/secondment/deleteCardAjax/',
-        data: {
-            secondment_id: $(this).attr("data-js-delete-card")
-        },
-        method: 'POST',
-        dataType: 'json',
-        success: function (data) {
-            if (data == 1) {
-                document.location.href = "/ulab/secondment/list"
-            } else {
-                $("[data-js-message]").html(`
+    $("[data-js-delete-card]").click(function (e) {
+        $.ajax({
+            url: '/ulab/secondment/deleteCardAjax/',
+            data: {
+                secondment_id: $(this).attr("data-js-delete-card")
+            },
+            method: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                if (data == 1) {
+                    document.location.href = "/ulab/secondment/list"
+                } else {
+                    $("[data-js-message]").html(`
                 <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
                         <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
@@ -676,29 +605,29 @@ $("[data-js-delete-card]").click(function (e) {
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             `)
+                }
+            },
+            error: function (jqXHR, exception) {
+                let msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status === 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status === 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                console.error(msg)
             }
-        },
-        error: function (jqXHR, exception) {
-            let msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect.\n Verify Network.';
-            } else if (jqXHR.status === 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status === 500) {
-                msg = 'Internal Server Error [500].';
-            } else if (exception === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (exception === 'timeout') {
-                msg = 'Time out error.';
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-            }
-            console.error(msg)
-        }
+        })
     })
-})
 
     $("#btn-extend").click(function (e) {
         let num = $(this).closest("form").find("[name=\"planned_expenses\"]").val().text.replace(" ", "")
@@ -706,100 +635,41 @@ $("[data-js-delete-card]").click(function (e) {
     })
 
 // Модальное окно - Транспорт
-$("[data-js-toggle-transport]").click(function (e) {
-    $("[data-js-form-transport]").toggle(500)
-})
+    $("[data-js-toggle-transport]").click(function (e) {
+        $("[data-js-form-transport]").toggle(500)
+    })
 
 // Модальное окно - Транспорт
-$("[data-js-toggle-contract]").click(function (e) {
-    $("[data-js-form-contract]").toggle(500)
-})
+    $("[data-js-toggle-contract]").click(function (e) {
+        $("[data-js-form-contract]").toggle(500)
+    })
 
 // Добавить договор
-$("[data-js-add-contract]").click(function (e) {
-    console.log("add contract!")
-    let formData = new FormData()
+    $("[data-js-add-contract]").click(function (e) {
+        console.log("add contract!")
+        let formData = new FormData()
 
-    formData.append("number", $("[name=\"contract_number\"]").val())
-    formData.append("client_id", $("[name=\"company_id\"]").val())
-    formData.append("contract", $("[name='contract']")[0].files[0]);
+        formData.append("number", $("[name=\"contract_number\"]").val())
+        formData.append("client_id", $("[name=\"company_id\"]").val())
+        formData.append("contract", $("[name='contract']")[0].files[0]);
 
-    $.ajax({
-        url: '/ulab/secondment/addContractAjax/',
-        data: formData,
-        method: 'POST',
-        processData: false,
-        contentType: false,
-        dataType: 'json',
-        success: function (data) {
-             console.log(data)
-            $("#contract-select").append(`
+        $.ajax({
+            url: '/ulab/secondment/addContractAjax/',
+            data: formData,
+            method: 'POST',
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                $("#contract-select").append(`
                         <option value="${data.id}" novalidate>${data.number}</option>
                     `)
 
-            $("#contract-select").val(data.id).change()
+                $("#contract-select").val(data.id).change()
 
-            $("#contract-file").attr("href", `/ulab/upload/contracts/${data.id}/${data.name}`);
-            $("[data-js-form-contract]").hide(300)
-
-        },
-        error: function (jqXHR, exception) {
-            let msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect.\n Verify Network.';
-            } else if (jqXHR.status === 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status === 500) {
-                msg = 'Internal Server Error [500].';
-            } else if (exception === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (exception === 'timeout') {
-                msg = 'Time out error.';
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-            }
-            console.error(msg)
-        }
-    })
-})
-
-// Добавить транспорт
-$("[data-js-add-vehicle]").click(function (e) {
-
-    let fields = $(this).parent().find("table input, table select");
-    let data = $(fields).serialize()
-
-    let check = true;
-
-    $(fields).each(function() {
-        if ($( this ).val() == "") {
-            $( this ).css("background", "#F25F66");
-            check = false;
-        } else {
-            $( this ).css("background", "white");
-        }
-
-
-
-    });
-
-    if (check) {
-        $.ajax({
-            url: '/ulab/transport/addTransportAjax/',
-            data: data,
-            method: 'POST',
-            dataType: 'json',
-            success: function (data) {
-               // console.log(data)
-                $("#transport").append(`
-                        <option value="${data.id}" data-js-fuel-price="${data.price}" data-js-fuel-consumption="${data.consumption_rate}" novalidate>${data.model} (${data.number})</option>
-                    `)
-
-                $("#transport").val(data.id).change()
-                $("[data-js-form-transport]").hide(300)
-
+                $("#contract-file").attr("href", `/ulab/upload/contracts/${data.id}/${data.name}`);
+                $("[data-js-form-contract]").hide(300)
 
             },
             error: function (jqXHR, exception) {
@@ -822,25 +692,82 @@ $("[data-js-add-vehicle]").click(function (e) {
                 console.error(msg)
             }
         })
-    }
+    })
+
+// Добавить транспорт
+    $("[data-js-add-vehicle]").click(function (e) {
+
+        let fields = $(this).parent().find("table input, table select");
+        let data = $(fields).serialize()
+
+        let check = true;
+
+        $(fields).each(function () {
+            if ($(this).val() == "") {
+                $(this).css("background", "#F25F66");
+                check = false;
+            } else {
+                $(this).css("background", "white");
+            }
 
 
+        });
 
-    console.log(data)
-  //  console.log($(this).parent().find("table input"))
+        if (check) {
+            $.ajax({
+                url: '/ulab/transport/addTransportAjax/',
+                data: data,
+                method: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    // console.log(data)
+                    $("#transport").append(`
+                        <option value="${data.id}" data-js-fuel-price="${data.price}" data-js-fuel-consumption="${data.consumption_rate}" novalidate>${data.model} (${data.number})</option>
+                    `)
+
+                    $("#transport").val(data.id).change()
+                    $("[data-js-form-transport]").hide(300)
 
 
-})
+                },
+                error: function (jqXHR, exception) {
+                    let msg = '';
+                    if (jqXHR.status === 0) {
+                        msg = 'Not connect.\n Verify Network.';
+                    } else if (jqXHR.status === 404) {
+                        msg = 'Requested page not found. [404]';
+                    } else if (jqXHR.status === 500) {
+                        msg = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msg = 'Requested JSON parse failed.';
+                    } else if (exception === 'timeout') {
+                        msg = 'Time out error.';
+                    } else if (exception === 'abort') {
+                        msg = 'Ajax request aborted.';
+                    } else {
+                        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                    }
+                    console.error(msg)
+                }
+            })
+        }
+
+
+        console.log(data)
+        //  console.log($(this).parent().find("table input"))
+
+
+    })
 
 // Добавить поле прочее
-$("[data-js-add-other]").click(function (e) {
-    let currentNum = 0;
+    $("[data-js-add-other]").click(function (e) {
+        let currentNum = 0;
 
-    if ($(this).parent().prev().find("[type=\"file\"]").attr("name") != undefined) {
-        parseInt($(this).parent().prev().find("[type=\"file\"]").attr("name").replace ( /[^\d.]/g, '' )) + 1;
-    }
+        if ($(this).parent().prev().find("[type=\"file\"]").attr("name") != undefined) {
+            parseInt($(this).parent().prev().find("[type=\"file\"]").attr("name").replace(/[^\d.]/g, '')) + 1;
+        }
 
-    $(this).parent().before(`
+        $(this).parent().before(`
         <div class="row mb-2 align-items-end">
             <div class="form-group col-sm-3">
                
@@ -869,21 +796,21 @@ $("[data-js-add-other]").click(function (e) {
         </div>
     `)
 
-   // setMoneyFormat($("[data-js-plan-card] [data-js-format-money]"), $('#plannedExpenses'),  $("#formInfo"));
-   // setMoneyFormat($("[data-js-extend-card] [data-js-format-money]"), $('#extendExpenses'),  $("#formInfo"));
-   //
-   //  getPlannedSum($('[data-js-plan-card] .cost'), $('#plannedExpenses'))
-   //  getPlannedSum($('[data-js-extend-card] .cost'), $('#extendExpenses'))
-   //
-   //  getPlannedSum($('.cost'), $('#plannedExpenses'))
-   //  setMoneyFormat($("[data-js-format-money]").last(), $("#plannedExpenses"), $("#formInfo"));
+        // setMoneyFormat($("[data-js-plan-card] [data-js-format-money]"), $('#plannedExpenses'),  $("#formInfo"));
+        // setMoneyFormat($("[data-js-extend-card] [data-js-format-money]"), $('#extendExpenses'),  $("#formInfo"));
+        //
+        //  getPlannedSum($('[data-js-plan-card] .cost'), $('#plannedExpenses'))
+        //  getPlannedSum($('[data-js-extend-card] .cost'), $('#extendExpenses'))
+        //
+        //  getPlannedSum($('.cost'), $('#plannedExpenses'))
+        //  setMoneyFormat($("[data-js-format-money]").last(), $("#plannedExpenses"), $("#formInfo"));
 
 
-});
+    });
 
 // Добавить поле прочее
-$("[data-js-add-additional]").click(function (e) {
-    $(this).parent().before(`
+    $("[data-js-add-additional]").click(function (e) {
+        $(this).parent().before(`
     <div class="row mb-2 align-items-end">
         <div class="form-group col-sm-3">
            
@@ -917,32 +844,32 @@ $("[data-js-add-additional]").click(function (e) {
     </div>
 `)
 
-    getPlannedSum($('.cost'), $('#plannedExpenses'))
-    setMoneyFormat($("[data-js-format-money]").last(), $("#plannedExpenses"), $("#formInfo"));
+        getPlannedSum($('.cost'), $('#plannedExpenses'))
+        setMoneyFormat($("[data-js-format-money]").last(), $("#plannedExpenses"), $("#formInfo"));
 
 
-});
+    });
 
 // Отправить форму сохранить инфо
-$("[data-js-save-info]").click(function (e) {
-    $('body').find("#formInfo").submit()
-  // $("#formInfo").submit()
-})
+    $("[data-js-save-info]").click(function (e) {
+        $('body').find("#formInfo").submit()
+        // $("#formInfo").submit()
+    })
 
 // Отправить форму сохранить отчет
-$("[data-js-save-report]").click(function (e) {
-    $("#formReport").submit()
-    $("#uploadDocuments").submit()
-})
+    $("[data-js-save-report]").click(function (e) {
+        $("#formReport").submit()
+        $("#uploadDocuments").submit()
+    })
 
 // Отправить форму приказа
-$("[data-js-save-files]").click(function (e) {
-    if ($(this).attr("name") == "stage_ready") {
-        $("#uploadFiles").append("<input name='stage_ready' value='true' style='display: none'>")
-    }
+    $("[data-js-save-files]").click(function (e) {
+        if ($(this).attr("name") == "stage_ready") {
+            $("#uploadFiles").append("<input name='stage_ready' value='true' style='display: none'>")
+        }
 
-    $("#uploadFiles").submit()
-})
+        $("#uploadFiles").submit()
+    })
 
 //
 // /** modal */
@@ -954,17 +881,17 @@ $("[data-js-save-files]").click(function (e) {
 //     fixedContentPos: false
 // })
 
-/** modal */
-$("[data-js-rework]").click(function (e) {
-    $.magnificPopup.open({
-        items: {
-            //  src: '#extend-secondment',
-            src: '#add-entry-modal-form',
-            type: 'inline'
-        },
-        fixedContentPos: false
+    /** modal */
+    $("[data-js-rework]").click(function (e) {
+        $.magnificPopup.open({
+            items: {
+                //  src: '#extend-secondment',
+                src: '#add-entry-modal-form',
+                type: 'inline'
+            },
+            fixedContentPos: false
+        })
     })
-})
 
 // $('#rework').magnificPopup({
 //     items: {
@@ -974,16 +901,16 @@ $("[data-js-rework]").click(function (e) {
 //     fixedContentPos: false
 // })
 
-/** modal */
-$('#cancel-stage-toggle').click(function (e) {
-    $.magnificPopup.open({
-        items: {
-            src: '#change-stage',
-            type: 'inline'
-        },
-        fixedContentPos: false
+    /** modal */
+    $('#cancel-stage-toggle').click(function (e) {
+        $.magnificPopup.open({
+            items: {
+                src: '#change-stage',
+                type: 'inline'
+            },
+            fixedContentPos: false
+        })
     })
-})
 // $('#cancel-stage-toggle').magnificPopup({
 //     items: {
 //         src: '#change-stage',
@@ -1000,266 +927,265 @@ $('#cancel-stage-toggle').click(function (e) {
 //     },
 //     fixedContentPos: false
 // })
-$("[data-js-extend]").click(function (e) {
-    $("#json_data").val(getJsonCard())
-    console.log($("#json_data").val())
-    $.magnificPopup.open({
-        items: {
-          //  src: '#extend-secondment',
-            src: '#add-entry-modal-form',
-            type: 'inline'
-        },
-        fixedContentPos: false
+    $("[data-js-extend]").click(function (e) {
+        $("#json_data").val(getJsonCard())
+        console.log($("#json_data").val())
+        $.magnificPopup.open({
+            items: {
+                //  src: '#extend-secondment',
+                src: '#add-entry-modal-form',
+                type: 'inline'
+            },
+            fixedContentPos: false
+        })
     })
-})
 
 
 // Продлить командировку
-$("#extendStageBtn").click(function (e) {
-    $.ajax({
-        url: '/ulab/secondment/extendAjax/',
-        data: $("#extend-secondment").serialize(),
-        method: 'POST',
-        dataType: 'json',
-        success: function (data) {
-            console.log(data)
-            if (data) {
-              //  location.reload();
-            }
+    $("#extendStageBtn").click(function (e) {
+        $.ajax({
+            url: '/ulab/secondment/extendAjax/',
+            data: $("#extend-secondment").serialize(),
+            method: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                if (data) {
+                    //  location.reload();
+                }
 
-        },
-        error: function (jqXHR, exception) {
-            let msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect.\n Verify Network.';
-            } else if (jqXHR.status === 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status === 500) {
-                msg = 'Internal Server Error [500].';
-            } else if (exception === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (exception === 'timeout') {
-                msg = 'Time out error.';
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
+            },
+            error: function (jqXHR, exception) {
+                let msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status === 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status === 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                console.error(msg)
             }
-            console.error(msg)
-        }
+        })
     })
-})
 
 // Изменить стадию
-$("#cancelStage").click(function (e) {
-    $.ajax({
-        url: '/ulab/secondment/changeStageAjax/',
-        data: {
-            secondment_id: $('.form-info .secondment-id').val(),
-            stage: $(this).attr("data-stage"),
-            cancel_comment: $("[name=\"cancel_reason\"]").val()
-        },
-        method: 'POST',
-        dataType: 'json',
-        success: function (data) {
-             console.log(data)
-            if (data) {
-                location.reload();
+    $("#cancelStage").click(function (e) {
+        $.ajax({
+            url: '/ulab/secondment/changeStageAjax/',
+            data: {
+                secondment_id: $('.form-info .secondment-id').val(),
+                stage: $(this).attr("data-stage"),
+                cancel_comment: $("[name=\"cancel_reason\"]").val()
+            },
+            method: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                if (data) {
+                    location.reload();
+                }
+
+            },
+            error: function (jqXHR, exception) {
+                let msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status === 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status === 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                console.error(msg)
             }
-
-        },
-        error: function (jqXHR, exception) {
-            let msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect.\n Verify Network.';
-            } else if (jqXHR.status === 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status === 500) {
-                msg = 'Internal Server Error [500].';
-            } else if (exception === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (exception === 'timeout') {
-                msg = 'Time out error.';
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-            }
-            console.error(msg)
-        }
-    })
-})
-
-
-function getJsonCard() {
-
-    let otherData = [];
-
-    let otherSum = $("[data-js-plan-card] [name='other[]']")
-    let otherComments = $("[data-js-plan-card] [name='comment_other[]']")
-    let otherIdArr = $("[data-js-plan-card] [name='other_id[]']")
-
-    let otherLength = $("[data-js-plan-card] [name='other[]']").length;
-
-    for (let i = 0; i < otherLength; i++) {
-        otherData.push({
-            "id": $(otherIdArr[i]).val(),
-            "sum": $(otherSum[i]).val(),
-            "comment": $(otherComments[i]).text().trim()
         })
+    })
+
+
+    function getJsonCard() {
+
+        let otherData = [];
+
+        let otherSum = $("[data-js-plan-card] [name='other[]']")
+        let otherComments = $("[data-js-plan-card] [name='comment_other[]']")
+        let otherIdArr = $("[data-js-plan-card] [name='other_id[]']")
+
+        let otherLength = $("[data-js-plan-card] [name='other[]']").length;
+
+        for (let i = 0; i < otherLength; i++) {
+            otherData.push({
+                "id": $(otherIdArr[i]).val(),
+                "sum": $(otherSum[i]).val(),
+                "comment": $(otherComments[i]).text().trim()
+            })
+        }
+
+
+        let data = {
+            "user_name": $("#user option:selected").text().trim(),
+            "work_position": $("#workPosition").val(),
+            "city": $("#city option:selected").text().trim(),
+            "object": $("#object option:selected").text().trim(),
+            "km": $("#kilometer").val(),
+            "company": $("#company").val(),
+            "contract": $("#contract-select option:selected").text().trim(),
+            "date_begin": $("#dateBeginning").val(),
+            "date_end": $("#dateEnding").val(),
+            "total_days": $("#totaаlDays").val(),
+            "content": $("#content").text().trim(),
+            "transport": $("#transport option:selected").text().trim(),
+            "comment": $("#comment").text().trim(),
+            "ticket_price": $("#ticketPrice").val().replace(" ", ""),
+            "ticket_price_comment": $("#commentTicketPrice").text().trim(),
+            "gasoline_consumption": $("#gasolineConsumption").val().replace(" ", ""),
+            "gasoline_consumption_object_comment": $("#commentGasolineConsumptionObject").text().trim(),
+            "gasoline_consumption_object": $("#gasolineConsumptionObject").val().replace(" ", ""),
+            "gasoline_consumption_comment": $("#commentGasolineConsumption").text().trim(),
+            "per_diem": $("#perDiem").val().replace(" ", ""),
+            "per_diem_comment": $("#commentPerDiem").text().trim(),
+            "accommodation": $("#accommodation").val().replace(" ", ""),
+            "accommodation_comment": $("#commentAccommodation").text().trim(),
+            "other": otherData,
+            "planned_expenses": $("#plannedExpenses").val().replace(" ", ""),
+            "planned_expenses_comment": $("#commentPlannedExpenses").text().trim(),
+        }
+
+        return JSON.stringify(data);
+
     }
 
-
-    let data = {
-        "user_name": $("#user option:selected").text().trim(),
-        "work_position": $("#workPosition").val(),
-        "city": $("#city option:selected").text().trim(),
-        "object": $("#object option:selected").text().trim(),
-        "km": $("#kilometer").val(),
-        "company": $("#company").val(),
-        "contract": $("#contract-select option:selected").text().trim(),
-        "date_begin": $("#dateBeginning").val(),
-        "date_end": $("#dateEnding").val(),
-        "total_days": $("#totaаlDays").val(),
-        "content": $("#content").text().trim(),
-        "transport": $("#transport option:selected").text().trim(),
-        "comment": $("#comment").text().trim(),
-        "ticket_price": $("#ticketPrice").val().replace(" ", ""),
-        "ticket_price_comment": $("#commentTicketPrice").text().trim(),
-        "gasoline_consumption": $("#gasolineConsumption").val().replace(" ", ""),
-        "gasoline_consumption_object_comment": $("#commentGasolineConsumptionObject").text().trim(),
-        "gasoline_consumption_object": $("#gasolineConsumptionObject").val().replace(" ", ""),
-        "gasoline_consumption_comment": $("#commentGasolineConsumption").text().trim(),
-        "per_diem": $("#perDiem").val().replace(" ", ""),
-        "per_diem_comment": $("#commentPerDiem").text().trim(),
-        "accommodation": $("#accommodation").val().replace(" ", ""),
-        "accommodation_comment": $("#commentAccommodation").text().trim(),
-        "other": otherData,
-        "planned_expenses": $("#plannedExpenses").val().replace(" ", ""),
-        "planned_expenses_comment": $("#commentPlannedExpenses").text().trim(),
-    }
-
-    return JSON.stringify(data);
-
-}
-
-console.log(getJsonCard())
-
+    console.log(getJsonCard())
 
 
 // Скрол по старнице (кнопки снизу)
-$(document).scroll(function () {
-    let maxScroll = $(document).height() - $(window).height();
-    let scrollTop = $(window).scrollTop();
+    $(document).scroll(function () {
+        let maxScroll = $(document).height() - $(window).height();
+        let scrollTop = $(window).scrollTop();
 
-    let bottomInt = (10 + maxScroll - scrollTop - 100) + "px";
-    let bottomText = (10 + maxScroll - scrollTop - 100);
+        let bottomInt = (10 + maxScroll - scrollTop - 100) + "px";
+        let bottomText = (10 + maxScroll - scrollTop - 100);
 
-    if (scrollTop >= maxScroll - 100) {
-        $(".btn-group-toolbar").css("bottom", "10px")
-    } else {
-        $(".btn-group-toolbar").css("bottom", bottomText)
-    }
-
-})
-
-$("[data-js-generate-compensation]").click(function (e) {
-    console.log("click click")
-   // let $button = $("[data-js-generate-compensation]")
-    let $button = $(this)
-    $.ajax({
-        url: '/ulab/secondment/generateCompensationAjax/',
-        data: {
-            secondment_id: $('.form-info .secondment-id').val(),
-            file_delete: $("#uploadDocuments [name=\"file_delete\"]").val()
-        },
-        method: 'POST',
-        dataType: 'json',
-        success: function (data) {
-            console.log(data)
-            let $btnGroup = $button.closest("[data-js-files]")
-            let $btnHref = $btnGroup.find("[data-js-file-wrap]")
-
-            $btnHref.find("a").attr("href", data.href)
-
-         //   $hrefItem.attr("href", data.href)
-
-            $btnGroup.find("[data-js-upload-wrap]").hide(300)
-            $btnHref.show(300)
-            $btnHref.removeClass("d-none")
-
-            console.log($btnHref)
-        },
-        error: function (jqXHR, exception) {
-            let msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect.\n Verify Network.';
-            } else if (jqXHR.status === 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status === 500) {
-                msg = 'Internal Server Error [500].';
-            } else if (exception === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (exception === 'timeout') {
-                msg = 'Time out error.';
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-            }
-            console.error(msg)
+        if (scrollTop >= maxScroll - 100) {
+            $(".btn-group-toolbar").css("bottom", "10px")
+        } else {
+            $(".btn-group-toolbar").css("bottom", bottomText)
         }
-    })
-})
 
-$("[data-js-add-sign]").click(function (e) {
-    // console.log("add sign!")
-    // console.log(JSON.parse($(this).attr("data-js-img-params")));
-
-  //  let filePath = $(this).attr("data-js-file-path")
-    let imgUrl = $(this).attr("data-js-img-path");
-    let imgParams = JSON.parse($(this).attr("data-js-img-params"));
-
-    [...$(this).parent().parent().find("a")].forEach(function (item) {
-        let filePath = $(item).attr("href").split('?')[0]
-        console.log(filePath)
-        console.log(imgUrl)
-        console.log(imgParams)
-
-        addImgToPdf(filePath, imgUrl, imgParams);
     })
 
-})
+    $("[data-js-generate-compensation]").click(function (e) {
+        console.log("click click")
+        // let $button = $("[data-js-generate-compensation]")
+        let $button = $(this)
+        $.ajax({
+            url: '/ulab/secondment/generateCompensationAjax/',
+            data: {
+                secondment_id: $('.form-info .secondment-id').val(),
+                file_delete: $("#uploadDocuments [name=\"file_delete\"]").val()
+            },
+            method: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                let $btnGroup = $button.closest("[data-js-files]")
+                let $btnHref = $btnGroup.find("[data-js-file-wrap]")
 
-$("[data-js-generate-memo-doc]").click(function (e) {
-    console.log("genarate doc!")
-    $.magnificPopup.open({
-        items: {
-            src: '#memo-modal',
-            type: 'inline'
-        },
-        fixedContentPos: false
+                $btnHref.find("a").attr("href", data.href)
+
+                //   $hrefItem.attr("href", data.href)
+
+                $btnGroup.find("[data-js-upload-wrap]").hide(300)
+                $btnHref.show(300)
+                $btnHref.removeClass("d-none")
+
+                console.log($btnHref)
+            },
+            error: function (jqXHR, exception) {
+                let msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status === 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status === 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                console.error(msg)
+            }
+        })
     })
-})
+
+    $("[data-js-add-sign]").click(function (e) {
+        // console.log("add sign!")
+        // console.log(JSON.parse($(this).attr("data-js-img-params")));
+
+        //  let filePath = $(this).attr("data-js-file-path")
+        let imgUrl = $(this).attr("data-js-img-path");
+        let imgParams = JSON.parse($(this).attr("data-js-img-params"));
+
+        [...$(this).parent().parent().find("a")].forEach(function (item) {
+            let filePath = $(item).attr("href").split('?')[0]
+            console.log(filePath)
+            console.log(imgUrl)
+            console.log(imgParams)
+
+            addImgToPdf(filePath, imgUrl, imgParams);
+        })
+
+    })
+
+    $("[data-js-generate-memo-doc]").click(function (e) {
+        console.log("genarate doc!")
+        $.magnificPopup.open({
+            items: {
+                src: '#memo-modal',
+                type: 'inline'
+            },
+            fixedContentPos: false
+        })
+    })
 
 
-let transportCounter = 0;
-let gsmCounter = 0;
+    let transportCounter = 0;
+    let gsmCounter = 0;
 
-$("body").on("keyup", "[data-js-km]", function (e) {
-    let index = $(this).attr("data-js-km")
-    let km = $(this).val();
-    let consumptionRate = $("#consumption_rate").val()
+    $("body").on("keyup", "[data-js-km]", function (e) {
+        let index = $(this).attr("data-js-km")
+        let km = $(this).val();
+        let consumptionRate = $("#consumption_rate").val()
 
-    let gsm = km * consumptionRate / 100
-    gsm = Math.round((gsm + Number.EPSILON) * 100) / 100
-    $(`[data-js-gsm=${index}]`).val(gsm)
-})
+        let gsm = km * consumptionRate / 100
+        gsm = Math.round((gsm + Number.EPSILON) * 100) / 100
+        $(`[data-js-gsm=${index}]`).val(gsm)
+    })
 
-$("body").on('click', '#gsm-report-add', function (e) {
-    const $tbody = $("#gsm-report-table").find("tbody");
+    $("body").on('click', '#gsm-report-add', function (e) {
+        const $tbody = $("#gsm-report-table").find("tbody");
 
-    $tbody.append(`
+        $tbody.append(`
         <tr>
             <td><input type="number" data-js-km="${gsmCounter}" name="gsmText[${gsmCounter}][km]" class="form-control"></td>
             <td><input type="number" data-js-gsm="${gsmCounter}" name="gsmText[${gsmCounter}][gsm]" class="form-control"></td>
@@ -1271,13 +1197,13 @@ $("body").on('click', '#gsm-report-add', function (e) {
         </tr>
     `);
 
-    gsmCounter++;
-})
+        gsmCounter++;
+    })
 
-$("#transport-report-add").click(function (e) {
-    const $tbody = $("#transport-report-table").find("tbody");
+    $("#transport-report-add").click(function (e) {
+        const $tbody = $("#transport-report-table").find("tbody");
 
-    $tbody.append(`
+        $tbody.append(`
         <tr>
             <td><input type="text" name="reportText[${transportCounter}][check_number]" class="form-control"></td>
             <td><input type="text" name="reportText[${transportCounter}][destination]" class="form-control"></td>
@@ -1289,48 +1215,47 @@ $("#transport-report-add").click(function (e) {
         </tr>
     `);
 
-    transportCounter++;
+        transportCounter++;
 
-})
-
-$("body").on('click', '[data-js-remove-row]', function () {
-    $(this).closest("tr").remove()
-})
-
-$("#send-memo").click(function (e) {
-    let form = $("#memo-modal").serialize()
-
-    $.ajax({
-        url: '/ulab/secondment/createMemoDocAjax/',
-        data: form,
-        method: 'POST',
-        success: function (data) {
-           console.log(JSON.parse(data))
-            window.location.reload()
-        },
-        error: function (jqXHR, exception) {
-            let msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connect.\n Verify Network.';
-            } else if (jqXHR.status === 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status === 500) {
-                msg = 'Internal Server Error [500].';
-            } else if (exception === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (exception === 'timeout') {
-                msg = 'Time out error.';
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-            }
-            console.error(msg)
-        }
     })
 
-})
+    $("body").on('click', '[data-js-remove-row]', function () {
+        $(this).closest("tr").remove()
+    })
 
-$('#oborud').select2();
+    $("#send-memo").click(function (e) {
+        let form = $("#memo-modal").serialize()
+
+        $.ajax({
+            url: '/ulab/secondment/createMemoDocAjax/',
+            data: form,
+            method: 'POST',
+            success: function (data) {
+                console.log(JSON.parse(data))
+                window.location.reload()
+            },
+            error: function (jqXHR, exception) {
+                let msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status === 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status === 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                console.error(msg)
+            }
+        })
+
+    })
+})
 
 

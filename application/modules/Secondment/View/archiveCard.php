@@ -39,24 +39,24 @@
                     <div class="form-group col-sm-5">
                       <label for="city">Населенный пункт <span class="redStars">*</span></label>
                       <input type="text" class="form-control" value="<?= $this->data["city"] ?>" readonly>
-
                     </div>
+
                     <div class="form-group col-sm-5">
                       <label for="object">Объект</label>
                       <input type="text" class="form-control" value="<?= $this->data["object"] ?>" readonly>
-
                     </div>
+
                     <!--TODO: Уточнить про "Километраж" и доработать-->
                     <div class="form-group col-sm-2">
                       <lable for="kilometer">Км <span class="redStars">*</span></lable>
                       <input type="text" class="form-control" value="<?= $this->data["km"] ?>" readonly>
                     </div>
                   </div>
+
                   <div class="row mb-2">
                     <div class="form-group col-sm-6">
                       <label for="company">Клиент <span class="redStars">*</span></label>
                       <input type="text" class="form-control" value="<?= $this->data["company"] ?>" readonly>
-
                     </div>
 
                     <div class="form-group col-sm-6">
@@ -74,12 +74,14 @@
                              name="date_begin"
                              value="<?= $this->data['date_begin'] ?>" readonly>
                     </div>
+
                     <div class="form-group col-sm-5">
                       <lable for="dateEnding">Дата окончания<span class="redStars">*</span>
                       </lable>
                       <input type="date" class="form-control date-ending" id="dateEnding"
                              name="date_end" value="<?= $this->data['date_end'] ?>" readonly>
                     </div>
+
                     <div class="form-group col-sm-2">
                       <lable for="totalDays">Всего</lable>
                       <input type="text" class="form-control" value="<?= $this->data['total_days'] ?>" readonly>
@@ -103,7 +105,6 @@
                       <strong class="mb-2 d-block">Транспорт</strong>
                       <div class="mb-2">
                         <input type="text" class="form-control" value="<?= $this->data['transport'] ?>" readonly>
-
                       </div>
                     </div>
 
