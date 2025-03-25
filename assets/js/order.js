@@ -111,7 +111,7 @@ $(function ($) {
 				class: 'text-nowrap',
 				render: function (data, type, item) {
 					return `<a class="request-link"
-						   href="/ulab/request/card/${item.ID_Z}" target="_blank">
+						   href="/ulab/request/card/${item.ID_Z}" >
 						   ${item['REQUEST_TITLE']}
 						</a>`
 				}

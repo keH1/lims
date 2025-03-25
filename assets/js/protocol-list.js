@@ -60,7 +60,7 @@ $(function ($) {
                 class: 'text-nowrap',
                 render: function (data, type, item) {
                     return `<a class="request-link"
-                           href="/ulab/request/card/${item.ID_Z}" target="_blank">
+                           href="/ulab/request/card/${item.ID_Z}" >
                            ${item['REQUEST_TITLE']}
                         </a>`
                 }
@@ -69,11 +69,11 @@ $(function ($) {
                 data: 'tz',
                 render: function (data, type, item) {
                     if ( item['ID_Z'] < 9357 ) {
-                        return `<a class="number-tz" href="/ulab/requirement/card_old/${item['b_tz_id']}" target="_blank">
+                        return `<a class="number-tz" href="/ulab/requirement/card_old/${item['b_tz_id']}" >
                                 ${item['b_tz_id']}
                             </a>`
                     }
-                    return `<a class="number-tz" href="/ulab/requirement/card/${item['b_tz_id']}" target="_blank">
+                    return `<a class="number-tz" href="/ulab/requirement/card/${item['b_tz_id']}" >
                                 ${item['b_tz_id']}
                             </a>`
                 }
@@ -106,7 +106,7 @@ $(function ($) {
                     }
                     console.log(item['PROTOCOL_OUTSIDE_LIS'])
                     return `<a class="results-link"
-                               href="/ulab/result/card/${item['ID_Z']}?protocol_id=${item['protocol_id']}" target="_blank">
+                               href="/ulab/result/card/${item['ID_Z']}?protocol_id=${item['protocol_id']}" >
                                Открыть
                             </a>`
                 }
@@ -116,7 +116,7 @@ $(function ($) {
                 render: function (data, type, item) {
                     if ( item['DOC'] !== '' ) {
                         return `<a class="results-link"
-                               href="${item['DOC']}" target="_blank">
+                               href="${item['DOC']}" >
                                PDF
                             </a>`
                     }

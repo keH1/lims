@@ -25,12 +25,12 @@ $(function ($) {
 				render: function (data, type, item) {
 					if (item.ID_Z > 9356) {
 					return `<a class="request-link"
-                           href="/ulab/result/resultCard_tester/${item.ID_Z}" target="_blank">
+                           href="/ulab/result/resultCard_tester/${item.ID_Z}" >
                            ${item.NUM_ACT_TABLE}
                         </a>`
 					} else {
 						return `<a class="request-link"
-                           href="/ulab/result/card_tester/${item.ID_Z}" target="_blank">
+                           href="/ulab/result/card_tester/${item.ID_Z}" >
                            ${item.NUM_ACT_TABLE}
                         </a>`
 					}

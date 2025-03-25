@@ -142,7 +142,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/archive/ticket_payment/<?= $this->data["id"] ?>/<?= $ticket ?>"
-                              target="_blank"
+                              
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $ticket ?>"
                               data-js-file-download
@@ -178,7 +178,7 @@
                               <a
                                 class="btn btn-primary position-relative rounded fa-solid fa-file"
                                 href="/ulab/upload/secondment/archive/fuel_payment/<?= $this->data["id"] ?>/<?= $file ?>"
-                                target="_blank"
+                                
                                 style="margin-left: 4px; font-size: 16px;"
                                 title="<?= $file ?>"
                                 data-js-file-download
@@ -214,7 +214,7 @@
                               <a
                                 class="btn btn-primary position-relative rounded fa-solid fa-file"
                                 href="/ulab/upload/secondment/archive/fuel_payment_object/<?= $this->data["id"] ?>/<?= $file ?>"
-                                target="_blank"
+                                
                                 style="margin-left: 4px; font-size: 16px;"
                                 title="<?= $file ?>"
                                 data-js-file-download
@@ -249,7 +249,7 @@
                               <a
                                 class="btn btn-primary position-relative rounded fa-solid fa-file"
                                 href="/ulab/upload/secondment/archive/per_diem/<?= $this->data["id"] ?>/<?= $file ?>"
-                                target="_blank"
+                                
                                 style="margin-left: 4px; font-size: 16px;"
                                 title="<?= $file ?>"
                                 data-js-file-download
@@ -285,7 +285,7 @@
                               <a
                                 class="btn btn-primary position-relative rounded fa-solid fa-file"
                                 href="/ulab/upload/secondment/archive/accommodation/<?= $this->data["id"] ?>/<?= $file ?>"
-                                target="_blank"
+                                
                                 style="margin-left: 4px; font-size: 16px;"
                                 title="<?= $file ?>"
                                 data-js-file-download
@@ -328,7 +328,7 @@
                                   <a
                                     class="btn btn-primary position-relative rounded fa-solid fa-file"
                                     href="/ulab/upload/secondment/archive/other/<?= $this->data['secondment']['s_id'] ?>/<?= $field["id"] ?>/<?= $file ?>"
-                                    target="_blank"
+                                    
                                     style="margin-left: 4px; font-size: 16px;"
                                     title="<?= $file ?>"
                                     data-js-file-download
@@ -406,7 +406,7 @@
                       <a
                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                         href="<?= $this->data['fileArr']['edict'][0] ?>"
-                        target="_blank"
+                        
                         style="margin-left: 5px; font-size: 16px"
                         title="<?= $this->data['fileArr']['edict'][0] ?>"
                         download
@@ -421,7 +421,7 @@
                       <a
                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                         href="<?= $this->data['fileArr']['service_assignment'] ?><?= $this->data['fileArr']['service_assignment'] ?>?v=<?= rand() ?>"
-                        target="_blank"
+                        
                         style="margin-left: 5px; font-size: 16px"
                         title="<?= $this->data['service_assignment']['file'] ?>"
                         download

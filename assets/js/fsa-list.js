@@ -40,7 +40,7 @@ $(function ($) {
                     orderable: false,
                     render: function (data, type, item) {
                         return `<a class="results-link"
-                           href="/protocol_generator/archive_dog/${item['xml_file']}" target="_blank">
+                           href="/protocol_generator/archive_dog/${item['xml_file']}" >
                            ${item['xml_file']}
                         </a>`
                     }

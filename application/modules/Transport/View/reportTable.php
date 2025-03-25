@@ -54,7 +54,7 @@
         <a
                 class="btn btn-primary position-relative ml-4 fs-16"
                 href="<?= $this->data["files"]["memo"]["href"] ?>"
-                target="_blank"
+                
                 title="<?= $this->data["files"]["memo"]["name"] ?>"
                 data-js-file-download
                 download
@@ -74,7 +74,7 @@
         <a
                 class="btn btn-primary position-relative ml-4 fs-16"
                 href="<?= $this->data["files"]["report"]["href"] ?>"
-                target="_blank"
+                
                 title="<?= $this->data["files"]["memo"]["name"] ?>"
                 data-js-file-download
         ><i class="fa-solid fa-file"></i></a>
@@ -93,7 +93,7 @@
         <a
                 class="btn btn-primary position-relative ml-4 fs-16"
                 href="<?= $this->data["files"]["compensation"]["href"] ?>"
-                target="_blank"
+                
                 title="<?= $this->data["files"]["compensation"]["name"] ?>"
                 data-js-file-download
                 download

@@ -23,7 +23,7 @@ $(function ($) {
                 orderable: true,
                 render: function (data, type, item) {
                     return `<a class="results-link"
-                               href="/ulab/material/card/${item['ID']}" target="_blank">
+                               href="/ulab/material/card/${item['ID']}" >
                                ${item['NAME']}
                             </a>`
                 }

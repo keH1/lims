@@ -182,21 +182,21 @@ class LabController extends Controller
                 empty($data['is_not_cond_temp'])) {
                 $isMethodMatch = 0;
                 $arrWarning['method_temp'][] =
-                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' target='_blank'>{$data['reg_doc']} {$data['name']}</a>";
+                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
             }
 
             if (($_POST['form']['humidity'] < $data['cond_wet_1'] || $_POST['form']['humidity'] > $data['cond_wet_2']) &&
                 empty($data['is_not_cond_wet'])) {
                 $isMethodMatch = 0;
                 $arrWarning['method_humidity'][] =
-                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' target='_blank'>{$data['reg_doc']} {$data['name']}</a>";
+                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
             }
 
             //if (($_POST['form']['pressure'] < $data['cond_pressure_1'] || $_POST['form']['pressure'] > $data['cond_pressure_2']) &&
             //    empty($data['is_not_cond_pressure'])) {
             //    $isMethodMatch = 0;
             //    $arrWarning['method_pressure'][] =
-            //        "&bull; <a href='" . URI . "/gost/method/{$data['id']}' target='_blank'>{$data['reg_doc']} {$data['name']}</a>";
+            //        "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
             //}
         }
 
@@ -206,21 +206,21 @@ class LabController extends Controller
                 empty($data['TEMPERATURE'])) {
                 $isOborudMatch = 0;
                 $arrWarning['oborud_temp'][] =
-                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' target='_blank'>{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
+                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
             }
 
             if (($_POST['form']['humidity'] < $data['OVV_EX'] || $_POST['form']['humidity'] > $data['OVV_EX2']) &&
                 empty($data['HUMIDITY'])) {
                 $isOborudMatch = 0;
                 $arrWarning['oborud_humidity'][] =
-                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' target='_blank'>{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
+                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
             }
 
             //if (($_POST['form']['pressure'] < $data['AD_EX'] || $_POST['form']['pressure'] > $data['AD_EX2']) &&
             //    empty($data['PRESSURE'])) {
             //    $isOborudMatch = 0;
             //    $arrWarning['oborud_pressure'][] =
-            //        "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' target='_blank'>{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
+            //        "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
             //}
         }
 
@@ -454,19 +454,19 @@ class LabController extends Controller
             if (($condition['temp'] < $data['cond_temp_1'] || $condition['temp'] > $data['cond_temp_2']) &&
                 empty($data['is_not_cond_temp'])) {
                 $arrWarning['method_temp'][] =
-                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' target='_blank'>{$data['reg_doc']} {$data['name']}</a>";
+                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
             }
 
             if (($condition['humidity'] < $data['cond_wet_1'] || $condition['humidity'] > $data['cond_wet_2']) &&
                 empty($data['is_not_cond_wet'])) {
                 $arrWarning['method_humidity'][] =
-                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' target='_blank'>{$data['reg_doc']} {$data['name']}</a>";
+                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
             }
 
             //if (($condition['pressure'] < $data['cond_pressure_1'] || $condition['pressure'] > $data['cond_pressure_2']) &&
             //    empty($data['is_not_cond_pressure'])) {
             //    $arrWarning['method_pressure'][] =
-            //        "&bull; <a href='" . URI . "/gost/method/{$data['id']}' target='_blank'>{$data['reg_doc']} {$data['name']}</a>";
+            //        "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
             //}
         }
 
@@ -475,19 +475,19 @@ class LabController extends Controller
             if (($condition['temp'] < $data['TOO_EX'] || $condition['temp'] > $data['TOO_EX2']) &&
                 empty($data['TEMPERATURE'])) {
                 $arrWarning['oborud_temp'][] =
-                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' target='_blank'>{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
+                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
             }
 
             if (($condition['humidity'] < $data['OVV_EX'] || $condition['humidity'] > $data['OVV_EX2']) &&
                 empty($data['HUMIDITY'])) {
                 $arrWarning['oborud_humidity'][] =
-                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' target='_blank'>{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
+                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
             }
 
             //if (($condition['pressure'] < $data['AD_EX'] || $condition['pressure'] > $data['AD_EX2']) &&
             //    empty($data['PRESSURE'])) {
             //    $arrWarning['oborud_pressure'][] =
-            //        "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' target='_blank'>{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
+            //        "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
             //}
         }
 

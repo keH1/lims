@@ -34,7 +34,7 @@ $(function ($) {
                     orderable: false,
                     render: function (data, type, item) {
                         return `<a class="results-link"
-                           href="/ulab/upload/fsa/protocols/${item['xml_file']}" target="_blank">
+                           href="/ulab/upload/fsa/protocols/${item['xml_file']}" >
                            ${item['xml_file']}
                         </a>`
                     }

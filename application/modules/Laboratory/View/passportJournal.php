@@ -19,7 +19,7 @@
         </button>
     </div>
     <div class="col-auto d-flex align-items-center justify-content-center p-0">
-        <a title="Редактор схем" href="/ulab/LabScheme/editor?type=1" target="_blank" class="rounded"><i class="fa-solid fa-gear text-primary"></i></i></a>
+        <a title="Редактор схем" href="/ulab/LabScheme/editor?type=1"  class="rounded"><i class="fa-solid fa-gear text-primary"></i></i></a>
         <!--        <a title="Редактор схем" href="--><?//= URI ?><!--/laboratory/editor/" class="rounded"><i class="fa-solid fa-gears text-primary"></i></i></a>-->
 
 <!--        <button type="button" class="btn --><?//= $this->data["is_admin"] ? "" : "d-none" ?><!--" id="hide-row" visible="1">-->

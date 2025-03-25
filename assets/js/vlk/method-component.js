@@ -31,7 +31,7 @@ $(function () {
             {
                 data: 'name',
                 render: function (data, type, item) {
-                    return `<a href="/ulab/gost/method/${item.um_id}" class="text-decoration-none" target="_blank">
+                    return `<a href="/ulab/gost/method/${item.um_id}" class="text-decoration-none" >
                                 ${item.name}
                             </a>`
                 }

@@ -28,7 +28,7 @@ $(function ($) {
                 render: function (data, type, item) {
                     if (type === 'display') {
                         return `<a class="request-link"
-                               href="/ulab/request/card/${item.ID_Z}?ACT_NUM=${item['ACT_NUM']}" target="_blank">
+                               href="/ulab/request/card/${item.ID_Z}?ACT_NUM=${item['ACT_NUM']}" >
                                ${item['REQUEST_TITLE']}${item['certificate']}
                             </a>`
                     }
@@ -81,7 +81,7 @@ $(function ($) {
                 data: 'NUM_ACT_TABLE',
                 render: function (data, type, item) {
                     if (type === 'display' || type === 'filter') {
-                        return `<a class="number-act" href="/probe.php?ID=${item['ID_Z']}&1" target="_blank">
+                        return `<a class="number-act" href="/probe.php?ID=${item['ID_Z']}&1" >
                                 ${item['NUM_ACT_TABLE']}
                             </a>`
                     }
@@ -92,7 +92,7 @@ $(function ($) {
             {
                 data: 'tz',
                 render: function (data, type, item) {
-                    return `<a class="number-tz" href="/tz_show.php?ID=${item['b_tz_id']}" target="_blank">
+                    return `<a class="number-tz" href="/tz_show.php?ID=${item['b_tz_id']}" >
                                 ${item['b_tz_id']}
                             </a>`
                 },
@@ -121,7 +121,7 @@ $(function ($) {
                 orderable: false,
                 render: function (data, type, item) {
                     return `<a class="results-link"
-                               href="/results_isp.php?ID=${item['ID_Z']}&ID_P=${item['firstProtocolId']}" target="_blank">
+                               href="/results_isp.php?ID=${item['ID_Z']}&ID_P=${item['firstProtocolId']}" >
                                 ${item['linkName']}
                             </a>`
                 },
@@ -139,26 +139,26 @@ $(function ($) {
                                 if (file.indexOf('.pdf') !== -1) {
                                     dataProtocol += `<a class="protocol-link" 
                                                         href="/protocol_generator/archive/${item['b_id']}${val['YEAR']}/${val['ID']}/${file}"
-                                                        target="_blank">
+                                                        >
                                                         ${val['NUMBER_AND_YEAR']}
                                                     </a>`
                                 }
                             }
 
                             if (val['PROTOCOL_OUTSIDE_LIS'] && val['PDF']) {
-                                dataProtocol += `<a class="protocol-link" href="/pdf/${val['ID']}/${val['PDF']}" target='_blank'
-                                                    target="_blank">
+                                dataProtocol += `<a class="protocol-link" href="/pdf/${val['ID']}/${val['PDF']}" 
+                                                    >
                                                     ${val['NUMBER_AND_YEAR']}
                                                 </a>`
                             }
                         }
                     } else {
                         if(item['NO_BITRIX']) {
-                            dataProtocol += `<a class="protocol-link" href="/pdf/${item['PDF']}" target='_blank'>
+                            dataProtocol += `<a class="protocol-link" href="/pdf/${item['PDF']}" >
                                                 ${item['PDF'] && item['NUM_P_TABLE'] ? item['NUM_P_TABLE'] : ''}
                                             </a>`
                         } else if (item['b_actual_ver']) {
-                            dataProtocol += `<a class="protocol-link" href="/protocol_generator/archive/${item['b_id']}${item['YEAR_ACT']}/${item['b_actual_ver']}.docx?1&1" target='_blank'>
+                            dataProtocol += `<a class="protocol-link" href="/protocol_generator/archive/${item['b_id']}${item['YEAR_ACT']}/${item['b_actual_ver']}.docx?1&1" >
                                                 ${item['RESULTS'] && item['NUM_P_TABLE'] ? item['NUM_P_TABLE'] : ''}
                                             </a>`
                         }
@@ -432,10 +432,10 @@ $(function ($) {
                                         <span title="${item.status}">${item.cropStatus}</span>
                                     </td>
                                     <td>
-                                        <!--a href="/request_card.php?ID=${item.ID_Z}" target="_blank">
+                                        <!--a href="/request_card.php?ID=${item.ID_Z}" >
                                             <div class="card-icon" title="Карточка заявки"></div>
                                         </a-->
-                                        <a href="/ulab/request/card/${item.ID_Z}" target="_blank">
+                                        <a href="/ulab/request/card/${item.ID_Z}" >
                                             <div class="card-icon" title="Карточка заявки"></div>
                                         </a>
                                     </td>
