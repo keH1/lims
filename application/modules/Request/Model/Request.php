@@ -1590,19 +1590,6 @@ class Request extends Model
                     GROUP BY b.ID ORDER BY YEAR(a.ACT_DATE) DESC, {$order['by']} {$order['dir']} {$limit}"
         );
 
-        $this->pre("SELECT b.ID b_id, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
-                        b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, b.ASSIGNED, a.ACT_NUM,
-                        GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER,
-                        GROUP_CONCAT(distinct IF(prtcl.NUMBER_AND_YEAR='', null, prtcl.NUMBER_AND_YEAR) SEPARATOR ', ') as PROTOCOLS
-                    FROM ba_tz b
-                    LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
-                    inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
-                    LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
-                    LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
-                    LEFT JOIN b_user as u ON u.ID = ass.user_id
-                    WHERE b.TYPE_ID != '3' AND {$where}
-                    GROUP BY b.ID ORDER BY YEAR(a.ACT_DATE) DESC, {$order['by']} {$order['dir']} {$limit}");
-
         $dataTotal = $this->DB->Query(
             "SELECT b.ID val
                     FROM ba_tz AS b
@@ -1621,7 +1608,7 @@ class Request extends Model
                     LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
+                    WHERE b.TYPE_ID != '3' AND {$where}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
 
