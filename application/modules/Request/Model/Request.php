@@ -1683,7 +1683,9 @@ class Request extends Model
                 }
                 // Сумма
                 if ( isset($filter['search']['PRICE']) ) {
-                    $where .= "b.PRICE LIKE '%{$filter['search']['PRICE']}%' AND ";
+                    $price = (float)str_replace([' ', 'руб.', ','], ['', '', '.'], $filter['search']['PRICE']);
+                    
+                    $where .= "b.PRICE = {$price} AND ";
                 }
                 // Act VR
                 if ( isset($filter['search']['ACT_VR']) ) {
