@@ -7,20 +7,6 @@
             </button>
         </div>
 
-<!--        <div class="col-auto filter-search" id="filter_search">-->
-<!--            <button class="filter-btn-search">-->
-<!--                <svg class="bi" width="20" height="20">-->
-<!--                    <use xlink:href="--><?//= URI ?><!--/assets/images/icons.svg#icon-search"/>-->
-<!--                </svg>-->
-<!--            </button>-->
-<!--            <div id="journal_requests_filter" class="dataTables_filter">-->
-<!--                <label>-->
-<!--                    <input id="filter_everywhere" type="search" class="form-control filter" placeholder="Поиск..."-->
-<!--                           aria-controls="journal_requests">-->
-<!--                </label>-->
-<!--            </div>-->
-<!--        </div>-->
-
         <div class="col-auto">
           <button
               type="button"
@@ -210,16 +196,9 @@
     <div class="line-dashed-small"></div>
 
     <div class="row mb-3">
-        <div class="col" style="width: 400px">
+        <div class="col">
             <label for="user">ФИО <span class="redStars">*</span></label>
-            <select
-                name="user_id"
-                class="form-control h-auto user"
-                id="user"
-                required
-                style="width: 100%"
-                <?= $this->data["check_user"] ? "" : "readonly" ?>
-            >
+            <select name="user_id" class="form-control select2 user" id="user" required >
                 <option value="" selected disabled></option>
                 <?php foreach ($this->data['users'] as $val): ?>
                     <option value="<?= $val['ID'] ?>" <?= $val['ID'] === $this->data['user_id'] ? 'selected' : '' ?>>
@@ -236,7 +215,7 @@
             <label for="company">Клиент <span class="redStars">*</span></label>
             <div class="row">
                 <div class="col-sm-10">
-                    <select id="company" name="company_id" data-js-company-list  id="company_list" style="width: 100%">
+                    <select id="company" name="company_id" class="form-control select2" data-js-company-list style="width: 100%">
                         <option data-value=""></option>
                         <?php if (isset($this->data['companies'])): ?>
                             <?php foreach ($this->data['companies'] as $company): ?>
@@ -280,35 +259,30 @@
                         </tr>
                         <tr>
                             <td>Адрес</td>
-                            <!--            <td><input list="gost" class="gost" name="ID_COMPANY" value=""></td>-->
                             <td>
                                 <input class="tz" type="text" name="ADDR" style="width: 100%">
                             </td>
                         </tr>
                         <tr>
                             <td>ОГРН</td>
-                            <!--            <td><input list="gost" class="gost" name="ID_COMPANY" value=""></td>-->
                             <td>
                                 <input type="number" name="OGRN" style="width: 100%">
                             </td>
                         </tr>
                         <tr>
                             <td>КПП</td>
-                            <!--            <td><input list="gost" class="gost" name="ID_COMPANY" value=""></td>-->
                             <td>
                                 <input type="number" name="KPP" style="width: 100%">
                             </td>
                         </tr>
                         <tr>
                             <td>ФИО руководителя</td>
-                            <!--            <td><input list="gost" class="gost" name="ID_COMPANY" value=""></td>-->
                             <td>
                                 <input class="tz" type="text" name="DirectorFIO" style="width: 100%">
                             </td>
                         </tr>
                         <tr>
                             <td>Должность руководителя</td>
-                            <!--            <td><input list="gost" class="gost" name="ID_COMPANY" value=""></td>-->
                             <td>
                                 <input class="tz" type="text" name="Position2" style="width: 100%">
                             </td>
@@ -319,8 +293,6 @@
                         </tbody>
                     </table>
                     <input type="hidden" name="ID" value="">
-                    <!--                    <input type="button" id="add" value="Добавить координаты ">-->
-                    <!--                    <input type="button" class="btn btn-primary" id="save" value="Сохранить">-->
                     <button type="button" class="btn btn-primary" id="saveCompany" >Сохранить</button>
                 </div>
 
@@ -338,7 +310,7 @@
             <label for="object">Объект</label>
             <div class="row" style="min-width: 100%">
                 <div class="col-sm-10">
-                    <select name="object_id" class="form-control h-auto object" id="object" aria-hidden="true" style="width: 100%">
+                    <select name="object_id" class="form-control select2 object" id="object" aria-hidden="true">
                         <option value="" selected disabled></option>
                         <?php foreach ($this->data['objects'] as $val): ?>
                             <option value="<?= $val['ID'] ?>" <?= $val['ID'] === $this->data['object_id'] ? 'selected' : '' ?>>
@@ -351,10 +323,11 @@
                 <button type="button" class="btn btn-primary rounded col-sm-1 col-md-offset-2" data-js-toggle-object><i class="fa-solid fa-plus"></i></button>
             </div>
 
-            <div data-js-form-object style="margin-left: 10px; display: none; width: 90%">
+            <div data-js-form-object style="display: none;" class="m-3">
                 <h6>Создать объект</h6>
-                <div >
-                    <table id="obj">
+                <div>
+                    <input type="hidden" name="ID" value="">
+                    <table id="obj" class="mb-2 w-75">
                         <tbody id="obj_body">
                         <tr>
                             <td>Название</td>
@@ -364,9 +337,8 @@
                         </tr>
                         <tr>
                             <td>Клиент</td>
-                            <!--            <td><input list="gost" class="gost" name="ID_COMPANY" value=""></td>-->
                             <td>
-                                <select list="gost" class="res gost" data-js-clients name="ID_COMPANY" style="width: 100%">
+                                <select class="form-control select2" data-js-clients name="ID_COMPANY">
                                     <option value=""></option>
                                     <?php foreach ($this->data["companyList"] as $company): ?>
                                         <option value="<?= $company["id"] ?>"><?= $company["title"] ?></option>
@@ -376,15 +348,8 @@
                         </tr>
                         <tr>
                             <td>Город</td>
-                            <!--            <td><input list="gost" class="gost" name="ID_COMPANY" value=""></td>-->
                             <td>
-                                <select data-js-cities name="CITY" style="width: 100%" id="city">
-                                    <option value=""></option>
-                                    <option value="111"></option>
-                                    <?php foreach ($this->data["cityList"] as $city): ?>
-                                        <option value="<?= $city["id"] ?>"><?= $city["name"] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <select data-js-cities name="CITY" class="form-control" id="city"></select>
                             </td>
                         </tr>
                         <tr>
@@ -408,12 +373,9 @@
 
                         </tbody>
                     </table>
-                    <input type="hidden" name="ID" value="">
-<!--                    <input type="button" id="add" value="Добавить координаты ">-->
-<!--                    <input type="button" class="btn btn-primary" id="save" value="Сохранить">-->
+
                     <button type="button" class="btn btn-primary" id="save" >Сохранить</button>
                 </div>
-
             </div>
         </div>
     </div>

@@ -95,10 +95,9 @@
                               <div class="form-group col-sm-6">
                                   <label for="user">Сотрудник <span class="redStars">*</span></label>
                                   <select name="user_id"
-                                          class="form-control h-auto user m_t_n-1"
+                                          class="form-control select2 user m_t_n-1"
                                           id="user"
                                           required
-
                                   >
                                       <option value="" selected disabled></option>
                                       <?php foreach ($this->data['users'] as $val): ?>
@@ -121,12 +120,10 @@
                           <div class="row mb-2">
                               <div class="form-group col-sm-5">
                                   <label for="city">Населенный пункт <span class="redStars">*</span></label>
-<!--                                    <input id="city" type="text" class="form-control" value="--><?//= $this->data['settlement_title'] ?><!--">-->
                                   <select
                                           name="settlement_id"
-                                          class="form-control h-auto object"
+                                          class="form-control select2 object"
                                           id="city"
-                                          style="overflow: hidden"
                                           required
                                           <?= empty($this->data['objects'][$this->data['object_id']]["settlement_id"]) ? "" : "readonly" ?>
                                   >
@@ -389,7 +386,7 @@
 
                           <div class="mb-2">
                               <strong>Оборудование</strong>
-                              <select name="oborud[]" multiple="multiple" id="oborud" aria-hidden="true">
+                              <select name="oborud[]" multiple="multiple" class="form-control select2" id="oborud" aria-hidden="true">
                                   <option value="" disabled></option>
                                   <?php foreach ($this->data["oborudList"] as $oborud): ?>
                                       <option value="<?= $oborud['ID'] ?>"
@@ -865,7 +862,7 @@
                         <div data-js-message> </div>
 
                         <div class="row wrapper-btn mb-2">
-                            <?php if ($this->data['is_save_info'] && in_array($this->data['stage_name'],
+                            <?php if (in_array($this->data['stage_name'],
                                     ['Новая', 'Нужна доработка'])): ?>
                                     <div class="col flex-grow-0 text-nowrap">
                                         <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -881,8 +878,7 @@
                                     </div>
                             <?php endif; ?>
 
-                            <?php if ($this->data['is_confirm_secondment'] &&
-                                $this->data['stage_name'] === 'Ожидает подтверждения'): ?>
+                            <?php if ($this->data['stage_name'] === 'Ожидает подтверждения'): ?>
                                     <div class="col flex-grow-0">
                                         <button type="button" class="btn btn-primary" id="confirmSecondment"
                                                 name="confirm_secondment" data-stage="Подготовка приказа и СЗ">
@@ -1739,45 +1735,6 @@
                                 </div>
                             </div>
                         </div>
-
-<!--                        <div>Чеки</div>-->
-<!--                        <div class="checks-wrapper wrapper-shadow mb-4 pt-4 pb-4">-->
-<!--                            <div class="row file-preview-container">-->
-<!--                                --><?php //foreach ($this->data['checks_files'] as $file): ?>
-<!--                                    <div class="col-2 file-preview-block d-flex flex-column">-->
-<!--                                        <div class="file-preview-img">-->
-<!--                                            <img src="--><?//= $file['img'] ?><!--" alt="ico" width="90">-->
-<!--                                        </div>-->
-<!--                                        <div class="file-preview-title align-center">-->
-<!--                                            <a class="text-decoration-none"-->
-<!--                                               href="/ulab/upload/secondment/checks/--><?//= $this->data['secondment_id'] ?><!--/--><?//= $file['name'] ?><!--"-->
-<!--                                               target="_blank">--><?//= $file['name'] ?><!--</a>-->
-<!--                                        </div>-->
-<!--                                        --><?php //if ($this->data['is_save_secondment'] && $this->data['stage_name'] === 'Подготовка отчета'): ?>
-<!--                                            <div class="file-preview-back flex-column">-->
-<!--                                                <a class="btn btn-danger"-->
-<!--                                                   href="/ulab/secondment/deleteChecksFile/--><?//= $this->data['secondment_id'] ?><!--?file=--><?//= $file['name'] ?><!--">Удалить</a>-->
-<!--                                                <a download class="btn btn-success"-->
-<!--                                                   href="/ulab/upload/secondment/checks/--><?//= $this->data['secondment_id'] ?><!--/--><?//= $file['name'] ?><!--">Скачать</a>-->
-<!--                                            </div>-->
-<!--                                        --><?php //endif; ?>
-<!--                                    </div>-->
-<!--                                --><?php //endforeach; ?>
-<!--                            </div>-->
-<!---->
-<!--                            <div class="line-dashed"></div>-->
-<!---->
-<!--                            <div class="dropzone-msg"></div>-->
-<!---->
-<!--                            <div class="row">-->
-<!--                                <div class="col">-->
-<!--                                    <div id="checks" class="dropzone dz-clickable min-h-180">-->
-<!--                                        <div class="dropzone-previews"></div>-->
-<!--                                        <div class="dz-default dz-message"><span>Drop files here to upload</span></div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
                         <!-- /.checks-wrapper -->
 
                         <?php if (!empty($this->data['users_confirmed_report'])): ?>

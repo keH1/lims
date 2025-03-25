@@ -18,7 +18,6 @@ class Secondment extends Model
     }
 
     /**
-     * @param $userId
      * @param $filter
      * @return array
      */
@@ -37,7 +36,6 @@ class Secondment extends Model
             // формат такой: $where .= "что-то = чему-то AND ";
             // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
             // слева без пробела, справа всегда AND пробел
-
 
             // работа с фильтрами
             if (!empty($filter['search'])) {
@@ -88,22 +86,6 @@ class Secondment extends Model
 
                 if (isset($filter['search']['oborud_list'])) {
                     $where .= "b_o.OBJECT LIKE '%{$filter['search']['oborud_list']}%' AND ";
-                }
-
-                // везде
-                if (isset($filter['search']['everywhere'])) {
-                    $where .=
-                        "(
-                        CONCAT(s.id, '/', IF(YEAR(s.created_at)  % 10, SUBSTR(YEAR(s.created_at), -2), YEAR(s.created_at))) LIKE '%{$filter['search']['everywhere']}%' 
-                        OR CONCAT(b_u.LAST_NAME, ' ', b_u.NAME, ' ', b_u.SECOND_NAME) LIKE '%{$filter['search']['everywhere']}%' 
-                        OR s_s.name LIKE '%{$filter['search']['everywhere']}%' 
-                        OR d_o.name LIKE '%{$filter['search']['everywhere']}%' 
-                        OR LOCATE('{$filter['search']['everywhere']}', DATE_FORMAT(s.date_begin, '%d.%m.%Y')) > 0 
-                        OR LOCATE('{$filter['search']['date_end']}', DATE_FORMAT(s.date_end, '%d.%m.%Y')) > 0  
-                        OR s.planned_expenses LIKE '%{$filter['search']['everywhere']}%'  
-                        OR s.total_spent LIKE '%{$filter['search']['everywhere']}%'  
-                        OR s.overspending LIKE '%{$filter['search']['everywhere']}%'  
-                        ) AND ";
                 }
             }
 
@@ -160,11 +142,6 @@ class Secondment extends Model
                     $limit = "LIMIT {$offset}, {$length}";
                 }
             }
-        }
-
-        if (isset($filter["managerAccess"])) {
-            $useridList = $filter["managerAccess"];
-            $where .= "s.user_id IN ({$useridList}) AND ";
         }
 
         $where .= "1 ";
@@ -228,10 +205,7 @@ class Secondment extends Model
 
             $row['overspending'] = $row['overspending'] ?: '';
 
-            //Если отчет подтвердили более 1 пользователя то показывает "Фактические затраты"(Всего потрачено)
-          //  $row['confirmeds_report'] = json_decode($row['confirmeds_report'], true);
-         //   $row['total_spent'] = !empty($row['total_spent']) && !empty($row['confirmeds_report']) &&
-           // count($row['confirmeds_report']) > 1 ? $row['total_spent'] : '';
+            // Если отчет подтвердили более 1 пользователя, то показывает "Фактические затраты"(Всего потрачено)
             $row['total_spent'] = $row['confirmeds_report'] > 1 ? $row['total_spent'] : '';
 
             $row['planned_expenses'] = $row['planned_expenses'] ?: '';
@@ -253,6 +227,7 @@ class Secondment extends Model
         return $result;
     }
 
+
     /**
      * @param array $data
      * @param string $table
@@ -271,10 +246,12 @@ class Secondment extends Model
         return intval($result);
     }
 
+
     /**
      * @param array $data
      * @param string $table
      * @param int $id
+     * @return mixed
      */
     public function update(array $data, string $table, int $id)
     {
@@ -648,7 +625,7 @@ class Secondment extends Model
     }
 
     // Получить список городов
-    public function getCityArr($name)
+    public function getCityArr($name = '')
     {
         $response = [];
 

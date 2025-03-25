@@ -386,10 +386,10 @@ class Transport extends Model {
             }
         }
 
-        if (isset($filter["managerAccess"])) {
-            $useridList = $filter["managerAccess"];
-            $where .= "t_r.user_id IN ({$useridList}) AND ";
-        }
+//        if (isset($filter["managerAccess"])) {
+//            $useridList = $filter["managerAccess"];
+//            $where .= "t_r.user_id IN ({$useridList}) AND ";
+//        }
 
         $where .= "1 ";
 
