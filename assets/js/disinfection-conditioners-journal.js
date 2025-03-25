@@ -1,8 +1,15 @@
 const conditionerRoom = {
-    '12' : "Samsung (модель AQ07XLN)",
-    '13' : "Samsung (модель AQ07XLN)",
-    '11' : "Midea (модель MSE-07HR)",
-    '10' : "Midea (модель MSE-07HR)"
+    '1' : "Samsung (модель AQ07XLN)",
+    '2' : "Samsung (модель AQ07XLN)",
+    '33' : "Midea (модель MSE-07HR)",
+    '43' : "Midea (модель MSE-07HR)",
+    '44' : "Samsung (модель AQ07XLN)",
+    '45' : "Samsung (модель AQ07XLN)",
+    '46' : "Midea (модель MSE-07HR)",
+    '47' : "Midea (модель MSE-07HR)",
+    '48' : "Samsung (модель AQ07XLN)",
+    '50' : "Midea (модель MSE-07HR)",
+    '51' : "Midea (модель MSE-07HR)"
 }
 
 $(function ($) {

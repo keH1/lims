@@ -1315,7 +1315,7 @@ class Requirement extends Model
 
     public function updateAssigned($dealId)
     {
-        $this->DB->Query("delete from assigned_to_request where deal_id = {$dealId} and is_creator = 0");
+        $this->DB->Query("delete from assigned_to_request WHERE deal_id = {$dealId} AND is_creator = 0 AND is_main = 0");
 
         $sql = $this->DB->Query(
             "select distinct 

@@ -24,6 +24,7 @@ $(function ($) {
             },
             {
                 data: 'CIPHER',
+                orderable: false,
                 render: $.fn.dataTable.render.ellipsis(40, true)
             },
             {
@@ -58,44 +59,6 @@ $(function ($) {
             {
                 data: 'PROTOCOLS',
                 orderable: false,
-                render: function (data, type, item) {
-                    let dataProtocol = `<div class="d-flex flex-column">`
-
-                    if (item['PROTOCOLS']) {
-                        for (const val of item['PROTOCOLS']) {
-
-                            for (const file of val['FILES']) {
-                                if (file.indexOf('.pdf') !== -1) {
-                                    dataProtocol += `<a class="protocol-link" 
-                                                        href="/protocol_generator/archive/${item['b_id']}${val['YEAR']}/${val['ID']}/${file}"
-                                                        target="_blank">
-                                                        ${val['NUMBER_AND_YEAR']}
-                                                    </a>`
-                                }
-                            }
-
-                            if (val['PROTOCOL_OUTSIDE_LIS'] && val['PDF']) {
-                                dataProtocol += `<a class="protocol-link" href="/pdf/${val['ID']}/${val['PDF']}" target='_blank'
-                                                    target="_blank">
-                                                    ${val['NUMBER_AND_YEAR']}
-                                                </a>`
-                            }
-                        }
-                    } else {
-                        if(item['NO_BITRIX']) {
-                            dataProtocol += `<a class="protocol-link" href="/pdf/${item['PDF']}" target='_blank'>
-                                                ${item['PDF'] && item['NUM_P_TABLE'] ? item['NUM_P_TABLE'] : ''}
-                                            </a>`
-                        } else if (item['b_actual_ver']) {
-                            dataProtocol += `<a class="protocol-link" href="/protocol_generator/archive/${item['b_id']}${item['YEAR_ACT']}/${item['b_actual_ver']}.docx?1&1" target='_blank'>
-                                                ${item['RESULTS'] && item['NUM_P_TABLE'] ? item['NUM_P_TABLE'] : ''}
-                                            </a>`
-                        }
-                    }
-                    dataProtocol += `</div>`
-
-                    return dataProtocol
-                },
             },
         ],
         language: dataTablesSettings.language,

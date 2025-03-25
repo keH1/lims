@@ -13,8 +13,14 @@ class DisinfectionConditionersController extends Controller
      */
     public function list()
     {
+        // $this->model('Permission')->checkPermission(__FUNCTION__, __FILE__);
+
+        /** @var Lab $labModel */
+        $labModel = $this->model('Lab');
+
         $this->data['title'] = 'Журнал учета работ по очистки и дезинфекции кондиционеров';
 
+        $this->data['rooms'] = $labModel->getRooms();
 
         $this->addCSS("/assets/plugins/select2/css/select2.min.css");
         $this->addJs("/assets/plugins/select2/js/select2.min.js");

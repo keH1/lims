@@ -181,7 +181,7 @@ class User extends Model
      */
     public function setAssignedUserList($dealId, $dataList)
     {
-        $resultQuery = $this->DB->Query("DELETE FROM `assigned_to_request` WHERE deal_id = {$dealId}");
+        $resultQuery = $this->DB->Query("DELETE FROM `assigned_to_request` WHERE deal_id = {$dealId} AND is_main = 1");
 
         if ( $resultQuery === false ) {
             return false;
@@ -192,7 +192,8 @@ class User extends Model
             $data = [
                 'deal_id' => $dealId,
                 'user_id' => $item,
-                'is_main' => $isFirst? 1 : 0,
+                // 'is_main' => $isFirst? 1 : 0,
+                'is_main' => 1,
             ];
             if ($isFirst) $isFirst = false;
 
@@ -213,7 +214,7 @@ class User extends Model
      */
     public function getAssignedByDealId($dealId)
     {
-        $users = $this->DB->Query("SELECT user_id, is_main FROM `assigned_to_request` WHERE deal_id = {$dealId}");
+        $users = $this->DB->Query("SELECT user_id, is_main FROM `assigned_to_request` WHERE deal_id = {$dealId} AND is_main = 1");
 
         $result = [];
         while ($row = $users->Fetch()) {

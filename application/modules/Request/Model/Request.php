@@ -1437,7 +1437,7 @@ class Request extends Model
 
 
     /**
-     * журнал акта приёмки проб
+     * Журнал акта приёмки проб
      * @param array $filter
      * @return array
      */
@@ -1450,6 +1450,7 @@ class Request extends Model
             'dir' => 'DESC'
         ];
 
+        $labModel = new Lab();
         $permissionModel = new Permission();
         $perm = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
 
@@ -1468,6 +1469,10 @@ class Request extends Model
                 // Заявка
                 if ( isset($filter['search']['REQUEST_TITLE']) ) {
                     $where .= "b.REQUEST_TITLE LIKE '%{$filter['search']['REQUEST_TITLE']}%' AND ";
+                }
+                // Шифры
+                if ( isset($filter['search']['CIPHER']) ) {
+                    $where .= "umtr.cipher LIKE '%{$filter['search']['CIPHER']}%' AND ";
                 }
                 // Дата
                 if ( isset($filter['search']['DATE_ACT']) ) {
@@ -1501,18 +1506,25 @@ class Request extends Model
                 if ( isset($filter['search']['lab']) ) {
                     $where .= "b.LABA_ID LIKE '%{$filter['search']['lab']}%' AND ";
                 }
-                // везде
-                if ( isset($filter['search']['everywhere']) ) {
-                    $where .=
-                        "(
-                        b.NUM_ACT_TABLE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.DOGOVOR_TABLE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.DATE_ACT LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.COMPANY_TITLE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.MATERIAL LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.ASSIGNED LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.REQUEST_TITLE LIKE '%{$filter['search']['everywhere']}%'  
-                        ) AND ";
+                if ( isset($filter['search']['LAB']) ) {
+                    $sql = $this->DB->Query("select `id_dep` from ba_laba where (`NAME` like '%{$filter['search']['LAB']}%' or `short_name` like '%{$filter['search']['LAB']}%' )");
+
+                    $depsId = [];
+
+                    $tmpWhere = "(";
+                    while ($row = $sql->Fetch()) {
+                        $tmpWhere .= "b.LABA_ID LIKE '%{$row['id_dep']}%' or ";
+                        $depsId[] = $row['id_dep'];
+                    }
+                    $tmpWhere .= " 0 ) and ";
+
+                    if ( !empty($depsId) ) {
+                        $where .= $tmpWhere;
+                    }
+                }
+                // Протокол
+                if ( isset($filter['search']['PROTOCOLS']) ) {
+                    $where .= "prtcl.NUMBER_AND_YEAR LIKE '%{$filter['search']['PROTOCOLS']}%' AND ";
                 }
             }
 
@@ -1570,10 +1582,14 @@ class Request extends Model
 
 
         $data = $this->DB->Query(
-            "SELECT DISTINCT b.ID b_id, b.TZ, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, 
-                        b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, b.ASSIGNED, a.ACT_NUM 
+            "SELECT b.ID b_id, b.TZ, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
+                        b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, b.ASSIGNED, a.ACT_NUM,
+                        GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER,
+                        GROUP_CONCAT(distinct IF(prtcl.NUMBER_AND_YEAR='', null, prtcl.NUMBER_AND_YEAR) SEPARATOR ', ') as PROTOCOLS
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
+                    inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
+                    LEFT JOIN protocols as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
@@ -1584,6 +1600,7 @@ class Request extends Model
             "SELECT b.ID val
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
+                    inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' 
@@ -1593,6 +1610,8 @@ class Request extends Model
             "SELECT b.ID val
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
+                    inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
+                    LEFT JOIN protocols as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
@@ -1602,76 +1621,27 @@ class Request extends Model
         while ($row = $data->Fetch()) {
             $row['DATE_ACT'] = !empty($row['DATE_ACT']) ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
 
-            $assigned = $this->getAssignedByDealId($row['ID_Z']);
-            $arrAss = [];
-            $headLab = '';
-            foreach ($assigned as $item) {
-                $arrAss[] = $item['short_name'];
-                if ($item['is_main'] == 1) {
-					$headLab = $item['department'][0];
-				}
-            }
-
             if ( !empty($arrAss) ) {
                 $row['ASSIGNED'] = implode(', ', $arrAss);
             }
 
-            $cipher = $this->getCipherByDealId($row['ID_Z']);
-            $arrCipher = [];
+            $arrNameLabs = [];
+            $labs = [];
+            if (!empty($row['LABA_ID'])) {
+                $labs = explode(',', $row['LABA_ID']);
+            }
 
-			foreach ($cipher as $item) {
-				$arrCipher[] = $item['cipher'];
-			}
+            foreach ($labs as $lab) {
+                $objLab = $labModel->getLabByDepartment($lab);
+                if ( empty($objLab) ) { continue; }
+                $arrNameLabs[] = !empty($objLab['short_name'])? $objLab['short_name'] : $objLab['NAME'];
+            }
 
-			if (!empty($arrCipher)) {
-				$row['CIPHER'] = implode(', ', $arrCipher);
-			} else {
-				$row['CIPHER'] = '';
-			}
-
-			$protocols = $this->getProtocolsByTzId($row['b_id']);
-			$protocolsData = [];
-			$firstProtocol = [];
-
-			if (count($protocols) > 0) {
-				$firstProtocol = current($protocols);
-				foreach ($protocols as $key => $value) {
-					$numberAndYear = !empty($value['NUMBER_AND_YEAR']) ? $value['NUMBER_AND_YEAR'] : '';
-					$protocolsData[$key] = [
-						'ID' => $value['ID'],
-						'NUMBER_AND_YEAR' => $numberAndYear,
-						'ACTUAL_VERSION' => unserialize($value['ACTUAL_VERSION']),
-						'PDF' => $value['PDF'],
-						'PROTOCOL_OUTSIDE_LIS' => $value['PROTOCOL_OUTSIDE_LIS'],
-						'YEAR' => !empty($value['DATE']) ? date('Y', strtotime($value['DATE'])) : ''
-					];
-
-					if (empty($value['PDF'])) {
-						$files = scandir($_SERVER['DOCUMENT_ROOT'] . '/protocol_generator/archive/' . $row['b_id'] . $protocolsData[$key]['YEAR'] . '/' . $protocolsData[$key]['ID'] . '/');
-
-						$protocolsData[$key]['FILES'] = !empty($files) ? $files : [];
-					} else {
-						$protocolsData[$key]['FILES'] = [];
-					}
-				}
-			}
-
-			$row['firstProtocolId'] = $firstProtocol['ID'] ?? null;
-
-			$row['PROTOCOLS'] = $protocolsData;
-
-			$department = [
-				'54' => 'ЛФХИ',
-				'55' => 'ДСЛ',
-				'56' => 'ЛФМИ',
-				'57' => 'ЛСМ',
-				'58' => 'ОСК',
-				'59' => 'Бухгалтерия',
-			];
-
-			$lab = $department[$headLab];
-
-			$row['LAB'] = $lab;
+            if ( !empty($arrNameLabs) ) {
+                $row['LAB'] = implode(', ', $arrNameLabs);
+            } else {
+                $row['LAB'] = '';
+            }
 
             $result[] = $row;
         }
@@ -1690,6 +1660,8 @@ class Request extends Model
      */
     public function getDatatoJournalInvoice(array $filter = [])
     {
+        $userModel = new User();
+        
         $where = "";
         $limit = "";
         $order = [
@@ -1864,7 +1836,8 @@ class Request extends Model
                 }
             }
         }
-        $where .= "1 ";
+
+        $where .= "1";
 
         $result = [];
 
@@ -1877,7 +1850,7 @@ class Request extends Model
                         a.DATE AS DATE_ACT_VR, a.SEND_DATE AS SEND_DATE_ACT_VR, a.NUMBER AS ACT_VR 
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
-                    INNER JOIN `AKT_VR` a ON b.ID=a.TZ_ID
+                    LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
                     GROUP BY b.ID ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
@@ -1887,7 +1860,7 @@ class Request extends Model
                         b.ID val 
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
-                    INNER JOIN `AKT_VR` a ON b.ID=a.TZ_ID
+                    LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''
                     GROUP BY b.ID"
         )->SelectedRowsCount();
@@ -1896,7 +1869,7 @@ class Request extends Model
                         b.ID val 
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
-                    INNER JOIN `AKT_VR` a ON b.ID=a.TZ_ID
+                    LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
@@ -1907,7 +1880,9 @@ class Request extends Model
             $row['DATE_ACT_VR'] = !empty($row['DATE_ACT_VR']) ? date('d.m.Y',  strtotime($row['DATE_ACT_VR'])) : '';
             $row['SEND_DATE_ACT_VR'] = !empty($row['SEND_DATE_ACT_VR']) ? date('d.m.Y',  strtotime($row['SEND_DATE_ACT_VR'])) : '';
             
-            $assigned = $this->getAssignedByDealId($row['ID_Z']);
+            // $assigned = $this->getAssignedByDealId($row['ID_Z']);
+            $assigned = $userModel->getAssignedByDealId($row['ID_Z']);
+
             $arrAss = [];
             foreach ($assigned as $item) {
                 $arrAss[] = $item['short_name'];
@@ -1978,25 +1953,6 @@ class Request extends Model
         return $result;
     }
 
-	/**
-	 * @param $dealId
-	 */
-    public function getCipherByDealId($dealId)
-	{
-		$cipherArr = $this->DB->Query(
-			"SELECT * FROM MATERIALS_TO_REQUESTS mtr, probe_to_materials ptm WHERE ptm.material_request_id = mtr.ID AND mtr.ID_DEAL = {$dealId}");
-
-		$result = [];
-
-		while ($cipher = $cipherArr->Fetch()) {
-			$result[] = [
-				'cipher' => $cipher['cipher']
-			];
-		}
-
-		return $result;
-
-	}
 
     /**
      * добавляет к ответственным в заявке новых ответственных
