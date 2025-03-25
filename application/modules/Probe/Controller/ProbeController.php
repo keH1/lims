@@ -325,9 +325,6 @@ class ProbeController extends Controller
         if ( !empty($_POST['lab']) ) {
             $filter['search']['lab'] = $_POST['lab'];
         }
-        if ( !empty($_POST['everywhere']) ) {
-            $filter['search']['everywhere'] = $_POST['everywhere'];
-        }
 
         $data = $request->getDatatoJournalActProbe($filter);
 

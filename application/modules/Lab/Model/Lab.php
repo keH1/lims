@@ -139,6 +139,18 @@ class Lab extends Model
 
 
     /**
+     * @param $departmentId
+     * @return array
+     */
+    public function getLabByDepartment($departmentId)
+    {
+        if (empty($departmentId)) { return []; }
+
+        return $this->DB->Query("select * from ba_laba where `id_dep` = {$departmentId}")->Fetch();
+    }
+
+
+    /**
      * @return array
      */
     public function getLabaRoom($labIdList = [])

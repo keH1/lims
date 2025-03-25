@@ -553,7 +553,7 @@
 						<img src="<?=$file['img']?>" alt="ico" width="90">
 					</div>
 					<div class="file-preview-title align-center">
-						<a class="text-decoration-none" href="/ulab/upload/request/<?=$this->data['deal_id']?>/<?=$file['name']?>" target="_blank"><?=$file['name']?></a>
+						<a class="text-decoration-none" href="/ulab/upload/request/<?=$this->data['deal_id']?>/<?=$file['name']?>" ><?=$file['name']?></a>
 					</div>
 					<?php if ($this->data['is_managers']): ?>
 						<div class="file-preview-back flex-column">

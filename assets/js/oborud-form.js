@@ -84,7 +84,7 @@ $(function ($) {
                                     <option value="">Не выбрано</option>
                                     ${optionEquipment}
                                 </select>
-                                <a class="btn btn-outline-secondary disabled" target="_blank" title="Перейти в оборудование">
+                                <a class="btn btn-outline-secondary disabled"  title="Перейти в оборудование">
                                     <i class="fa-solid fa-right-to-bracket"></i>
                                 </a>
                             </div>

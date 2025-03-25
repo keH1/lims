@@ -11,7 +11,7 @@
                     </a>
                 </li>
                 <li class="nav-item me-2">
-                    <a class="nav-link link-list" target="_blank" href="/ulab/upload/secondment/Инструкция командировки.pdf" title="Инструкция">
+                    <a class="nav-link link-list"  href="/ulab/upload/secondment/Инструкция командировки.pdf" title="Инструкция">
                         <i class="fa-solid fa-file-lines"></i>
                     </a>
                 </li>
@@ -207,7 +207,7 @@
                                               <a class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                  id="contract-file"
                                                  href=""
-                                                 target="_blank"
+
                                                  style="margin-right: 4px; height: 30px; margin-top: 6px"
                                                  title=""
                                                  data-js-file-download=""
@@ -444,7 +444,7 @@
                                     <a
                                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                                       href="/ulab/upload/secondment/ticket_payment/<?= $this->data['secondment']['s_id'] ?>/<?= $ticket ?>"
-                                      target="_blank"
+
                                       style="margin-left: 4px; font-size: 16px;"
                                       title="<?= $ticket ?>"
                                       data-js-file-download
@@ -511,7 +511,7 @@
                                     <a
                                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                                       href="/ulab/upload/secondment/fuel_payment/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                                      target="_blank"
+
                                       style="margin-left: 4px; font-size: 16px;"
                                       title="<?= $file ?>"
                                       data-js-file-download
@@ -578,7 +578,7 @@
                                     <a
                                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                                       href="/ulab/upload/secondment/fuel_payment_object/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                                      target="_blank"
+
                                       style="margin-left: 4px; font-size: 16px;"
                                       title="<?= $file ?>"
                                       data-js-file-download
@@ -644,7 +644,7 @@
                                     <a
                                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                                       href="/ulab/upload/secondment/per_diem/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                                      target="_blank"
+
                                       style="margin-left: 4px; font-size: 16px;"
                                       title="<?= $file ?>"
                                       data-js-file-download
@@ -711,7 +711,7 @@
                                     <a
                                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                                       href="/ulab/upload/secondment/accommodation/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                                      target="_blank"
+
                                       style="margin-left: 4px; font-size: 16px;"
                                       title="<?= $file ?>"
                                       data-js-file-download
@@ -781,7 +781,7 @@
                                         <a
                                           class="btn btn-primary position-relative rounded fa-solid fa-file"
                                           href="/ulab/upload/secondment/other/<?= $this->data['secondment']['s_id'] ?>/<?= $field["id"] ?>/<?= $file ?>"
-                                          target="_blank"
+
                                           style="margin-left: 4px; font-size: 16px;"
                                           title="<?= $file ?>"
                                           data-js-file-download
@@ -964,7 +964,7 @@
                                                             class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                             data-js-file-edict
                                                             href="<?= $edict['dir'] ?><?= $edict['file'] ?>?<?= rand() ?>"
-                                                            target="_blank"
+
                                                             style="margin-left: 5px; font-size: 16px"
                                                             title="<?= $edict['file'] ?>"
                                                     ></a>
@@ -1014,7 +1014,7 @@
 
 <!--                                        <span class="upload-file-message" id="uploadServiceAssignment">-->
 <!--                                            <a href="--><?//= $this->data['service_assignment']['dir'] ?><!----><?//= $this->data['service_assignment']['file'] ?><!--?v=--><?//= rand() ?><!--"-->
-<!--                                               target="_blank">-->
+<!--                                               >-->
 <!--                                                --><?//= $this->data['service_assignment']['file'] ?>
 <!--                                            </a>-->
 <!--                                        </span>-->
@@ -1025,7 +1025,7 @@
                                                     <a
                                                             class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                             href="<?= $file['dir'] ?><?= $file['file'] ?>?<?= rand() ?>"
-                                                            target="_blank"
+
                                                             style="margin-left: 5px; font-size: 16px"
                                                             title="<?= $file['file'] ?>"
                                                     ></a>
@@ -1060,7 +1060,7 @@
                                                     <a
                                                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                         href="<?= $file['dir'] ?><?= $file['file'] ?>"
-                                                        target="_blank"
+
                                                         style="margin-left: 5px; font-size: 16px"
                                                         title="<?= $file['file'] ?>"
                                                     ></a>
@@ -1077,7 +1077,7 @@
                                                 <a
                                                     class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                     href="<?= $file['dir'] ?><?= $file['file'] ?>"
-                                                    target="_blank"
+
                                                     style="margin-left: 5px; font-size: 16px"
                                                     title="<?= $file['file'] ?>"
                                                 ></a>
@@ -1185,7 +1185,7 @@
                                                 <a
                                                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                         href="/ulab/upload/secondment/ticket_payment_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $ticket ?>"
-                                                        target="_blank"
+
                                                         style="margin-left: 4px; font-size: 16px;"
                                                         title="<?= $ticket ?>"
                                                         data-js-file-download
@@ -1251,7 +1251,7 @@
                                                 <a
                                                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                         href="/ulab/upload/secondment/fuel_payment_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                                                        target="_blank"
+
                                                         style="margin-left: 4px; font-size: 16px;"
                                                         title="<?= $file ?>"
                                                         data-js-file-download
@@ -1318,7 +1318,7 @@
                                           <a
                                             class="btn btn-primary position-relative rounded fa-solid fa-file"
                                             href="/ulab/upload/secondment/fuel_payment_object_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                                            target="_blank"
+
                                             style="margin-left: 4px; font-size: 16px;"
                                             title="<?= $file ?>"
                                             data-js-file-download
@@ -1383,7 +1383,7 @@
                                                 <a
                                                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                         href="/ulab/upload/secondment/per_diem_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                                                        target="_blank"
+
                                                         style="margin-left: 4px; font-size: 16px;"
                                                         title="<?= $file ?>"
                                                         data-js-file-download
@@ -1450,7 +1450,7 @@
                                                 <a
                                                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                         href="/ulab/upload/secondment/accommodation_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                                                        target="_blank"
+
                                                         style="margin-left: 4px; font-size: 16px;"
                                                         title="<?= $file ?>"
                                                         data-js-file-download
@@ -1517,7 +1517,7 @@
                                                     <a
                                                             class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                             href="/ulab/upload/secondment/other_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $field["id"] ?>/<?= $file ?>"
-                                                            target="_blank"
+
                                                             style="margin-left: 4px; font-size: 16px;"
                                                             title="<?= $file ?>"
                                                             data-js-file-download
@@ -1599,7 +1599,7 @@
                                                 <a
                                                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                         href="<?= $file['dir'] ?><?= $file['file'] ?>"
-                                                        target="_blank"
+
                                                         style="margin-left: 5px; font-size: 16px"
                                                         title="<?= $file['file'] ?>"
                                                 ></a>
@@ -1638,7 +1638,7 @@
                                                 <a
                                                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                         href="<?= $file['dir'] ?><?= $file['file'] ?>"
-                                                        target="_blank"
+
                                                         style="margin-left: 5px; font-size: 16px"
                                                         title="<?= $file['file'] ?>"
 
@@ -1704,7 +1704,7 @@
                                                         <a
                                                                 class="btn btn-primary position-relative rounded fa-solid fa-file"
                                                                 href="/ulab/upload/secondment/additional/<?= $this->data['secondment']['s_id'] ?>/<?= $field["id"] ?>/<?= $file ?>"
-                                                                target="_blank"
+
                                                                 style="margin-left: 4px; font-size: 16px;"
                                                                 title="<?= $file ?>"
                                                                 data-js-file-download
@@ -1857,7 +1857,7 @@
                       <a
                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                         href="<?= $this->data['memo_doc']['dir'] ?><?= $this->data['memo_doc']['file'] ?>?v=<?= rand() ?>"
-                        target="_blank"
+
                         style="margin-left: 5px; font-size: 16px"
                         title="<?= $this->data['memo_doc']['file'] ?>"
 
@@ -1893,7 +1893,7 @@
                       <a
                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                         href="<?= $this->data['compensation']['dir'] ?><?= $this->data['compensation']['file'] ?>?v=<?= rand() ?>"
-                        target="_blank"
+
                         style="margin-left: 5px; font-size: 16px"
                         title="<?= $this->data['compensation']['file'] ?>"
 
@@ -1931,7 +1931,7 @@
                       <a
                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                         href="<?= $this->data['waybill']['dir'] ?><?= $this->data['waybill']['file'] ?>?v=<?= rand() ?>"
-                        target="_blank"
+
                         style="margin-left: 5px; font-size: 16px"
                         title="<?= $this->data['waybill']['file'] ?>"
 
@@ -2017,7 +2017,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/ticket_payment/<?= $this->data['secondment']['s_id'] ?>/<?= $ticket ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $ticket ?>"
                               data-js-file-download
@@ -2084,7 +2084,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/fuel_payment/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $file ?>"
                               data-js-file-download
@@ -2151,7 +2151,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/fuel_payment_object/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $file ?>"
                               data-js-file-download
@@ -2217,7 +2217,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/per_diem/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $file ?>"
                               data-js-file-download
@@ -2284,7 +2284,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/accommodation/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $file ?>"
                               data-js-file-download
@@ -2354,7 +2354,7 @@
                                 <a
                                   class="btn btn-primary position-relative rounded fa-solid fa-file"
                                   href="/ulab/upload/secondment/other/<?= $this->data['secondment']['s_id'] ?>/<?= $field["id"] ?>/<?= $file ?>"
-                                  target="_blank"
+
                                   style="margin-left: 4px; font-size: 16px;"
                                   title="<?= $file ?>"
                                   data-js-file-download
@@ -2427,7 +2427,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/ticket_payment_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $ticket ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $ticket ?>"
                               data-js-file-download
@@ -2472,7 +2472,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/fuel_payment_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $file ?>"
                               data-js-file-download
@@ -2539,7 +2539,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/fuel_payment_object_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $file ?>"
                               data-js-file-download
@@ -2582,7 +2582,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/per_diem_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $file ?>"
                               data-js-file-download
@@ -2627,7 +2627,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/accommodation_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                              target="_blank"
+
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $file ?>"
                               data-js-file-download
@@ -2670,7 +2670,7 @@
                                 <a
                                   class="btn btn-primary position-relative rounded fa-solid fa-file"
                                   href="/ulab/upload/secondment/other_fact/<?= $this->data['secondment']['s_id'] ?>/<?= $field["id"] ?>/<?= $file ?>"
-                                  target="_blank"
+
                                   style="margin-left: 4px; font-size: 16px;"
                                   title="<?= $file ?>"
                                   data-js-file-download
@@ -2721,7 +2721,7 @@
                                 <a
                                   class="btn btn-primary position-relative rounded fa-solid fa-file"
                                   href="/ulab/upload/secondment/additional/<?= $this->data['secondment']['s_id'] ?>/<?= $field["id"] ?>/<?= $file ?>"
-                                  target="_blank"
+
                                   style="margin-left: 4px; font-size: 16px;"
                                   title="<?= $file ?>"
                                   data-js-file-download
@@ -2940,7 +2940,7 @@
                     <a
                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                       href="/ulab/upload/secondment/ticket_payment/<?= $this->data['secondment']['s_id'] ?>/<?= $ticket ?>"
-                      target="_blank"
+
                       style="margin-left: 4px; font-size: 16px;"
                       title="<?= $ticket ?>"
                       data-js-file-download
@@ -3007,7 +3007,7 @@
                     <a
                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                       href="/ulab/upload/secondment/fuel_payment/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                      target="_blank"
+
                       style="margin-left: 4px; font-size: 16px;"
                       title="<?= $file ?>"
                       data-js-file-download
@@ -3074,7 +3074,7 @@
                     <a
                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                       href="/ulab/upload/secondment/fuel_payment_object/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                      target="_blank"
+
                       style="margin-left: 4px; font-size: 16px;"
                       title="<?= $file ?>"
                       data-js-file-download
@@ -3140,7 +3140,7 @@
                     <a
                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                       href="/ulab/upload/secondment/per_diem/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                      target="_blank"
+
                       style="margin-left: 4px; font-size: 16px;"
                       title="<?= $file ?>"
                       data-js-file-download
@@ -3207,7 +3207,7 @@
                     <a
                       class="btn btn-primary position-relative rounded fa-solid fa-file"
                       href="/ulab/upload/secondment/accommodation/<?= $this->data['secondment']['s_id'] ?>/<?= $file ?>"
-                      target="_blank"
+
                       style="margin-left: 4px; font-size: 16px;"
                       title="<?= $file ?>"
                       data-js-file-download
@@ -3277,7 +3277,7 @@
                         <a
                           class="btn btn-primary position-relative rounded fa-solid fa-file"
                           href="/ulab/upload/secondment/other/<?= $this->data['secondment']['s_id'] ?>/<?= $field["id"] ?>/<?= $file ?>"
-                          target="_blank"
+
                           style="margin-left: 4px; font-size: 16px;"
                           title="<?= $file ?>"
                           data-js-file-download

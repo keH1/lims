@@ -182,7 +182,7 @@
 
                                                             <div class="position-relative d-inline-block">
                                                                 <a href="<?= $this->data['file'][$val['ID']]['dir'] ?><?= $this->data['file'][$val['ID']]['file'] ?>"
-                                                                   target="_blank"
+                                                                   
                                                                    title="<?= $this->data['file'][$val['ID']]['file'] ?>">
                                                                     <svg class="icon" width="30" height="30">
                                                                         <use xlink:href="<?= URI ?>/assets/images/icons.svg#pdf_file"/>

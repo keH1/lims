@@ -78,7 +78,7 @@ $(function ($) {
                         let filePath = `/ulab/upload/contractor/content/${item.id}/${item.content_file}`
                         return `
                             <div class="block">
-                                <a href="${filePath}" target="_blank"></a>
+                                <a href="${filePath}" ></a>
                                 <div class="image" style="z-index: 9999">
                                     <img src="${filePath}" width="300" height="400">
                                 </div>

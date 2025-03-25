@@ -22,7 +22,7 @@
 			</select>
 		</div>
 		<div class="col-1 mt-4">
-			<a class="no-decoration me-1 popup-with-form zern-link" href="/zern.php?ID=<?=$this->data['measuring']['zern']?? 0?>" title="Заполнить данные по оплате" target="_blank">
+			<a class="no-decoration me-1 popup-with-form zern-link" href="/zern.php?ID=<?=$this->data['measuring']['zern']?? 0?>" title="Заполнить данные по оплате" >
 				<svg class="icon" width="35" height="35">
 					<use xlink:href="/ulab/assets/images/icons.svg#edit"></use>
 				</svg>

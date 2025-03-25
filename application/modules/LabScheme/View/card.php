@@ -26,7 +26,7 @@
 <!--        <button type="button" data-js-copy-modal="" class="btn btn-primary popup-with-form mw-100 mt-0 ml-4">-->
 <!--            Копировать схему-->
 <!--        </button>-->
-<!--        <a target="_blank" href="--><?//= URI ?><!--/laboratory/dashboard/--><?//= $this->data["card"]["scheme"]["id"] ?><!--/" class="btn btn-primary popup-with-form mw-100 mt-0 ml-4">-->
+<!--        <a  href="--><?//= URI ?><!--/laboratory/dashboard/--><?//= $this->data["card"]["scheme"]["id"] ?><!--/" class="btn btn-primary popup-with-form mw-100 mt-0 ml-4">-->
 <!--            Все испытания-->
 <!--        </a>-->
 

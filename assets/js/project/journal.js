@@ -32,7 +32,7 @@ let table = $('#table').DataTable({
             data: 'id',
             defaultContent: '',
             render: function (data, type, item) {
-                return `<a href="/ulab/project/dashboard/${data}" target="_blank" class="fw-bold text-dark text-decoration-none">${data}</a>`
+                return `<a href="/ulab/project/dashboard/${data}"  class="fw-bold text-dark text-decoration-none">${data}</a>`
             }
         },
         {

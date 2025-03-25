@@ -35,10 +35,10 @@ $(function ($) {
                     }
                 }
             },
-            {
-                data: 'number',
-                // orderable: false
-            },
+            // {
+            //     data: 'number',
+            //     orderable: false
+            // },
             {
                 data: 'date_calibration'
             },
@@ -198,17 +198,17 @@ $(function ($) {
         }
     })
 
-    $('.auto-fill').on('click', function () {
-        const fillModalForm = $('#auto-fill')
+    // $('.auto-fill').on('click', function () {
+    //     const fillModalForm = $('#auto-fill')
 
-        $.magnificPopup.open({
-            items: {
-                src: fillModalForm,
-                type: 'inline',
-                fixedContentPos: false
-            },
-            closeOnBgClick: false,
-        })
-    })
+    //     $.magnificPopup.open({
+    //         items: {
+    //             src: fillModalForm,
+    //             type: 'inline',
+    //             fixedContentPos: false
+    //         },
+    //         closeOnBgClick: false,
+    //     })
+    // })
 
 })

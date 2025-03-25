@@ -150,7 +150,7 @@ $(document).ready(function () {
                     //     shortName = data.slice(0, 14) + "..."
                     // }
 
-                    return `<span title="${data}"><a target="_blank" href="/ulab/LabScheme/card/${item.scheme_id}/">${data}</a></span>`
+                    return `<span title="${data}"><a  href="/ulab/LabScheme/card/${item.scheme_id}/">${data}</a></span>`
                 }
             },
             {
@@ -187,7 +187,7 @@ $(document).ready(function () {
                 defaultContent: "",
                 orderable: false,
                 render: function (data, type, item) {
-                    // return `<a target="_blank" href="${URI}/laboratory/dashboard/${item.scheme_id}/" disabled><i class="fa-solid fa-circle-info text-dark"></i></a>`
+                    // return `<a  href="${URI}/laboratory/dashboard/${item.scheme_id}/" disabled><i class="fa-solid fa-circle-info text-dark"></i></a>`
                     return `<a href="#"><i class="fa-solid fa-circle-info text-dark"></i></a>`
                 }
             }

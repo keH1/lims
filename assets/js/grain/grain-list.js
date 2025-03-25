@@ -13,7 +13,7 @@ $(function ($) {
             {
                 data: 'material_name',
                 render: function (data, type, item) {
-                    return `<a class="results-link" href="/ulab/grain/card/${item.ID}" target="_blank">${item.NAME}</a>`
+                    return `<a class="results-link" href="/ulab/grain/card/${item.ID}" >${item.NAME}</a>`
                 }
             }
         ],
