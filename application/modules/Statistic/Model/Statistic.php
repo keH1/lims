@@ -1602,9 +1602,10 @@ class Statistic extends Model
 
     public function setRadiologyDate($id, $date)
     {
-        $upd = $this->DB->Query("UPDATE `ba_tz` SET `date_radiology` = '{$date}' WHERE `ID_Z` = {$id}");
+        $sqlData = $this->prepearTableData('ba_tz', ['date_radiology' => $date]);
 
-        return $upd;
+        $where = "WHERE ID_Z = {$id}";
+        return $this->DB->Update('ba_tz', $sqlData, $where);
     }
 
     public function deleteProtocolRadiology($href)

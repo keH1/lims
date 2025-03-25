@@ -60,7 +60,7 @@ class ReactiveController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $filter = $usedModel->prepareFilter($_POST ?? []);
+        $filter = $usedModel->postToFilter($_POST ?? []);
 
         $data = $usedModel->getList($filter);
 

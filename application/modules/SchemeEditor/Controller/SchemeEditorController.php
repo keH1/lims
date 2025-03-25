@@ -54,16 +54,7 @@ class SchemeEditorController extends Controller
         /** @var SchemeEditor $schemeEditor */
         $schemeEditor = $this->model('SchemeEditor');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'], // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        $this->collectFilter($filter);
+        $filter = $schemeEditor->prepareFilter($_POST ?? []);
 
         $data = $schemeEditor->getDataToJournal($filter);
 
@@ -73,7 +64,7 @@ class SchemeEditorController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -141,7 +132,7 @@ class SchemeEditorController extends Controller
         global $APPLICATION;
         $APPLICATION->RestartBuffer();
 
-        $attributes = ['name' => $_POST['name'], 'work_type_id' => $_POST['work_type_id'],];
+        $attributes = ['name' => $_POST['name'], 'work_type_id' => $_POST['work_type_id']];
 
         /** @var SchemeCard $schemeCard */
         $schemeCard = $this->model('SchemeCard');
@@ -191,7 +182,7 @@ class SchemeEditorController extends Controller
 
         /** @var SchemeEditor $schemeEditor */
         $schemeEditor = $this->model('SchemeEditor');
-        $schemeEditor->delete($workTypeId);
+        $schemeEditor->delete((int)$workTypeId);
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
@@ -259,7 +250,6 @@ class SchemeEditorController extends Controller
         $schemeCard = new SchemeCard();
         $schemeCard->createID($_POST['name']);
 
-
         $this->redirect("/schemeEditor/card/" . $_POST['card_id']);
     }
 
@@ -288,19 +278,11 @@ class SchemeEditorController extends Controller
         global $APPLICATION;
         $APPLICATION->RestartBuffer();
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'], // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        $this->collectFilter($filter);
-
         $schemeCard = new SchemeCard();
-        $data = $schemeCard->getAllSchemeCardData($_POST['card_id'], $filter);
+
+        $filter = $schemeCard->prepareFilter($_POST ?? []);
+
+        $data = $schemeCard->getAllSchemeCardData((int)$_POST['card_id'], $filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -308,7 +290,7 @@ class SchemeEditorController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -338,7 +320,7 @@ class SchemeEditorController extends Controller
         }
 
         $schemeCard = new SchemeCard();
-        $schemeCard->deleteIDType($schemeTypeId);
+        $schemeCard->deleteIDType((int)$schemeTypeId);
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
@@ -381,7 +363,7 @@ class SchemeEditorController extends Controller
             return;
         }
 
-        $attributes = ['scheme_id' => $_POST['scheme_id'],];
+        $attributes = ['scheme_id' => (int)$_POST['scheme_id'],];
 
         $schemeCard = new SchemeCard();
         $schemeCard->deleteScheme($attributes);

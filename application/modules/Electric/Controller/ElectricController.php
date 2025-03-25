@@ -59,7 +59,7 @@ class ElectricController extends Controller
         /** @var Electric $usedModel */
         $usedModel = $this->model('Electric');
 
-        $filter = $usedModel->prepareFilter($_POST ?? []);
+        $filter = $usedModel->postToFilter($_POST ?? []);
 
         $data = $usedModel->getList($filter);
 

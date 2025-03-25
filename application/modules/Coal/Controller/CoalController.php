@@ -71,6 +71,8 @@ class CoalController extends Controller
         $filter = $usedModel->prepareFilter($_POST ?? []);
 
         $filter['idCoal'] = (int)$_POST['idCoal'];
+        $filter['date_start'] = $usedModel->sanitize($_POST['dateStart']);
+        $filter['date_end'] = $usedModel->sanitize($_POST['dateEnd']);
 
         $data = $usedModel->getList($filter);
 

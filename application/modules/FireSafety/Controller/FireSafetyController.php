@@ -56,15 +56,6 @@ class FireSafetyController extends Controller
 
         if (isset($_POST['sortByMaxDate']) && (int)$_POST['sortByMaxDate'] === 1) {
             $filter['sortByMaxDate'] = true;
-
-            if (isset($_POST['order']) && !empty($_POST['order'])) {
-                $filter['order']['dir'] = $_POST['order'][0]['dir'];
-            }
-        } else {
-            if (isset($_POST['order']) && !empty($_POST['columns'])) {
-                $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-                $filter['order']['dir'] = $_POST['order'][0]['dir'];
-            }
         }
 
         $data = $fireSafetyModel->getFireSafetyLog($filter);

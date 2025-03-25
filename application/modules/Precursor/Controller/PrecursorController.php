@@ -4,7 +4,7 @@
  * @desc Прекурсор
  * Class PrecursorController
  */
-class s extends Controller
+class PrecursorController extends Controller
 {
     private string $nameModel = 'Precursor';
 
@@ -60,7 +60,7 @@ class s extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $filter = $usedModel->prepareFilter($_POST ?? []);
+        $filter = $usedModel->postToFilter($_POST ?? []);
 
         $data = $usedModel->getList($filter);
 

@@ -905,6 +905,9 @@ class User extends Model
      */
     public function updateStatus($userId, $statusId)
     {
+        $userId = (int)$userId;
+        $statusId = $this->sanitize($statusId);
+
         $count = $this->DB->Query("SELECT COUNT(*) AS val FROM `ulab_user_status` WHERE `user_id` = {$userId}")->fetch()['val'];
 
         if ($count > 0) {
@@ -939,6 +942,9 @@ class User extends Model
 
     public function updateJob($userId, $text)
     {
+        $userId = (int)$userId;
+        $text = $this->sanitize($text);
+
         $count = $this->DB->Query("SELECT COUNT(*) AS val FROM `ulab_user_status` WHERE `user_id` = {$userId}")->fetch()['val'];
 
         if ($count > 0) {
@@ -950,6 +956,9 @@ class User extends Model
 
     public function updateNote($userId, $text)
     {
+        $userId = (int)$userId;
+        $text = $this->sanitize($text);
+
         $count = $this->DB->Query("SELECT COUNT(*) AS val FROM `ulab_user_status` WHERE `user_id` = {$userId}")->fetch()['val'];
 
         if ($count > 0) {

@@ -30,6 +30,10 @@ class Model
         return "'{$str}'";
     }
 
+    public function sanitize($value) {
+        return $this->DB->ForSql(trim(strip_tags($value)));
+    }
+
     public function prepareFilter(array $postData): array
     {
         $filter = [
@@ -47,39 +51,27 @@ class Model
         if (!empty($columns)) {
             foreach ($columns as $column) {
                 if (isset($column['search']['value']) && $column['search']['value'] !== '') {
-                    $value = trim(strip_tags($column['search']['value']));
-                    $filter['search'][$column['data']] = $this->DB->ForSql($value);
+                    $filter['search'][$column['data']] = $this->sanitize($column['search']['value']);
                 }
             }
         }
 
         if (!empty($order) && isset($columns[$order[0]['column']])) {
-            $filter['order']['by'] = $this->DB->ForSql(trim(strip_tags($columns[$order[0]['column']]['data'])));
+            $filter['order']['by'] = $this->sanitize($columns[$order[0]['column']]['data']);
             $filter['order']['dir'] = (strtolower($order[0]['dir']) === 'asc') ? 'asc' : 'desc';
         }
 
         if (!empty($postData['dateStart'])) {
-            $dateStartInput = trim(strip_tags($postData['dateStart']));
-            // Если формат "YYYY-MM"
-            if (preg_match('/^\d{4}-\d{2}$/', $dateStartInput)) {
-                $filter['dateStart'] = $this->DB->ForSql($dateStartInput);
-            } else {
-                $startTimestamp = strtotime($dateStartInput);
-                if ($startTimestamp) {
-                    $filter['search']['dateStart'] = $this->DB->ForSql(date('Y-m-d', $startTimestamp) . ' 00:00:00');
-                }
+            $startTimestamp = strtotime(trim(strip_tags($postData['dateStart'])));
+            if ($startTimestamp) {
+                $filter['search']['dateStart'] = $this->DB->ForSql(date('Y-m-d', $startTimestamp) . ' 00:00:00');
             }
         }
 
         if (!empty($postData['dateEnd'])) {
-            $dateEndInput = trim(strip_tags($postData['dateEnd']));
-            if (preg_match('/^\d{4}-\d{2}$/', $dateEndInput)) {
-                $filter['dateEnd'] = $this->DB->ForSql($dateEndInput);
-            } else {
-                $endTimestamp = strtotime($dateEndInput);
-                if ($endTimestamp) {
-                    $filter['search']['dateEnd'] = $this->DB->ForSql(date('Y-m-d', $endTimestamp) . ' 23:59:59');
-                }
+            $endTimestamp = strtotime(trim(strip_tags($postData['dateEnd'])));
+            if ($endTimestamp) {
+                $filter['search']['dateEnd'] = $this->DB->ForSql(date('Y-m-d', $endTimestamp) . ' 23:59:59');
             }
         } else if (!empty($postData['dateStart'])) {
             // Если дата окончания не указана, но дата старта есть
@@ -92,22 +84,17 @@ class Model
         $ignoredParams = ['draw', 'columns', 'order', 'start', 'length', 'search', 'dateStart', 'dateEnd'];
 
         foreach ($postData as $param => $data) {
-            if (in_array($param, $ignoredParams)) {
+            if (empty($data) || in_array($param, $ignoredParams, true)) {
                 continue;
             }
 
-            if (in_array($param, ['stage'])) {
-                if (isset($postData[$param]) && !is_array($postData[$param])) {
-                    $value = trim(strip_tags($postData[$param]));
-                    $filter['search'][$param] = $this->DB->ForSql($value);
-                }
-            } else {
-                if (!empty($postData[$param]) && !is_array($postData[$param])) {
-                    $value = trim(strip_tags($postData[$param]));
-                    if ($value !== '') {
-                        $filter['search'][$param] = $this->DB->ForSql($value);
-                    }
-                }
+            if (is_array($data)) {
+                $filter['search'][$param] = array_map($this->sanitize, $data);
+                continue;
+            }
+
+            if (!empty($data)) {
+                $filter['search'][$param] = $this->sanitize($data);
             }
         }
 
@@ -584,5 +571,34 @@ class Model
             default:
                 return $maxValue;
         }
+    }
+
+    public function postToFilter(array $post): array
+    {
+
+        $filter = [
+            'paginate' => [
+                'length' => (isset($postData['length']) && is_numeric($postData['length'])) ? (int)$postData['length'] : 10,
+                'start'  => (isset($postData['start']) && is_numeric($postData['start'])) ? (int)$postData['start'] : 0,
+            ],
+            'search' => [],
+        ];
+
+        foreach ($post['columns'] as $column) {
+            if ($column['search']['value'] != '') {
+                $filter['search'][$column['data']] = $this->sanitize($column['search']['value']);
+            }
+        }
+
+        if (isset($post['order']) && !empty($post['columns'])) {
+            $filter['order']['by'] = $this->sanitize($post['columns'][$post['order'][0]['column']]['data']);
+            $filter['order']['dir'] = $this->sanitize($post['order'][0]['dir']);
+        }
+
+        $filter['idWhichFilter'] = $this->sanitize($post['idWhichFilter']);
+        $filter['dateStart'] = $this->sanitize($post['dateStart']);
+        $filter['dateEnd'] = $this->sanitize($post['dateEnd']);
+
+        return $filter;
     }
 }

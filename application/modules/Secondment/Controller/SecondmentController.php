@@ -202,12 +202,6 @@ class SecondmentController extends Controller
 
         $this->addJs("/assets/js/journals/secondment-list.js?v=" . rand());
 
-        echo "<pre>";
-       // var_dump(count($this->data['companies']));
-        //var_dump(in_array($this->data['user_id'], $this->data['users_create_secondment']));
-       // var_dump(join(",", self::MANAGEMENT_STRUCTURE[1]));
-        echo "</pre>";
-
         $this->view('list');
     }
 
@@ -222,49 +216,18 @@ class SecondmentController extends Controller
 
         /** @var Secondment $secondment */
         $secondment = $this->model('Secondment');
-        /** @var Viewer $viewer */
-        $viewer = $this->model('Viewer');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if (!empty($column['search']['value'])) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if (!empty($_POST['dateStart'])) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart']));
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd']));
-        }
-
-        if (!empty($_POST['everywhere'])) {
-            $filter['search']['everywhere'] = $_POST['everywhere'];
-        }
+        $filter = $secondment->prepareFilter($_POST ?? []);
 
         if (!empty($_POST['stage_filter'])) {
             $filter['search']['stage_filter'] = $_POST['stage_filter'];
         }
 
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = (int)$_SESSION['SESS_AUTH']['USER_ID'];
 
         if (in_array($userId, self::USERS_ROOT)) {
-
-      //  } else if (key_exists($userId, self::MANAGEMENT_STRUCTURE)) {
+            // ...
         } else if (key_exists($userId, $this->getManagementStructure())) {
-            //$userArr = self::MANAGEMENT_STRUCTURE[$userId];
             $userArr = $this->getManagementStructure()[$userId];
             $userArr[] = $userId;
 
@@ -273,9 +236,7 @@ class SecondmentController extends Controller
             $filter["managerAccess"] = $userId;
         }
 
-
         $data = $secondment->getDataToSecondmentJournal($filter);
-
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -284,7 +245,7 @@ class SecondmentController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -314,12 +275,6 @@ class SecondmentController extends Controller
         $viewer = $this->model('Viewer');
         /** @var ObjectTest $object */
         $object = $this->model('ObjectTest');
-//        echo "<pre>";
-//        var_dump($_POST);
-//        echo "</pre>";
-//        die();
-
-
 
         $secondmentId = (int)$_POST['secondment_id'] ?? null;
         $location = empty($secondmentId) ? '/secondment/list/' : "/secondment/card/{$secondmentId}";
@@ -429,14 +384,6 @@ class SecondmentController extends Controller
             }
         }
 
-//        if (isset($_POST['other'])) {
-//            $valid = $this->validateNumber($_POST['other'], 'Прочее', false);
-//            if (!$valid['success']) {
-//                $this->showErrorMessage($valid['error']);
-//                $this->redirect($location);
-//            }
-//        }
-
         if (isset($_POST['planned_expenses'])) {
             $valid = $this->validateNumber($_POST['planned_expenses'], 'Запланированные затраты(Итого)', false);
             if (!$valid['success']) {
@@ -509,7 +456,7 @@ class SecondmentController extends Controller
 
             if ( is_countable($_POST["other"]) ) {
                 for ($i = 0; $i < count($_POST["other"]); $i++) {
-                    $otherId = $_POST["other_id"][$i];
+                    $otherId = (int)$_POST["other_id"][$i];
 
                     $otherData = [
                         "secondment_id" => $secondmentId,
@@ -910,11 +857,9 @@ class SecondmentController extends Controller
 
             ];
 
-           // $secondment->create($compensationData, "secondment_compensations");
             if ($transportData["personal"] == 1) {
                 $secondment->insertUpdateCompensation($compensationData["sum"], $compensationData["secondment_id"]);
             }
-
 
             $secondmentUpdate = $secondment->update($data, 'secondment', $secondmentId);
 
@@ -1380,18 +1325,6 @@ class SecondmentController extends Controller
         global $DB;
         $temp = floatval(3/2);
 
-        echo "<pre>";
-//        if ($_GET["dev"] == 1) {
-//            var_dump($this->usersSaveSecondment);
-//        }
-
-        //var_dump($oborudArr);
-       // var_dump($this->data["archiveList"][count($this->data["archiveList"]) - 1]["planned_expenses"]);
-       // var_dump($this->data["planned_expenses"]);
-      //  var_dump($DB->ForSql(trim($temp)));
-       // var_dump($this->data["compensation"]);
-        echo "</pre>";
-
         $this->view('card');
     }
 
@@ -1496,11 +1429,13 @@ class SecondmentController extends Controller
 
         $response = '';
 
-        if (!empty($_POST['user_id'])) {
+        $userId = (int)$_POST['user_id'];
+
+        if (!empty($userId)) {
             /** @var User $user */
             $user = $this->model('User');
 
-            $curUser = $user->getUserData($_POST['user_id']);
+            $curUser = $user->getUserData($userId);
             $response = $curUser['WORK_POSITION'] ?: '';
         }
 
@@ -1518,11 +1453,13 @@ class SecondmentController extends Controller
 
         $response = [];
 
-        if (!empty($_POST['company_id'])) {
+        $companyId = (int)$_POST['company_id'];
+
+        if (!empty($companyId)) {
             /** @var Secondment $secondment */
             $secondment = $this->model('Secondment');
 
-            $response = $secondment->getObjectDataByCompanyId($_POST['company_id']);
+            $response = $secondment->getObjectDataByCompanyId($companyId);
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
@@ -1768,7 +1705,6 @@ class SecondmentController extends Controller
         $result = $secondment->getCityArr($_POST['searchTerm']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
-       // echo json_encode([["id" => 1, "text" => "test"], ["id" =>2, "text" => "errr"]]);
     }
 
     /**
@@ -1895,7 +1831,7 @@ class SecondmentController extends Controller
         $secondment = $this->model('Secondment');
         $viewer = $this->model('Viewer');
 
-        $secondmentId = $_POST["secondment_id"];
+        $secondmentId = (int)$_POST["secondment_id"];
 
 
         $secondmentDataBd =  $secondment->getSecondmentDataById($secondmentId);
@@ -1989,7 +1925,7 @@ class SecondmentController extends Controller
                 $otherId = $secondment->create($otherData, 'secondment_other');
                 $test = $otherId;
             } else {
-                $secondment->update($otherData, 'secondment_other', $otherId);
+                $secondment->update($otherData, 'secondment_other', (int)$otherId);
             }
 
             if ( is_countable($_FILES["other"]["name"][$i]) ) {
@@ -2051,8 +1987,6 @@ class SecondmentController extends Controller
         echo "</pre>";
 
         $this->redirect("/ulab/secondment/card/{$secondmentId}");
-      //  echo json_encode($secondmentData, JSON_UNESCAPED_UNICODE);
-     //   echo json_encode($_FILES, JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -2087,11 +2021,6 @@ class SecondmentController extends Controller
             $this->data["fileArr"]["other"][$index] = $secondment->getFilesFromDir(UPLOAD_DIR . "/secondment/archive/other/{$id}/" . $field["id"]);
         }
 
-
-        echo "<pre>";
-        //var_dump($this->data);
-        echo "</pre>";
-
         $this->addCSS("/assets/css/secondment_card.css?v=" . rand());
 
         $this->addJs("/assets/js/secondment-card.js?v=" . rand());
@@ -2121,7 +2050,7 @@ class SecondmentController extends Controller
         $transport = $this->model('Transport');
         /** @var Viewer $viewer */
 
-        $id = $_POST["secondment_id"];
+        $id = (int)$_POST["secondment_id"];
 
         if (!empty($_POST["file_delete"])) {
             $pathArr = explode(",", $_POST["file_delete"]);
@@ -2353,7 +2282,7 @@ class SecondmentController extends Controller
 
         $secondment = $this->model('Secondment');
 
-        $id = $_POST["id"];
+        $id = (int)$_POST["id"];
 
         $data = [
             "project_id" => $_POST["project_id"],
@@ -2363,7 +2292,6 @@ class SecondmentController extends Controller
             $secondment->updateRow($data, $id);
         }
 
-        // echo json_encode($id, JSON_UNESCAPED_UNICODE);
         echo json_encode($_POST, JSON_UNESCAPED_UNICODE);
     }
 }

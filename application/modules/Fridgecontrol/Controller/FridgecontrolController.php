@@ -59,7 +59,7 @@ class FridgecontrolController extends Controller
 
         $thisModel = $this->model($this->nameModel);
 
-        $filter = $thisModel->prepareFilter($_POST ?? []);
+        $filter = $thisModel->postToFilter($_POST ?? []);
 
         $data = $thisModel->getList($filter);
 
