@@ -1026,6 +1026,64 @@ $(function ($) {
         $('.equipment-used option').eq(iEquipmentUsed).remove()
     })
 
+    /**
+     * вернуть оборудование по умолчанию
+     */
+    $body.on('click', '.revert-default', function () {
+        let protocolId = $(this).data('protocolId')
+        let equipmentUsedSelect = $('.equipment-used')
+
+        $.ajax({
+            method: 'POST',
+            url: '/ulab/result/revertDefaultAjax',
+            data: {
+                protocol_id: protocolId
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.success) {
+                    equipmentUsedSelect.empty()
+                    
+                    if (data.default_equipment) {
+                        $.each(data.default_equipment, function(key, value) {
+                            equipmentUsedSelect.append(
+                                `<option value="${value.b_o_id}" class="${value.bg_color}">
+                                    ${value.TYPE_OBORUD} ${value.OBJECT}, инв. номер ${value.REG_NUM}
+                                </option>`
+                            )
+                        })
+                        
+                        let equipmentIds = data.default_equipment_ids || []
+                        $('#equipmentIds').val(JSON.stringify(equipmentIds))
+                    } else {
+                        $('#equipmentIds').val('[]')
+                    }
+                } else if (data.error) {
+                    console.log(data.error.message)
+                }
+            },
+            error: function (jqXHR, exception) {
+                let msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status === 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status === 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                console.error(msg)
+            }
+        })
+    })
+
 
     $body.on('click', '.protocol-information', function () {
         const dealId = $('#deal_id').val()

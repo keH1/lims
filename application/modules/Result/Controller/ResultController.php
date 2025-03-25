@@ -4457,7 +4457,6 @@ class ResultController extends Controller
     public function revertDefaultAjax()
     {
         global $APPLICATION;
-
         $APPLICATION->RestartBuffer();
 
         $response = [
@@ -4471,18 +4470,28 @@ class ResultController extends Controller
             /** @var Oborud $oborudModel */
             $oborudModel = $this->model('Oborud');
 
-            $response = $oborudModel->delTzObConnectByProtocolId($_POST['protocol_id']);
-        }
-
-        if (!empty($response['success'])) {
-            $this->showSuccessMessage('Данные успешно обновлены');
-        } else {
-            $this->showErrorMessage($response['error']['message'] ?: '');
+            $protocolId = (int)$_POST['protocol_id'];
+            
+            $response = $oborudModel->delTzObConnectByProtocolId($protocolId);
+            
+            if ($response['success']) {
+                $defaultEquipment = $oborudModel->oborudsByProtocolId($protocolId);
+                
+                $equipmentIds = !empty($defaultEquipment) ? array_keys($defaultEquipment) : [];
+                sort($equipmentIds);
+                
+                $response['default_equipment'] = $defaultEquipment;
+                $response['default_equipment_ids'] = $equipmentIds;
+                
+                $this->showSuccessMessage('Данные успешно обновлены');
+            } else {
+                $this->showErrorMessage($response['error']['message'] ?: '');
+            }
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
-
+    
 
     /**
      * @desc Получает лист измерения
