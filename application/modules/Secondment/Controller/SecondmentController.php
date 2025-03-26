@@ -139,7 +139,7 @@ class SecondmentController extends Controller
         ];
 
         foreach ($_POST['columns'] as $column) {
-            if (!empty($column['search']['value'])) {
+            if ($column['search']['value'] != '') {
                 $filter['search'][$column['data']] = $column['search']['value'];
             }
         }
