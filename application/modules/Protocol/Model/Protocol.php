@@ -988,7 +988,7 @@ class Protocol extends Model
         $sql = $this->DB->Query(
             "
                 SELECT sum(price) as price from ulab_gost_to_probe as ugtp
-                inner join protocols as p on ugtp.protocol_id = p.ID
+                inner join PROTOCOLS as p on ugtp.protocol_id = p.ID
                 where p.ID = {$protocolId} and p.NUMBER is not null
             "
         )->Fetch();
