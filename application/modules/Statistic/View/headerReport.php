@@ -91,46 +91,36 @@
 			<tr>
 				<th colspan="<?=$i + 1?>">Испытания</th>
 			</tr>
-				<tr>
-					<td nowrap>Количество завершенных испытаний, шт:</td>
-					<?php foreach ($this->data['Staff'] as $lab):?>
-						<?php foreach ($lab as $user):?>
-							<td class="text-center align-middle" nowrap><?=$user['test_by_user']?></td>
-						<?php endforeach;?>
-					<?php endforeach;?>
-				</tr>
-				<tr>
-					<td nowrap>Количество незавершенных испытаний, шт:</td>
-					<?php foreach ($this->data['Staff'] as $lab):?>
-						<?php foreach ($lab as $user):?>
-							<td class="text-center align-middle" nowrap><?=$user['request_in_work']?></td>
-						<?php endforeach;?>
-					<?php endforeach;?>
-				</tr>
-				<tr>
-					<td nowrap>Процент завершенных испытаний<br> относительно лаборатории, %:</td>
-					<?php foreach ($this->data['Staff'] as $lab):?>
-						<?php foreach ($lab as $user):?>
-							<td class="text-center align-middle" nowrap><?=$user['procent_by_test']?></td>
-						<?php endforeach;?>
-					<?php endforeach;?>
-				</tr>
-				<tr>
-					<td nowrap>Стоимость выполненных методик, руб:</td>
-					<?php foreach ($this->data['Staff'] as $lab):?>
-						<?php foreach ($lab as $user):?>
-							<td class="text-center align-middle" nowrap><?=$user['price_test']?></td>
-						<?php endforeach;?>
-					<?php endforeach;?>
-				</tr>
-				<tr>
-					<td nowrap>Процент от общей стоимости<br> выполненных методик лаборатории, %</td>
-					<?php foreach ($this->data['Staff'] as $lab):?>
-						<?php foreach ($lab as $user):?>
-							<td class="text-center align-middle" nowrap><?=$user['procent_by_price']?></td>
-						<?php endforeach;?>
-					<?php endforeach;?>
-				</tr>
+            <?php foreach ($this->data['field_report_user'] as $key => $row): ?>
+                <tr>
+                    <td nowrap><?=$row?></td>
+                    <?php foreach ($this->data['lab_list'] as $lab): ?>
+                        <?php if (!empty($this->data['users_from_dep'][$lab['id_dep']])): ?>
+                            <?php foreach ($this->data['users_from_dep'][$lab['id_dep']] as $user): ?>
+                                <td class="--text-center">
+                                    <?php if ($key == 'percent_complete'): ?>
+                                        <?php if ($this->data['user_methods'][$user['ID']]['complete'] > 0): ?>
+                                            <?=round($this->data['user_methods'][$user['ID']]['dep_count'][$lab['id_dep']]/$this->data['user_methods'][$user['ID']]['complete']*100, 2)?>
+                                        <?php else: ?>
+                                            0
+                                        <?php endif; ?>
+                                    <?php elseif ($key == 'percent_price'): ?>
+                                        <?php if ($this->data['user_methods'][$user['ID']]['price'] > 0): ?>
+                                            <?=round($this->data['user_methods'][$user['ID']]['dep_price'][$lab['id_dep']]/$this->data['user_methods'][$user['ID']]['price']*100, 2)?>
+                                        <?php else: ?>
+                                            0
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <?=$this->data['user_methods'][$user['ID']][$key]?? "0"?>
+                                    <?php endif; ?>
+                                </td>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <td class="text-center">-</td>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
 			</tbody>
 		</table>
 		<button class="btn btn-success" id="view-chart">Посмотреть график</button>

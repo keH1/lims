@@ -161,6 +161,8 @@ class StatisticController extends Controller
         $this->data['protocols'] = $statisticModel->getStatisticProtocolByMonth($monthReport);
         $this->data['users_from_dep'] = $userModel->getUserFromDep();
 
+        $this->data['user_methods'] = $statisticModel->getStatisticUserMethods($monthReport);
+
         $this->data['field_report_protocol'] = [
             'Протоколы',
             'count' => 'Общее количество протоколов, шт',
@@ -173,11 +175,11 @@ class StatisticController extends Controller
         ];
 
         $this->data['field_report_user'] = [
-            'Количество завершенных испытаний, шт:',
-            'Количество незавершенных испытаний, шт:',
-            "Процент завершенных испытаний<br> относительно лаборатории, %:",
-            'Стоимость выполненных методик, руб:',
-            "Процент от общей стоимости<br> выполненных методик лаборатории, %",
+            'complete' => 'Количество завершенных испытаний, шт:',
+            'incomplete' => 'Количество незавершенных испытаний, шт:',
+            'percent_complete' => "Процент завершенных испытаний<br> относительно лаборатории, %:",
+            'price' => 'Стоимость выполненных методик, руб:',
+            'percent_price' => "Процент от общей стоимости<br> выполненных методик лаборатории, %",
         ];
 
         $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
@@ -506,7 +508,7 @@ class StatisticController extends Controller
 		$APPLICATION->RestartBuffer();
 
 		/** @var Statistic $statistic */
-		$statistic = $this->model('Statistic');
+        $statisticModel = $this->model('Statistic');
 
 
 		if (empty($_POST['month'])) {
@@ -515,7 +517,7 @@ class StatisticController extends Controller
 			$monthReport = $_POST['month'];
 		}
 
-		$response = $statistic->getStatisticStaffByMonthForChart($monthReport);
+		$response = $statisticModel->getStatisticUserMethods($monthReport);
 
 		echo json_encode($response, JSON_UNESCAPED_UNICODE);
 	}

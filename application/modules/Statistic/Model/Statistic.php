@@ -1703,6 +1703,56 @@ class Statistic extends Model
 
 
     /**
+     * получает кол-во завершенных, не завершенных испытаний и стоимость испытаний по пользователям за определенный месяц
+     * @param $dataReport
+     * @return array
+     */
+    public function getStatisticUserMethods($dataReport)
+    {
+        $month = date('m', strtotime($dataReport));
+        $year = date('Y', strtotime($dataReport));
+
+        $labModel = new Lab();
+        $userModel = new User();
+
+        $sql = $this->DB->Query(
+            "select 
+                sum(IF(strt.state = 'complete', 1, 0)) as complete, 
+                sum(IF((SELECT state FROM `ulab_start_trials` WHERE `ugtp_id` = ugtp.id  ORDER BY id DESC LIMIT 1) <> 'complete', 1, 0)) as incomplete, 
+                ugtp.assigned_id, 
+                sum(ugtp.price) as price
+            from ulab_gost_to_probe as ugtp
+            inner join ulab_start_trials as strt on strt.ugtp_id = ugtp.id
+            where year(strt.date) = {$year} and month(strt.date) = {$month} and strt.is_actual = 1 and ugtp.assigned_id > 0
+            group by ugtp.assigned_id"
+        );
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+
+            $dep = $userModel->getDepartmentByUserId($row['assigned_id']);
+
+            if ( !empty($dep) ) {
+                if ( !isset($row['dep_price'][$dep]) ) {
+                    $row['dep_price'][$dep] = 0;
+                }
+                if ( !isset($row['dep_count'][$dep]) ) {
+                    $row['dep_count'][$dep] = 0;
+                }
+
+                $row['dep_price'][$dep] += $row['price'];
+                $row['dep_count'][$dep] += $row['complete'];
+            }
+
+            $result[$row['assigned_id']] = $row;
+        }
+
+        return $result;
+    }
+
+
+    /**
      * @param $monthReport
      * @return array
      */

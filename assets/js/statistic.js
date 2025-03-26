@@ -168,44 +168,44 @@ $(function ($) {
 			dataType: 'json',
 			success: function (data) {
 				console.log(data)
-				let name = []
-				let won = []
-				let progress = []
-				$.each(data, function (key, val) {
-					won.push(val.won)
-					progress.push(val.progress)
-					name.push(val.short_name)
-				})
-				const ctx = $('#myChart');
-				new Chart(ctx, {
-					type: 'bar',
-					data: {
-						labels: name,
-						datasets: [{
-							label: 'Завершенные',
-							data: won,
-							borderWidth: 1,
-							backgroundColor: 'rgba(117, 246, 169, 0.77)',
-						},
-						{
-						label: 'В процессе',
-						data: progress,
-						borderWidth: 1,
-						backgroundColor: 'rgba(233, 235, 190, 0.45)',
-						}]
-					},
-					options: {
-						scales: {
-							x: {
-								stacked: true,
-							},
-							y: {
-								beginAtZero: true,
-								stacked: true
-							}
-						}
-					}
-				});
+				// let name = []
+				// let won = []
+				// let progress = []
+				// $.each(data, function (key, val) {
+				// 	won.push(val.won)
+				// 	progress.push(val.progress)
+				// 	name.push(val.short_name)
+				// })
+				// const ctx = $('#myChart');
+				// new Chart(ctx, {
+				// 	type: 'bar',
+				// 	data: {
+				// 		labels: name,
+				// 		datasets: [{
+				// 			label: 'Завершенные',
+				// 			data: won,
+				// 			borderWidth: 1,
+				// 			backgroundColor: 'rgba(117, 246, 169, 0.77)',
+				// 		},
+				// 		{
+				// 		label: 'В процессе',
+				// 		data: progress,
+				// 		borderWidth: 1,
+				// 		backgroundColor: 'rgba(233, 235, 190, 0.45)',
+				// 		}]
+				// 	},
+				// 	options: {
+				// 		scales: {
+				// 			x: {
+				// 				stacked: true,
+				// 			},
+				// 			y: {
+				// 				beginAtZero: true,
+				// 				stacked: true
+				// 			}
+				// 		}
+				// 	}
+				// });
 			}
 		})
 
