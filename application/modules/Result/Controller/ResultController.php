@@ -3738,7 +3738,7 @@ class ResultController extends Controller
 
 
         $dealId = (int)$_POST['deal_id'];
-        $location = "/result/".($dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card')."/{$dealId}";
+        $location = "/result/card_oati/{$dealId}";
 
         $deal = $request->getDealById($dealId);
 
@@ -3854,7 +3854,7 @@ class ResultController extends Controller
         }
 
         $dealId = (int)$_POST['deal_id'];
-        $location = "/result/".($dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card')."/{$dealId}?protocol_id={$protocolId}";
+        $location = "/result/card_oati/{$dealId}?protocol_id={$protocolId}";
 
         if (empty($protocolId) || $protocolId < 0) {
             $this->showErrorMessage("Ошибка отсутствия выбранного протокола");
@@ -3958,9 +3958,8 @@ class ResultController extends Controller
         }
 
         $dealId = (int)$_POST['deal_id'];
-        $method = $dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card';
         $selected = $_POST['selected'] ? '&selected' : '';
-        $location = $protocolId ? "/result/{$method}/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/{$method}/{$_POST['deal_id']}";
+        $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
         $successMessage = isset($_POST['edit_results']) ?
             'Данные протокола успешно разблокированы' : 'Данные протокола успешно заблокированы для редактирования';
         $errorMessage = isset($_POST['edit_results']) ?
@@ -4036,8 +4035,7 @@ class ResultController extends Controller
 
 
         $dealId = (int)$_POST['deal_id'];
-        $location = "/result/".($dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card')."/{$dealId}";
-
+        $location = "/result/card_oati/{$dealId}";
 
         $deal = $request->getDealById($dealId);
 
@@ -4106,10 +4104,8 @@ class ResultController extends Controller
 
 
         $dealId = (int)$_POST['deal_id'];
-        $method = $dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card';
         $selected = $_POST['selected'] ? '&selected' : '';
-        $location = $protocolId ? "/result/{$method}/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/{$method}/{$_POST['deal_id']}";
-
+        $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
 
         $deal = $request->getDealById($dealId);
 
@@ -4182,10 +4178,8 @@ class ResultController extends Controller
 
 
         $dealId = (int)$_POST['deal_id'];
-        $method = $dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card';
         $selected = $_POST['selected'] ? '&selected' : '';
-        $location = $protocolId ? "/result/{$method}/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/{$method}/{$_POST['deal_id']}";
-
+        $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
 
         $deal = $request->getDealById($dealId);
 
@@ -4234,9 +4228,8 @@ class ResultController extends Controller
         }
 
         $dealId = (int)$_POST['deal_id'];
-        $method = $dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card';
         $selected = $_POST['selected'] ? '&selected' : '';
-        $location = $protocolId ? "/result/{$method}/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/{$method}/{$_POST['deal_id']}";
+        $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
 
         if ( $dealId >= DEAL_NEW_RESULT ) {
             if (empty($_POST['selected_protocol']) || $protocolId !== $_POST['selected_protocol']) {
