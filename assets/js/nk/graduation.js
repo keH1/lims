@@ -85,6 +85,11 @@ $(function ($) {
 
             wrapper.prepend(messageErrorContent);
             resetValue(resetElement);
+            
+            $('html, body').animate({
+                scrollTop: wrapper.find(".messages").offset().top - 100
+            }, 300)
+            
             return false;
         }
 
