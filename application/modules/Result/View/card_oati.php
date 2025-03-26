@@ -818,39 +818,20 @@
                         <div class="form-group col">
                             <div class="d-flex justify-content-between mb-1">
                                 <span>Используемое оборудование</span>
-                                <button type="button" class="bg-transparent border-0 revert-default" data-protocol-id="<?= $protocol_info['ID'] ?? '' ?>">
+                                <button type="button" class="bg-transparent border-0 revert-default" data-protocol-id="">
                                     <ins>Вернуть по умолчанию</ins>
                                 </button>
                             </div>
                             
                             <select class="equipment-used" name="equipment_used" style="display: none;" multiple="multiple">
-                                <?php if (!empty($protocol_equipment)): ?>
-                                    <?php foreach ($protocol_equipment as $equipment): ?>
-                                        <option value="<?= $equipment['b_o_id'] ?>" class="<?= $equipment['bg_color'] ?? '' ?>">
-                                            <?= $equipment['TYPE_OBORUD'] ?> <?= $equipment['OBJECT'] ?>, инв. номер <?= $equipment['REG_NUM'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
                             </select>
 
                             <div class="custom-equipment-list form-select min-h-180">
-                                <?php if (!empty($protocol_equipment)): ?>
-                                    <?php foreach ($protocol_equipment as $equipment): ?>
-                                        <div class="equipment-item <?= $equipment['bg_color'] ?? '' ?>" data-value="<?= $equipment['b_o_id'] ?>">
-                                            <div class="equipment-item-text">
-                                                <?= $equipment['TYPE_OBORUD'] ?> <?= $equipment['OBJECT'] ?>, инв. номер <?= $equipment['REG_NUM'] ?>
-                                            </div>
-                                            <button type="button" class="btn btn-sm delete-equipment" data-value="<?= $equipment['b_o_id'] ?>">
-                                                <i class="fa-solid fa-times"></i>
-                                            </button>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
 
-                    <input type="hidden" id="equipmentIds" name="oborud[equipment_ids]" value="<?= htmlspecialchars(json_encode(array_column($protocol_equipment ?? [], 'b_o_id'))) ?>">
+                    <input type="hidden" id="equipmentIds" name="oborud[equipment_ids]" value="[]">
 
                     <div class="row">
                         <div class="form-group col">
