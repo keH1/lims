@@ -1704,7 +1704,9 @@ class Request extends Model
                 }
                 // Клиент
                 if ( isset($filter['search']['COMPANY_TITLE']) ) {
-                    $where .= "b.COMPANY_TITLE LIKE '%{$filter['search']['COMPANY_TITLE']}%' AND ";
+                    $searchRaw = trim($filter['search']['COMPANY_TITLE']);
+                    $searchHtml = htmlspecialchars($searchRaw, ENT_QUOTES, 'UTF-8');
+                    $where .= "(b.COMPANY_TITLE LIKE '%{$searchRaw}%' OR b.COMPANY_TITLE LIKE '%{$searchHtml}%') AND ";
                 }
                 // Объект испытаний
                 if ( isset($filter['search']['MATERIAL']) ) {
