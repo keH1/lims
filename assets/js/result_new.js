@@ -1060,7 +1060,7 @@ $(function ($) {
      * вернуть оборудование по умолчанию
      */
     $body.on('click', '.revert-default', function () {
-        let protocolId = $(this).data('protocolId'),
+        let protocolId = $(this).attr('data-protocol-id'),
             equipmentUsedSelect = $('.equipment-used'),
             customEquipmentList = $('.custom-equipment-list')
 
@@ -1172,21 +1172,12 @@ $(function ($) {
 
                 if (count) {
                     let verify = protocolInformation.find('.verify'),
-                        equipmentUsed = protocolInformation.find('.equipment-used'),
                         equipment = protocolInformation.find('#equipment')
 
                     $.each(data['assigned'], function(key, value) {
                         verify.append(`<option value="${value['user_id']}">${value['user_name']}</option>`);
                     });
 
-                    $.each(data['protocol_equipment'], function(key, value) {
-                        equipmentUsed.append(
-                            `<option value="${value['b_o_id']}" class="${value['bg_color']}">
-                                ${value['TYPE_OBORUD']} ${value['OBJECT']}, инв. номер ${value['REG_NUM']}
-                            </option>`
-                        )
-                    })
-                    
                     const customEquipmentList = protocolInformation.find('.custom-equipment-list')
                     customEquipmentList.empty()
                     
@@ -1285,8 +1276,8 @@ $(function ($) {
                     protocolInformation.find('.output-in-protocol').prop('checked', +data['protocol']['OUTPUT_IN_PROTOCOL']);
 
                     //Информация об оборудовании
-                    protocolInformation.find('.revert-default').data('protocolId', protocolId);
-                    protocolInformation.find('#equipmentIds').val(data['equipment_ids_json']);
+                    protocolInformation.find('.revert-default').attr('data-protocol-id', protocolId)
+                    protocolInformation.find('#equipmentIds').val(data['equipment_ids_json'])
 
                     //Данные объекта испытаний
                     protocolInformation.find('.object-description').val(data['object_data']['DESCRIPTION']);
