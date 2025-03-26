@@ -113,7 +113,7 @@ $(function ($) {
                 inputMean = $(inputMeans[index]),
                 elemHi = $(inputHi[index]);
 
-            // Среднее значение на участке (если УКС расчитываем среднее по 2 полям)
+            // Среднее значение на участке (если УКС рассчитываем среднее по 2 полям)
             if (measuringDevice === 'УКС') {
                 let mean = (singleValue1 + singleValue2) / 2;
                 let roundMean = round(mean, ONE);
@@ -560,13 +560,13 @@ $(function ($) {
                 return false
             }
         } else {
-            // Проверка заполненость полей "Среднее значение на участке" не расчитано"
+            // Проверка заполненость полей "Среднее значение на участке" не рассчитано"
             let checkMean =
                 checkEmptyFields(
                     `.mean`,
                     `#graduationWrapper`,
                     '',
-                    'Внимание! Поле "Среднее значение на участке" не расчитано!'
+                    'Внимание! Поле "Среднее значение на участке" не рассчитано!'
                 );
 
             if (!checkMean) {
@@ -579,7 +579,7 @@ $(function ($) {
                     `.shear-strength`,
                     `#graduationWrapper`,
                     '',
-                    'Внимание! Поле "Прочность бетона на участке методом отрыва со скалыванием" не расчитано!'
+                    'Внимание! Поле "Прочность бетона на участке методом отрыва со скалыванием" не рассчитано!'
                 );
             if (!checkShearStrength) {
                 return false;
@@ -728,7 +728,7 @@ $(function ($) {
     showChart(true)
 
     /**
-     * Очистить граффик
+     * Очистить график
      */
     function destroyChart() {
         if (chartData) {
@@ -783,7 +783,7 @@ $(function ($) {
         }).get()
 
         if (measuringDevice === 'УКС' || measuringDevice === 'ИПС') {
-            // Проверка заполненость полей "Единичные значения" поле 1
+            // Проверка заполненности полей "Единичные значения" поле 1
             let checkAfterBefore =
                 checkEmptyFields(
                     `.single-value-1`,
@@ -797,7 +797,7 @@ $(function ($) {
         }
 
         if (measuringDevice === 'УКС') {
-            // Проверка заполненость полей "Единичные значения" поле 2
+            // Проверка заполненности полей "Единичные значения" поле 2
             let checkAfterBefore =
                 checkEmptyFields(
                     `.single-value-2`,
@@ -816,7 +816,7 @@ $(function ($) {
         let roundX = round(x, ONE);
         inputX.val(roundX.toFixed(ONE));
 
-        // Проверка заполненость полей "Прочность бетона на участке методом отрыва со скалыванием, МПа"
+        // Проверка заполненности полей "Прочность бетона на участке методом отрыва со скалыванием, МПа"
         let checkAfterBefore =
             checkEmptyFields(
                 `.shear-strength`,
