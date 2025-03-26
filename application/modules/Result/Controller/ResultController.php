@@ -164,6 +164,8 @@ class ResultController extends Controller
         $docTemplateModel = $this->model('DocTemplate');
         /** @var Material $materialModel */
         $materialModel = $this->model('Material');
+        /** @var Oborud $oborudModel */
+        $oborudModel = $this->model('Oborud');
 
         $deal = $requestModel->getDealById($dealId);
         if (empty($deal)) {
@@ -196,6 +198,16 @@ class ResultController extends Controller
         $actBase = $requirementModel->getActBase($dealId);
         $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
         $protocol = $resultModel->getProtocolById($selectedProtocol);
+
+        if (!empty($selectedProtocol)) {
+            $this->data['protocol_info'] = $protocol;
+
+            $tzObConnect = $oborudModel->getTzObConnectByProtocolId($selectedProtocol);
+            $oborudsToGosts = $oborudModel->oborudsByProtocolId($selectedProtocol);
+            $this->data['protocol_equipment'] = !empty($tzObConnect) ? $tzObConnect : $oborudsToGosts;
+        } else {
+            $this->data['protocol_equipment'] = [];
+        }
 
         // Если роль "Лаборант", то перенаправляем на карточку лаборанта
         if ($permissionInfo['id'] == LAB_PERMISSION) {
