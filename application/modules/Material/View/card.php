@@ -84,7 +84,7 @@
                                 <input type="hidden" class="gost-to-material-id" value="<?= $arrGost['id'] ?>">
                                 <td>
                                     <a href="/obl_acc.php?ID=<?= $arrGost['id'] ?>"
-                                    target="_blank"><?= $arrGost['view_gost'] ?></a>
+                                    ><?= $arrGost['view_gost'] ?></a>
                                     <input class="gostId"
                                         type="hidden" value="<?= $arrGost['id'] ?>"
                                         name="arrGost[]">
@@ -181,7 +181,7 @@
                                                             <option value="<?= $tc['id'] ?>" <?= $tu['norm_doc_method_id'] == $tc['id'] ? 'selected' : '' ?>><?= $tc['view_gost'] ?></option>
                                                         <?php endforeach; ?>
                                                     </select>
-                                                    <a class="btn btn-outline-secondary tu-link" target="_blank"
+                                                    <a class="btn btn-outline-secondary tu-link" 
                                                        title="Перейти в ту"
                                                        href="/ulab/normDocGost/edit/<?= $tu['norm_doc_method_id'] ?>">
                                                         <i class="fa-solid fa-right-to-bracket"></i>
@@ -345,7 +345,7 @@
                                                     <?php endforeach; ?>
                                                 </select>
                                                 <a class="btn btn-outline-secondary method-link"
-                                                   target="_blank"
+                                                   
                                                    title="Перейти в методику" href="/ulab/gost/method/<?= $method['id'] ?>">
                                                     <i class="fa-solid fa-right-to-bracket"></i>
                                                 </a>
@@ -360,7 +360,7 @@
                                                         <option value="<?= $method['id'] ?>" <?= $method['id'] == $val['nd_id'] ? 'selected' : '' ?>><?= $method['view_gost'] ?></option>
                                                     <?php endforeach; ?>
                                                 </select>
-                                                <a class="btn btn-outline-secondary tu-link" target="_blank"
+                                                <a class="btn btn-outline-secondary tu-link" 
                                                    title="Перейти в ТУ" href="/ulab/normDocGost/edit/<?= $val['nd_id'] ?>">
                                                     <i class="fa-solid fa-right-to-bracket"></i>
                                                 </a>
@@ -426,7 +426,7 @@
                                                 <option value="<?= $method['id'] ?>"><?= $method['view_gost'] ?></option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <a class="btn btn-outline-secondary method-link disabled" target="_blank"
+                                        <a class="btn btn-outline-secondary method-link disabled" 
                                            title="Перейти в методику" href="">
                                             <i class="fa-solid fa-right-to-bracket"></i>
                                         </a>
@@ -441,7 +441,7 @@
                                                 <option value="<?= $tc['id'] ?>"><?= $tc['view_name'] ?></option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <a class="btn btn-outline-secondary tu-link disabled" target="_blank"
+                                        <a class="btn btn-outline-secondary tu-link disabled" 
                                            title="Перейти в ТУ" href="">
                                             <i class="fa-solid fa-right-to-bracket"></i>
                                         </a>

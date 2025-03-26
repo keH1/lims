@@ -306,32 +306,30 @@ $( document ).ready(function() {
         $("[data-js-form-company]").toggle(500)
     })
 
-    $('[data-js-company-list]').select2();
-    $('[data-js-clients]').select2();
-    $('#object').select2();
-    $('#user').select2();
+    $('.select2').select2({
+        theme: 'bootstrap-5'
+    })
 
     $('#city').select2({
-
+        theme: 'bootstrap-5',
+        placeholder: 'Для поиска города, начните писать название',
         ajax: {
             url: "/ulab/secondment/getSettlementsAjax",
             type: "post",
             dataType: 'json',
             delay: 250,
             data: function (params) {
-                console.log("succ")
                 return {
-                   searchTerm: params.term || ''
+                   searchTerm: params.term || '*'
                 }
             },
             processResults: function (response) {
-                console.log("err")
                 return {
                     results: response
                 };
             },
             cache: true
-            }
+        }
     })
 
     $("#saveCompany").click(function (e) {
@@ -370,7 +368,6 @@ $( document ).ready(function() {
     });
 
     $("#inn").on('input', function () {
-
         $innHelp = $("#innHelp")
         let inn = $(this).val()
 

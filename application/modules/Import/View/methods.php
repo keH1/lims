@@ -97,7 +97,7 @@
                                                   enctype="multipart/form-data">
                                                 <div class="position-relative d-inline-block">
                                                     <a class="a_svg" href="<?= $this->data['file'] ?>"
-                                                       target="_blank"
+                                                       
                                                        title="<?= $this->data['file'] ?>">
                                                         <svg class="icon" width="30" height="30">
                                                             <use xlink:href="<?= URI ?>/assets/images/icons.svg#csv_file"/>

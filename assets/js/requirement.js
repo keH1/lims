@@ -280,7 +280,7 @@ $(function ($) {
                             <input type="hidden" name="methods[${countMaterials}][0][id]" id="material${countMaterials}-methods0-hidden" class="methods-id" value="">
                         </td>
                         <td class="text-center td-method-link">
-                            <a class="link-tab method-link" target='_blank'>
+                            <a class="link-tab method-link" >
                                 <svg class="icon" width="35" height="35">
                                     <use xlink:href="/ulab/assets/images/icons.svg#tab"/>
                                 </svg>
@@ -495,7 +495,7 @@ $(function ($) {
                     <input type="hidden" name="methods[${materialNumber[0]}][${countMethods}][id]" id="material${materialNumber[0]}-methods${countMethods}-hidden" class="methods-id" value="">
                 </td>
                 <td class="text-center td-method-link">
-                    <a class="link-tab method-link" target='_blank'>
+                    <a class="link-tab method-link" >
                         <svg class="icon" width="35" height="35">
                             <use xlink:href="/ulab/assets/images/icons.svg#tab"/>
                         </svg>
@@ -565,7 +565,7 @@ $(function ($) {
                     <input type="hidden" name="methods[${materialNumber}][0][id]" id="material${materialNumber}-methods0-hidden" class="methods-id" value="">
                 </td>
                 <td class="text-center td-method-link">
-                    <a class="link-tab method-link" target='_blank'>
+                    <a class="link-tab method-link" >
                         <svg class="icon" width="35" height="35">
                             <use xlink:href="/ulab/assets/images/icons.svg#tab"/>
                         </svg>
@@ -718,7 +718,7 @@ $(function ($) {
                             <input type="hidden" name="methods[${materialNumber[0]}][${methodsAmount + i}][id]" id="material${materialNumber[0]}-methods${methodsAmount + i}-hidden" class="methods-id" value="${item.ID}">
                         </td>
                         <td class="text-center td-method-link">
-                            <a class="link-tab method-link" target='_blank'>
+                            <a class="link-tab method-link" >
                                 <svg class="icon" width="35" height="35">
                                     <use xlink:href="/ulab/assets/images/icons.svg#tab"/>
                                 </svg>

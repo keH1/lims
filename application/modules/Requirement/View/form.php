@@ -400,7 +400,7 @@
                                                     <input type="hidden" name="methods[<?= $key ?>][0][id]" id="material<?= $key ?>-methods0-hidden" class="methods-id" value="<?= $this->data['requirement']['methods'][$key][0]['id'] ?? '' ?>">
                                                 </td>
                                                 <td class="text-center td-method-link">
-                                                    <a class="link-tab method-link" target='_blank' href="/ulab/gost/method/<?= $this->data['requirement']['methods'][$key][0]['id'] ?? '' ?>">
+                                                    <a class="link-tab method-link"  href="/ulab/gost/method/<?= $this->data['requirement']['methods'][$key][0]['id'] ?? '' ?>">
                                                         <svg class="icon" width="35" height="35">
                                                             <use xlink:href="/ulab/assets/images/icons.svg#tab"/>
                                                         </svg>
@@ -470,7 +470,7 @@
                                                             <input type="hidden" name="methods[<?= $key ?>][<?= $i ?>][id]" id="material<?= $key ?>-methods<?= $i ?>-hidden" class="methods-id" value="<?= $this->data['requirement']['methods'][$key][$i]['id'] ?? '' ?>">
                                                         </td>
                                                         <td class="text-center td-method-link">
-                                                            <a class="link-tab method-link" target="_blank" href="/ulab/gost/method/<?= $this->data['requirement']['methods'][$key][$i]['id'] ?? '' ?>">
+                                                            <a class="link-tab method-link"  href="/ulab/gost/method/<?= $this->data['requirement']['methods'][$key][$i]['id'] ?? '' ?>">
                                                                 <svg class="icon" width="35" height="35">
                                                                     <use xlink:href="/ulab/assets/images/icons.svg#tab"/>
                                                                 </svg>

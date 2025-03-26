@@ -54,51 +54,24 @@ $(function ($) {
         pageLength: 25,
         order: [],
         colReorder: true,
-        dom: 'fBrt<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        dom: 'frtB<"bottom"lip>',
+        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX: true,
         fixedHeader: false,
     })
 
-    recipeJournal.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-            recipeJournal
-                .column($(this).parent().index())
-                .search(this.value)
-                .draw()
+    recipeJournal.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                recipeJournal
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 
@@ -167,7 +140,9 @@ $(function ($) {
         cloneReactive.find('input').attr('name', `reactives[unit_reactive_id` + countReactivePlusOne + `][quantity]`)
         $(`.reactives[data-id="${countReactive}"]`).after(cloneReactive)
         $.each($('.select-reactive'), function () {
-            $(this).select2();
+            $(this).select2({
+                theme: 'bootstrap-5',
+            });
         });
     })
 
@@ -216,21 +191,9 @@ $(function ($) {
         fixedContentPos: false
     })
 
-    $('.select-doc').select2({
-        placeholder: 'Выберете документ',
-        width: '100%',
-    })
-    $('.select-reactive').select2({
-        placeholder: 'Выберете реактив',
-        width: '100%',
-    })
-    $('.select-solution').select2({
-        placeholder: 'Выберете растворитель',
-        width: '100%',
-    })
-    $('.select-recipe').select2({
-        placeholder: 'Выберете рецепт',
-        width: '100%',
+    $('.select2').select2({
+        theme: 'bootstrap-5',
+        placeholder: $(this).data('placeholder'),
     })
 
     /** journal filters */

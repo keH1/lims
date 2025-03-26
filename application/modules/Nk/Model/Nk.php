@@ -100,21 +100,18 @@ class Nk extends Model {
         ];
 
         if (!empty($filter)) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
-
-            // работа с фильтрами
             if (!empty($filter['search'])) {
                 // Номер
                 if (isset($filter['search']['id'])) {
                     $where .= "ug.id LIKE '%{$filter['search']['id']}%' AND ";
                 }
-
                 // дата
                 if (isset($filter['search']['date'])) {
                     $where .= "LOCATE('{$filter['search']['date']}', DATE_FORMAT(ug.date, '%d.%m.%Y %H:%i:%s')) > 0 AND ";
+                }
+                // Объект строительства
+                if (isset($filter['search']['object'])) {
+                    $where .= "ug.object LIKE '%{$filter['search']['object']}%' AND ";
                 }
                 if ( isset($filter['search']['dateStart']) ) {
                     $where .= "(ug.date >= '{$filter['search']['dateStart']}' AND ug.date <= '{$filter['search']['dateEnd']}') AND ";

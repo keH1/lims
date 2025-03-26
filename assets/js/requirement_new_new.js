@@ -751,7 +751,7 @@ function getHtmlMethod(methodList, normDocList, gostNumber = 0, defaultMethod = 
                             <option value=""></option>
                             ${optionMethod}
                         </select>
-                        <a class="btn btn-outline-secondary method-link disabled" target="_blank" title="Перейти в методику" href="">
+                        <a class="btn btn-outline-secondary method-link disabled"  title="Перейти в методику" href="">
                             <i class="fa-solid fa-right-to-bracket"></i>
                         </a>
                     </div>
@@ -761,7 +761,7 @@ function getHtmlMethod(methodList, normDocList, gostNumber = 0, defaultMethod = 
                         <select class="form-control select2 tu-select" name="form[${gostNumber}][norm_doc_method_id]">
                             ${optionCondition}
                         </select>
-                        <a class="btn btn-outline-secondary tu-link disabled" target="_blank" title="Перейти в ТУ" href="">
+                        <a class="btn btn-outline-secondary tu-link disabled"  title="Перейти в ТУ" href="">
                             <i class="fa-solid fa-right-to-bracket"></i>
                         </a>
                     </div>

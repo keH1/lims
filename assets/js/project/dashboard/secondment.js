@@ -29,7 +29,7 @@ $('#secondmentTable').DataTable({
             defaultContent: '',
             render: function (data, type, item) {
                 return `<a 
-                            target="_blank" 
+                             
                             href="/ulab/secondment/card/${item.id}"
                             class="fw-bold text-dark text-decoration-none"
                         >${item.id}</a>`;

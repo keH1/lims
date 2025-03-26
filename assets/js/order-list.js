@@ -34,7 +34,7 @@ $(function ($) {
                 width: '100px',
                 render: function (data, type, item) {
                     return `<a class="results-link"
-                               href="/ulab/order/card/${item['d_id']}" target="_blank">
+                               href="/ulab/order/card/${item['d_id']}" >
                                ${item['NUMBER']}
                             </a>`
                 }
@@ -59,7 +59,7 @@ $(function ($) {
                         return 'Не сформирована';
                     } else {
                         return `<a class="results-link"
-                               href="/protocol_generator/archive_dog/${item['order_pdf']}" target="_blank">
+                               href="/protocol_generator/archive_dog/${item['order_pdf']}" >
                                Скачать
                             </a>`
                     }
@@ -73,7 +73,7 @@ $(function ($) {
                         return 'Не загружена';
                     } else {
                         return `<a class="results-link"
-                               href="/pdf/${item['PDF']}" target="_blank">
+                               href="/pdf/${item['PDF']}" >
                                Скачать
                             </a>`
                     }

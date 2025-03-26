@@ -207,7 +207,7 @@
                                                     ><?=$method['view_gost']?></option>
                                                 <?php endforeach; ?>
                                             </select>
-                                            <a class="btn btn-outline-secondary method-link disabled" target="_blank" title="Перейти в методику" href="">
+                                            <a class="btn btn-outline-secondary method-link disabled"  title="Перейти в методику" href="">
                                                 <i class="fa-solid fa-right-to-bracket"></i>
                                             </a>
                                         </div>
@@ -456,7 +456,7 @@
                                                                                 <input type="text" class="form-control"
                                                                                         value="<?=$probeMethod['GOST'] . '-' . $probeMethod['GOST_YEAR'] . ' | ' . $probeMethod['SPECIFICATION']?>" readonly>
                                                                                 <input type="hidden" class="gost-number-input" name="probe[<?=$probeId?>][method][<?=$probeMethod['ugtp_id']?>][gost_number]" value="<?=$probeMethod['gost_number']?>">
-                                                                                <a class="btn btn-outline-secondary method-link <?=$probeMethod['ID'] > 0? '' : 'disabled'?>" target="_blank" title="Перейти в методику" href="/obl_acc.php?ID=<?=$probeMethod['ID']?>">
+                                                                                <a class="btn btn-outline-secondary method-link <?=$probeMethod['ID'] > 0? '' : 'disabled'?>"  title="Перейти в методику" href="/obl_acc.php?ID=<?=$probeMethod['ID']?>">
                                                                                     <i class="fa-solid fa-right-to-bracket"></i>
                                                                                 </a>
                                                                                 <div class="col-auto">

@@ -223,7 +223,7 @@
 
                                                             <div class="position-relative d-inline-block">
                                                                 <a href="<?= $val['file']['dir'] ?><?= $val['file']['file'] ?>"
-                                                                   target="_blank"
+                                                                   
                                                                    title="<?= $val['file']['file'] ?>">
                                                                     <svg class="icon" width="30" height="30">
                                                                         <use xlink:href="<?= URI ?>/assets/images/icons.svg#pdf_file"/>

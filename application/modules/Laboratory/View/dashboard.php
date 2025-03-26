@@ -1,6 +1,6 @@
 <div class="fs-14">
     <div>
-        <a class="d-block w-max-content" target="_blank" href="<?= URI ?>/laboratory/schemeCard/<?= $this->data["scheme_id"] ?>/"><h2>Материал: <?= $this->data["scheme"]["material_name"] ?></h2></a>
+        <a class="d-block w-max-content"  href="<?= URI ?>/laboratory/schemeCard/<?= $this->data["scheme_id"] ?>/"><h2>Материал: <?= $this->data["scheme"]["material_name"] ?></h2></a>
     </div>
 
     <div class="timeline-wrap">
@@ -27,7 +27,7 @@
                 <th scope="col" rowspan="2" class="wd-60 text-center">До</th>
                 <?php foreach ($this->data["test_list"] as $item): ?>
                     <th scope="col" class="wd-100 text-center" data-js-test-id="<?= $item["id"] ?>">
-                        <a target="_blank" href="<?= URI ?>/laboratory/<?= $this->data["type"] ?>/<?= $item["id"] ?>/"><?= DateHelper::setPointFormat($item["created_date"]) ?></a>
+                        <a  href="<?= URI ?>/laboratory/<?= $this->data["type"] ?>/<?= $item["id"] ?>/"><?= DateHelper::setPointFormat($item["created_date"]) ?></a>
                     </th>
                 <?php endforeach; ?>
             </tr>
