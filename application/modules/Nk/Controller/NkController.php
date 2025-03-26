@@ -24,7 +24,7 @@ class NkController extends Controller
         /** @var Nk $nkModel */
         $nkModel = $this->model('Nk');
 
-        $this->data['title'] = empty($id)? 'Создание градуировочной зависимости' : "Редактирование градуировочной зависисмоти";
+        $this->data['title'] = empty($id)? 'Создание градуировочной зависимости' : "Редактирование градуировочной зависимости";
 
         $graduation = $nkModel->getGraduation($id);
 

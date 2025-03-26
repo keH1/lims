@@ -537,34 +537,48 @@ $(function ($) {
     }
 
     let chartData;
-    function showChart() {
+    function showChart(skipValidation = false) {
         // Очищаем график
         destroyChart();
         $('#chart').attr("src", '');
 
-        // Проверка заполненость полей "Среднее значение на участке" не расчитано"
-        let checkMean =
-            checkEmptyFields(
-                `.mean`,
-                `#graduationWrapper`,
-                '',
-                'Внимание! Поле "Среднее значение на участке" не расчитано!'
-            );
+        if (skipValidation) {
+            let emptyMean = $('.mean').filter(function() {
+                return $(this).val() === null || $(this).val() === ''
+            }).length
+            
+            let emptyShearStrength = $('.shear-strength').filter(function() {
+                return $(this).val() === null || $(this).val() === ''
+            }).length
+            
+            if (emptyMean > 0 || emptyShearStrength > 0) {
+                return false
+            }
+        } else {
+            // Проверка заполненость полей "Среднее значение на участке" не расчитано"
+            let checkMean =
+                checkEmptyFields(
+                    `.mean`,
+                    `#graduationWrapper`,
+                    '',
+                    'Внимание! Поле "Среднее значение на участке" не расчитано!'
+                );
 
-        if (!checkMean) {
-            return false;
-        }
+            if (!checkMean) {
+                return false;
+            }
 
-        // Проверка заполненость полей "Прочность бетона на участке методом отрыва со скалыванием" поле 2
-        let checkShearStrength =
-            checkEmptyFields(
-                `.shear-strength`,
-                `#graduationWrapper`,
-                '',
-                'Внимание! Поле "Прочность бетона на участке методом отрыва со скалыванием" не расчитано!'
-            );
-        if (!checkShearStrength) {
-            return false;
+            // Проверка заполненость полей "Прочность бетона на участке методом отрыва со скалыванием" поле 2
+            let checkShearStrength =
+                checkEmptyFields(
+                    `.shear-strength`,
+                    `#graduationWrapper`,
+                    '',
+                    'Внимание! Поле "Прочность бетона на участке методом отрыва со скалыванием" не расчитано!'
+                );
+            if (!checkShearStrength) {
+                return false;
+            }
         }
 
         let inputMean = $('.mean'),
@@ -705,7 +719,8 @@ $(function ($) {
 
         chartData = myChart;
     }
-    showChart();
+
+    showChart(true)
 
     /**
      * Очистить граффик
@@ -868,7 +883,7 @@ $(function ($) {
         let r07 = r > 0.7 ? 'Соответствует' : 'Не соответствует';
         $('#r07').val(r07);
 
-        showChart();
+        showChart(false)
     });
 
     /**
@@ -1076,7 +1091,7 @@ $(function ($) {
     });
 
     body.on('input', '#pointRadius, #minAxisY, #maxAxisY, #yMain, #minAxisX, #maxAxisX, #xMain', function () {
-        showChart();
+        showChart(false)
     });
 
     /** Редактирование */
