@@ -441,9 +441,10 @@ class User extends Model
 		return $userDep;
 	}
 
-	/**
-	 * @param $id
-	 */
+    /**
+     * @param $id
+     * @return mixed
+     */
 	public function getDepartmentByUserId($id)
 	{
 //		$res = $this->DB->Query("SELECT `DEPARTMENT_ID` as depId FROM `b_intranet_user2dep` WHERE `USER_ID` = {$id}")->Fetch();
@@ -453,6 +454,55 @@ class User extends Model
 
         return $tmp[0];
 	}
+
+
+    /**
+     * получает список пользователей по ид департамента (из битрикса)
+     * @param $depId
+     * @return array
+     */
+	public function getUserByDep($depId)
+    {
+        $sql = $this->DB->Query(
+            "SELECT u.ID, u.`NAME`, u.`LAST_NAME`, u.WORK_POSITION as depId FROM `b_uts_user` as uts
+            inner join b_user as u on uts.VALUE_ID = u.ID
+            WHERE `UF_DEPARTMENT` like '%i:{$depId};%'"
+        );
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+            $result[] = $row;
+        }
+
+        return $result;
+    }
+
+
+    public function getUserFromDep()
+    {
+        $sql = $this->DB->Query(
+            "SELECT u.ID, u.`NAME`, u.`LAST_NAME`, u.WORK_POSITION, uts.`UF_DEPARTMENT` FROM `b_uts_user` as uts
+            inner join b_user as u on uts.VALUE_ID = u.ID where u.ACTIVE='Y'"
+        );
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+            $deps = unserialize($row['UF_DEPARTMENT']);
+
+            $shortName = StringHelper::shortName($row['NAME']);
+            $row['short_name'] = "{$shortName}. {$row['LAST_NAME']}";
+
+            foreach ($deps as $dep) {
+                $result[$dep][] = $row;
+            }
+
+        }
+
+        return $result;
+    }
+
 
 	public function getUsersByIdArr($idArr)
     {

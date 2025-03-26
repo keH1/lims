@@ -1615,484 +1615,92 @@ class Statistic extends Model
         return !is_file($path);
     }
 
-    /**
-     * @param $monthReport
-     * @return array
-     */
-    public function getStatisticHeaderByMonth($monthReport)
-    {
-        $user = new User();
-        $protocolModel = new Protocol();
-
-        $month = date('m', strtotime($monthReport));
-        $year = 2023;//date('Y',  strtotime($monthReport));
-
-        $data = [];
-
-        $protocol = $this->DB->Query("SELECT * FROM `PROTOCOLS` p WHERE month(p.DATE) = {$month} AND year(p.DATE) = {$year}");
-        $count = $protocol->SelectedRowsCount();
-
-        $arr = [];
-        while ($prot = $protocol->Fetch()) {
-            $labVerify = unserialize($prot['VERIFY']);
-            foreach ($labVerify as $assign) {
-                $arr['laba'][$prot['ID']][] = $user->getDepartmentByUserId($assign);
-            }
-
-            if (!empty($prot['NUMBER'])) {
-                $arr['won'][] = $prot;
-                foreach ($labVerify as $assign) {
-                    $arr['laba_prot_won'][$prot['ID']]['laba_id'][] = $user->getDepartmentByUserId($assign);
-                    $arr['laba_prot_won'][$prot['ID']]['price'] = $protocolModel->getProtocolPrice($prot['ID'])['allPrice'];
-                }
-
-                $aaa = array_unique($arr['laba_prot_won'][$prot['ID']]['laba_id']);
-                $arr['laba_prot_won'][$prot['ID']]['laba_id'] = $aaa;
-
-            } else {
-                $arr['in_work'][] = $prot;
-                foreach ($labVerify as $assign) {
-                    $arr['laba_prot_work'][$prot['ID']][] = $user->getDepartmentByUserId($assign);
-                }
-            }
-
-            $arr['id_tz'][] = $prot['ID_TZ'];
-
-            $newArr[] = array_unique($arr['laba'][$prot['ID']]);
-            $protocolWon = $arr['laba_prot_won'];
-            $protocolWork[] = array_unique($arr['laba_prot_work'][$prot['ID']]);
-        }
-
-        //Вывод всех протоколов по лабораториям
-        foreach ($newArr as $lab) {
-            foreach ($lab as $item) {
-                $labAll[] = $item;
-            }
-        }
-        $labOneWon[54]['count'] = 0;
-        $labOneWon[55]['count'] = 0;
-        $labOneWon[56]['count'] = 0;
-        $labOneWon[57]['count'] = 0;
-
-        //Вывод протоколов готовых по лабораториям
-
-
-        foreach ($protocolWon as $k => $lab) {
-            foreach ($lab['laba_id'] as $item) {
-                $LabProtocolPrice = $protocolModel->getProtocolPrice($k);
-                $labOneWon[$item]['count']++;
-                $labOneWon[$item]['price'][$k] = $LabProtocolPrice[$item];
-            }
-        }
-
-
-
-        //Вывод протоколов в работе по лабораториям
-        foreach ($protocolWork as $lab) {
-            foreach ($lab as $item) {
-                $labOneWork[] = $item;
-            }
-        }
-
-        //разбивка массива по лабораториям
-        $labDop = $this->protDop($newArr);
-        $labOneWonDop = $this->protDop($protocolWon);
-
-        $labOneWorkDop = $this->protDop($protocolWork);
-
-        $arrToLab = array_count_values($labAll??[]);
-        $arrToLabOneWon = array_count_values($labOneWon??[]);
-        $arrToLabOneWork = array_count_values($labOneWork??[]);
-
-        $arr['id_tz'] = array_unique($arr['id_tz']??[]);
-
-
-        $methodsArr = [];
-
-        $methods = $this->DB->Query("SELECT p.NUMBER, mtr.id, ptm.id, gtp.id, ugtp.`method_id`, gtp.`price`, gtp.`assigned`, u2d.UF_DEPARTMENT as lab
-									FROM `PROTOCOLS` p
-									inner JOIN `ulab_material_to_request` umtr ON p.ID = umtr.protocol_id
-									inner JOIN `ulab_gost_to_probe` ugtp ON umtr.id = ugtp.`material_to_request_id`
-									LEFT JOIN `MATERIALS_TO_REQUESTS` mtr ON umtr.`mtr_id` = mtr.`ID`
-									LEFT JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
-									LEFT JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
-									LEFT JOIN `b_uts_user` u2d ON gtp.`assigned` = u2d.`VALUE_ID`
-									WHERE month(p.DATE) = 9 AND year(p.DATE) = {$year} AND p.NUMBER is not NULL AND gtp.`assigned` != 0 
-									group by gtp.id");
-
-        while ($method = $methods->Fetch()) {
-            $methodsArr['count_method'][] = [
-                'gost' => $method['method_id'],
-                'price' => $method['price']
-            ];
-            $labAllTest[$method['lab']][] = [
-                'gost' => $method['method_id'],
-                'price' => $method['price']
-            ];
-
-            $methodAllGost[] = $method['method_id'];
-
-        }
-
-
-        $labAllTestLaba[54] = 0;
-        $labAllTestLaba[55] = 0;
-        $labAllTestLaba[56] = 0;
-        $labAllTestLaba[57] = 0;
-
-        foreach ($labAllTest as $labId => $val) {
-            $labAllTestLaba[$labId] = count($val??[]);
-        }
-
-        $labAllTestPriceLaba = [];
-        foreach ($labOneWon as $labId => $val) {
-            $labAllTestPriceLaba[$labId][] = $val['price'];
-            $arrSum[$labId] = array_sum($val['price']??[]);
-        }
-
-        Registry::set('count', $labAllTestLaba);
-        Registry::set('price', $arrSum);
-
-        $allTests = count($methodAllGost);
-
-        $labsAllMethod = array_count_values($methodAllGost??[]);
-        $arrGost = implode(',', $methodAllGost);
-        $infoGostArr = $this->DB->Query("SELECT * FROM `ba_gost` WHERE `ID` IN ({$arrGost})");
-
-
-        $uniqGost = array_unique($methodAllGost);
-
-
-        $labIds[54] = [];
-        $labIds[55] = [];
-        $labIds[56] = [];
-        $labIds[57] = [];
-
-        while ($infoGost = $infoGostArr->Fetch()) {
-            if ( $infoGost['LFHI'] ) {
-                $labIds[54][] = $infoGost['ID'];
-                $labsCountMethodArr[54][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-                continue;
-            }
-            if ( $infoGost['LFMI'] ) {
-                $labIds[56][] = $infoGost['ID'];
-                $labsCountMethodArr[56][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-                continue;
-            }
-            if ( $infoGost['DSL'] ) {
-                $labIds[55][] = $infoGost['ID'];
-                $labsCountMethodArr[55][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-                continue;
-            }
-            if ( $infoGost['LSM'] ) {
-                $labIds[57][] = $infoGost['ID'];
-                $labsCountMethodArr[57][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-                continue;
-            }
-            if ( $infoGost['OSK'] ) {
-                $labIds[58][] = $infoGost['ID'];
-                $labsCountMethodArr[58][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-            }
-        }
-
-
-
-        $arr['count_value'] = array_count_values($methodsArr['count_method']);
-        arsort($arr['count_value']);
-        foreach ($arr['count_value'] as $key => $item) {
-            if ($item >= 20) {
-                $arr['count_value_50'][$key] = $item;
-            }
-        }
-
-        $labsCountMethod = [];
-
-        foreach ($labIds as $k => $val) {
-            $CountMethod[$k] = count(array_unique($val));
-            $CountAllMethod[$k] = count($val);
-        }
-
-
-
-        foreach ($labsCountMethodArr as $k => $val) {
-            $labsCountMethodMore40[$k] = $this->countUniq($val);
-        }
-
-        $data['count_value'] = count($arr['count_value_50']);
-        $data['count_tests'] = $allTests;
-        $data['count_method'] = count($uniqGost);
-        $data['labs'] = $arrToLab;
-        $data['labs_won'] = $labOneWon;
-        $data['labs_work'] = $arrToLabOneWork;
-        $data['labs_dop'] = $labDop;
-        $data['labs_Won_dop'] = $labOneWonDop;
-        $data['labs_Work_dop'] = $labOneWorkDop;
-        $data['methodic_in_labs'] = $CountMethod;
-        $data['all_methodic_in_labs'] = $labAllTestLaba;
-        $data['methodic_in_labs_more'] = $labsCountMethodMore40;
-        $data['count'] = $count;
-
-        $data['won'] = count($arr['won']);
-        $data['in_work'] = count($arr['in_work']);
-
-        return $data;
-    }
 
     /**
-     * @param $monthReport
+     * получает статистику по протоколу за месяц. количество, стоимость. всего и по лабораториям
+     * @param $dataReport
      * @return array
      */
-    public function getStatisticHeaderByMonthNew($monthReport)
+    public function getStatisticProtocolByMonth($dataReport)
     {
-        $user = new User();
         $protocolModel = new Protocol();
-        $labModel = new Lab();
+        $userModel = new User();
 
-        $month = date('m', strtotime($monthReport));
-        $year = 2023;//date('Y',  strtotime($monthReport));
+        $month = date('m', strtotime($dataReport));
+        $year = date('Y', strtotime($dataReport));
 
-        $data = [];
-        $labOneWon[54]['count'] = 0;
-        $labOneWon[55]['count'] = 0;
-        $labOneWon[56]['count'] = 0;
-        $labOneWon[57]['count'] = 0;
+        $protocolSql = $this->DB->Query("SELECT * FROM `PROTOCOLS` p WHERE month(p.DATE) = {$month} AND year(p.DATE) = {$year}");
+        $count = $protocolSql->SelectedRowsCount();
+        $allPrice = 0;
+        $allWon = 0;
+        $allInWork = 0;
+        $allWonMethods = 0;
+        $allMethods = 0;
 
-        $labCoWon[54]['count'] = 0;
-        $labCoWon[55]['count'] = 0;
-        $labCoWon[56]['count'] = 0;
-        $labCoWon[57]['count'] = 0;
+        $result = [];
 
-        $protocol = $this->DB->Query("SELECT p.ID, p.NUMBER, SUM(ugtp.price) as prot_sum, 
-										concat('[', group_concat(distinct l.id_dep separator ','), ']') as labs
-										FROM `PROTOCOLS` p 
-										LEFT JOIN `ulab_material_to_request` umtr ON p.ID = umtr.protocol_id
-										LEFT JOIN `ulab_gost_to_probe` ugtp ON umtr.id = ugtp.`material_to_request_id`
-										LEFT JOIN `ulab_methods_lab` u2d ON ugtp.`method_id` = u2d.`method_id`
-										LEFT JOIN `ba_laba` as l ON u2d.lab_id = l.ID
-										WHERE p.NUMBER is not null and month(p.DATE) = {$month}
-										AND year(p.DATE) = {$year} AND is_non_actual <> 1
-										group by p.ID");
-        $count = $protocol->SelectedRowsCount();
-        $data['coWon']['all']['count'] = 0;
-        $data['won']['all']['count'] = 0;
-        $arr = [];
+        while ($row = $protocolSql->Fetch()) {
+            $methodsSql = $this->DB->Query("SELECT count(id) as `count` FROM `ulab_gost_to_probe` WHERE protocol_id = {$row['ID']}")->Fetch();
 
-        while ($prot = $protocol->Fetch()) {
-            $prot['labs'] = json_decode($prot['labs'], true);
+            // ид пользователей, которые подписали протокол
+            $userVerify = unserialize($row['VERIFY']);
 
-            if (count($prot['labs']) == 1) {
-                $data['won']['all']['count']++;
-                $data['won'][$prot['labs'][0]]['count']++;
-                $data['won'][$prot['labs'][0]][$prot['ID']] = $prot['prot_sum'];
-            } elseif (count($prot['labs']) > 1) {
-                $data['coWon']['all']['count']++;
-                foreach ($prot['labs'] as $lab) {
-                    $data['coWon'][$lab]['count']++;
-                    $labCoWon[$lab]['price'][$prot['ID']] = $labModel->getProtocolPrice;
-                }
-            };
+            $price = $protocolModel->getPriceWonProtocol((int)$row['ID']);
+            $allPrice += $price;
 
-            $labVerify = unserialize($prot['VERIFY']);
-            foreach ($labVerify as $assign) {
-                $arr['laba'][$prot['ID']][] = $user->getDepartmentByUserId($assign);
-            }
-
-            if (!empty($prot['NUMBER'])) {
-                $arr['won'][] = $prot;
-                $arr['laba_prot_won'][$prot['ID']]['price'] = $protocolModel->getProtocolPriceNew($prot['ID'])['allPrice'];
-                $arr['laba_prot_won'][$prot['ID']]['laba_id'] = $protocolModel->getProtocolPriceNew($prot['ID'])['lab'];
-
-
+            if ( !empty($row['NUMBER']) ) {
+                $allWon++;
+                $allWonMethods += $methodsSql['count']?? 0;
             } else {
-                $arr['in_work'][] = $prot;
-                foreach ($labVerify as $assign) {
-                    $arr['laba_prot_work'][$prot['ID']][] = $user->getDepartmentByUserId($assign);
+                $allInWork++;
+                $allMethods += $methodsSql['count']?? 0;
+            }
+
+            foreach ($userVerify as $assign) {
+                $departmentId = $userModel->getDepartmentByUserId($assign);
+
+                if ( !isset($result[$departmentId]['count']) ) {
+                    $result['dep'][$departmentId]['count'] = 0;
+                }
+                if ( !isset($result[$departmentId]['price']) ) {
+                    $result['dep'][$departmentId]['price'] = 0;
+                }
+                if ( !isset($result[$departmentId]['won']) ) {
+                    $result['dep'][$departmentId]['won'] = 0;
+                }
+                if ( !isset($result[$departmentId]['in_work']) ) {
+                    $result['dep'][$departmentId]['in_work'] = 0;
+                }
+                if ( !isset($result[$departmentId]['won_methods']) ) {
+                    $result['dep'][$departmentId]['won_methods'] = 0;
+                }
+                if ( !isset($result[$departmentId]['methods']) ) {
+                    $result['dep'][$departmentId]['methods'] = 0;
+                }
+
+                $result[$departmentId]['count']++;
+                $result[$departmentId]['price'] += $price;
+
+                if ( !empty($row['NUMBER']) ) {
+                    $result['dep'][$departmentId]['won']++;
+                    $result['dep'][$departmentId]['won_methods'] += $methodsSql['count']?? 0;
+                } else {
+                    $result['dep'][$departmentId]['in_work']++;
+                    $result['dep'][$departmentId]['methods'] += $methodsSql['count']?? 0;
                 }
             }
-
-            $arr['id_tz'][] = $prot['ID_TZ'];
-
-            $newArr[] = array_unique($arr['laba'][$prot['ID']]);
-            $protocolWon = $arr['laba_prot_won'];
-            $protocolWork[] = array_unique($arr['laba_prot_work'][$prot['ID']]);
-        }
-//		$this->pre($data);
-
-        //Вывод всех протоколов по лабораториям
-        foreach ($newArr as $lab) {
-            foreach ($lab as $item) {
-                $labAll[] = $item;
-            }
-        }
-        $labOneWon[54]['count'] = 0;
-        $labOneWon[55]['count'] = 0;
-        $labOneWon[56]['count'] = 0;
-        $labOneWon[57]['count'] = 0;
-
-        //Вывод протоколов готовых по лабораториям
-
-
-        foreach ($protocolWon as $k => $lab) {
-            foreach ($lab['laba_id'] as $item) {
-                $LabProtocolPrice = $protocolModel->getProtocolPrice($k);
-                $labOneWon[$item]['count']++;
-                $labOneWon[$item]['price'][$k] = $LabProtocolPrice[$item];
-            }
         }
 
+        $result['all_count'] = $count;
+        $result['all_price'] = $allPrice;
+        $result['all_won'] = $allWon;
+        $result['all_in_work'] = $allInWork;
+        $result['all_won_methods'] = $allWonMethods;
+        $result['all_methods'] = $allMethods;
 
-
-        //Вывод протоколов в работе по лабораториям
-        foreach ($protocolWork as $lab) {
-            foreach ($lab as $item) {
-                $labOneWork[] = $item;
-            }
-        }
-
-        //разбивка массива по лабораториям
-        $labDop = $this->protDop($newArr);
-        $labOneWonDop = $this->protDop($protocolWon);
-
-        $labOneWorkDop = $this->protDop($protocolWork);
-
-        $arrToLab = array_count_values($labAll);
-        $arrToLabOneWon = array_count_values($labOneWon);
-        $arrToLabOneWork = array_count_values($labOneWork);
-
-        $arr['id_tz'] = array_unique($arr['id_tz']);
-
-
-        $methodsArr = [];
-
-        $methods = $this->DB->Query("SELECT p.NUMBER, mtr.id, ptm.id, gtp.id, ugtp.`method_id`, gtp.`price`, gtp.`assigned`, u2d.UF_DEPARTMENT as lab
-									FROM `PROTOCOLS` p
-									inner JOIN `ulab_material_to_request` umtr ON p.ID = umtr.protocol_id
-									inner JOIN `ulab_gost_to_probe` ugtp ON umtr.id = ugtp.`material_to_request_id`
-									LEFT JOIN `MATERIALS_TO_REQUESTS` mtr ON umtr.`mtr_id` = mtr.`ID`
-									LEFT JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
-									LEFT JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
-									LEFT JOIN `b_uts_user` u2d ON gtp.`assigned` = u2d.`VALUE_ID`
-									WHERE month(p.DATE) = 9 AND year(p.DATE) = {$year} AND p.NUMBER is not NULL AND gtp.`assigned` != 0 
-									group by gtp.id");
-
-        while ($method = $methods->Fetch()) {
-            $methodsArr['count_method'][] = [
-                'gost' => $method['method_id'],
-                'price' => $method['price']
-            ];
-            $labAllTest[$method['lab']][] = [
-                'gost' => $method['method_id'],
-                'price' => $method['price']
-            ];
-
-            $methodAllGost[] = $method['method_id'];
-
-        }
-
-        $labAllTestLaba[54] = 0;
-        $labAllTestLaba[55] = 0;
-        $labAllTestLaba[56] = 0;
-        $labAllTestLaba[57] = 0;
-
-        foreach ($labAllTest as $labId => $val) {
-            $labAllTestLaba[$labId] = count($val);
-        }
-
-        $labAllTestPriceLaba = [];
-        foreach ($labOneWon as $labId => $val) {
-            $labAllTestPriceLaba[$labId][] = $val['price'];
-            $arrSum[$labId] = array_sum($val['price']);
-        }
-
-        Registry::set('count', $labAllTestLaba);
-        Registry::set('price', $arrSum);
-
-        $allTests = count($methodAllGost);
-
-        $labsAllMethod = array_count_values($methodAllGost);
-        $arrGost = implode(',', $methodAllGost);
-        $infoGostArr = $this->DB->Query("SELECT * FROM `ba_gost` WHERE `ID` IN ({$arrGost})");
-
-
-        $uniqGost = array_unique($methodAllGost);
-
-
-        $labIds[54] = [];
-        $labIds[55] = [];
-        $labIds[56] = [];
-        $labIds[57] = [];
-
-        while ($infoGost = $infoGostArr->Fetch()) {
-            if ( $infoGost['LFHI'] ) {
-                $labIds[54][] = $infoGost['ID'];
-                $labsCountMethodArr[54][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-                continue;
-            }
-            if ( $infoGost['LFMI'] ) {
-                $labIds[56][] = $infoGost['ID'];
-                $labsCountMethodArr[56][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-                continue;
-            }
-            if ( $infoGost['DSL'] ) {
-                $labIds[55][] = $infoGost['ID'];
-                $labsCountMethodArr[55][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-                continue;
-            }
-            if ( $infoGost['LSM'] ) {
-                $labIds[57][] = $infoGost['ID'];
-                $labsCountMethodArr[57][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-                continue;
-            }
-            if ( $infoGost['OSK'] ) {
-                $labIds[58][] = $infoGost['ID'];
-                $labsCountMethodArr[58][$infoGost['ID']] = $labsAllMethod[$infoGost['ID']];
-            }
-        }
-
-
-
-        $arr['count_value'] = array_count_values($methodsArr['count_method']);
-        arsort($arr['count_value']);
-        foreach ($arr['count_value'] as $key => $item) {
-            if ($item >= 20) {
-                $arr['count_value_50'][$key] = $item;
-            }
-        }
-
-        $labsCountMethod = [];
-
-        foreach ($labIds as $k => $val) {
-            $CountMethod[$k] = count(array_unique($val));
-            $CountAllMethod[$k] = count($val);
-        }
-
-
-
-        foreach ($labsCountMethodArr as $k => $val) {
-            $labsCountMethodMore40[$k] = $this->countUniq($val);
-        }
-
-
-
-        $data['count_value'] = count($arr['count_value_50']);
-        $data['count_tests'] = $allTests;
-        $data['count_method'] = count($uniqGost);
-        $data['labs'] = $arrToLab;
-        $data['labs_won'] = $labOneWon;
-        $data['labs_work'] = $arrToLabOneWork;
-        $data['labs_dop'] = $labDop;
-        $data['labs_Won_dop'] = $labOneWonDop;
-        $data['labs_Work_dop'] = $labOneWorkDop;
-        $data['methodic_in_labs'] = $CountMethod;
-        $data['all_methodic_in_labs'] = $labAllTestLaba;
-        $data['methodic_in_labs_more'] = $labsCountMethodMore40;
-        $data['count'] = $count;
-
-//        $data['won'] = count($arr['won']);
-//        $data['in_work'] = count($arr['in_work']);
-
-        return $data;
+        return $result;
     }
+
 
     /**
      * @param $monthReport

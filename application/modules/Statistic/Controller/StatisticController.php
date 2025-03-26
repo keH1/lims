@@ -136,76 +136,56 @@ class StatisticController extends Controller
 		$this->view('reportFinUser');
 	}
 
+
     /**
      * @desc Страница «Отчет за период»
      */
 	public function headerReport()
 	{
+		/** @var Statistic $statisticModel */
+		$statisticModel = $this->model('Statistic');
 
-//	    header("location: https://ulab.niistrom.pro/ulab/statistic/reportConstructor");
-		/** @var Request $request */
-		$request = $this->model('Request');
-		/** @var User $user */
-		$user = $this->model('User');
-		/** @var Material $material */
-		$material = $this->model('Material');
-		/** @var Order $order */
-		$order = $this->model('Order');
-		/** @var Statistic $statistic */
-		$statistic = $this->model('Statistic');
-
-
+		$labModel = new Lab();
+		$userModel = new User();
 
 		$this->data['title'] = "Отчет за период";
 
 		if (empty($_POST['month'])) {
-			$monthReport = '2023-01';//date('Y-m');
+			$monthReport = date('Y-m');
 		} else {
 			$monthReport = $_POST['month'];
 		}
 
-		if (strtotime($monthReport) <= 1682881200) {
-			$data['Header'] = $statistic->getStatisticHeaderByMonth($monthReport);
-			$data['Staff'] = $statistic->getStatisticStaffByMonth($monthReport);
-			$data['Finance'] = $statistic->getStatisticFinanceByMonth($monthReport);
-			$data['MFC'] = $statistic->getStatisticMFCByMonth($monthReport);
-			$data['Year'] = $statistic->getStatisticByYear($monthReport);
-			$this->data['protocols'] = $data['Header'];
-			$this->data['statistic_date'] = $monthReport;
-			$this->data['Staff']['lfhi'] = $data['Staff']['user'][54];
-			$this->data['Staff']['dsl'] = $data['Staff']['user'][55];
-			$this->data['Staff']['lfmi'] = $data['Staff']['user'][56];
-			$this->data['Staff']['lsm'] = $data['Staff']['user'][57];
-			$this->data['Staff']['test'] = $data['Staff']['test'];
-			$this->data['MFC'] = $data['MFC'];
-			$this->data['Finance'] = $data['Finance'];
-			$this->data['Year'] = $data['Year'];
-			$this->data['test'] = $this->data['protocols'];
-		} else {
-			$data['Header'] = $statistic->getStatisticHeaderByMonthNew($monthReport);
+        $this->data['statistic_date'] = $monthReport;
+        $this->data['lab_list'] = $labModel->getList();
+        $this->data['protocols'] = $statisticModel->getStatisticProtocolByMonth($monthReport);
+        $this->data['users_from_dep'] = $userModel->getUserFromDep();
 
-			$data['Staff'] = $statistic->getStatisticStaffByMonthNew($monthReport);
-			$data['Finance'] = $statistic->getStatisticFinanceByMonthNew($monthReport);
-			$data['MFC'] = $statistic->getStatisticMFCByMonthNew($monthReport);
-			$data['Year'] = $statistic->getStatisticByYearNew($monthReport);
-			$this->data['protocols'] = $data['Header'];
-			$this->data['statistic_date'] = $monthReport;
-			$this->data['Staff']['lfhi'] = $data['Staff']['user'][54];
-			$this->data['Staff']['dsl'] = $data['Staff']['user'][55];
-			$this->data['Staff']['lfmi'] = $data['Staff']['user'][56];
-			$this->data['Staff']['lsm'] = $data['Staff']['user'][57];
-			$this->data['Staff']['test'] = $data['Staff']['test'];
-			$this->data['MFC'] = $data['MFC'];
-			$this->data['Finance'] = $data['Finance'];
-			$this->data['Year'] = $data['Year'];
-		}
+        $this->data['field_report_protocol'] = [
+            'Протоколы',
+            'count' => 'Общее количество протоколов, шт',
+            'won' => 'Выдано протоколов, шт',
+            'in_work' => 'Незавершенные протоколы, шт',
+            'price' => 'Выдано протоколов на сумму, руб',
+            'Методики',
+            'won_methods' => 'Количество завершенных испытаний, шт',
+            'methods' => 'Использовано методик, шт',
+        ];
 
+        $this->data['field_report_user'] = [
+            'Количество завершенных испытаний, шт:',
+            'Количество незавершенных испытаний, шт:',
+            "Процент завершенных испытаний<br> относительно лаборатории, %:",
+            'Стоимость выполненных методик, руб:',
+            "Процент от общей стоимости<br> выполненных методик лаборатории, %",
+        ];
 
-		$this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
+        $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
 		$this->addJs("/assets/js/statistic.js");
 
 		$this->view('headerReport');
 	}
+
 
     /**
      * @desc Отчет за период по сотруднику
