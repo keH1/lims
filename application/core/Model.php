@@ -578,8 +578,8 @@ class Model
 
         $filter = [
             'paginate' => [
-                'length' => (isset($postData['length']) && is_numeric($postData['length'])) ? (int)$postData['length'] : 10,
-                'start'  => (isset($postData['start']) && is_numeric($postData['start'])) ? (int)$postData['start'] : 0,
+                'length' => (isset($post['length']) && is_numeric($post['length'])) ? (int)$post['length'] : 10,
+                'start'  => (isset($post['start']) && is_numeric($post['start'])) ? (int)$post['start'] : 0,
             ],
             'search' => [],
         ];
