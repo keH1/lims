@@ -123,7 +123,7 @@
             <?php endforeach; ?>
 			</tbody>
 		</table>
-		<button class="btn btn-success" id="view-chart">Посмотреть график</button>
+		<button class="btn btn-success d-none" id="view-chart">Посмотреть график</button>
 		<div class="visually-hidden" id="chartForm">
 			<canvas id="myChart"></canvas>
 		</div>
