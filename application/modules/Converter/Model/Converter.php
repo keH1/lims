@@ -44,6 +44,8 @@ class Converter extends Model
 
     public function convertDocxToPdf($docxPath = null, $outputFileName = null)
     {
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+        
         $wkhtmltopdfPath = '/usr/local/bin/wkhtmltopdf';
 
         try {
@@ -83,14 +85,20 @@ class Converter extends Model
                     <title>' . htmlspecialchars($outputFileName) . '</title>
                     <style>
                         body { font-family: Arial, sans-serif; margin: 20px; }
-                        table { border-collapse: collapse; width: 100%; }
-                        td, th { border: 1px solid #ddd; padding: 8px; }
+                        table { border-collapse: collapse; width: 100%; border: none !important; }
+                        table * { border: none !important; }
+                        td, th { border: none !important; padding: 8px; }
                         h1, h2, h3 { color: #333; }
                     </style>
                 </head>
                 <body>' . $html . '
                 </body>
             </html>';
+            
+            $html = preg_replace('/<table([^>]*)border=["\']?[0-9]+["\']?/i', '<table$1border="0"', $html);
+            $html = preg_replace('/<td([^>]*)border=["\']?[0-9]+["\']?/i', '<td$1border="0"', $html);
+            $html = preg_replace('/<th([^>]*)border=["\']?[0-9]+["\']?/i', '<th$1border="0"', $html);
+            $html = preg_replace('/style=(["\'])[^"\']*?border[^"\']*?\1/i', 'style="border:none !important;"', $html);
             
             file_put_contents($htmlFile, $html);
             
