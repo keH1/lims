@@ -125,7 +125,7 @@
             <input type="text" class="form-control search" disabled>
         </th>
         <th scope="col">
-            <input type="text" class="form-control search">
+            <input type="text" class="form-control search" disabled>
         </th>
         <th scope="col">
             <input type="text" class="form-control search">
