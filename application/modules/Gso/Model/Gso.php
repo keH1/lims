@@ -331,15 +331,62 @@ class Gso extends Model
     public function newUpdateSQL(array $newRecord, string $typeName = null): int
     {
         $nameTable = array_key_first($newRecord);
-        $filter = [$nameTable, $newRecord[$nameTable]['id']];
-        $oldRecord[$nameTable] = $this->getFromSQL('data_for_update', $filter)[0];
+        $recordId = (int)$newRecord[$nameTable]['id'];
 
-        $idFirstAdd = $this->historyToSQL($oldRecord);
-        if (!$idFirstAdd) {
+        $historyId = $this->copyRecordToHistory($nameTable, $recordId);
+
+        if (empty($historyId) || !preg_match('/^[a-zA-Z_]+$/', $nameTable)) {
             return 0;
         }
 
-        return $this->newUpdateToSQL($newRecord);
+        $newRecord[$nameTable]['global_assigned'] = (int)$_SESSION['SESS_AUTH']['USER_ID'];
+        $newRecord[$nameTable]['global_entry_date'] = date('Y-m-d H:i:s');
+
+        $sqlData = $this->prepearTableData($nameTable, $newRecord[$nameTable]);
+
+        return $this->DB->Update($nameTable, $sqlData, "where id = {$recordId}");
+    }
+
+    public function copyRecordToHistory(string $tableName, int $recordId): int
+    {
+        if ($recordId <= 0 || !preg_match('/^[a-zA-Z_]+$/', $tableName)) {
+            return 0;
+        }
+
+        // Таблицы истории
+        $historyTable = $tableName . '_history';
+
+        $globalAssigned = (int)$_SESSION['SESS_AUTH']['USER_ID'];
+        $globalEntryDate = date('Y-m-d H:i:s');
+
+        $columnsMetadata = $this->getColumnsMetadata($historyTable);
+
+        $record = $this->DB->Query("SELECT * FROM {$tableName} WHERE id = {$recordId}")->Fetch();
+
+        $historyData = [];
+        foreach ($columnsMetadata as $column => $meta) {
+            if ($column === 'id_old') {
+                $historyData[$column] = $record['id'];
+            } elseif ($column === 'global_assigned') { // Текущий пользователь
+                $historyData[$column] = $globalAssigned;
+            } elseif ($column === 'global_entry_date') { // Текущая дата
+                $historyData[$column] = $globalEntryDate;
+            } elseif (substr($column, -4) === '_old') { // Старые пользователи и дата
+                $baseField = substr($column, 0, -4);
+                if (isset($record[$baseField])) {
+                    $historyData[$column] = $record[$baseField];
+                }
+            } else {
+                if (isset($record[$column])) {
+                    $historyData[$column] = $record[$column]; // Остальные поля
+                }
+            }
+        }
+
+        $sqlData = $this->prepearTableData($historyTable, $historyData);
+        $insertId = $this->DB->Insert($historyTable, $sqlData);
+
+        return intval($insertId);
     }
 }
 
