@@ -1096,12 +1096,12 @@ class Laboratory extends Model
 		$probe = new Probe();
 
 		$_SESSION['request_post'] = $post;
-		$schemeId = $post["scheme_id"];
+		$schemeId = (int)$post["scheme_id"];
 
 		$schemeItem = $labScheme->getSchemeById($schemeId);
 		// $materialId = $schemeItem["material_type_id"];
 
-		$materialId = $post["material_id"];
+		$materialId = (int)$post["material_id"];
 
 		$materialItem = $labScheme->getMaterialById($materialId);
 		$materialName = $materialItem["NAME"];
@@ -1270,12 +1270,14 @@ class Laboratory extends Model
 
 	public function addPassportData($data)
 	{
-		return $this->DB->insert("oz_passport", $data);
+        $sqlData = $this->prepearTableData('oz_passport', $data);
+		return $this->DB->insert("oz_passport", $sqlData);
 	}
 
 	public function addPassportGost($data)
 	{
-		return $this->DB->insert("oz_passport_gost", $data);
+        $sqlData = $this->prepearTableData('oz_passport_gost', $data);
+		return $this->DB->insert("oz_passport_gost", $sqlData);
 	}
 
 	public function updatePassport($id, $data)

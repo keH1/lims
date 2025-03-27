@@ -68,30 +68,11 @@ class CoalController extends Controller
 		/** @var  Coal $usedModel*/
         $usedModel = $this->model($this->nameModel);
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
+        $filter = $usedModel->prepareFilter($_POST ?? []);
 
-        foreach ($_POST['columns'] as $column) {
-            if ($column['search']['value'] != '') {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        $filter['idCoal'] = $_POST['idCoal'];
-
-        $filter['date_start'] = $_POST['dateStart'];
-        $filter['date_end'] = $_POST['dateEnd'];
+        $filter['idCoal'] = (int)$_POST['idCoal'];
+        $filter['date_start'] = $usedModel->sanitize($_POST['dateStart']);
+        $filter['date_end'] = $usedModel->sanitize($_POST['dateEnd']);
 
         $data = $usedModel->getList($filter);
 
@@ -102,7 +83,7 @@ class CoalController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data

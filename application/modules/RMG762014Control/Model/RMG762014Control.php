@@ -18,8 +18,8 @@ class RMG762014Control extends Model
         $vlkModel = new Vlk;
 
         $umcId = (int)$data['umc_id'];
-        $dateStart = $data['date_start'] ?? '';
-        $dateEnd = $data['date_end'] ?? '';
+        $dateStart = !empty($data['date_start']) ? $this->sanitize($data['date_start']) : '';
+        $dateEnd   = !empty($data['date_end']) ? $this->sanitize($data['date_end']) : '';
 
         $measuring = $vlkModel->getVlkMeasuringByDate($umcId, $dateStart, $dateEnd);
 

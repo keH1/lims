@@ -43,31 +43,7 @@ class SafetyTrainingController extends Controller
         /** @var SafetyTraining $safetyTrainingModel */
         $safetyTrainingModel = $this->model('SafetyTraining');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ($column['search']['value'] !== '') {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if (!empty($_POST['dateStart'])) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-        }
-
+        $filter = $safetyTrainingModel->prepareFilter($_POST ?? []);
 
         $data = $safetyTrainingModel->getSafetyTrainingLog($filter);
 
@@ -78,7 +54,7 @@ class SafetyTrainingController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,

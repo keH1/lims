@@ -107,34 +107,37 @@ class LabScheme extends Model
 
     public function update($materialId, $materialName)
     {
-        $sql = "UPDATE MATERIALS SET NAME = '$materialName' WHERE ID = {$materialId}";
-        $this->DB->Query($sql);
+        $sqlData = $this->prepearTableData('MATERIALS', ['NAME' => $materialName]);
+        $where = "WHERE ID = {$materialId}";
+        return $this->DB->Update('MATERIALS', $sqlData, $where);
     }
 
     public function updateOz($materialId, $manufacturer)
     {
-        $sql = "UPDATE oz_materials SET manufacturer = '$manufacturer' WHERE ulab_material_id = {$materialId}";
-        $this->DB->Query($sql);
+        $sqlData = $this->prepearTableData('oz_materials', ['manufacturer' => $manufacturer]);
+        $where = "WHERE ulab_material_id = {$materialId}";
+        return $this->DB->Update('oz_materials', $sqlData, $where);
     }
 
     public function add($name)
     {
+        $sqlData = $this->prepearTableData('MATERIALS', ['NAME' => $name]);
+        $result = $this->DB->Insert('MATERIALS', $sqlData);
 
-        $sql = "INSERT INTO MATERIALS (NAME)
-                VALUES ('{$name}')";
-        $this->DB->Query($sql);
-
-        return $this->DB->LastID();
+        return intval($result);
     }
 
     public function addToOz($ulabMaterialId, $manufacturer, $type)
     {
-        $sql = "INSERT INTO oz_materials (ulab_material_id, manufacturer, type)
-                VALUES ({$ulabMaterialId}, '{$manufacturer}', '{$type}')";
+        $data = [
+            'ulab_material_id' => $ulabMaterialId,
+            'manufacturer' => $manufacturer,
+            'type' => $type,
+        ];
+        $sqlData = $this->prepearTableData('oz_materials', $data);
+        $result = $this->DB->Insert('oz_materials', $sqlData);
 
-        $this->DB->query($sql);
-
-        return $this->DB->LastID();
+        return intval($result);
     }
 
     public function delete($ulabMaterialId)
@@ -145,22 +148,16 @@ class LabScheme extends Model
 
     public function addScheme($materialId, $schemeName, $gostArr = [])
     {
-        $sql = "INSERT INTO oz_scheme (material_id, name) 
-                VALUES ({$materialId}, '{$schemeName}')";
-
-        $this->DB->query($sql);
-
-        $schemeId = $this->DB->LastID();
+        $sqlData = $this->prepearTableData('oz_scheme', ['material_id' => $materialId, 'name' => $schemeName]);
+        $result = $this->DB->Insert('oz_scheme', $sqlData);
+        $schemeId = intval($result);
 
         if (!empty($gostArr)) {
             foreach ($gostArr as $gostId) {
-                $sql = "INSERT INTO oz_scheme_gost (scheme_id, gost_id)
-                VALUES ({$schemeId}, '{$gostId}')";
-
-                $this->DB->query($sql);
+                $sqlData = $this->prepearTableData('oz_scheme_gost', ['scheme_id' => $schemeId, 'gost_id' => $gostId]);
+                $this->DB->Insert('oz_scheme_gost', $sqlData);
             }
         }
-
 
         return $schemeId;
     }
@@ -295,12 +292,18 @@ class LabScheme extends Model
 
     public function addGostToScheme($schemeId, $gostId, $rangeFrom, $rangeBefore, $laboratoryStatus, $param)
     {
-        $sql = "INSERT INTO oz_scheme_gost (scheme_id, method_id, range_from, range_before, laboratory_status, param)
-                VALUES ({$schemeId}, {$gostId}, {$rangeFrom}, {$rangeBefore}, {$laboratoryStatus}, '{$param}')";
+        $data = [
+            'scheme_id' => $schemeId,
+            'method_id' => $gostId,
+            'range_from' => $rangeFrom,
+            'range_before' => $rangeBefore,
+            'laboratory_status' => $laboratoryStatus,
+            'param' => $param,
+        ];
+        $sqlData = $this->prepearTableData('oz_scheme_gost', $data);
+        $result = $this->DB->Insert('oz_scheme_gost', $sqlData);
 
-        $this->DB->query($sql);
-
-        return $this->DB->LastID();
+        return intval($result);
     }
 
     public function updateGostToScheme($schemeGostId, $data)

@@ -138,7 +138,7 @@ class FsaController extends Controller
         /** @var FsaProtocol $fsaModel */
         $fsaModel = $this->model('FsaProtocol');
 
-        $resultCreate = $fsaModel->createXMLProtocol($_POST['protocol_id']);
+        $resultCreate = $fsaModel->createXMLProtocol((int)$_POST['protocol_id']);
 
         if ( $resultCreate['success'] ) {
             $this->showSuccessMessage("XML протокола создан");
@@ -264,14 +264,7 @@ class FsaController extends Controller
         /** @var Fsa $fsa */
         $fsa = $this->model('Fsa');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],   // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
+        $filter = $fsa->prepareFilter($_POST ?? []);
 
         $data = $fsa->getDataToJournalHistory($filter);
 
@@ -282,7 +275,7 @@ class FsaController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -304,28 +297,10 @@ class FsaController extends Controller
         /** @var FsaProtocol $fsa */
         $fsa = $this->model('FsaProtocol');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],   // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $fsa->prepareFilter($_POST ?? []);
 
         if ( !empty($_POST['protocol_id']) ) {
-            $filter['search']['protocol_id'] = $_POST['protocol_id'];
+            $filter['search']['protocol_id'] = (int)$_POST['protocol_id'];
         }
 
         $data = $fsa->getDataToJournalXml($filter);
@@ -337,7 +312,7 @@ class FsaController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -359,7 +334,7 @@ class FsaController extends Controller
         /** @var FsaProtocol $fsaProtocolModel */
         $fsaProtocolModel = $this->model('FsaProtocol');
 
-        $resultUpload = $fsaProtocolModel->uploadSigProtocol($_FILES["file"], $_POST['protocol_id']);
+        $resultUpload = $fsaProtocolModel->uploadSigProtocol($_FILES["file"], (int)$_POST['protocol_id']);
 
         echo json_encode($resultUpload, JSON_UNESCAPED_UNICODE);
     }
@@ -377,7 +352,7 @@ class FsaController extends Controller
         /** @var FsaProtocol $fsaProtocolModel */
         $fsaProtocolModel = $this->model('FsaProtocol');
 
-        $result = $fsaProtocolModel->saveSig($_POST['id'], $_POST['sign']);
+        $result = $fsaProtocolModel->saveSig((int)$_POST['id'], $_POST['sign']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }

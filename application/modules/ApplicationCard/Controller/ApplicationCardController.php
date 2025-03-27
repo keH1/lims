@@ -89,7 +89,7 @@ class ApplicationCardController extends Controller
 
         /** @var  ApplicationCard $appCard */
         $appCard = $this->model('ApplicationCard');
-        $data = $appCard->getDataToJournal($rowId, $_POST['scheme_id']);
+        $data = $appCard->getDataToJournal((int)$rowId, $_POST['scheme_id']);
 
 
         $jsonData = [

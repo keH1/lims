@@ -61,7 +61,9 @@ class StandarttitrController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $data = $usedModel->getList($this->postToFilter($_POST));
+        $filter = $usedModel->postToFilter($_POST ?? []);
+
+        $data = $usedModel->getList($filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -70,7 +72,7 @@ class StandarttitrController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -154,11 +156,10 @@ class StandarttitrController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $filter['id'] = $_POST['which_select_id'];
-        $filter['type'] = $_POST['type'];
+        $filter['id'] = (int)$_POST['which_select_id'];
+        $filter['type'] = $usedModel->sanitize($_POST['type']);
 
         $data = $usedModel->getUpdateData($filter);
-
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }

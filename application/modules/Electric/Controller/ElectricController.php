@@ -59,13 +59,15 @@ class ElectricController extends Controller
         /** @var Electric $usedModel */
         $usedModel = $this->model('Electric');
 
-        $data = $usedModel->getList($this->postToFilter($_POST));
+        $filter = $usedModel->postToFilter($_POST ?? []);
+
+        $data = $usedModel->getList($filter);
 
 		foreach ($data as $k => $item) {
 			if ($k == 'recordsTotal' || $k == 'recordsFiltered' ) {
 				continue;
 			}
-//			$usedModel->pre($item, false);
+
 			$item['voltage_UA'] = number_format((float)$item['voltage_UA'], 1, '.');
 			$item['voltage_UB'] = number_format((float)$item['voltage_UB'], 1, '.');
 			$item['voltage_UC'] = number_format((float)$item['voltage_UC'], 1, '.');
@@ -81,7 +83,7 @@ class ElectricController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data

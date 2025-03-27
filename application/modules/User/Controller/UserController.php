@@ -148,28 +148,10 @@ class UserController extends Controller
 
         $APPLICATION->RestartBuffer();
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( !empty($column['search']['value']) ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
         /** @var User $userModel */
         $userModel = $this->model('User');
+
+        $filter = $userModel->prepareFilter($_POST ?? []);
 
         $data = $userModel->getUsersForStatusJournal($filter);
 
@@ -180,7 +162,7 @@ class UserController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -231,7 +213,7 @@ class UserController extends Controller
         /** @var  User $userModel */
         $userModel = $this->model('User');
 
-        $userModel->updateReplacement($_POST['user_id'], $_POST['replacementId']);
+        $userModel->updateReplacement((int)$_POST['user_id'], (int)$_POST['replacementId']);
 
         $this->showSuccessMessage("Статусы успешно обновлены");
 
@@ -256,7 +238,6 @@ class UserController extends Controller
         }
 
         $this->showSuccessMessage("Статусы успешно обновлены");
-        //$this->redirect("/permission/users/");
     }
 
     /**
@@ -271,13 +252,12 @@ class UserController extends Controller
 
         $usersData = $_POST['array_update_users'];
         foreach ($usersData as $userData) {
-              $userId = $userData['user_id'];
-              $replacementId = $userData['replacement_id'];
+              $userId = (int)$userData['user_id'];
+              $replacementId = (int)$userData['replacement_id'];
               $userModel->updateReplacement($userId, $replacementId);
         }
 
         $this->showSuccessMessage("Статусы успешно обновлены");
-        //$this->redirect("/permission/users/");
     }
 
     /**
@@ -298,7 +278,6 @@ class UserController extends Controller
         }
 
         $this->showSuccessMessage("Статусы успешно обновлены");
-        //$this->redirect("/permission/users/");
     }
 
     /**
@@ -319,7 +298,6 @@ class UserController extends Controller
         }
 
         $this->showSuccessMessage("Статусы успешно обновлены");
-        //$this->redirect("/permission/users/");
     }
 
     /**

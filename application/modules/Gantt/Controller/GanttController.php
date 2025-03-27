@@ -229,7 +229,7 @@ class GanttController extends Controller
         }
 
         $gantt = new Gantt();
-        $data = $gantt->getUser($_POST['id'], empty($_POST['project_id']) ? null : $_POST['project_id']);
+        $data = $gantt->getUser((int)$_POST['id'], empty($_POST['project_id']) ? null : (int)$_POST['project_id']);
 
         $response['data'] = $data;
 
@@ -264,7 +264,7 @@ class GanttController extends Controller
         }
 
         $gantt = new Gantt();
-        $data = $gantt->getProject($_POST['id'], $_POST['user_id']);
+        $data = $gantt->getProject($_POST['id'], empty($_POST['user_id']) ? null : (int)$_POST['user_id']);
 
         $response['data'] = $data;
 
@@ -307,8 +307,8 @@ class GanttController extends Controller
         $attributes = [
             'project_name' => $_POST['project_name'],
         ];
-        $projectId = $_POST['project_id'];
-        $memberId = $_POST['project_member_id'];
+        $projectId = (int)$_POST['project_id'];
+        $memberId = (int)$_POST['project_member_id'];
         $dates = $_POST['dates'];
 
         $gantt = new Gantt();

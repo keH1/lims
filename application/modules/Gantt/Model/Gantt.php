@@ -163,6 +163,8 @@ class Gantt extends Model
         }
 
         foreach ($dates as $date) {
+            $rowId = (int)$date['row_id'];
+
             $attrs = [
                 'start_date' => $date['start_date'],
                 'end_date' => empty($date['end_date']) ? null : $date['end_date'],
@@ -172,7 +174,7 @@ class Gantt extends Model
                 continue;
             }
 
-            $this->DB->Update("gantt_user_projects", $this->prepareDataForSqlQuery($attrs), "WHERE id = {$date['row_id']}");
+            $this->DB->Update("gantt_user_projects", $this->prepareDataForSqlQuery($attrs), "WHERE id = {$rowId}");
         }
 
         return intval($result);
@@ -187,6 +189,8 @@ class Gantt extends Model
         }
 
         foreach ($dates as $date) {
+            $rowId = (int)$date['row_id'];
+
             $attrs = [
                 'start_date' => $date['start_date'],
                 'end_date' => empty($date['end_date']) ? null : $date['end_date'],
@@ -196,7 +200,7 @@ class Gantt extends Model
                 continue;
             }
 
-            $this->DB->Update("gantt_user_projects", $this->prepareDataForSqlQuery($attrs), "WHERE id = {$date['row_id']}");
+            $this->DB->Update("gantt_user_projects", $this->prepareDataForSqlQuery($attrs), "WHERE id = {$rowId}");
         }
 
         return intval($result);

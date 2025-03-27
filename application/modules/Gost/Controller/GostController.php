@@ -199,7 +199,7 @@ class GostController extends Controller
 //        $this->data['assigned_list'] = $userModel->getAssignedUserListByLab($this->data['lab']);
 //        $this->data['lab_user_list'] = $labModel->getLabAndUser();
         $this->data['user_list'] = $userModel->getUserList1();
-        
+
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
 
@@ -263,7 +263,8 @@ class GostController extends Controller
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
-        $location   = "/gost/method/{$_POST['id']}";
+        $methodId = (int)$_POST['id'];
+        $location   = "/gost/method/{$methodId}";
 
         $data = $_POST['form'];
 
@@ -284,14 +285,13 @@ class GostController extends Controller
         $data['is_text_fact'] = $_POST['form']['is_text_fact'] ?? 0;
         $data['is_range_text'] = $_POST['form']['is_range_text'] ?? 0;
 
+        $methodsModel->updateLab($methodId, $data['lab']);
+        $methodsModel->updateRoom($methodId, $data['room']);
+        $methodsModel->updateAssigned($methodId, $data['assigned']);
+        $methodsModel->updateUncertainty($methodId, $_POST['uncertainty']);
+        $methodsModel->updateOborud($methodId, $_POST['oborud']);
 
-        $methodsModel->updateLab($_POST['id'], $data['lab']);
-        $methodsModel->updateRoom($_POST['id'], $data['room']);
-        $methodsModel->updateAssigned($_POST['id'], $_POST['form']['assigned']);
-        $methodsModel->updateUncertainty($_POST['id'], $_POST['uncertainty']);
-        $methodsModel->updateOborud($_POST['id'], $_POST['oborud']);
-
-        $result = $methodsModel->update($_POST['id'], $data);
+        $result = $methodsModel->update($methodId, $data);
 
         if ( empty($result) ) {
             $this->showErrorMessage("Методику не удалось обновить");
@@ -334,7 +334,7 @@ class GostController extends Controller
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
-        $result = $methodsModel->copyMethod($_POST['method_id']);
+        $result = $methodsModel->copyMethod((int)$_POST['method_id']);
 
         if ( empty($result) ) {
             $this->showErrorMessage("Методику не удалось скопировать");
@@ -395,7 +395,7 @@ class GostController extends Controller
 
         $data['is_confirm'] = 1;
 
-        $result = $methodsModel->update($id, $data);
+        $result = $methodsModel->update((int)$id, $data);
 
         if ( empty($result) ) {
             $this->showErrorMessage("Методику не удалось подтвердить");
@@ -446,7 +446,7 @@ class GostController extends Controller
 
         if ( !empty($_POST['id']) ) { // редактирование
             $idGost = $_POST['id'];
-            $gostModel->updateGost($_POST['id'], $_POST['form']);
+            $gostModel->updateGost((int)$_POST['id'], $_POST['form']);
         } else { // создание
             $idGost = $gostModel->addGost($_POST['form']);
         }
@@ -615,37 +615,7 @@ class GostController extends Controller
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-//        if ( !empty($_POST['dateStart']) ) {
-//            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-//            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-//        }
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
+        $filter = $methodsModel->prepareFilter($_POST ?? []);
 
         $data = $methodsModel->getJournalList($filter);
 
@@ -656,7 +626,7 @@ class GostController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -678,37 +648,7 @@ class GostController extends Controller
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],
-                'start'     => $_POST['start'],
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-        }
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
+        $filter = $methodsModel->prepareFilter($_POST ?? []);
 
         $data = $methodsModel->getJournalReportList($filter);
 
@@ -744,33 +684,7 @@ class GostController extends Controller
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
+        $filter = $methodsModel->prepareFilter($_POST ?? []);
 
         $data = $methodsModel->getJournalMatrixList($filter);
 
@@ -783,7 +697,7 @@ class GostController extends Controller
         unset($data['columns']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -842,7 +756,7 @@ class GostController extends Controller
         /** @var Methods $methodModel */
         $methodModel = $this->model('Methods');
 
-        $result = $methodModel->setNewPrice($_POST['method_id'], $_POST['new_price']);
+        $result = $methodModel->setNewPrice((int)$_POST['method_id'], $_POST['new_price']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -895,33 +809,7 @@ class GostController extends Controller
 		/** @var Methods $methodsModel */
 		$methodsModel = $this->model('Methods');
 
-		$filter = [
-			'paginate' => [
-				'length'    => $_POST['length'], // кол-во строк на страницу
-				'start'     => $_POST['start'],  // текущая страница
-			],
-			'search' => [],
-			'order' => []
-		];
-
-		foreach ($_POST['columns'] as $column) {
-			if ( $column['search']['value'] !== '' ) {
-				$filter['search'][$column['data']] = $column['search']['value'];
-			}
-		}
-
-		if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-			$filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-			$filter['order']['dir'] = $_POST['order'][0]['dir'];
-		}
-
-		if ( !empty($_POST['dateStart']) ) {
-			$filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-			$filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-		}
-		if ( !empty($_POST['everywhere']) ) {
-			$filter['search']['everywhere'] = $_POST['everywhere'];
-		}
+        $filter = $methodsModel->prepareFilter($_POST ?? []);
 
 		$data = $methodsModel->statsUsedTests($filter);
 
@@ -932,7 +820,7 @@ class GostController extends Controller
 		unset($data['recordsFiltered']);
 
 		$jsonData = [
-			"draw" => $_POST['draw'],
+			"draw" => (int)$_POST['draw'],
 			"recordsTotal" => $recordsTotal,
 			"recordsFiltered" => $recordsFiltered,
 			"data" => $data
@@ -954,28 +842,9 @@ class GostController extends Controller
 		/** @var Methods $methodsModel */
 		$methodsModel = $this->model('Methods');
 
-		$filter = [
-			'paginate' => [
-				'length'    => $_POST['length'], // кол-во строк на страницу
-				'start'     => $_POST['start'],  // текущая страница
-			],
-			'search' => [],
-			'order' => []
-		];
+        $filter = $methodsModel->prepareFilter($_POST ?? []);
 
-		foreach ($_POST['columns'] as $column) {
-			if ( $column['search']['value'] !== '' ) {
-				$filter['search'][$column['data']] = $column['search']['value'];
-			}
-		}
-
-		if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-			$filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-			$filter['order']['dir'] = $_POST['order'][0]['dir'];
-		}
-
-
-		$filter['search']['id'] = $_POST['id'] ?? 0;
+		$filter['search']['id'] = (int)$_POST['id'] ?? 0;
 
 		$data = $methodsModel->methodsJournal($filter);
 
@@ -986,7 +855,7 @@ class GostController extends Controller
 		unset($data['recordsFiltered']);
 
 		$jsonData = [
-			"draw" => $_POST['draw'],
+			"draw" => (int)$_POST['draw'],
 			"recordsTotal" => $recordsTotal,
 			"recordsFiltered" => $recordsFiltered,
 			"data" => $data

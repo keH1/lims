@@ -64,30 +64,11 @@ class ScaleController extends Controller
 		/** @var  ScaleCalibration $usedModel*/
         $usedModel = $this->model($this->nameModel);
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],
-                'start' => $_POST['start'],
-            ],
-            'search' => [],
-            'order' => []
-        ];
+        $filter = $usedModel->prepareFilter($_POST ?? []);
 
-        foreach ($_POST['columns'] as $column) {
-            if ($column['search']['value'] != '') {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        $filter['idScale'] = $_POST['idScale'];
-
-        $filter['date_start'] = $_POST['dateStart'];
-        $filter['date_end'] = $_POST['dateEnd'];
+        $filter['idScale'] = $usedModel->sanitize($_POST['idScale']);
+        $filter['date_start'] = $usedModel->sanitize($_POST['dateStart']);
+        $filter['date_end'] = $usedModel->sanitize($_POST['dateEnd']);
 
         $data = $usedModel->getList($filter);
 
@@ -98,7 +79,7 @@ class ScaleController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
