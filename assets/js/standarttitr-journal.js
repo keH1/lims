@@ -164,7 +164,7 @@ $(function ($) {
     $('body').on('click', '#standartTitrUpdate', function () {
         let id_standarttitr = $('#selectStandartTitrUpdate').val();
         $('.edit-standarttitr-form-name').html('Редактировать стандарт-титр')
-        $('.entity_id').val(id_standarttitr)
+        $('#standart_titr_id').val(id_standarttitr)
 
         $.ajax({
             url: `/ulab/standarttitr/getStandarttitrUpdate`,
@@ -201,7 +201,6 @@ $(function ($) {
                 which_select_id: idreceive
             },
             success: function (result) {
-                console.log(idreceive)
                 $('#receive_id').val(idreceive)
                 $('#selectFormStandartTitrUpdate').val(result[0].standart_titr_id)
                 $(".number-reactive").text(result[0].standart_titr_number)

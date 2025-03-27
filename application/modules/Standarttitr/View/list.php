@@ -164,7 +164,7 @@
     </div>
     <div class="line-dashed-small"></div>
 
-    <input class="entity_id" type="hidden" name="standart_titr[id]">
+    <input id="standart_titr_id" type="hidden" name="standart_titr[id]">
 
     <div class="row mb-3">
         <div class="col">
