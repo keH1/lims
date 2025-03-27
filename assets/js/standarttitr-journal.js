@@ -69,40 +69,8 @@ $(function ($) {
         pageLength: 25,
         order: [],
         colReorder: true,
-        dom: 'fBrt<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        dom: 'frtB<"bottom"lip>',
+        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX: true,
         fixedHeader: false,
@@ -155,7 +123,8 @@ $(function ($) {
     })
 
     $('.select-standart_titr').select2({
-        placeholder: 'Выбирете стандарт-титр',
+        theme: 'bootstrap-5',
+        placeholder: 'Выберете стандарт-титр',
         width: '100%',
     })
 
@@ -167,7 +136,7 @@ $(function ($) {
         if (number != 'undefined') {
             $('.number-reactive').html(number + " -");
         }
-        if ($('#add-entry-modal-form-second').attr('action') == '/ulab/reactive/updateStandartTitrReceive/') {
+        if ($('#add-entry-modal-form-second').attr('action') == '/ulab/standarttitr/updateStandartTitrReceive/') {
             $('.number-receive').val(numberReceive);
         } else $('.number-receive').val(numberReceive + 1);
         $('.idlibraryreactive').val(idLibraryReactive);
@@ -175,8 +144,8 @@ $(function ($) {
 
     $('#selectStandartTitrUpdate').on('change', function () {
         let selectedID = $(".reactive-update option:selected").data('idreceive')
-        $('#add-entry-modal-form-first').attr('action', '/ulab/reactive/updateStandartTitr/')
-        $('#add-entry-modal-form-second').attr('action', '/ulab/reactive/updateStandartTitrReceive/')
+        $('#add-entry-modal-form-first').attr('action', '/ulab/standarttitr/updateStandartTitr/')
+        $('#add-entry-modal-form-second').attr('action', '/ulab/standarttitr/updateStandartTitrReceive/')
 
         $('.btn-add-entry').each(function () {
             $(this).prop('disabled', true)
@@ -195,6 +164,7 @@ $(function ($) {
     $('body').on('click', '#standartTitrUpdate', function () {
         let id_standarttitr = $('#selectStandartTitrUpdate').val();
         $('.edit-standarttitr-form-name').html('Редактировать стандарт-титр')
+        $('#standart_titr_id').val(id_standarttitr)
 
         $.ajax({
             url: `/ulab/standarttitr/getStandarttitrUpdate`,
@@ -205,8 +175,6 @@ $(function ($) {
                 which_select_id: id_standarttitr
             },
             success: function (result) {
-                console.log(result)
-
                 $("[name*='standart_titr[name]']").val(result[0].name)
                 $("[name*='standart_titr[number]']").val(result[0].number)
                 if(result[0].is_precursor == 1){
@@ -223,6 +191,7 @@ $(function ($) {
     $('body').on('click', '#receiveUpdate', function () {
         let idreceive = $('#selectStandartTitrUpdate option:selected').data('idreceive')
         $('.edit-receive-standarttitr-form-name').html('Редактировать проводку')
+        $('#receive_id').val(idreceive)
         $.ajax({
             url: `/ulab/standarttitr/getStandarttitrUpdate`,
             type: "POST",
@@ -232,7 +201,7 @@ $(function ($) {
                 which_select_id: idreceive
             },
             success: function (result) {
-                console.log(result)
+                $('#receive_id').val(idreceive)
                 $('#selectFormStandartTitrUpdate').val(result[0].standart_titr_id)
                 $(".number-reactive").text(result[0].standart_titr_number)
                 $("[name*='receive[number]']").val(result[0].number)
