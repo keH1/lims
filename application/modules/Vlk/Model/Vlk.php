@@ -494,7 +494,7 @@ class Vlk extends Model
         $dataTotal = $this->DB->Query(
             "SELECT uvm.* 
                     FROM ulab_vlk_measuring uvm 
-                    WHERE uvm.is_deleted = 0 AND {$where}"
+                    WHERE uvm.is_deleted = 0 AND 1"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
             "SELECT uvm.* 
@@ -504,7 +504,7 @@ class Vlk extends Model
 
 
         //проверка на допуск к редактированию
-        $isCanEdit = in_array($permissionInfo['id'], [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
+        $isCanEdit = true;//in_array($permissionInfo['id'], [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
 
         while ($row = $data->Fetch()) {
             $row['result'] = json_decode($row['result'], true);

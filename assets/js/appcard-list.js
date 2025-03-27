@@ -41,7 +41,7 @@ $(function ($) {
                 render: function (data, type, item) {
                     if (item.file_path) {
                         return `<div class="block">
-                                <a href="${item.file_path}" target="_blank"></a>
+                                <a href="${item.file_path}" ></a>
                                 <div class="image" style="z-index: 9999">
                                     <img src="${item.file_path}" width="300" height="400">
                                 </div>

@@ -39,24 +39,24 @@
                     <div class="form-group col-sm-5">
                       <label for="city">Населенный пункт <span class="redStars">*</span></label>
                       <input type="text" class="form-control" value="<?= $this->data["city"] ?>" readonly>
-
                     </div>
+
                     <div class="form-group col-sm-5">
                       <label for="object">Объект</label>
                       <input type="text" class="form-control" value="<?= $this->data["object"] ?>" readonly>
-
                     </div>
+
                     <!--TODO: Уточнить про "Километраж" и доработать-->
                     <div class="form-group col-sm-2">
                       <lable for="kilometer">Км <span class="redStars">*</span></lable>
                       <input type="text" class="form-control" value="<?= $this->data["km"] ?>" readonly>
                     </div>
                   </div>
+
                   <div class="row mb-2">
                     <div class="form-group col-sm-6">
                       <label for="company">Клиент <span class="redStars">*</span></label>
                       <input type="text" class="form-control" value="<?= $this->data["company"] ?>" readonly>
-
                     </div>
 
                     <div class="form-group col-sm-6">
@@ -74,12 +74,14 @@
                              name="date_begin"
                              value="<?= $this->data['date_begin'] ?>" readonly>
                     </div>
+
                     <div class="form-group col-sm-5">
                       <lable for="dateEnding">Дата окончания<span class="redStars">*</span>
                       </lable>
                       <input type="date" class="form-control date-ending" id="dateEnding"
                              name="date_end" value="<?= $this->data['date_end'] ?>" readonly>
                     </div>
+
                     <div class="form-group col-sm-2">
                       <lable for="totalDays">Всего</lable>
                       <input type="text" class="form-control" value="<?= $this->data['total_days'] ?>" readonly>
@@ -103,7 +105,6 @@
                       <strong class="mb-2 d-block">Транспорт</strong>
                       <div class="mb-2">
                         <input type="text" class="form-control" value="<?= $this->data['transport'] ?>" readonly>
-
                       </div>
                     </div>
 
@@ -142,7 +143,7 @@
                             <a
                               class="btn btn-primary position-relative rounded fa-solid fa-file"
                               href="/ulab/upload/secondment/archive/ticket_payment/<?= $this->data["id"] ?>/<?= $ticket ?>"
-                              target="_blank"
+                              
                               style="margin-left: 4px; font-size: 16px;"
                               title="<?= $ticket ?>"
                               data-js-file-download
@@ -178,7 +179,7 @@
                               <a
                                 class="btn btn-primary position-relative rounded fa-solid fa-file"
                                 href="/ulab/upload/secondment/archive/fuel_payment/<?= $this->data["id"] ?>/<?= $file ?>"
-                                target="_blank"
+                                
                                 style="margin-left: 4px; font-size: 16px;"
                                 title="<?= $file ?>"
                                 data-js-file-download
@@ -214,7 +215,7 @@
                               <a
                                 class="btn btn-primary position-relative rounded fa-solid fa-file"
                                 href="/ulab/upload/secondment/archive/fuel_payment_object/<?= $this->data["id"] ?>/<?= $file ?>"
-                                target="_blank"
+                                
                                 style="margin-left: 4px; font-size: 16px;"
                                 title="<?= $file ?>"
                                 data-js-file-download
@@ -249,7 +250,7 @@
                               <a
                                 class="btn btn-primary position-relative rounded fa-solid fa-file"
                                 href="/ulab/upload/secondment/archive/per_diem/<?= $this->data["id"] ?>/<?= $file ?>"
-                                target="_blank"
+                                
                                 style="margin-left: 4px; font-size: 16px;"
                                 title="<?= $file ?>"
                                 data-js-file-download
@@ -285,7 +286,7 @@
                               <a
                                 class="btn btn-primary position-relative rounded fa-solid fa-file"
                                 href="/ulab/upload/secondment/archive/accommodation/<?= $this->data["id"] ?>/<?= $file ?>"
-                                target="_blank"
+                                
                                 style="margin-left: 4px; font-size: 16px;"
                                 title="<?= $file ?>"
                                 data-js-file-download
@@ -328,7 +329,7 @@
                                   <a
                                     class="btn btn-primary position-relative rounded fa-solid fa-file"
                                     href="/ulab/upload/secondment/archive/other/<?= $this->data['secondment']['s_id'] ?>/<?= $field["id"] ?>/<?= $file ?>"
-                                    target="_blank"
+                                    
                                     style="margin-left: 4px; font-size: 16px;"
                                     title="<?= $file ?>"
                                     data-js-file-download
@@ -406,7 +407,7 @@
                       <a
                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                         href="<?= $this->data['fileArr']['edict'][0] ?>"
-                        target="_blank"
+                        
                         style="margin-left: 5px; font-size: 16px"
                         title="<?= $this->data['fileArr']['edict'][0] ?>"
                         download
@@ -421,7 +422,7 @@
                       <a
                         class="btn btn-primary position-relative rounded fa-solid fa-file"
                         href="<?= $this->data['fileArr']['service_assignment'] ?><?= $this->data['fileArr']['service_assignment'] ?>?v=<?= rand() ?>"
-                        target="_blank"
+                        
                         style="margin-left: 5px; font-size: 16px"
                         title="<?= $this->data['service_assignment']['file'] ?>"
                         download

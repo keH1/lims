@@ -77,7 +77,8 @@ $(function ($) {
             inputAverageValue = averageWrapper.find('#averageValue'),
             inputActualValue = averageWrapper.find('.actual-value');
         let methodType = averageWrapper.find('#methodType').val(),
-            decimalPlaces = +averageWrapper.find('#decimalPlaces').val();
+            decimalPlaces = +averageWrapper.find('#decimalPlaces').val(),
+            messageError = "";
 
         let actualValueEmpty = inputActualValue.filter(function () {
             return $(this).val() === null || $(this).val() === '';
@@ -85,9 +86,11 @@ $(function ($) {
 
         averageWrapper.find(".messages").remove();
 
-        if (actualValueEmpty.length) {
-            let messageError =
-                "Внимание! Для расчета значений заполните все фактические значения!";
+        if (actualValueEmpty.length || inputActualValue.length == 1) {
+            if (inputActualValue.length == 1)
+                messageError = "Внимание! Для расчета необходимо больше 1-го значения!";
+            else
+                messageError = "Внимание! Для расчета значений заполните все фактические значения!";
 
             let messageErrorContent = getMessageErrorContent(messageError)
 
@@ -122,6 +125,4 @@ $(function ($) {
         }
         inputAverageValue.val(roundAverage);
     });
-
-
 });

@@ -18,7 +18,6 @@ class Secondment extends Model
     }
 
     /**
-     * @param $userId
      * @param $filter
      * @return array
      */
@@ -38,7 +37,6 @@ class Secondment extends Model
             // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
             // слева без пробела, справа всегда AND пробел
 
-
             // работа с фильтрами
             if (!empty($filter['search'])) {
                 // Заявка
@@ -51,7 +49,7 @@ class Secondment extends Model
                 }
                 // Населенный пункт
                 if (isset($filter['search']['s_s_name'])) {
-                    $where .= "s_s.name LIKE '%{$filter['search']['s_s_name']}%' AND ";
+                    $where .= "f_s.settlement LIKE '%{$filter['search']['s_s_name']}%' AND ";
                 }
                 // Объект
                 if (isset($filter['search']['d_o_name'])) {
@@ -67,6 +65,9 @@ class Secondment extends Model
                 }
                 // Запланированные затраты(Итого)
                 if (isset($filter['search']['planned_expenses'])) {
+                    if ( $filter['search']['planned_expenses'] == 0 ) {
+                        $filter['search']['planned_expenses'] = '0.00';
+                    }
                     $where .= "s.planned_expenses LIKE '%{$filter['search']['planned_expenses']}%' AND ";
                 }
                 // Фактические затраты(Всего потрачено)
@@ -96,22 +97,6 @@ class Secondment extends Model
 
                 if (isset($filter['search']['oborud_list'])) {
                     $where .= "b_o.OBJECT LIKE '%{$filter['search']['oborud_list']}%' AND ";
-                }
-
-                // везде
-                if (isset($filter['search']['everywhere'])) {
-                    $where .=
-                        "(
-                        CONCAT(s.id, '/', IF(YEAR(s.created_at)  % 10, SUBSTR(YEAR(s.created_at), -2), YEAR(s.created_at))) LIKE '%{$filter['search']['everywhere']}%' 
-                        OR CONCAT(b_u.LAST_NAME, ' ', b_u.NAME, ' ', b_u.SECOND_NAME) LIKE '%{$filter['search']['everywhere']}%' 
-                        OR s_s.name LIKE '%{$filter['search']['everywhere']}%' 
-                        OR d_o.name LIKE '%{$filter['search']['everywhere']}%' 
-                        OR LOCATE('{$filter['search']['everywhere']}', DATE_FORMAT(s.date_begin, '%d.%m.%Y')) > 0 
-                        OR LOCATE('{$filter['search']['date_end']}', DATE_FORMAT(s.date_end, '%d.%m.%Y')) > 0  
-                        OR s.planned_expenses LIKE '%{$filter['search']['everywhere']}%'  
-                        OR s.total_spent LIKE '%{$filter['search']['everywhere']}%'  
-                        OR s.overspending LIKE '%{$filter['search']['everywhere']}%'  
-                        ) AND ";
                 }
             }
 
@@ -170,11 +155,6 @@ class Secondment extends Model
             }
         }
 
-        if (isset($filter["managerAccess"])) {
-            $useridList = $filter["managerAccess"];
-            $where .= "s.user_id IN ({$useridList}) AND ";
-        }
-
         $where .= "1 ";
 
         $result = [];
@@ -222,6 +202,7 @@ class Secondment extends Model
              LEFT JOIN settlements AS s_s ON s.settlement_id = s_s.id 
              LEFT JOIN DEV_OBJECTS AS d_o ON s.object_id = d_o.ID
              LEFT JOIN secondment_oborud AS s_o ON s_o.secondment_id = s.id 
+             LEFT JOIN full_settlements AS f_s ON d_o.CITY_ID = f_s.id 
              LEFT JOIN ba_oborud AS b_o ON b_o.ID = s_o.oborud_id 
              WHERE {$where} 
              GROUP BY s.id"
@@ -236,10 +217,7 @@ class Secondment extends Model
 
             $row['overspending'] = $row['overspending'] ?: '';
 
-            //Если отчет подтвердили более 1 пользователя то показывает "Фактические затраты"(Всего потрачено)
-          //  $row['confirmeds_report'] = json_decode($row['confirmeds_report'], true);
-         //   $row['total_spent'] = !empty($row['total_spent']) && !empty($row['confirmeds_report']) &&
-           // count($row['confirmeds_report']) > 1 ? $row['total_spent'] : '';
+            // Если отчет подтвердили более 1 пользователя, то показывает "Фактические затраты"(Всего потрачено)
             $row['total_spent'] = $row['confirmeds_report'] > 1 ? $row['total_spent'] : '';
 
             $row['planned_expenses'] = $row['planned_expenses'] ?: '';
@@ -261,6 +239,7 @@ class Secondment extends Model
         return $result;
     }
 
+
     /**
      * @param array $data
      * @param string $table
@@ -279,10 +258,12 @@ class Secondment extends Model
         return intval($result);
     }
 
+
     /**
      * @param array $data
      * @param string $table
      * @param int $id
+     * @return mixed
      */
     public function update(array $data, string $table, int $id)
     {
@@ -656,7 +637,7 @@ class Secondment extends Model
     }
 
     // Получить список городов
-    public function getCityArr($name)
+    public function getCityArr($name = '')
     {
         $response = [];
 

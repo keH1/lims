@@ -68,7 +68,7 @@ $(function ($) {
         $('.method-not-found').hide()
 
         let tr = `<tr>
-                    <td><a href="/obl_acc.php?ID=${gostId}" target="_blank">${gost}</a><input type="hidden" value="${gostId}" name="arrGost[]"></td>
+                    <td><a href="/obl_acc.php?ID=${gostId}" >${gost}</a><input type="hidden" value="${gostId}" name="arrGost[]"></td>
                     <td>${spec}</td>
                     <td><button type="button" class="btn btn-outline-danger del-gost btn-square-new"><i class="fa-solid fa-xmark"></i></button></td>
                 </tr>`
@@ -522,7 +522,7 @@ function getHtmlMethod(methodList, normDocList, gostNumber = 0) {
                             <option value="">--</option>
                             ${optionMethod}
                         </select>
-                        <a class="btn btn-outline-secondary method-link disabled" target="_blank" title="Перейти в методику" href="">
+                        <a class="btn btn-outline-secondary method-link disabled"  title="Перейти в методику" href="">
                             <i class="fa-solid fa-right-to-bracket"></i>
                         </a>
                     </div>
@@ -532,7 +532,7 @@ function getHtmlMethod(methodList, normDocList, gostNumber = 0) {
                         <select class="form-control select2 tu-select" name="form[${gostNumber}][norm_doc_method_id]">
                             ${optionCondition}
                         </select>
-                        <a class="btn btn-outline-secondary tu-link disabled" target="_blank" title="Перейти в ТУ" href="">
+                        <a class="btn btn-outline-secondary tu-link disabled"  title="Перейти в ТУ" href="">
                             <i class="fa-solid fa-right-to-bracket"></i>
                         </a>
                     </div>
@@ -557,7 +557,7 @@ function getHtmlGroupRowTu(groupId = 'new', count = 0) {
                             <select class="form-control select2 tu-select" name="group[${groupId}][tu][${count}][norm_doc_method_id]">
                                 ${htmlTu}
                             </select>
-                            <a class="btn btn-outline-secondary tu-link disabled" target="_blank" title="Перейти" href="">
+                            <a class="btn btn-outline-secondary tu-link disabled"  title="Перейти" href="">
                                 <i class="fa-solid fa-right-to-bracket"></i>
                             </a>
                         </div>

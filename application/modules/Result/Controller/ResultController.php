@@ -164,6 +164,8 @@ class ResultController extends Controller
         $docTemplateModel = $this->model('DocTemplate');
         /** @var Material $materialModel */
         $materialModel = $this->model('Material');
+        /** @var Oborud $oborudModel */
+        $oborudModel = $this->model('Oborud');
 
         $deal = $requestModel->getDealById($dealId);
         if (empty($deal)) {
@@ -196,6 +198,16 @@ class ResultController extends Controller
         $actBase = $requirementModel->getActBase($dealId);
         $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
         $protocol = $resultModel->getProtocolById($selectedProtocol);
+
+        if (!empty($selectedProtocol)) {
+            $this->data['protocol_info'] = $protocol;
+
+            $tzObConnect = $oborudModel->getTzObConnectByProtocolId($selectedProtocol);
+            $oborudsToGosts = $oborudModel->oborudsByProtocolId($selectedProtocol);
+            $this->data['protocol_equipment'] = !empty($tzObConnect) ? $tzObConnect : $oborudsToGosts;
+        } else {
+            $this->data['protocol_equipment'] = [];
+        }
 
         // Если роль "Лаборант", то перенаправляем на карточку лаборанта
         if ($permissionInfo['id'] == LAB_PERMISSION) {
@@ -3724,7 +3736,7 @@ class ResultController extends Controller
 
 
         $dealId = (int)$_POST['deal_id'];
-        $location = "/result/".($dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card')."/{$dealId}";
+        $location = "/result/card_oati/{$dealId}";
 
         $deal = $request->getDealById($dealId);
 
@@ -3840,7 +3852,7 @@ class ResultController extends Controller
         }
 
         $dealId = (int)$_POST['deal_id'];
-        $location = "/result/".($dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card')."/{$dealId}?protocol_id={$protocolId}";
+        $location = "/result/card_oati/{$dealId}?protocol_id={$protocolId}";
 
         if (empty($protocolId) || $protocolId < 0) {
             $this->showErrorMessage("Ошибка отсутствия выбранного протокола");
@@ -3944,9 +3956,8 @@ class ResultController extends Controller
         }
 
         $dealId = (int)$_POST['deal_id'];
-        $method = $dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card';
         $selected = $_POST['selected'] ? '&selected' : '';
-        $location = $protocolId ? "/result/{$method}/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/{$method}/{$_POST['deal_id']}";
+        $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
         $successMessage = isset($_POST['edit_results']) ?
             'Данные протокола успешно разблокированы' : 'Данные протокола успешно заблокированы для редактирования';
         $errorMessage = isset($_POST['edit_results']) ?
@@ -4022,8 +4033,7 @@ class ResultController extends Controller
 
 
         $dealId = (int)$_POST['deal_id'];
-        $location = "/result/".($dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card')."/{$dealId}";
-
+        $location = "/result/card_oati/{$dealId}";
 
         $deal = $request->getDealById($dealId);
 
@@ -4092,10 +4102,8 @@ class ResultController extends Controller
 
 
         $dealId = (int)$_POST['deal_id'];
-        $method = $dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card';
         $selected = $_POST['selected'] ? '&selected' : '';
-        $location = $protocolId ? "/result/{$method}/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/{$method}/{$_POST['deal_id']}";
-
+        $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
 
         $deal = $request->getDealById($dealId);
 
@@ -4168,10 +4176,8 @@ class ResultController extends Controller
 
 
         $dealId = (int)$_POST['deal_id'];
-        $method = $dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card';
         $selected = $_POST['selected'] ? '&selected' : '';
-        $location = $protocolId ? "/result/{$method}/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/{$method}/{$_POST['deal_id']}";
-
+        $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
 
         $deal = $request->getDealById($dealId);
 
@@ -4220,9 +4226,8 @@ class ResultController extends Controller
         }
 
         $dealId = (int)$_POST['deal_id'];
-        $method = $dealId >= DEAL_START_NEW_AREA ? 'resultCard' : 'card';
         $selected = $_POST['selected'] ? '&selected' : '';
-        $location = $protocolId ? "/result/{$method}/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/{$method}/{$_POST['deal_id']}";
+        $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
 
         if ( $dealId >= DEAL_NEW_RESULT ) {
             if (empty($_POST['selected_protocol']) || $protocolId !== $_POST['selected_protocol']) {
@@ -4444,7 +4449,6 @@ class ResultController extends Controller
     public function revertDefaultAjax()
     {
         global $APPLICATION;
-
         $APPLICATION->RestartBuffer();
 
         $response = [
@@ -4461,12 +4465,20 @@ class ResultController extends Controller
             $oborudModel = $this->model('Oborud');
 
             $response = $oborudModel->delTzObConnectByProtocolId($protocolId);
-        }
 
-        if (!empty($response['success'])) {
-            $this->showSuccessMessage('Данные успешно обновлены');
-        } else {
-            $this->showErrorMessage($response['error']['message'] ?: '');
+            if ($response['success']) {
+                $defaultEquipment = $oborudModel->oborudsByProtocolId($protocolId);
+
+                $equipmentIds = !empty($defaultEquipment) ? array_keys($defaultEquipment) : [];
+                sort($equipmentIds);
+
+                $response['default_equipment'] = $defaultEquipment;
+                $response['default_equipment_ids'] = $equipmentIds;
+
+                $this->showSuccessMessage('Данные успешно обновлены');
+            } else {
+                $this->showErrorMessage($response['error']['message'] ?: '');
+            }
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);

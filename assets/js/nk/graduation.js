@@ -85,6 +85,11 @@ $(function ($) {
 
             wrapper.prepend(messageErrorContent);
             resetValue(resetElement);
+            
+            $('html, body').animate({
+                scrollTop: wrapper.find(".messages").offset().top - 100
+            }, 300)
+            
             return false;
         }
 
@@ -108,7 +113,7 @@ $(function ($) {
                 inputMean = $(inputMeans[index]),
                 elemHi = $(inputHi[index]);
 
-            // Среднее значение на участке (если УКС расчитываем среднее по 2 полям)
+            // Среднее значение на участке (если УКС рассчитываем среднее по 2 полям)
             if (measuringDevice === 'УКС') {
                 let mean = (singleValue1 + singleValue2) / 2;
                 let roundMean = round(mean, ONE);
@@ -537,34 +542,48 @@ $(function ($) {
     }
 
     let chartData;
-    function showChart() {
+    function showChart(skipValidation = false) {
         // Очищаем график
         destroyChart();
         $('#chart').attr("src", '');
 
-        // Проверка заполненость полей "Среднее значение на участке" не расчитано"
-        let checkMean =
-            checkEmptyFields(
-                `.mean`,
-                `#graduationWrapper`,
-                '',
-                'Внимание! Поле "Среднее значение на участке" не расчитано!'
-            );
+        if (skipValidation) {
+            let emptyMean = $('.mean').filter(function() {
+                return $(this).val() === null || $(this).val() === ''
+            }).length
+            
+            let emptyShearStrength = $('.shear-strength').filter(function() {
+                return $(this).val() === null || $(this).val() === ''
+            }).length
+            
+            if (emptyMean > 0 || emptyShearStrength > 0) {
+                return false
+            }
+        } else {
+            // Проверка заполненость полей "Среднее значение на участке" не рассчитано"
+            let checkMean =
+                checkEmptyFields(
+                    `.mean`,
+                    `#graduationWrapper`,
+                    '',
+                    'Внимание! Поле "Среднее значение на участке" не рассчитано!'
+                );
 
-        if (!checkMean) {
-            return false;
-        }
+            if (!checkMean) {
+                return false;
+            }
 
-        // Проверка заполненость полей "Прочность бетона на участке методом отрыва со скалыванием" поле 2
-        let checkShearStrength =
-            checkEmptyFields(
-                `.shear-strength`,
-                `#graduationWrapper`,
-                '',
-                'Внимание! Поле "Прочность бетона на участке методом отрыва со скалыванием" не расчитано!'
-            );
-        if (!checkShearStrength) {
-            return false;
+            // Проверка заполненость полей "Прочность бетона на участке методом отрыва со скалыванием" поле 2
+            let checkShearStrength =
+                checkEmptyFields(
+                    `.shear-strength`,
+                    `#graduationWrapper`,
+                    '',
+                    'Внимание! Поле "Прочность бетона на участке методом отрыва со скалыванием" не рассчитано!'
+                );
+            if (!checkShearStrength) {
+                return false;
+            }
         }
 
         let inputMean = $('.mean'),
@@ -705,10 +724,11 @@ $(function ($) {
 
         chartData = myChart;
     }
-    showChart();
+
+    showChart(true)
 
     /**
-     * Очистить граффик
+     * Очистить график
      */
     function destroyChart() {
         if (chartData) {
@@ -763,7 +783,7 @@ $(function ($) {
         }).get()
 
         if (measuringDevice === 'УКС' || measuringDevice === 'ИПС') {
-            // Проверка заполненость полей "Единичные значения" поле 1
+            // Проверка заполненности полей "Единичные значения" поле 1
             let checkAfterBefore =
                 checkEmptyFields(
                     `.single-value-1`,
@@ -777,7 +797,7 @@ $(function ($) {
         }
 
         if (measuringDevice === 'УКС') {
-            // Проверка заполненость полей "Единичные значения" поле 2
+            // Проверка заполненности полей "Единичные значения" поле 2
             let checkAfterBefore =
                 checkEmptyFields(
                     `.single-value-2`,
@@ -796,7 +816,7 @@ $(function ($) {
         let roundX = round(x, ONE);
         inputX.val(roundX.toFixed(ONE));
 
-        // Проверка заполненость полей "Прочность бетона на участке методом отрыва со скалыванием, МПа"
+        // Проверка заполненности полей "Прочность бетона на участке методом отрыва со скалыванием, МПа"
         let checkAfterBefore =
             checkEmptyFields(
                 `.shear-strength`,
@@ -868,7 +888,7 @@ $(function ($) {
         let r07 = r > 0.7 ? 'Соответствует' : 'Не соответствует';
         $('#r07').val(r07);
 
-        showChart();
+        showChart(false)
     });
 
     /**
@@ -1076,7 +1096,7 @@ $(function ($) {
     });
 
     body.on('input', '#pointRadius, #minAxisY, #maxAxisY, #yMain, #minAxisX, #maxAxisX, #xMain', function () {
-        showChart();
+        showChart(false)
     });
 
     /** Редактирование */

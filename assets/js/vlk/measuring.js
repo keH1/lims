@@ -250,9 +250,9 @@ $(function () {
                                 title="Редактировать" data-uvm="${item.id}">
                                     ${displayIndex}
                             </span>`;
-                    } else {
-                        return item.num;
                     }
+
+                    return item.id;
                 }
             },
             {
@@ -299,7 +299,7 @@ $(function () {
         language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
-        order: [[ 1, "desc" ]],
+        order: [[ 2, "desc" ]],
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
@@ -307,13 +307,18 @@ $(function () {
     });
 
     journalDataTable.columns().every( function () {
+        let timeout
         $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            journalDataTable
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
-        });
-    });
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function () {
+                journalDataTable
+                    .column( $(this).parent().index() )
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
+        })
+    })
 
     /*journal filters*/
     $('.filter').on('change', function () {

@@ -44,12 +44,14 @@
             <label for="averageValue" class="form-label mb-1">Среднее значение</label>
             <!--name="result_value" наименование инпута результат которого хотим видеть в результатах испытаний "Фактическое значение" в поле для всех одинаково-->
             <input type="number" class="me-2 w-100 border p-2 bg-white" id="averageValue" name="form_data[<?=$this->data['ugtp_id']?>][result_value]"
-                   step="any" value="<?= $this->data['measuring']['result_value'] ?>">
+                   step="any" value="<?= $this->data['measuring']['result_value'] ?>" readonly>
         </div>
         <div class="col">
             <label for="decimalPlaces" class="form-label mb-1">Знаков после запятой</label>
-            <input type="number" class="me-2 w-100 border p-2 bg-white" id="decimalPlaces" name="form_data[<?=$this->data['ugtp_id']?>][decimal_places]"
-                   step="1" value="<?= $this->data['measuring']['result_value']?? $this->data['measuring_property']['decimal'] ?>">
+            <input type="number" class="me-2 w-100 border p-2 bg-white" id="decimalPlaces"
+                   name="form_data[<?=$this->data['ugtp_id']?>][decimal_places]"
+                   min="0" step="1" value="<?= $this->data['measuring']['decimal_places'] ?>"
+            >
         </div>
     </div>
 

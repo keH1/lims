@@ -11,82 +11,6 @@ use \Bitrix\Main\Loader;
  */
 class SecondmentController extends Controller
 {
-
-    //  const USERS_CREATE_SECONDMENT = [84, 1, 8, 77, 98, 99, 76, 7, 26, 27, 43];
-
-    // const USERS_CONFIRM_SECONDMENT = [84, 26, 27, 43, 8, 1, 77, 7]; //Подтвердить, Вернуть на доработку, Отклонить командировку
-   // const USERS_PREPARE_DOCUMENTS = [1, 98, 99, 68]; //пользователи подготавливают документы "приказ и служебное задание"(уведомление) (25 - Екатерина Горшкова, 57 - Анастасия Кокозашвили, 89 - Полина Сербинова, 88 - Анастасия Серебренникова)
-  //  const USERS_CONFIRM_REPORT = [84, 26, 27, 43, 8, 1, 99, 77, 7]; //пользователи подтверждающие отчёт
-
-  //  const USERS_SAVE_FILES = [84, 98, 99, 43, 8, 1 ,77]; //пользователи сохраняют приказ и СЗ
-  //  const USER_NOTIFICATION_OVERSPENDING = 8; //уведомление пользователя о перерасходе средств //8
-
- //   private $usersSaveInfo = [84, 26, 27, 43, 8, 1, 77, 7, 76]; //пользователи + выбранный пользователь, которые могут сохранять общую информацию
-  //  private $usersSaveSecondment = [84, 26, 27, 43, 8, 1, 77, 7, 76, 99]; //пользователи + выбранный пользователь, которые могут сохранять общую информацию
-
-  //  private $usersChangeReportPreparation = [84, 26, 27, 43, 8, 1, 99, 77, 1]; //пользователи меняют стадию на "Подготовка итчёта" или "В комендеровке"
-  //  private $usersSaveReport = [84, 26, 27, 43, 8, 1, 99, 77, 7]; //пользователи сохраняют отчёт
-    //private $usersSendApprove = [7, 1, 43]; //пользователи которые могут отправить на согласование + выбранный пользователь
-
-    const USERS_ROOT = [84, 1, 8, 77, 98, 99, 76, 7, 80, 109];
-    public $usersSaveSecondment = [84, 1, 8, 77, 98, 99, 76, 7, 26, 27, 43, 33, 73, 69, 18, 80, 109]; //пользователи + выбранный пользователь, которые могут сохранять общую информацию
-    const USERS_VERIFY_REPORT = [48, 8, 99]; //Пользователи проверяют отчёт(уведомление)
-
-    // Структура управления (Начальник - подчиненный)
-    const MANAGEMENT_STRUCTURE = [
-        26 => [30, 60, 45, 36, 28, 59, 67, 82, 105, 68, 18, 69],
-        27 => [32, 29, 39, 92, 102, 103, 104, 18, 69, 13, 111, 160],
-        43 => [30, 60, 45, 36, 28, 59, 67, 82, 105, 68, 26, 18, 69, 114, 115,
-               116, 95, 124, 8, 134, 135, 136],
-        33 => [73, 58, 12],
-        69 => [69],
-        18 => [...[18], ...[22, 23]]
-      //  84 => [1]
-   //     68 => [32, 29, 39, 92, 102, 103, 104]
-        //    1 => [75, 12]
-    ];
-
-    const DEPT_ARR = [
-        58 => ["manager_id" => 26, "name" => "ОСК"],
-        66 => ["manager_id" => 27, "name" => "ОСК-Д"],
-        67 => ["manager_id" => 43, "name" => "ОСК-О"],
-    ];
-
-    static array $managementStructure = [
-        26 => [30, 60, 45, 36, 28, 59, 67, 82, 105, 68, 18, 69],
-        27 => [32, 29, 39, 92, 102, 103, 104, 18, 69, 13, 111, 160],
-        43 => [30, 60, 45, 36, 28, 59, 67, 82, 105, 68, 26, 18, 69, 114, 115,
-            116, 95, 124, 8, 134, 135, 136, 104],
-        33 => [73, 58, 12],
-        69 => [69],
-        18 => [18]
-    ];
-
-    static array $test = [1, 2 ,3];
-
-//    public function __construct()
-//    {
-//        $secondment = $this->model('Secondment');
-//
-//        foreach (self::DEPT_ARR as $id => $dept) {
-//            self::$managementStructure[$dept["manager_id"]] =  array_unique(array_merge(self::$managementStructure[$dept["manager_id"]], $secondment->getDeptUsers($id, $dept["manager_id"])));
-//        }
-//    }
-
-    /**
-     * @desc Получает структуру управления
-     */
-    public static function getManagementStructure()
-    {
-        $secondment = new Secondment();
-
-        foreach (self::DEPT_ARR as $id => $dept) {
-            self::$managementStructure[$dept["manager_id"]] =  array_unique(array_merge(self::$managementStructure[$dept["manager_id"]], $secondment->getDeptUsers($id, $dept["manager_id"])));
-        }
-
-        return self::$managementStructure;
-    }
-
     const DAILY_ALLOWANCE = 700; // Суточные
 
     // Файлы
@@ -113,8 +37,6 @@ class SecondmentController extends Controller
         "waybill" => "waybill"
     ];
 
-
-
     const STAGES = [
         "Новая",
         "Ожидает подтверждения",
@@ -129,6 +51,7 @@ class SecondmentController extends Controller
         "Отменена"
     ];
 
+
     /**
      * @desc Перенаправляет пользователя на страницу «Журнал командировок»
      * route /secondment/
@@ -137,6 +60,7 @@ class SecondmentController extends Controller
     {
         $this->redirect('/secondment/list');
     }
+
 
     /**
      * @desc Журнал командировок
@@ -153,13 +77,10 @@ class SecondmentController extends Controller
         $secondment = $this->model('Secondment');
         /** @var Company $company */
         $company = $this->model('Company');
-        /** @var Viewer $viewer */
-        $viewer = $this->model('Viewer');
         /** @var Project $project */
         $project = $this->model('Project');
 
         $this->data["companyList"] = $secondment->getCompanyList();
-        //$this->data["cityList"] = $secondment->getCityArr();
 
         $this->data['projects'] = array_merge([["id" => 0, "name" => "Без проекта"]], $project->getList());
 
@@ -169,16 +90,11 @@ class SecondmentController extends Controller
         $this->data['settlements'] = $secondment->getSettlementsData();
         $this->data['companies'] = $company->getList();
         $this->data['user_id'] = $_SESSION["SESS_AUTH"]["USER_ID"];
-
-       // $this->data['check_user'] = in_array($this->data['user_id'], self::USERS_ROOT) + key_exists($this->data['user_id'], self::MANAGEMENT_STRUCTURE);
-        $this->data['check_user'] = in_array($this->data['user_id'], self::USERS_ROOT) + key_exists($this->data['user_id'], $this->getManagementStructure());
-
-        $this->data['users_create_secondment'] = $this->usersSaveSecondment;
+//        $this->data["cityList"] = $secondment->getCityArr();
 
         $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
         $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
         $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
 
         $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
         $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
@@ -190,20 +106,16 @@ class SecondmentController extends Controller
         $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
         $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
         $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-        $this->addJS('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
 
-        $version = rand();
-        $this->addJs('/assets/js/object.js?v=' . $version);
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
-
-        $this->addCSS("/assets/css/object.css");
-        $this->addCSS("/assets/css/secondment_card.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
 
         $this->addJs("/assets/js/journals/secondment-list.js?v=" . rand());
 
         $this->view('list');
     }
+
 
     /**
      * @desc Получает данные для «Журнала командировок»
@@ -219,23 +131,6 @@ class SecondmentController extends Controller
 
         $filter = $secondment->prepareFilter($_POST ?? []);
 
-        if (!empty($_POST['stage_filter'])) {
-            $filter['search']['stage_filter'] = $_POST['stage_filter'];
-        }
-
-        $userId = (int)$_SESSION['SESS_AUTH']['USER_ID'];
-
-        if (in_array($userId, self::USERS_ROOT)) {
-            // ...
-        } else if (key_exists($userId, $this->getManagementStructure())) {
-            $userArr = $this->getManagementStructure()[$userId];
-            $userArr[] = $userId;
-
-            $filter["managerAccess"] = join(",",  $userArr);
-        } else {
-            $filter["managerAccess"] = $userId;
-        }
-
         $data = $secondment->getDataToSecondmentJournal($filter);
 
         $recordsTotal = $data['recordsTotal'];
@@ -249,13 +144,12 @@ class SecondmentController extends Controller
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
-            "test" => $filter,
-            "isAdmin" => in_array($userId, self::USERS_ROOT)
+            "isAdmin" => true,//in_array($userId, self::USERS_ROOT)
         ];
-
 
         echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
     }
+
 
     /**
      * @desc Сохраняет или изменяет данные заявки на командировку
@@ -263,7 +157,6 @@ class SecondmentController extends Controller
      */
     public function insertUpdateInfo()
     {
-
         setlocale(LC_ALL, 'ru_RU.utf8');
 
         /** @var Secondment $secondment */
@@ -285,9 +178,6 @@ class SecondmentController extends Controller
         $currentUserId = $user->getCurrentUserId();
 
         $viewer->deleteView($secondmentId, "secondmentCard");
-
-
-
 
         //Общая информация
         if (isset($_POST['user_id'])) {
@@ -531,7 +421,6 @@ class SecondmentController extends Controller
                 $this->redirect($location);
             }
         } else {
-
             $data = [
                 'user_id' => $_POST['user_id'],
                 'settlement_id' => $_POST['settlement_id'],
@@ -558,10 +447,10 @@ class SecondmentController extends Controller
                 unset($_SESSION['secondment_post']);
                 $this->showSuccessMessage($successMsg);
                 $this->redirect($location);
-
             }
         }
     }
+
 
     /**
      * route /secondment/insertUpdateDocuments/
@@ -610,8 +499,8 @@ class SecondmentController extends Controller
         }
 
         $this->redirect("/secondment/card/{$secondmentId}");
-
     }
+
 
     /**
      * @desc Сохраняет и обновляет файлы приказа и служебного задания
@@ -745,9 +634,9 @@ class SecondmentController extends Controller
 
             $this->showSuccessMessage("Успешно изменено!");
             $this->redirect("/secondment/card/{$secondmentId}");
-
         }
     }
+
 
     /**
      * @desc Сохраняет или обновляет данные отчёта о командировке
@@ -949,17 +838,9 @@ class SecondmentController extends Controller
                 $this->showErrorMessage("Не удалось обновить данные отчёта");
                 $this->redirect($location);
             }
-
-
-            echo "<pre>";
-            var_dump($compensationSum);
-            var_dump($_POST);
-
-
-            echo "</pre>";
-
         }
     }
+
 
     /**
      * @desc Выполняет мягкое удаление заявки о командировке
@@ -991,14 +872,14 @@ class SecondmentController extends Controller
 
             echo json_encode("Ошибка! Заявку можно удалить только на стадии \"Новая\"");
         }
-
-
     }
+
 
     /**
      * @desc Карточка командировки
      * route /secondment/card/
      * @param int $id
+     * @throws DateMalformedStringException
      */
     public function card(int $id)
     {
@@ -1007,7 +888,6 @@ class SecondmentController extends Controller
         if (empty($id) || $id < 0) {
             $this->redirect($location);
         }
-
 
         /** @var Secondment $secondment */
         $secondment = $this->model('Secondment');
@@ -1029,12 +909,10 @@ class SecondmentController extends Controller
 
         $this->data['secondment'] = $secondment->getSecondmentDataById($id);
 
-
         if (empty($this->data['secondment']) || $this->data['secondment']['del'] == 1) {
             $this->showErrorMessage("Заявки с ИД {$id} не существует");
             $this->redirect($location);
         }
-
 
         $this->data['stage_name'] = $this->data['secondment']['stage'] ?: 'Стадия отсутствует';
         $objectId = $this->data['secondment']['object_id'] ?? null;
@@ -1042,19 +920,13 @@ class SecondmentController extends Controller
         $this->data['user_id'] = $this->data['secondment']['user_id'] ?? null;
 
         $this->data["stage_list"] = self::STAGES;
-        $this->data["users_root"] = self::USERS_ROOT;
-
-
 
         $currentUserId = $user->getCurrentUserId();
         $this->data['users'] = $user->getUsersForSecondment();
-       // $this->data['settlements'] = $secondment->getSettlementsData();
         $this->data['objects'] = $secondment->getObjectDataByCompanyId($companyId);
         $this->data['object'] = isset($objectId) ? $secondment->getObjectDataById($objectId) : null;
         $this->data['company'] = $company->getCompanyDataByCompanyId($companyId);
         $arFilter = ["=ID" => $companyId];
-      //  $this->data['company'] = $company->getList($arFilter)[0];
-     //   $this->data['organization'] = $company->getCompanyDataByCompanyId($companyId);
         $this->data['contracts'] = $request->getContractsByCompanyId($companyId);
 
         $this->data['secondmentContracts'] = $secondment->getContractsByCompanyId($companyId);
@@ -1072,14 +944,12 @@ class SecondmentController extends Controller
 
         $this->data["archiveList"] = $secondment->getArchiveListBySecondmentId($id);
 
-       // $this->data["fuel_consumption"] = round($fuelConsumption / 100 * $km * $fuelPrice, 2);
 
         $this->data["compensationItem"] = $secondment->getCompensationBySecondmentId($id);
 
         $this->data['stage_border_color'] = $stageColor['border_color'] ?? '';
         $this->data['title'] = $this->data['secondment']['title'] ?? '';
         $this->data['work_position'] = $selectedUser['WORK_POSITION'] ?? '';
-     //   $this->data['settlement_id'] = $this->data['object']['CITY_ID'] ?? null;
 
         $this->data['settlement_title'] = $this->data['object']['settlement'] ?? null;
         $this->data['other_fields'] = $secondment->getOtherFieldsById($id);
@@ -1101,7 +971,7 @@ class SecondmentController extends Controller
         $this->data['comment_gasoline_consumption'] = $this->data['secondment']['comment_gasoline_consumption'] ?: '';
         $this->data['gasoline_consumption_object'] = $this->data['secondment']['gasoline_consumption_object'] ?: null;
         $this->data['comment_gasoline_consumption_object'] = $this->data['secondment']['comment_gasoline_consumption_object'] ?: '';
-    //    $this->data['per_diem'] = $this->data['secondment']['per_diem'] ?: null;
+
         if ($this->data['total_days'] == 1) {
             $this->data['per_diem'] = 0;
         } else {
@@ -1162,20 +1032,13 @@ class SecondmentController extends Controller
             }
         }
 
-
-        $this->data['is_confirm_secondment'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
-        $this->data['is_confirm_report'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
-        //$this->data['is_may_send'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSendApprove);
-
-        if (!empty($this->data['user_id'])) {
-            $this->usersSaveSecondment[] = $this->data['user_id'];
-        }
-
-        $this->data['is_save_info'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
-        $this->data['is_save_secondment'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
-        $this->data['is_save_report'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
-        $this->data['is_may_save_files'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
-        $this->data['is_can_prepare_report'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
+        $this->data['is_confirm_secondment'] = true;//in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
+        $this->data['is_confirm_report'] = true;//in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
+        $this->data['is_save_info'] = true;//in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
+        $this->data['is_save_secondment'] = true;//in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
+        $this->data['is_save_report'] = true;//in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
+        $this->data['is_may_save_files'] = true;//in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
+        $this->data['is_can_prepare_report'] = true;//in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->usersSaveSecondment);
 
 
         foreach (self::SECONDMENT_FILE_CATEGORIES as $category) {
@@ -1183,7 +1046,6 @@ class SecondmentController extends Controller
             $dirEdict = $_SERVER["DOCUMENT_ROOT"] . "/ulab/upload/secondment/{$category}/{$id}/";
             $pathEdict = "/ulab/upload/secondment/{$category}/{$id}/";
             $filesEdict = $request->getFilesFromDir($dirEdict);
-          //  $fileEdict = end($filesEdict);
 
             if (!empty($filesEdict)) {
                 foreach ($filesEdict as $index => $fileEdict) {
@@ -1197,43 +1059,7 @@ class SecondmentController extends Controller
 
                 }
             }
-//            $this->data[$category]['dir'] = $pathEdict;
-//            $this->data[$category]['file'] = $fileEdict;
         }
-
-
-//        // Загрузить приказ
-//        $this->data['file']['edict']['files'] = [];
-//        $dirEdict = $_SERVER["DOCUMENT_ROOT"] . "/ulab/upload/secondment/edict/{$id}/";
-//        $pathEdict = "/ulab/upload/secondment/edict/{$id}/";
-//        $filesEdict = $request->getFilesFromDir($dirEdict);
-//        $fileEdict = end($filesEdict);
-//
-//        $this->data['edict']['dir'] = $pathEdict;
-//        $this->data['edict']['file'] = $fileEdict;
-//
-//        // Загрузить служебное задание
-//        $this->data['file']['service_assignment']['files'] = [];
-//        $dirServiceAssignment = "/home/bitrix/www/ulab/upload/secondment/service_assignment/{$id}/";
-//        $pathServiceAssignment = "/ulab/upload/secondment/service_assignment/{$id}/";
-//        $filesServiceAssignment = $request->getFilesFromDir($dirServiceAssignment);
-//        $fileServiceAssignment = end($filesServiceAssignment);
-//
-//        $this->data['service_assignment']['dir'] = $pathServiceAssignment;
-//        $this->data['service_assignment']['file'] = $fileServiceAssignment;
-
-
-        // Загрузить служебную записку
-//        $this->data['file']['memo']['files'] = [];
-//        $dirServiceAssignment  = "/home/bitrix/www/ulab/upload/secondment/memo/{$id}/";
-//        $pathServiceAssignment = "/ulab/upload/secondment/memo/{$id}/";
-//        $filesServiceAssignment = $request->getFilesFromDir($dirServiceAssignment);
-//        $fileServiceAssignment = end($filesServiceAssignment);
-//
-//        $this->data['memo']['dir'] = $pathServiceAssignment;
-//        $this->data['memo']['file'] = $fileServiceAssignment;
-
-     //   $fileArr = $request->getFilesFromDir(UPLOAD_DIR . "/secondment/ticket_payment/{$id}");;
 
         foreach (self::SECONDMENT_FILE_CATEGORIES as $category) {
             $this->data["fileArr"][$category] = $request->getFilesFromDir(UPLOAD_DIR . "/secondment/{$category}/{$id}");
@@ -1247,8 +1073,6 @@ class SecondmentController extends Controller
         foreach ($this->data['additional_fields'] as $index => $field) {
             $this->data["fileArr"]["additional"][$index] = $request->getFilesFromDir(UPLOAD_DIR . "/secondment/additional/{$id}/" . $field["id"]);
         }
-
-
 
         // Прикрепление счета на оплату билетов
         $userFiles = $request->getFilesFromDir(UPLOAD_DIR . "/secondment/ticket_payment/{$id}");
@@ -1297,10 +1121,10 @@ class SecondmentController extends Controller
 
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
 
         $this->addCSS("/assets/plugins/dropzone/css/basic.css");
         $this->addCSS("/assets/plugins/dropzone/dropzone3.css");
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
 
         $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
         $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
@@ -1312,18 +1136,11 @@ class SecondmentController extends Controller
         $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
         $this->addJS("/assets/plugins/pdf-lib/pdf-lib-1.4.0.js");
 
-        $this->addCSS("/assets/css/object.css?v=" . rand());
         $this->addCSS("/assets/css/secondment_card.css?v=" . rand());
 
         $this->addJS("/assets/plugins/dropzone/dropzone3.js");
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-       // $this->addJs("/assets/js/methods.js?v=" . rand());
+
         $this->addJs("/assets/js/secondment-card.js?v=" . rand());
-        $this->addJs("/assets/js/journals/secondment-list.js?v=" . rand());
-
-
-        global $DB;
-        $temp = floatval(3/2);
 
         $this->view('card');
     }
@@ -1607,7 +1424,7 @@ class SecondmentController extends Controller
                 }
 
 
-                //отправляет уведомление
+                // отправляет уведомление
                 if (in_array($stage, ['Нужна доработка', 'Подготовка отчета', 'Отчет не подтвержден'])) {
                     switch ($stage) {
                         case 'Нужна доработка':
@@ -1635,28 +1452,23 @@ class SecondmentController extends Controller
                     CIMNotify::Add($notify);
                 }
 
-                //отправляет уведомление пользователям для проверки отчёта
+                // отправляет уведомление пользователям для проверки отчёта
                 if ($stage === 'Проверка отчета') {
-                    switch ($stage) {
-                        case 'Проверка отчета':
-                            $message = 'Отчёт готов к проверке ';
-                            break;
-                        default:
-                            $message = '';
-                    }
+                    $message = 'Отчёт готов к проверке';
 
-                    foreach (self::USERS_VERIFY_REPORT as $userId) {
+//                    foreach (self::USERS_VERIFY_REPORT as $userId) {
                         $notify = [
                             "NOTIFY_TITLE" => $secondmentData['title'],
                             "TO_USER_ID" => $userId,
                             "FROM_USER_ID" => $currentUserId,
                             "NOTIFY_TYPE" => IM_NOTIFY_FROM,
-                            "NOTIFY_MESSAGE" => "{$message}<a href='{URI}/secondment/card/{$secondmentData['s_id']}'>
-                        {$secondmentData['title']}
-                    </a>",
+                            "NOTIFY_MESSAGE" =>
+                                "{$message} <a href='{URI}/secondment/card/{$secondmentData['s_id']}'>
+                                    {$secondmentData['title']}
+                                </a>",
                         ];
                         CIMNotify::Add($notify);
-                    }
+//                    }
                 }
             } else {
                 $this->showErrorMessage('Не удалось изменить стадию');
@@ -1923,7 +1735,6 @@ class SecondmentController extends Controller
 
             if (is_null($otherId)) {
                 $otherId = $secondment->create($otherData, 'secondment_other');
-                $test = $otherId;
             } else {
                 $secondment->update($otherData, 'secondment_other', (int)$otherId);
             }

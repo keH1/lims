@@ -337,7 +337,7 @@
                                                     ><?=$method['view_gost']?></option>
                                                 <?php endforeach; ?>
                                             </select>
-                                            <a class="btn btn-outline-secondary method-link disabled" target="_blank" title="Перейти в методику" href="">
+                                            <a class="btn btn-outline-secondary method-link disabled"  title="Перейти в методику" href="">
                                                 <i class="fa-solid fa-right-to-bracket"></i>
                                             </a>
                                         </div>
@@ -351,7 +351,7 @@
                                                     <option value="<?=$condition['id']?>"><?=$condition['view_name']?></option>
                                                 <?php endforeach; ?>
                                             </select>
-                                            <a class="btn btn-outline-secondary tu-link disabled" target="_blank" title="Перейти в ТУ" href="">
+                                            <a class="btn btn-outline-secondary tu-link disabled"  title="Перейти в ТУ" href="">
                                                 <i class="fa-solid fa-right-to-bracket"></i>
                                             </a>
                                         </div>
@@ -557,7 +557,7 @@
                                                                                         ><?=$method['view_gost']?></option>
                                                                                     <?php endforeach; ?>
                                                                                 </select>
-                                                                                <a class="btn btn-outline-secondary method-link <?=$probeMethod['id'] > 0? '' : 'disabled'?>" target="_blank" title="Перейти в методику" href="/ulab/gost/method/<?=$probeMethod['id']?>">
+                                                                                <a class="btn btn-outline-secondary method-link <?=$probeMethod['id'] > 0? '' : 'disabled'?>"  title="Перейти в методику" href="/ulab/gost/method/<?=$probeMethod['id']?>">
                                                                                     <i class="fa-solid fa-right-to-bracket"></i>
                                                                                 </a>
                                                                             </div>
@@ -571,7 +571,7 @@
                                                                                         <option value="<?=$condition['id']?>" <?=$condition['id'] == $probe['condition'][$methodKey]? 'selected': ''?>><?=$condition['view_name']?></option>
                                                                                     <?php endforeach; ?>
                                                                                 </select>
-                                                                                <a class="btn btn-outline-secondary tu-link <?=$probe['condition'][$methodKey] > 0? '' : 'disabled'?>" target="_blank" title="Перейти в ТУ" href="/ulab/techCondition/edit/<?=$probe['condition'][$methodKey]?>">
+                                                                                <a class="btn btn-outline-secondary tu-link <?=$probe['condition'][$methodKey] > 0? '' : 'disabled'?>"  title="Перейти в ТУ" href="/ulab/techCondition/edit/<?=$probe['condition'][$methodKey]?>">
                                                                                     <i class="fa-solid fa-right-to-bracket"></i>
                                                                                 </a>
                                                                             </div>

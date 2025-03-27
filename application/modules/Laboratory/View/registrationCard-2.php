@@ -33,7 +33,7 @@
                         <a
                                 class="btn btn-primary position-relative rounded ml-4 fs-16"
                                 href="https://ulab.niistrom.pro/api/upload/lab/cert/<?= $this->data["cardInfo"]["id"] ?>/<?= $cert ?>"
-                                target="_blank"
+                                
                                 title="<?= $cert ?>"
                                 data-js-file-download
 
@@ -90,7 +90,7 @@
 <div class="d-flex justify-content-between mt-3 mb-3">
     <div class="d-flex gap-3">
         <button class="btn btn-success" id="save">Сохранить</button>
-        <a target="_blank" href="<?= URI ?>/laboratory/dashboard/<?= $this->data["cardInfo"]["scheme_id"] ?>/" class="btn btn-primary popup-with-form mw-100 mt-0 ml-4">
+        <a  href="<?= URI ?>/laboratory/dashboard/<?= $this->data["cardInfo"]["scheme_id"] ?>/" class="btn btn-primary popup-with-form mw-100 mt-0 ml-4">
             Все испытания
         </a>
     </div>

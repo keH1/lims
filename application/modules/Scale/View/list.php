@@ -28,11 +28,11 @@
             <button type="button" class="btn btn-outline-secondary filter-btn-reset" title="Сбросить фильтр">Сбросить</button>
         </div>
 
-		<div class="col-auto">
+		<!-- <div class="col-auto">
 			<a class="nav-link auto-fill " href="#" title="Автозаполнение" style="color: black;">
 				<i class="fa-solid fa-gauge-high icon-big"></i>
 			</a>
-		</div>
+		</div> -->
     </div>
 </div>
 
@@ -40,7 +40,7 @@
     <thead>
     <tr class="table-light">
         <th scope="col" class="text-nowrap"></th>
-		<th scope="col" class="text-nowrap">№ п/п</th>
+		<!-- <th scope="col" class="text-nowrap">№ п/п</th> -->
         <th scope="col" class="text-nowrap">Дата</th>
         <th scope="col">Наименование оборудования, зав. номер</th>
         <th scope="col">Используемая для калибровки гиря, класс, зав. номер</th>
@@ -52,7 +52,7 @@
     </tr>
     <tr class="header-search">
         <th scope="col"></th>
-		<th scope="col"></th>
+		<!-- <th scope="col"></th> -->
         <th scope="col">
             <input type="text" class="form-control search">
         </th>
@@ -93,7 +93,9 @@
 			<label class="form-label">Дата измерения</label>
 			<input name="toSQL[scale_calibration][date_calibration]" type="date"
 				   class="form-control "
-				   value="<?= $this->data['current_date'] ?>">
+				   value="<?= $this->data['current_date'] ?>"
+                   max="<?= date('Y-m-d') ?>"
+            >
 		</div>
 	</div>
 
@@ -163,7 +165,7 @@
     <button type="submit" class="btn btn-primary">Отправить</button>
 </form>
 
-<form id="auto-fill" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative auto-fill-form"
+<!-- <form id="auto-fill" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative auto-fill-form"
 	  action="/ulab/scale/autoFill/" method="post">
 
 	<div class="title mb-3 h-2">
@@ -182,12 +184,11 @@
 		<div class="mb-3">
 			<label class="form-label" for="date">Дата окончания заполнения</label>
 			<input type="datetime-local" class="form-control w-100" id="dateTo" name="formAutoFill[dateTo]" step="any"
-				   value="<?= date('Y-m-d H:i') ?>"
+				   value="<?//= date('Y-m-d H:i') ?>"
 				   required>
 		</div>
 
 	<div class="line-dashed-small"></div>
 
 	<button type="submit" class="btn btn-primary">Заполнить</button>
-</form>
-
+</form> -->

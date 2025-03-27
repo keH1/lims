@@ -31,9 +31,9 @@
             <label class="col-sm-2 col-form-label">Информация</label>
             <div class="col-sm-8">
                 <div id="info_msg" style="text-align:center;">
-                    <a href="https://cryptopro.ru/sites/default/files/products/cades/demopage/cades_bes_sample.html" target="_blank">Проверить работоспособность плагина</a>
+                    <a href="https://cryptopro.ru/sites/default/files/products/cades/demopage/cades_bes_sample.html" >Проверить работоспособность плагина</a>
                     <br>
-                    <a href="https://docs.cryptopro.ru/cades/plugin/plugin-installation-windows" target="_blank">Инструкция установки плагина</a>
+                    <a href="https://docs.cryptopro.ru/cades/plugin/plugin-installation-windows" >Инструкция установки плагина</a>
                     <br>
                     <span id="PlugInEnabledTxt">Плагин не загружен</span>
                     <br>

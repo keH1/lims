@@ -131,10 +131,6 @@ class UserController extends Controller
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-
-
         $r = rand();
         $this->addJs("/assets/js/user/status-list.js");
 

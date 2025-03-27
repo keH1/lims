@@ -1582,18 +1582,18 @@ class Request extends Model
 
 
         $data = $this->DB->Query(
-            "SELECT b.ID b_id, b.TZ, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
+            "SELECT b.ID b_id, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
                         b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, b.ASSIGNED, a.ACT_NUM,
                         GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER,
                         GROUP_CONCAT(distinct IF(prtcl.NUMBER_AND_YEAR='', null, prtcl.NUMBER_AND_YEAR) SEPARATOR ', ') as PROTOCOLS
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
-                    LEFT JOIN protocols as prtcl ON prtcl.ID_TZ = b.ID
+                    LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
-                    GROUP BY b.ID ORDER BY YEAR(ACT_DATE) DESC, {$order['by']} {$order['dir']} {$limit}"
+                    WHERE b.TYPE_ID != '3' AND {$where}
+                    GROUP BY b.ID ORDER BY YEAR(a.ACT_DATE) DESC, {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
@@ -1603,7 +1603,7 @@ class Request extends Model
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' 
+                    WHERE b.TYPE_ID != '3'
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
@@ -1611,18 +1611,26 @@ class Request extends Model
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
-                    LEFT JOIN protocols as prtcl ON prtcl.ID_TZ = b.ID
+                    LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND u.ACTIVE = 'Y' AND {$where}
+                    WHERE b.TYPE_ID != '3' AND {$where}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
             $row['DATE_ACT'] = !empty($row['DATE_ACT']) ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
 
+            $assigned = $this->getAssignedByDealId($row['ID_Z']);
+            $arrAss = [];
+            foreach ($assigned as $item) {
+                $arrAss[] = $item['short_name'];
+            }
+
             if ( !empty($arrAss) ) {
                 $row['ASSIGNED'] = implode(', ', $arrAss);
+            } else {
+                $row['ASSIGNED'] = '';
             }
 
             $arrNameLabs = [];
@@ -1689,7 +1697,9 @@ class Request extends Model
                 }
                 // Сумма
                 if ( isset($filter['search']['PRICE']) ) {
-                    $where .= "b.PRICE LIKE '%{$filter['search']['PRICE']}%' AND ";
+                    $price = (float)str_replace([' ', 'руб.', ','], ['', '', '.'], $filter['search']['PRICE']);
+                    
+                    $where .= "b.PRICE = {$price} AND ";
                 }
                 // Act VR
                 if ( isset($filter['search']['ACT_VR']) ) {
@@ -1700,7 +1710,9 @@ class Request extends Model
                 }
                 // Клиент
                 if ( isset($filter['search']['COMPANY_TITLE']) ) {
-                    $where .= "b.COMPANY_TITLE LIKE '%{$filter['search']['COMPANY_TITLE']}%' AND ";
+                    $searchRaw = trim($filter['search']['COMPANY_TITLE']);
+                    $searchHtml = htmlspecialchars($searchRaw, ENT_QUOTES, 'UTF-8');
+                    $where .= "(b.COMPANY_TITLE LIKE '%{$searchRaw}%' OR b.COMPANY_TITLE LIKE '%{$searchHtml}%') AND ";
                 }
                 // Объект испытаний
                 if ( isset($filter['search']['MATERIAL']) ) {

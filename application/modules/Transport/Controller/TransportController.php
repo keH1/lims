@@ -239,22 +239,13 @@ class TransportController extends Controller
         $this->data['title'] = 'Отчет по бензину';
 
         $transport = $this->model("Transport");
-        $user = $this->model("User");
-
         $userId = $_SESSION['SESS_AUTH']['USER_ID'];
 
 
-        $userIdArr = [$userId];
-
-        if (in_array($userId, SecondmentController::USERS_ROOT)) {
-            $userIdArr = [];
-      //  } else if (array_key_exists($userId, SecondmentController::MANAGEMENT_STRUCTURE)) {
-        } else if (array_key_exists($userId, SecondmentController::getManagementStructure())) {
-            $userIdArr = array_merge($userIdArr, SecondmentController::getManagementStructure()[$userId]);
-        }
-
         $this->data["currentUser"] = $userId;
         $this->data["transportList"] = $transport->getTransportList();
+
+
         $this->data["userList"] = $user->getUsersByIdArr($userIdArr);
 
         $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
@@ -306,42 +297,24 @@ class TransportController extends Controller
             $filter['search']['date_end'] = $transport->sanitize($_POST['date_end']);
         }
 
-        $userId = (int)$_SESSION['SESS_AUTH']['USER_ID'];
-
-        if (in_array($userId, SecondmentController::USERS_ROOT)) {
-
-     //   } else if (key_exists($userId, SecondmentController::MANAGEMENT_STRUCTURE)) {
-        } else if (key_exists($userId, SecondmentController::getManagementStructure())) {
-          //  $userArr = SecondmentController::MANAGEMENT_STRUCTURE[$userId];
-            $userArr = SecondmentController::getManagementStructure()[$userId];
-            $userArr[] = $userId;
-
-            $filter["managerAccess"] = join(",",  $userArr);
-        } else {
-            $filter["managerAccess"] = $userId;
-        }
-
         $data = $transport->getReposrtListToJournal($filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
-        $test = $data['test'];
 
         unset($data['recordsTotal']);
         unset($data['recordsFiltered']);
-        unset($data['test']);
-
 
         $jsonData = [
             "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
-            "test" => $test
         ];
 
         echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
     }
+
 
     /**
      * @desc Добавляет или обновляет отчёт по бензину

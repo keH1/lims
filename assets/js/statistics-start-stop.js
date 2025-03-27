@@ -22,7 +22,7 @@ $(function () {
             {
                 data: 'method',
                 render: function (data, type, item) {
-                    return `<a href="/ulab/gost/method/${item.method_id}" class="text-decoration-none" target="_blank">
+                    return `<a href="/ulab/gost/method/${item.method_id}" class="text-decoration-none" >
                                 ${item.method}
                             </a>`
                 }
@@ -149,7 +149,7 @@ function createChild (row) {
                 render: function (data, type, item) {
                     if (type === 'display' || type === 'filter') {
                         return `<a class="request-link"
-                               href="/ulab/request/card/${item.deal_id}" target="_blank">
+                               href="/ulab/request/card/${item.deal_id}" >
                                ${item['TITLE']}
                             </a>`
                     }

@@ -241,6 +241,7 @@ $(function ($) {
                     const formUser = selectedElement.parentElement.parentElement.parentElement.parentElement;
                     const jobInput = $(formUser).find('input[name="job_title"]');
                     jobInput.val(userPosition);
+                    jobInput.trigger('change')
                 });
 
                 const tooltipUserTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -308,6 +309,8 @@ $(function ($) {
                         usersUpdateStatusButton.removeClass('disabled');
                     else
                         usersUpdateStatusButton.addClass('disabled');
+
+                    $('.form-control.job_title').trigger('change')
 
                     const toast = new bootstrap.Toast($('.toast-save-permission'));
                     toast.show();

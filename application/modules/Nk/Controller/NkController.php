@@ -24,7 +24,7 @@ class NkController extends Controller
         /** @var Nk $nkModel */
         $nkModel = $this->model('Nk');
 
-        $this->data['title'] = empty($id)? 'Создание градуировочной зависимости' : "Редактирование градуировочной зависисмоти";
+        $this->data['title'] = empty($id)? 'Создание градуировочной зависимости' : "Редактирование градуировочной зависимости";
 
         $graduation = $nkModel->getGraduation($id);
 
@@ -128,9 +128,12 @@ class NkController extends Controller
      */
     public function graduationList()
     {
+        /** @var Nk $nkModel */
+        $nkModel = $this->model('Nk');
+
         $this->data['title'] = 'Журнал листов измерений градуировочной зависимости';
-        $this->data['date_start'] = date('Y-m-d', strtotime('-1 year'));
-        $this->data['date_end'] = date('Y-m-d');
+        $this->data['date_start'] = (new DateTime())->modify('-1 month')->format('Y-m-d');
+        $this->data['date_end'] = $nkModel->getMaxValueByFields('ulab_graduation', ['date']);
 
         $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
         $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
