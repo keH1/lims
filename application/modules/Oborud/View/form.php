@@ -14,44 +14,44 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                             <li>
-                                <div class="btn-flex">
-                                    <div>
-                                        Скачать карточку оборудования
-                                    </div>
-                                    <div>
-                                        <a class="dropdown-item text-red" href="/protocol_generator/oborud_card.php?OB_ID=<?=$this->data['id']?>&type=PDF">
-                                            PDF
-                                        </a>
-                                    </div>
-                                    <div>
-                                        <a class="dropdown-item text-blue" href="/protocol_generator/oborud_card.php?OB_ID=<?=$this->data['id']?>&type=DOCX">
-                                            DOCX
-                                        </a>
-                                    </div>
+                                <a class="dropdown-item ps-2" href="/protocol_generator/oborud_card.php?OB_ID=<?=$this->data['id']?>">
+                                    Скачать карточку оборудования
+                                </a>
+                            </li>
+                            <li>
+                                <div class="d-flex align-items-center ps-2 pe-3 py-1">
+                                    <span class="me-2">Скачать акт ввода</span>
+                                    <a class="btn btn-sm btn-link text-red p-0 me-2" href="/protocol_generator/oborud_akt_vvoda.php?OB_ID=<?=$this->data['id']?>&type=PDF">
+                                        PDF
+                                    </a>
+                                    <a class="btn btn-sm btn-link text-blue p-0" href="/protocol_generator/oborud_akt_vvoda.php?OB_ID=<?=$this->data['id']?>&type=DOCX">
+                                        DOCX
+                                    </a>
                                 </div>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_akt_vvoda.php?OB_ID=<?=$this->data['id']?>">
-                                    Скачать акт ввода
-                                </a>
+                                <div class="d-flex align-items-center ps-2 pe-3 py-1">
+                                    <span class="me-2">Скачать акт списания</span>
+                                    <a class="btn btn-sm btn-link text-red p-0 me-2" href="/protocol_generator/oborud_akt_sp.php?OB_ID=<?=$this->data['id']?>&type=PDF">
+                                        PDF
+                                    </a>
+                                    <a class="btn btn-sm btn-link text-blue p-0" href="/protocol_generator/oborud_akt_sp.php?OB_ID=<?=$this->data['id']?>&type=DOCX">
+                                        DOCX
+                                    </a>
+                                </div>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_akt_sp.php?OB_ID=<?=$this->data['id']?>">
-                                    Скачать акт списания
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_akt_post.php?OB_ID=<?=$this->data['id']?>">
+                                <a class="dropdown-item ps-2" href="/protocol_generator/oborud_akt_post.php?OB_ID=<?=$this->data['id']?>">
                                     Скачать акт о постановке на длительное хранение
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_akt_ver.php?OB_ID=<?=$this->data['id']?>">
+                                <a class="dropdown-item ps-2" href="/protocol_generator/oborud_akt_ver.php?OB_ID=<?=$this->data['id']?>">
                                     Скачать акт о верификации оборудования
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_card_once.php?OB_ID=<?=$this->data['id']?>">
+                                <a class="dropdown-item ps-2" href="/protocol_generator/oborud_card_once.php?OB_ID=<?=$this->data['id']?>">
                                     Скачать этикетку оборудования
                                 </a>
                             </li>
