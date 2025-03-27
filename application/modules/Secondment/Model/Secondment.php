@@ -84,7 +84,15 @@ class Secondment extends Model
                 }
 
                 if (isset($filter['search']['stage_filter'])) {
-                    $where .= "s.stage IN ({$filter['search']['stage_filter']}) AND ";
+                    $allowedStages = ['Новая','Ожидает подтверждения','Отклонена','Нужна доработка','Подготовка приказа и СЗ','Согласована','В командировке','Подготовка отчета','Проверка отчета','Проверка перерасхода','Отчет подтвержден','Затраты не подтверждены','Завершена','Отменена'];
+                    $stages = array_map('trim', explode("','", trim($filter['search']['stage_filter'], "'")));
+
+                    $stages = array_intersect($stages, $allowedStages);
+
+                    if (!empty($stages)) {
+                        $stagesList = implode("','", $stages);
+                        $where .= "s.stage IN ('{$stagesList}') AND ";
+                    }
                 }
 
                 if (isset($filter['search']['oborud_list'])) {
@@ -633,7 +641,9 @@ class Secondment extends Model
     {
         $response = [];
 
-        $result = $this->DB->Query("SELECT * FROM full_settlements WHERE settlement LIKE '%{$name}%' GROUP BY settlement");
+        $nameEscaped = $this->sanitize($name);
+
+        $result = $this->DB->Query("SELECT * FROM full_settlements WHERE settlement LIKE '%{$nameEscaped}%' GROUP BY settlement");
 
         while ($row = $result->fetch()) {
             $arr = [

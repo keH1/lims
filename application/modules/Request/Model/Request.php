@@ -236,10 +236,12 @@ class Request extends Model
         $dateCreateTimestamp = date('Y-m-d H:i:s');
 
         $data['ID_Z'] = $dealId;
-        $data['DATE_CREATE'] = "'{$dateCreate}'";
-        $data['DATE_CREATE_TIMESTAMP'] = "'{$dateCreateTimestamp}'";
-        
-        return $this->DB->Insert('ba_tz', $data);
+        $data['DATE_CREATE'] = $dateCreate;
+        $data['DATE_CREATE_TIMESTAMP'] = $dateCreateTimestamp;
+
+        $sqlData = $this->prepearTableData('ba_tz', $data);
+
+        return $this->DB->Insert('ba_tz', $sqlData);
     }
 
     /**
@@ -326,8 +328,10 @@ class Request extends Model
      */
     public function updateTz($dealId, $data)
     {
+        $sqlData = $this->prepearTableData('ba_tz', $data);
+
         $where = "WHERE ID_Z = {$dealId}";
-        return $this->DB->Update('ba_tz', $data, $where);
+        return $this->DB->Update('ba_tz', $sqlData, $where);
     }
 
     public function getCountDeal($type = '')
@@ -370,7 +374,9 @@ class Request extends Model
 
         // TODO: убрать костыль
         while (1) {
-            $title = "{$data['type_rus']} №{$countDeal}/{$year}";
+            $typeRus = $this->DB->ForSql(trim(strip_tags($data['type_rus'])));
+
+            $title = "{$typeRus} №{$countDeal}/{$year}";
 
             $tmp = $this->DB->Query("SELECT ID FROM `b_crm_deal` WHERE `TITLE` = '{$title}'")->Fetch();
 
@@ -447,7 +453,7 @@ class Request extends Model
         );
 
         $data = [
-            'STAGE_ID' => "'{$stage}'",
+            'STAGE_ID' => $stage,
             'STAGE_NUMBER' => $stageNumber
         ];
         $this->updateTz($dealId, $data);
@@ -1980,7 +1986,7 @@ class Request extends Model
         $resultArray = array_diff($arrayUserId, $userIdList);
 
         foreach ($resultArray as $item) {
-            $this->DB->Insert('assigned_to_request', ['deal_id' => $dealId, 'user_id' => $item]);
+            $this->DB->Insert('assigned_to_request', ['deal_id' => $dealId, 'user_id' => (int)$item]);
         }
     }
 

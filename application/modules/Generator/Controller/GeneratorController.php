@@ -131,7 +131,7 @@ class GeneratorController extends Controller
             'directive' => !empty($_POST['directive']) ? $_POST['directive'] : '',
             'directive_date' => !empty($_POST['directive_date']) ? $_POST['directive_date'] : date('Y-m-d'),
         ];
-        $oa = $_POST['in_oa'] ?: 0;
+        $oa = (int)$_POST['in_oa'] ?: 0;
 
         $generator->InventoryList($inform, $oa);
     }
@@ -153,10 +153,10 @@ class GeneratorController extends Controller
         /** @var DocumentGenerator $generator */
         $generator = $this->model('DocumentGenerator');
 
-        $year = $_POST['year'];
-        $type = (int)$_POST['type'];
-        $oa = $_POST['in_oa'];
-        $month = $_POST['month2'];
+        $year  = (int)$_POST['year'];
+        $type  = (int)$_POST['type'];
+        $oa    = !empty($_POST['in_oa']) ? 1 : 0;
+        $month = !empty($_POST['month2']) ? 1 : 0;
 
         $generator->VerificationGraph($year, $type, $oa, $month);
     }

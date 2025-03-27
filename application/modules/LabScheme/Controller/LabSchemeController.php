@@ -64,35 +64,12 @@ class LabSchemeController extends Controller
 
         $scheme = $this->model('LabScheme');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
+        $filter = $scheme->prepareFilter($_POST ?? []);
 
         $filter['search']['type'] = 0;
 
-        foreach ($_POST['columns'] as $column) {
-            if (!empty($column['search']['value'])) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if (!empty($_POST['dateStart'])) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart']));
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd']));
-        }
-
         if (!empty($_POST['type'])) {
-            $filter['search']['type'] = $_POST['type'];
+            $filter['search']['type'] = (int)$_POST['type'];
         }
 
         $data = $scheme->getSchemeEditorData($filter);
@@ -109,7 +86,7 @@ class LabSchemeController extends Controller
         //  $test = CCrmDeal::GetList();
 
         $jsonData = [
-            "draw" => $_POST["draw"],
+            "draw" => (int)$_POST["draw"],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -139,10 +116,9 @@ class LabSchemeController extends Controller
         $type = $_POST["type"];
 
         if (isset($_POST["material_id"]) && !empty($_POST["material_id"])) {
-            $materialId = $_POST["material_id"];
+            $materialId = (int)$_POST["material_id"];
 
             $materialName = $_POST["material_name"];
-
 
             $labScheme->update($materialId, $materialName);
             $labScheme->updateOz($materialId, $manufacturer);
@@ -191,7 +167,7 @@ class LabSchemeController extends Controller
         $labScheme = $this->model('LabScheme');
         //  $test = $request->b24("crm.deal.get", ["id" => 8919])["result"];
 
-        $schemeId = $labScheme->addScheme($_POST["material_id"], $_POST["scheme_name"], $_POST["gost"]);
+        $schemeId = $labScheme->addScheme((int)$_POST["material_id"], $_POST["scheme_name"], $_POST["gost"]);
         $schemeName = $_POST["scheme_name"];
 
         //  echo json_encode($_POST, JSON_UNESCAPED_UNICODE);
@@ -279,28 +255,10 @@ class LabSchemeController extends Controller
 
         $labScheme = $this->model('LabScheme');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if (!empty($column['search']['value'])) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $labScheme->prepareFilter($_POST ?? []);
 
         if (!empty($_POST['scheme_id'])) {
-            $filter['search']['scheme_id'] = $_POST['scheme_id'];
+            $filter['search']['scheme_id'] = (int)$_POST['scheme_id'];
         }
 
         $data = $labScheme->getSchemeCardData($filter);
@@ -314,7 +272,7 @@ class LabSchemeController extends Controller
         unset($data['test']);
 
         $jsonData = [
-            "draw" => $_POST["draw"],
+            "draw" => (int)$_POST["draw"],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,

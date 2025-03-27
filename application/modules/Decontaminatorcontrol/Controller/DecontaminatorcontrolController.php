@@ -57,7 +57,9 @@ class DecontaminatorcontrolController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $data = $usedModel->getList($this->postToFilter($_POST));
+        $filter = $usedModel->postToFilter($_POST ?? []);
+
+        $data = $usedModel->getList($filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -66,7 +68,7 @@ class DecontaminatorcontrolController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data

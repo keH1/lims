@@ -80,7 +80,7 @@ class MaterialController extends Controller
         if ( empty($groupId) ) {
             $this->showErrorMessage("Не удалось добавить группу '{$_POST['name']}'");
         } else {
-            $materialModel->updateTuGroupMaterial($groupId, $_POST['group']['new']['tu']);
+            $materialModel->updateTuGroupMaterial((int)$groupId, $_POST['group']['new']['tu']);
 
             $this->showSuccessMessage("Группа '{$_POST['name']}' добавлена");
         }
@@ -218,7 +218,7 @@ class MaterialController extends Controller
 
         $_SESSION['material_post'] = $_POST;
 
-        $ID = $_POST['id'];
+        $ID = (int)$_POST['id'];
         $successMsg = empty($_POST['id'])? 'Материал успешно создан' : "Материал успешно изменен";
 
         $dataGroup = [];
@@ -262,25 +262,7 @@ class MaterialController extends Controller
         /** @var  Material $material*/
         $material = $this->model('Material');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $material->prepareFilter($_POST ?? []);
 
         $data = $material->getDatatoJournalMaterial($filter);
 
@@ -291,7 +273,7 @@ class MaterialController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -360,7 +342,7 @@ class MaterialController extends Controller
         $APPLICATION->RestartBuffer();
         /** @var  Material $material*/
         $material = $this->model('Material');
-        $id = $_POST['id_scheme'];
+        $id = (int)$_POST['id_scheme'];
         $materialId = !empty($_POST['id_material']) ? $_POST['id_material'] : 0;
 
         $dataGost = $_POST['gosts'];
@@ -416,7 +398,7 @@ class MaterialController extends Controller
         /** @var  Material $material*/
         $material = $this->model('Material');
 
-        $data = $material->getSieveAndNorm($_POST['groupId']);
+        $data = $material->getSieveAndNorm((int)$_POST['groupId']);
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -470,10 +452,10 @@ class MaterialController extends Controller
         /** @var  Material $materialModel */
         $materialModel = $this->model('Material');
 		foreach ($_POST['probe_id_list'] as $umtrId) {
-			$materialId = $materialModel->getMaterialByUmtrId($umtrId);
+			$materialId = $materialModel->getMaterialByUmtrId((int)$umtrId);
 
-			$data[$materialId] = $materialModel->getGroupMaterial($materialId);
-			$data[$materialId]['material_name'] = $materialModel->getById($materialId)['NAME'];
+			$data[$materialId] = $materialModel->getGroupMaterial((int)$materialId);
+			$data[$materialId]['material_name'] = $materialModel->getById((int)$materialId)['NAME'];
 		}
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);

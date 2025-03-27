@@ -65,39 +65,21 @@ class OverheadController extends Controller
 
         $overhead = $this->model('Overhead');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
+        $_POST['dateStart'] = $_POST['date_start'];
+        $_POST['dateEnd'] = $_POST['date_end'];
+        $filter = $overhead->prepareFilter($_POST ?? []);
 
-        foreach ($_POST['columns'] as $column) {
-            if (!empty($column['search']['value'])) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
+        if (!empty($_POST['dateStart'])) {
+            $filter['search']['date_start'] = $_POST['dateStart'];
         }
 
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if (!empty($_POST['date_start'])) {
-            $filter['search']['date_start'] = $_POST['date_start'];
-        }
-
-        if (!empty($_POST['date_end'])) {
-            $filter['search']['date_end'] = $_POST['date_end'];
+        if (!empty($_POST['dateEnd'])) {
+            $filter['search']['date_end'] = $_POST['dateEnd'];
         }
 
         if ($_POST['project_id'] != "") {
-            $filter['search']['project_id'] = $_POST['project_id'];
+            $filter['search']['project_id'] = (int)$_POST['project_id'];
         }
-
-       // $userId = $_SESSION['SESS_AUTH']['USER_ID'];
 
         $data = $overhead->getJournal($filter);
 
@@ -108,7 +90,7 @@ class OverheadController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "project_bg" => ProjectController::PROJECT_BG,
@@ -136,7 +118,7 @@ class OverheadController extends Controller
         ];
 
         if (isset($_POST["id"]) && !empty($_POST["id"])) {
-            $overhead->updateRow($data, $_POST["id"]);
+            $overhead->updateRow($data, (int)$_POST["id"]);
         } else {
             $overhead->insertRow($data);
         }

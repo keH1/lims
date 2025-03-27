@@ -95,34 +95,7 @@ class LabController extends Controller
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],
-                'start' => $_POST['start'],
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ($column['search']['value'] !== '') {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-        }
-
-        if (!empty($_POST['room'])) {
-            $filter['search']['room'] = $_POST['room'];
-        }
+        $filter = $labModel->prepareFilter($_POST ?? []);
 
         $data = $labModel->getJournalCondition($filter);
 
@@ -133,7 +106,7 @@ class LabController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -156,14 +129,14 @@ class LabController extends Controller
 
         $location = "/lab/conditionList/";
 
-        if (empty($_POST['form']['room_id']) && $_POST['form']['room_id'] < 0) {
+        if (empty($_POST['form']['room_id']) && (int)$_POST['form']['room_id'] < 0) {
             $this->showErrorMessage('Не указан, или указан неверно ИД комнаты');
             $this->redirect($location);
         }
 
 
         $userId = $_SESSION['SESS_AUTH']['USER_ID'];
-        $roomId = $_POST['form']['room_id'] - 100;
+        $roomId = intval($_POST['form']['room_id']) - 100;
         $arrWarning = [];
         $isMethodMatch = 1;
         $isOborudMatch = 1;
@@ -276,7 +249,7 @@ class LabController extends Controller
         }
 
         if (!empty($_POST['id'])) {
-            $result = $labModel->updateConditions($_POST['id'], $_POST['form']);
+            $result = $labModel->updateConditions((int)$_POST['id'], $_POST['form']);
         } else {
             //if (!empty($_POST['form']['date'])) {
             //    $date = new DateTime($_POST['form']['date']);
@@ -319,7 +292,7 @@ class LabController extends Controller
         }
 
         if (!empty($_POST['pressure_id'])) {
-            $result = $labModel->updatePressure($_POST['pressure_id'], $_POST['form']);
+            $result = $labModel->updatePressure((int)$_POST['pressure_id'], $_POST['form']);
         } else {
             if (!empty($_POST['form']['date'])) {
                 $_POST['form']['created_at'] = $_POST['form']['date'] ?: date('Y-m-d H:i');
@@ -368,7 +341,7 @@ class LabController extends Controller
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');
 
-        $result = $labModel->getConditionById($_POST['id']);
+        $result = $labModel->getConditionById((int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -392,8 +365,8 @@ class LabController extends Controller
             ]
         ];
 
-        if (!empty($_POST['id']) && $_POST['id'] > 0) {
-            $labModel->removeConditionById($_POST['id']);
+        if (!empty($_POST['id']) && (int)$_POST['id'] > 0) {
+            $labModel->removeConditionById((int)$_POST['id']);
 
             $this->showSuccessMessage("Данные условия удалены");
 
@@ -443,8 +416,8 @@ class LabController extends Controller
         $arrWarning = [];
 
 
-        $condition = $labModel->getConditionById($_POST['id']);
-        $roomId = $condition['room_id'] - 100;
+        $condition = $labModel->getConditionById((int)$_POST['id']);
+        $roomId = intval($condition['room_id']) - 100;
         $methods = $methodsModel->getMethodsByRoom($roomId);
         $oboruds = $oborudModel->getOborudByRoom($roomId);
 
@@ -554,8 +527,8 @@ class LabController extends Controller
         ];
 
 
-        if (!empty($_POST['room_id']) && $_POST['room_id'] > 0) {
-            $result = $labModel->getMeanConditions($_POST['room_id']);
+        if (!empty($_POST['room_id']) && (int)$_POST['room_id'] > 0) {
+            $result = $labModel->getMeanConditions((int)$_POST['room_id']);
 
             if (!empty($result)) {
 

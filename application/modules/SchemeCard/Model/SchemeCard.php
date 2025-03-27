@@ -36,10 +36,13 @@ class SchemeCard extends Model
 
     public function createScheme(array $attrs)
     {
-        $this->DB->Insert("osk_schemes", [
-            'name' => '"' . $attrs['name'] . '"',
-            'work_type_id' => '"' . $attrs['work_type_id'] . '"',
-        ]);
+        $data = [
+            'name' => $attrs['name'],
+            'work_type_id' => $attrs['work_type_id']
+        ];
+
+        $sqlData = $this->prepearTableData('osk_schemes', $data);
+        $this->DB->Insert("osk_schemes", $sqlData);
     }
 
     public function getSchemeCardData(int $cardId)
@@ -57,9 +60,8 @@ class SchemeCard extends Model
 
     public function createID(string $name)
     {
-        $this->DB->Insert("osk_id_type", [
-            'name' => '"' . $name . '"',
-        ]);
+        $sqlData = $this->prepearTableData('osk_id_type', ['name' => $name]);
+        $this->DB->Insert("osk_id_type", $sqlData);
     }
 
     public function getIDTypes(): array
@@ -77,10 +79,13 @@ class SchemeCard extends Model
 
     public function createIDType(array $attributes)
     {
-        $this->DB->Insert("osk_isp_doc_types", [
-            'type_id' => '"' . $attributes['type_id'] . '"',
-            'card_id' => '"' . $attributes['card_id'] . '"',
-        ]);
+        $data = [
+            'type_id' => $attributes['type_id'],
+            'card_id' => $attributes['card_id']
+        ];
+
+        $sqlData = $this->prepearTableData('osk_schemes', $data);
+        $this->DB->Insert("osk_isp_doc_types", $sqlData);
     }
 
     public function getAllSchemeCardData(int $cardId, array $filter): array
@@ -133,9 +138,8 @@ class SchemeCard extends Model
 
     public function editIDType(array $attrs)
     {
-        $this->DB->Update("osk_id_type", [
-            'name' => '"' . $attrs['name'] . '"',
-        ], "WHERE id={$attrs['type_id']}");
+        $sqlData = $this->prepearTableData('osk_id_type', ['name' => $attrs['name']]);
+        $this->DB->Update("osk_id_type", $sqlData, "WHERE id=" . (int)$attrs['type_id']);
     }
 
     public function deleteScheme(array $attrs)

@@ -742,39 +742,43 @@ class Requirement extends Model
         $m_number = 1;
         foreach ($materialDataList as $keyMaterial => $material) {
             $k = 1;
+            $mtrId = (int)$material['mtr_id'];
+            $obiem = (int)$probeDataList[$keyMaterial];
 
             $materialData = [
                 'ID_DEAL' => $dealId,
-                'ID_MATERIAL' => $material['id'],
+                'ID_MATERIAL' => (int)$material['id'],
                 'NAME_MATERIAL' => $this->quoteStr($this->DB->ForSql($material['name'])),
-                'OBIEM' => $probeDataList[$keyMaterial]
+                'OBIEM' => $obiem
             ];
 
-            if ( !empty($material['mtr_id']) ) {
-                $this->DB->Update('MATERIALS_TO_REQUESTS', $materialData, "WHERE ID = {$material['mtr_id']}");
+
+            if ( !empty($mtrId) ) {
+                $this->DB->Update('MATERIALS_TO_REQUESTS', $materialData, "WHERE ID = {$mtrId}");
             } else {
                 $material['mtr_id'] = $this->DB->Insert('MATERIALS_TO_REQUESTS', $materialData);
-            }
 
+                $mtrId = (int)$material['mtr_id'];
+            }
 
             $dataProbe = [
                 'deal_id' => $dealId,
                 'material_id' => $material['id'],
                 'material_number' => $m_number,
-                'mtr_id' => $material['mtr_id'],
+                'mtr_id' => $mtrId,
             ];
 
-            $this->DB->Query("DELETE FROM `probe_to_materials` WHERE material_request_id = {$material['mtr_id']}");
-            $this->DB->Query("DELETE FROM `ulab_material_to_request` WHERE probe_number > {$probeDataList[$keyMaterial]} and mtr_id = {$material['mtr_id']}");
-            for ($i = 0; $i < $probeDataList[$keyMaterial]; $i++) {
+            $this->DB->Query("DELETE FROM `probe_to_materials` WHERE material_request_id = {$mtrId}");
+            $this->DB->Query("DELETE FROM `ulab_material_to_request` WHERE probe_number > {$obiem} and mtr_id = {$mtrId}");
+            for ($i = 0; $i < $obiem; $i++) {
                 $key_g = 1;
 
                 $dataProbe['probe_number'] = $k;
 
-                $c = $this->DB->Query("select id from ulab_material_to_request where mtr_id = {$material['mtr_id']} and probe_number = {$k}")->Fetch();
+                $c = $this->DB->Query("select id from ulab_material_to_request where mtr_id = {$mtrId} and probe_number = {$k}")->Fetch();
 
                 if ( isset($c['id']) ) {
-                    $this->DB->Update('ulab_material_to_request', $dataProbe, "WHERE mtr_id = {$material['mtr_id']} and probe_number = {$k}");
+                    $this->DB->Update('ulab_material_to_request', $dataProbe, "WHERE mtr_id = {$mtrId} and probe_number = {$k}");
                     $ulabMaterialToRequest = $c['id'];
                 } else {
                     $ulabMaterialToRequest = $this->DB->Insert('ulab_material_to_request', $dataProbe);
@@ -784,7 +788,7 @@ class Requirement extends Model
 
 
                 $probeData = [
-                    'material_request_id' => (int)$material['mtr_id']
+                    'material_request_id' => $mtrId
                 ];
 
                 $probeToMaterials = $this->DB->Insert('probe_to_materials', $probeData);
@@ -985,7 +989,7 @@ class Requirement extends Model
     public function changeGostNumber($data)
     {
         foreach ($data as $row) {
-            $this->DB->Update('ulab_gost_to_probe', ['gost_number' => $row['newPosition']], "where id = {$row['id']}");
+            $this->DB->Update('ulab_gost_to_probe', ['gost_number' => (int)$row['newPosition']], "where id = " . $row['id']);
         }
     }
 
@@ -1010,13 +1014,14 @@ class Requirement extends Model
         if ( isset($data['new_method_id']) ) {
             $methodModel = new Methods();
 
-            $method = $methodModel->get($data['new_method_id']);
+            $method = $methodModel->get((int)$data['new_method_id']);
 
             $data['price'] = $method['price'];
             $data['assigned_id'] = '';
         }
 
-        $this->DB->Update('ulab_gost_to_probe', $data, "where id = {$ugtpId}");
+        $sqlData = $this->prepearTableData('ulab_gost_to_probe', $data);
+        $this->DB->Update('ulab_gost_to_probe', $sqlData, "where id = {$ugtpId}");
 
         $dealId = $requestModel->getDealIdByTzId($tzId);
 
@@ -1191,7 +1196,7 @@ class Requirement extends Model
     {
         foreach ($data as $materialId => $newMaterialId) {
             if ( $materialId != $newMaterialId ) {
-                $this->DB->Update('ulab_material_to_request', ['material_id' => $newMaterialId], "WHERE deal_id = {$dealId} and material_id = {$materialId}");
+                $this->DB->Update('ulab_material_to_request', ['material_id' => (int)$newMaterialId], "WHERE deal_id = {$dealId} and material_id = " . (int)$materialId);
             }
         }
     }
@@ -1210,15 +1215,16 @@ class Requirement extends Model
         $arrMaterial = [];
 
         foreach ($data as $materialId => $materialData) {
+            $materialId = (int)$materialId;
 
-            $arrMaterial[] = $materialModel->getById((int)$materialId)['NAME'];
+            $arrMaterial[] = $materialModel->getById($materialId)['NAME'];
 
             foreach ($materialData['probe'] as $probeId => $probeData) {
 
                 $sqlProbeData = $this->prepearTableData('ulab_material_to_request', $probeData);
 
                 if ( stripos($probeId, 'new') === false ) {
-                    $this->DB->Update('ulab_material_to_request', $sqlProbeData, "WHERE id = {$probeId}");
+                    $this->DB->Update('ulab_material_to_request', $sqlProbeData, "WHERE id = " . (int)$probeId);
                 } else {
                     $sqlProbeData['material_id'] = $materialId;
                     $sqlProbeData['deal_id'] = $dealId;
@@ -1236,9 +1242,9 @@ class Requirement extends Model
                     $sqlMethodData = $this->prepearTableData('ulab_gost_to_probe', $methodData);
 
                     if ( stripos($ugtpId, 'new') === false ) {
-                        $this->DB->Update('ulab_gost_to_probe', $sqlMethodData, "WHERE id = {$ugtpId}");
+                        $this->DB->Update('ulab_gost_to_probe', $sqlMethodData, "WHERE id = " . (int)$ugtpId);
                     } else {
-                        $sqlMethodData['material_to_request_id'] = $probeId;
+                        $sqlMethodData['material_to_request_id'] = (int)$probeId;
                         $this->DB->Insert('ulab_gost_to_probe', $sqlMethodData);
                     }
                 }
@@ -1896,6 +1902,8 @@ class Requirement extends Model
     public function addProbeToMaterial($dealId, $arrMaterialId, $number)
     {
         foreach ($arrMaterialId as $materialId) {
+            $materialId = (int)$materialId;
+
             $sql = $this->DB->Query("select max(probe_number) as probe_number, material_number from ulab_material_to_request where deal_id = {$dealId} and material_id = {$materialId}")->Fetch();
             $probeNumber = $sql['probe_number'];
 
@@ -1921,6 +1929,8 @@ class Requirement extends Model
     public function addMethodsToProbe($probeIdList, $data)
     {
         foreach ($probeIdList as $probeId) {
+            $probeId = (int)$probeId;
+
             $sql = $this->DB->Query("select max(gost_number) as gost_number from ulab_gost_to_probe where material_to_request_id = {$probeId}")->Fetch();
             $gostNumber = $sql['gost_number'];
             if ( !is_numeric($gostNumber) ) {
@@ -1940,6 +1950,7 @@ class Requirement extends Model
                     'gost_number' => ++$gostNumber,
                 ];
 
+                $sqlData = $this->prepearTableData('ulab_gost_to_probe', $sqlData);
                 $this->DB->Insert('ulab_gost_to_probe', $sqlData);
             }
         }
@@ -2222,6 +2233,7 @@ class Requirement extends Model
             return $response;
         }
 
+        $methodsId = array_map('intval', $methodsId);
         $strMethodsId = implode(', ', $methodsId);
 
         $result = $this->DB->Query("SELECT * FROM ba_gost WHERE IN_OA <> 1 AND ID IN ({$strMethodsId}) AND ID NOT IN (2875, 5962) AND GOST_TYPE <> 'metodic_otbor'");

@@ -131,6 +131,7 @@ class Permission extends Model
      */
     public function getRoleInfo($roleId)
     {
+        $roleId = (int)$roleId;
         $row = $this->DB->Query("SELECT * FROM `ulab_permission` WHERE id = {$roleId}")->Fetch();
 
         $row['permission'] = json_decode($row['permission'], true);
@@ -162,6 +163,7 @@ class Permission extends Model
      */
     public function updateRole($roleId, $data)
     {
+        $roleId = (int)$roleId;
         $where = "WHERE id = {$roleId}";
 
         $d = [
@@ -180,6 +182,9 @@ class Permission extends Model
      */
     public function updateUser($userId, $roleId)
     {
+        $userId = (int)$userId;
+        $roleId = (int)$roleId;
+
         $this->DB->Query("REPLACE `ulab_user_permission` SET `user_id` = {$userId}, `permission_id` = {$roleId}");
     }
 

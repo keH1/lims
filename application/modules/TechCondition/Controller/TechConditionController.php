@@ -68,15 +68,17 @@ class TechConditionController extends Controller
 
 
     /**
-     * @desc Создание/изменение ТУ с формы
+     * @desc Создание/v
      */
     public function insertUpdate()
     {
         /** @var TechCondition $tcModel */
         $tcModel = $this->model('TechCondition');
 
-        $location   = empty($_POST['id'])? '/techCondition/new/' : "/techCondition/edit/{$_POST['id']}";
-        $successMsg = empty($_POST['id'])? 'ТУ успешно создано' : "ТУ успешно изменено";
+        $id = (int)$_POST['id'];
+
+        $location   = empty($id)? '/techCondition/new/' : "/techCondition/edit/{$id}";
+        $successMsg = empty($id)? 'ТУ успешно создано' : "ТУ успешно изменено";
 
         // сохраним пост в сессию, что бы при ошибке не заполнять поля заново
         $_SESSION['request_post'] = $_POST;
@@ -85,9 +87,9 @@ class TechConditionController extends Controller
 
         ///  \блок проверок
 
-        if ( !empty($_POST['id']) ) { // редактирование
-            $idTU = $_POST['id'];
-            $tcModel->update($_POST['id'], $_POST['form']);
+        if ( !empty($id) ) { // редактирование
+            $idTU = $id;
+            $tcModel->update($id, $_POST['form']);
         } else { // создание
             $idTU = $tcModel->add($_POST['form']);
         }
@@ -161,26 +163,7 @@ class TechConditionController extends Controller
         /** @var TechCondition $tcModel */
         $tcModel = $this->model('TechCondition');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $tcModel->prepareFilter($_POST ?? []);
 
         $data = $tcModel->getJournalList($filter);
 
@@ -191,7 +174,7 @@ class TechConditionController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,

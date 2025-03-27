@@ -24,22 +24,17 @@ class Assignment extends Model
 
     public function SetEquipment (array $data)
     {
-
         $key = array_key_first($data);
-        $updateFor = "'" . stristr(array_key_first($data), "-", true) . "'";
+        $updateFor = stristr(array_key_first($data), "-", true);
 
-        //$values = serialize($data[$key]);
         $param = [
-            // 'equipment' => "'" . $this->DB->ForSql($values) . "'"
-            'equipment' => "'" . json_encode($data[$key], JSON_UNESCAPED_UNICODE) . "'"
+            'equipment' => json_encode($data[$key], JSON_UNESCAPED_UNICODE)
         ];
 
-        // echo '<pre>';
-        // print_r($param);
-        // echo '<pre>';
-        // die;
+        $param = $this->prepearTableData('journal_equipment', $param);
+        $updateFor = $this->DB->ForSql($updateFor);
 
-        $where = "WHERE equipment_for = {$updateFor}";
+        $where = "WHERE equipment_for = '{$updateFor}'";
         $this->DB->Update('journal_equipment', $param, $where);
     }
 

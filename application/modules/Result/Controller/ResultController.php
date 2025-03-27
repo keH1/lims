@@ -2186,12 +2186,6 @@ class ResultController extends Controller
         $successMsg = 'Данные результатов испытаний успешно сохранены';
         $selected = $_POST['selected'] ? '&selected' : '';
 
-        /*if ($_SESSION['SESS_AUTH']['ROLE'] == 6) {
-            $location = "/result/resultCard_tester/{$_POST['deal_id']}";
-        } else {
-            $location = $protocolId ? "/result/card_new/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_new/{$_POST['deal_id']}";
-        }*/
-//        $location = $protocolId ? "/result/card_new/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_new/{$_POST['deal_id']}";
         $location = $protocolId ? "/result/card_oati/{$_POST['deal_id']}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$_POST['deal_id']}";
 
         $deal = $request->getDealById($dealId);
@@ -2206,15 +2200,15 @@ class ResultController extends Controller
             $this->redirect('/request/list/');
         }
 
-        if (!empty($protocolId) && !empty($protocol['INVALID'])) {
-            $this->showErrorMessage("Ошибка сохранения данных, нельзя изменить данные у протокола признанным недействительным");
-            $this->redirect($location);
-        }
-
         // Если у протокола есть номер и протокол не разблокирован, то изменить данные нельзя
         $protocol = $resultModel->getProtocolById($protocolId);
         if (!empty($protocolId) && !empty($protocol['NUMBER']) && empty($protocol['EDIT_RESULTS'])) {
             $this->showErrorMessage("Ошибка сохранения данных, нельзя изменить данные у протокола с присвоенным номером");
+            $this->redirect($location);
+        }
+
+        if (!empty($protocolId) && !empty($protocol['INVALID'])) {
+            $this->showErrorMessage("Ошибка сохранения данных, нельзя изменить данные у протокола признанным недействительным");
             $this->redirect($location);
         }
 
@@ -2353,7 +2347,7 @@ class ResultController extends Controller
 
             foreach ($umtr as $key => $val) {
                 if (!empty($val['protocol_id']) && empty($_POST['probe_checkbox'][$val['id']])) {
-                    $umtr_result = $result->updateMaterialToRequest($val['id'], $mtrData);
+                    $umtr_result = $result->updateMaterialToRequest((int)$val['id'], $mtrData);
 
                     if ($umtr_result !== 1) {
                         $this->showErrorMessage("Не удалось открепить пробы от протокола");
@@ -2373,6 +2367,7 @@ class ResultController extends Controller
             ];
 
             foreach ($_POST['probe_checkbox'] as $umtr_id => $val) {
+                $umtr_id = (int)$umtr_id;
                 $umtr = $result->materialToRequestData($umtr_id);
 
                 if (!empty($umtr['protocol_id']) && (int)$umtr['protocol_id'] !== $protocolId) {
@@ -2413,6 +2408,7 @@ class ResultController extends Controller
             //end
 
             foreach ($value as $ugtp_id => $actualValue) {
+                $ugtp_id = (int)$ugtp_id;
                 $ugtp = $result->materialToRequestByUgtpId($ugtp_id);
 
                 //TODO: Временно, для работы остальных скриптов до их рефакторинга
@@ -2498,9 +2494,9 @@ class ResultController extends Controller
 
                 $data = [
                     'gost_to_probe_id' => $ugtp_id,
-                    'normative_value' => "'{$normativeValue}'",
-                    'actual_value' => "'{$actualValueJson}'",
-                    'average_value' => "'{$actualValue[0]}'",
+                    'normative_value' => $normativeValue,
+                    'actual_value' => $actualValueJson,
+                    'average_value' => $actualValue[0],
                     'match' => $match
                 ];
 
@@ -2703,7 +2699,7 @@ class ResultController extends Controller
                 'ATTESTAT_IN_PROTOCOL' => $attestatInProtocol,
             ];
 
-            $result->updateProtocolById($val['ID'], $protocolData);
+            $result->updateProtocolById((int)$val['ID'], $protocolData);
         }
 
         $noCompliance = !empty($_POST['NO_COMPLIANCE']) ? 1 : 0;
@@ -3032,7 +3028,7 @@ class ResultController extends Controller
 
             foreach ($umtr as $key => $val) {
                 if (!empty($val['protocol_id']) && empty($_POST['probe_checkbox'][$val['id']])) {
-                    $umtr_result = $result->updateMaterialToRequest($val['id'], $mtrData);
+                    $umtr_result = $result->updateMaterialToRequest((int)$val['id'], $mtrData);
 
                     if ($umtr_result !== 1) {
                         $this->showErrorMessage("Не удалось открепить пробы от протокола");
@@ -3052,6 +3048,7 @@ class ResultController extends Controller
             ];
 
             foreach ($_POST['probe_checkbox'] as $umtr_id => $val) {
+                $umtr_id = (int)$umtr_id;
                 $umtr = $result->getMaterialToRequestData($umtr_id);
 
                 if (!empty($umtr['protocol_id']) && (int)$umtr['protocol_id'] !== $protocolId) {
@@ -3092,6 +3089,7 @@ class ResultController extends Controller
             //end
 
             foreach ($value as $ugtp_id => $actualValue) {
+                $ugtp_id = (int)$ugtp_id;
                 $ugtp = $result->getUlabGostToProbeById($ugtp_id);
 
                 //TODO: Временно, для работы остальных скриптов до их рефакторинга
@@ -3312,9 +3310,9 @@ class ResultController extends Controller
 
                 $data = [
                     'gost_to_probe_id' => $ugtp_id,
-                    'normative_value' => "'{$normativeValue}'",
-                    'actual_value' => "'{$actualValueJson}'",
-                    'average_value' => "'{$averageValue}'",
+                    'normative_value' => $normativeValue,
+                    'actual_value' => $actualValueJson,
+                    'average_value' => $averageValue,
                     'match' => $match
                 ];
 
@@ -3893,7 +3891,7 @@ class ResultController extends Controller
         $tzId = $tz['ID'] ?: null;
 
 
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission((int)$_SESSION['SESS_AUTH']['USER_ID']);
         $protocolData = $result->getProtocolById($protocolId);
         $currentUserId = $user->getCurrentUserId();
         $currentUser = $user->getCurrentUser();
@@ -4274,9 +4272,9 @@ class ResultController extends Controller
 
 
         if ( $dealId >= DEAL_NEW_RESULT ) {
-            $umtr = $result->getMaterialToRequestByProtocolId($_POST['selected_protocol']);
+            $umtr = $result->getMaterialToRequestByProtocolId((int)$_POST['selected_protocol']);
         } else {
-            $umtr = $result->getMaterialToRequestByProtocolId($_POST['selected_protocol_id']);
+            $umtr = $result->getMaterialToRequestByProtocolId((int)$_POST['selected_protocol_id']);
         }
         $protocolData = $result->getProtocolById($protocolId);
         $currentUserId = $user->getCurrentUserId();
@@ -4391,7 +4389,7 @@ class ResultController extends Controller
 
         $this->showSuccessMessage("Данные записаны");
 
-        $this->redirect("/result/card_oati/{$_POST['deal_id']}");
+        $this->redirect("/result/card_oati/" . (int)$_POST['deal_id']);
     }
 
 
@@ -4403,7 +4401,7 @@ class ResultController extends Controller
         /** @var Result $resultModel */
         $resultModel = $this->model('Result');
         foreach ($_POST['form_data'] as $ugtpId => $data) {
-            $resultModel->saveMeasurementDataNew($data, $ugtpId);
+            $resultModel->saveMeasurementDataNew($data, (int)$ugtpId);
         }
 
         $this->showSuccessMessage("Листы измерения сохранены");
@@ -4421,24 +4419,13 @@ class ResultController extends Controller
 
         $APPLICATION->RestartBuffer();
 
+        $selectedProtocolId = (int)$_POST['selected_protocol_id'];
 
-        if (!empty($_POST['selected_protocol_id']) && $_POST['selected_protocol_id'] > 0) {
+        if (!empty($selectedProtocolId) && $selectedProtocolId > 0) {
             /** @var Result $result */
             $result = $this->model('Result');
 
-            $umtr = $result->getMaterialToRequestByProtocolId($_POST['selected_protocol_id']);
-
-
-//            if ($_POST['selected_samples'] !== array_column($umtr, 'id')) {
-//                $response = [
-//                    'success' => false,
-//                    'error' => [
-//                        'message' => 'Количество выбранных проб при присвоении номера не соответствует количеству сохраненных проб'
-//                    ]
-//                ];
-//                echo json_encode($response, JSON_UNESCAPED_UNICODE);
-//                return;
-//            }
+            $umtr = $result->getMaterialToRequestByProtocolId($selectedProtocolId);
 
             $response = [
                 'success' => true
@@ -4471,23 +4458,23 @@ class ResultController extends Controller
             ]
         ];
 
-        if (!empty($_POST['protocol_id']) && $_POST['protocol_id'] > 0) {
+        $protocolId = (int)$_POST['protocol_id'];
+
+        if (!empty($protocolId) && $protocolId > 0) {
             /** @var Oborud $oborudModel */
             $oborudModel = $this->model('Oborud');
 
-            $protocolId = (int)$_POST['protocol_id'];
-            
             $response = $oborudModel->delTzObConnectByProtocolId($protocolId);
-            
+
             if ($response['success']) {
                 $defaultEquipment = $oborudModel->oborudsByProtocolId($protocolId);
-                
+
                 $equipmentIds = !empty($defaultEquipment) ? array_keys($defaultEquipment) : [];
                 sort($equipmentIds);
-                
+
                 $response['default_equipment'] = $defaultEquipment;
                 $response['default_equipment_ids'] = $equipmentIds;
-                
+
                 $this->showSuccessMessage('Данные успешно обновлены');
             } else {
                 $this->showErrorMessage($response['error']['message'] ?: '');
@@ -4496,7 +4483,7 @@ class ResultController extends Controller
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
-    
+
 
     /**
      * @desc Получает лист измерения
@@ -4519,16 +4506,20 @@ class ResultController extends Controller
         if ( isset($_POST['measurement_object']) ) {
             $tmpName = '';
             foreach ($_POST['measurement_object'] as $item) {
-                $sheet = $resultModel->getMeasurement($item['measurement_id']);
-                $ugtp = $requirementModel->getGostToProbe($item['ugtpId']);
-                $probe = $resultModel->getProbeByUgtpId($item['ugtpId']);
+                $measurementId = (int)$item['measurement_id'];
+                $ugtpId = (int)$item['ugtpId'];
+                $methodId = (int)$item['methodId'];
+
+                $sheet = $resultModel->getMeasurement($measurementId);
+                $ugtp = $requirementModel->getGostToProbe($ugtpId);
+                $probe = $resultModel->getProbeByUgtpId($ugtpId);
                 if ( method_exists($resultModel, $sheet['name']) ) {
-                    $this->data['measuring_property'] = $resultModel->{$sheet['name']}($ugtp, $item['methodId']);
+                    $this->data['measuring_property'] = $resultModel->{$sheet['name']}($ugtp, $methodId);
                 }
 
                 $this->data['measuring'] = $ugtp['measuring_sheet'] ?? [];
                 $this->data['sheet'] = $sheet;
-                $this->data['ugtp_id'] = $item['ugtpId'];
+                $this->data['ugtp_id'] = $ugtpId;
                 $this->data['probe'] = $probe;
 
                 if ( $tmpName !== $sheet['name'] ) {
@@ -4552,8 +4543,10 @@ class ResultController extends Controller
 
         /** @var Result $resultModel */
         $resultModel = $this->model('Result');
-        if (!empty($_POST['ugtp_id']) && $_POST['ugtp_id'] > 0) {
-            $result = $resultModel->saveMeasurementData($_POST['form_data'], $_POST['ugtp_id']);
+
+        $ugtpId = (int)$_POST['ugtp_id'];
+        if (!empty($ugtpId) && $ugtpId > 0) {
+            $result = $resultModel->saveMeasurementData($_POST['form_data'], $ugtpId);
 
             echo $result;
         }
@@ -4744,7 +4737,9 @@ class ResultController extends Controller
         $dateEnd = $_POST['date_end'] ?: '';
 
         $ugtp = $resultModel->getUGTPNotSelection($protocolId);
+
         $ugtpIds = array_column($ugtp, 'id');
+        $ugtpIds = array_map('intval', $ugtpIds);
 
         $response = [
             'success' => true,
@@ -4832,8 +4827,10 @@ class ResultController extends Controller
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');
 
-        if ( !empty($_POST['protocol_id']) && (int)$_POST['protocol_id'] > 0 ) {
-            $conditions = $labModel->getConditionByProtocol($_POST['protocol_id']);
+        $protocolId = (int)$_POST['protocol_id'];
+
+        if (!empty($protocolId) && $protocolId > 0) {
+            $conditions = $labModel->getConditionByProtocol($protocolId);
 
             $response = [
                 'success' => true,
@@ -4863,8 +4860,10 @@ class ResultController extends Controller
         /** @var Result $resultModel */
         $resultModel = $this->model('Result');
 
-        if ( !empty($_POST['protocol_id']) && (int)$_POST['protocol_id'] > 0 ) {
-            $protocol = $resultModel->getProtocolById($_POST['protocol_id']);
+        $protocolId = (int)$_POST['protocol_id'];
+
+        if (!empty($protocolId) && $protocolId > 0) {
+            $protocol = $resultModel->getProtocolById($protocolId);
 
             $response = [
                 'success' => true,
@@ -4884,7 +4883,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Валидация протоколо по условиям Ajax запросом
+     * @desc Валидация протокола по условиям Ajax запросом
      */
     public function validateProtocolAjax()
     {
@@ -4911,8 +4910,10 @@ class ResultController extends Controller
         $ugtp = $resultModel->getUGTPNotSelection($protocolId);
 
         foreach ($ugtp as $val) {
-            $stateLastAction = $resultModel->getStateLastAction($val['id']);
-            $method = $methodsModel->getMethodByUgtpId($val['id']);
+            $ugtpId = (int)$val['id'];
+
+            $stateLastAction = $resultModel->getStateLastAction($ugtpId);
+            $method = $methodsModel->getMethodByUgtpId($ugtpId);
 
             $anchor = "<a href='".URI."/gost/method/{$method['id']}'>{$method['view_gost_for_protocol']}</a>";
 
@@ -4988,26 +4989,7 @@ class ResultController extends Controller
         /** @var Result $resultModel */
         $resultModel = $this->model('Result');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $resultModel->prepareFilter($_POST ?? []);
 
         $data = $resultModel->getTrialStatisticsList($filter);
 
@@ -5018,7 +5000,7 @@ class ResultController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -5039,29 +5021,10 @@ class ResultController extends Controller
         /** @var Result $resultModel */
         $resultModel = $this->model('Result');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $resultModel->prepareFilter($_POST ?? []);
 
         if ( !empty($_POST['method_id']) ) {
-            $filter['search']['method_id'] = $_POST['method_id'];
+            $filter['search']['method_id'] = (int)$_POST['method_id'];
         }
 
         $data = $resultModel->getStartStopTrials($filter);
@@ -5194,41 +5157,7 @@ class ResultController extends Controller
         /** @var Result $resultModel */
         $resultModel = $this->model('Result');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'], // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( !empty($column['search']['value']) ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( !empty($_POST['material_id']) ) {
-            $filter['search']['material_id'] = $_POST['material_id'];
-        }
-        if ( !empty($_POST['method_id']) ) {
-            $filter['search']['method_id'] = $_POST['method_id'];
-        }
-        if ( !empty($_POST['probe_id']) ) {
-            $filter['search']['probe_id'] = $_POST['probe_id'];
-        }
-        if ( !empty($_POST['protocol_id']) ) {
-            $filter['search']['protocol_id'] = $_POST['protocol_id'];
-        }
-
-        $filter['search']['selected_protocol_id'] = $_POST['selected_protocol_id']?? '';
-
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $resultModel->prepareFilter($_POST ?? []);
 
         $data = $resultModel->getMethodProbeJournal((int)$_POST['deal_id'], $filter);
 
@@ -5239,7 +5168,7 @@ class ResultController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -5262,7 +5191,7 @@ class ResultController extends Controller
         $resultModel = $this->model('Result');
 
         foreach ($_POST['probe_id_list'] as $ugtpId) {
-            $resultModel->startTrial($ugtpId);
+            $resultModel->startTrial((int)$ugtpId);
         }
     }
 
@@ -5280,7 +5209,7 @@ class ResultController extends Controller
         $resultModel = $this->model('Result');
 
         foreach ($_POST['probe_id_list'] as $ugtpId) {
-            $resultModel->pauseTrial($ugtpId);
+            $resultModel->pauseTrial((int)$ugtpId);
         }
     }
 
@@ -5298,7 +5227,7 @@ class ResultController extends Controller
         $resultModel = $this->model('Result');
 
         foreach ($_POST['probe_id_list'] as $ugtpId) {
-            $resultModel->stopTrial($ugtpId);
+            $resultModel->stopTrial((int)$ugtpId);
         }
     }
 

@@ -595,7 +595,7 @@ class Oborud extends Model {
         $number = 1;
 
         $lab = $data['place_of_installation_or_storage'];
-        $labFind = "= {$data['place_of_installation_or_storage']}";
+        $labFind = "= " . (int)$data['place_of_installation_or_storage'];
 
         if ( $lab == 4 ) {
             $lab = 2;
@@ -676,6 +676,8 @@ class Oborud extends Model {
     {
 
         foreach ($arrayData as $certId => $data) {
+            $certId = (int)$certId;
+
             $file = [
                 'name' => $files['name'][$certId],
                 'type' => $files['type'][$certId],
@@ -770,6 +772,7 @@ class Oborud extends Model {
         $this->deleteInterchangeableOborud($oborudId);
 
         foreach ($arrOborudId as $id) {
+            $id = (int)$id;
             $this->DB->Insert('ba_oborud_interchangeable', ['oborud_id' => $oborudId, 'inter_oborud_id' => $id]);
             $this->DB->Insert('ba_oborud_interchangeable', ['oborud_id' => $id, 'inter_oborud_id' => $oborudId]);
         }
@@ -1953,6 +1956,7 @@ class Oborud extends Model {
         ");
 
         foreach ($oborudIds as $oborudId) {
+            $oborudId = (int)$oborudId;
             $this->DB->Update('ba_oborud', ['roomnumber' => $roomId], "WHERE id = {$oborudId}");
         }
 
@@ -1977,6 +1981,7 @@ class Oborud extends Model {
         ");
 
         foreach ($oborudIds as $oborudId) {
+            $oborudId = (int)$oborudId;
             $this->DB->Update('ba_oborud', ['roomnumber' => $roomId], "WHERE id = {$oborudId}");
         }
 

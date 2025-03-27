@@ -186,6 +186,7 @@ class Company extends Model
 
     public function getCompanyIdByInn($inn)
     {
+        $inn = $this->DB->ForSql(trim(strip_tags($inn)));
         $company = $this->DB->Query("SELECT ENTITY_ID FROM b_crm_requisite WHERE RQ_INN LIKE '{$inn}'")->Fetch();
 
         return !empty($company['ENTITY_ID'])? $company['ENTITY_ID'] : false;
@@ -195,6 +196,8 @@ class Company extends Model
 	{
 		CModule::IncludeModule('socialservices');
 		$client = new Socialservices\Properties\Client();
+
+        $inn = $this->DB->ForSql(trim(strip_tags($inn)));
 
 		$company = $client->getByInn($inn);
 
@@ -255,6 +258,8 @@ class Company extends Model
 
     public function getByInnFromBx($inn)
     {
+        $inn = $this->DB->ForSql(trim(strip_tags($inn)));
+
         $result = $this->DB->Query("
             SELECT ENTITY_ID, NAME FROM b_crm_requisite WHERE RQ_INN = {$inn} AND ENTITY_TYPE_ID = 4
         ");

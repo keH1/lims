@@ -1289,7 +1289,7 @@ class ImportController extends Controller
         }
 
         if (!empty($_POST['id'])) { // редактирование
-            $result = $companyModel->updateCompanyInfo($_POST['id'], $_POST['form']);
+            $result = $companyModel->updateCompanyInfo((int)$_POST['id'], $_POST['form']);
         } else { // создание
             $result = $companyModel->addCompanyInfo($_POST['form']);
         }
@@ -1341,7 +1341,7 @@ class ImportController extends Controller
         }
 
         if (!empty($_POST['id'])) { // редактирование
-            $result = $companyModel->updateCompanyInfo($_POST['id'], $_POST['form']);
+            $result = $companyModel->updateCompanyInfo((int)$_POST['id'], $_POST['form']);
         } else { // создание
             $result = $companyModel->addCompanyInfo($_POST['form']);
         }
@@ -1372,14 +1372,14 @@ class ImportController extends Controller
 
         $_SESSION['room_post'] = $_POST;
         if (!empty($_POST['form_room']['room_id'])) {
-            $result = $labModel->updateRoom($_POST['form_room']['room_id'], $_POST['form_room']);
-            $oborudModel->updateOborudsToStorageRoom($_POST['form_room']['equipment_storaged'], $_POST['form_room']['room_id']);
-            $oborudModel->updateOborudsToOperatingRoom([], $_POST['form_room']['room_id']);
+            $result = $labModel->updateRoom((int)$_POST['form_room']['room_id'], $_POST['form_room']);
+            $oborudModel->updateOborudsToStorageRoom($_POST['form_room']['equipment_storaged'], (int)$_POST['form_room']['room_id']);
+            $oborudModel->updateOborudsToOperatingRoom([], (int)$_POST['form_room']['room_id']);
         } else {
             $result = $labModel->addRoom($_POST['form_room']);
-            $labModel->assignRoomToLab($result, $_POST['form_room']['LAB_ID']);
-            $oborudModel->updateOborudsToStorageRoom($_POST['form_room']['equipment_storaged'] ? $_POST['form_room']['equipment_storaged'] : [], $result);
-            $oborudModel->updateOborudsToOperatingRoom([], $result);
+            $labModel->assignRoomToLab((int)$result, (int)$_POST['form_room']['LAB_ID']);
+            $oborudModel->updateOborudsToStorageRoom($_POST['form_room']['equipment_storaged'] ? $_POST['form_room']['equipment_storaged'] : [], (int)$result);
+            $oborudModel->updateOborudsToOperatingRoom([], (int)$result);
         }
 
         if (empty($result)) {
@@ -1522,7 +1522,7 @@ class ImportController extends Controller
 
 
         if (!empty($_POST['user_id'])) { // редактирование
-            $result = $userModel->updateUser($_POST['user_id'], $_POST);
+            $result = $userModel->updateUser((int)$_POST['user_id'], $_POST);
 
             $_SESSION['user_id'] = $_POST['user_id'];
         } else { // создание
@@ -1530,7 +1530,7 @@ class ImportController extends Controller
             $_SESSION['user_id'] = $result['data'];
         }
 
-        $userModel->updateUserDepartment($_SESSION['user_id'], $_POST['DEPARTMENT_ID']);
+        $userModel->updateUserDepartment((int)$_SESSION['user_id'], (int)$_POST['DEPARTMENT_ID']);
 
         if (empty($result['success'])) {
             $this->showErrorMessage($result['error']['message']);
@@ -1578,7 +1578,7 @@ class ImportController extends Controller
         }
 
         if (!empty($_POST['id'])) { // редактирование
-            $result = $importModel->updateOnboarding($_POST['id'], $_POST['form']);
+            $result = $importModel->updateOnboarding((int)$_POST['id'], $_POST['form']);
             $errorMsg = 'Не удалось обновить данные раздела';
         } else { // создание
             $result = $importModel->addOnboarding($_POST['form']);
@@ -1672,7 +1672,7 @@ class ImportController extends Controller
 
 
         if (!empty($_POST['id'])) { // редактирование
-            $result = $companyModel->updateMail($_POST['id'], $_POST['form']);
+            $result = $companyModel->updateMail((int)$_POST['id'], $_POST['form']);
         } else { // создание
             $result = $companyModel->addMail($_POST['form']);
         }
@@ -1802,32 +1802,7 @@ class ImportController extends Controller
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
+        $filter = $labModel->prepareFilter($_POST ?? []);
 
         $data = $labModel->getJournalList($filter);
 
@@ -1838,7 +1813,7 @@ class ImportController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -1860,7 +1835,7 @@ class ImportController extends Controller
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');
 
-        $result = $labModel->getRoom($_POST['id']);
+        $result = $labModel->getRoom((int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -1878,7 +1853,7 @@ class ImportController extends Controller
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');
 
-        $result = $labModel->getLab($_POST['id']);
+        $result = $labModel->getLab((int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -1904,7 +1879,7 @@ class ImportController extends Controller
         ];
 
         if (!empty($_POST['id']) && $_POST['id'] > 0) {
-            $labModel->deleteRoom($_POST['id']);
+            $labModel->deleteRoom((int)$_POST['id']);
 
             $this->showSuccessMessage("Данные помещения удалены");
 
@@ -1937,7 +1912,7 @@ class ImportController extends Controller
         ];
 
         if (!empty($_POST['id']) && $_POST['id'] > 0 && $_POST['id'] != 53) {
-            $labModel->deleteLab($_POST['id']);
+            $labModel->deleteLab((int)$_POST['id']);
 
             $this->showSuccessMessage("Данные отделения удалены");
 
@@ -1970,7 +1945,7 @@ class ImportController extends Controller
         if (!empty($_POST["room"]) && !empty($_POST["hidden_oborud"])) {
             $oborudIds = !empty($_POST["hidden_oborud"]) ? explode(',', $_POST["hidden_oborud"]) : [];
 
-            $oborud = $oborudModel->getOborudByRoom($_POST["room"]);
+            $oborud = $oborudModel->getOborudByRoom((int)$_POST["room"]);
             $prevOborudIds = array_column($oborud, 'ID');
             $oborudDiff = array_diff($prevOborudIds, $oborudIds);
 
@@ -1978,22 +1953,22 @@ class ImportController extends Controller
             //привязываем оборудование к помещению
             foreach ($oborudIds as $oborudId) {
                 $dataItem = [
-                    'id_room' => $_POST["room"],
+                    'id_room' => (int)$_POST["room"],
                 ];
 
-                $oborudModel->updateOborudToRooms($oborudId, $dataItem);
+                $oborudModel->updateOborudToRooms((int)$oborudId, $dataItem);
             }
 
             //отвязываем оборудование от помещения
             foreach ($oborudDiff as $oborudId) {
                 $dataItem = [
-                    'id_room' => $_POST["room"],
+                    'id_room' => (int)$_POST["room"],
                 ];
 
-                $oborudModel->deleteOborudToRooms($oborudId, $dataItem);
+                $oborudModel->deleteOborudToRooms((int)$oborudId, $dataItem);
             }
 
-            $_SESSION['room_id'] = $_POST["room"];
+            $_SESSION['room_id'] = (int)$_POST["room"];
         } else {
             $response = [
                 'success' => false,
@@ -2023,7 +1998,7 @@ class ImportController extends Controller
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $result = $oborudModel->getOborudByRoom($_POST['room']);
+        $result = $oborudModel->getOborudByRoom((int)$_POST['room']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -2056,7 +2031,7 @@ class ImportController extends Controller
                 ];
             }
 
-            $methodsModel->updateOborud($_POST["method"], $dataOborud);
+            $methodsModel->updateOborud((int)$_POST["method"], $dataOborud);
 
             $_SESSION['method_id'] = $_POST["method"];
             $_SESSION['gost_id'] = $_POST["gost"];
@@ -2089,7 +2064,7 @@ class ImportController extends Controller
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
-        $result = $methodsModel->getListByGostId($_POST['gost']);
+        $result = $methodsModel->getListByGostId((int)$_POST['gost']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -2107,7 +2082,7 @@ class ImportController extends Controller
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
-        $result = $methodsModel->getOborud($_POST['method']);
+        $result = $methodsModel->getOborud((int)$_POST['method']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -2146,7 +2121,7 @@ class ImportController extends Controller
         if ( !empty($_POST['user_id']) ) {
             /** @var User $userModel */
             $userModel = $this->model('User');
-            $response = $userModel->getUserData($_POST['user_id']);
+            $response = $userModel->getUserData((int)$_POST['user_id']);
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
@@ -2173,7 +2148,7 @@ class ImportController extends Controller
         ];
 
         if (!empty($_POST['user_id']) && $_POST['user_id'] > 0) {
-            $result = $userModel->deleteUser($_POST['user_id']);
+            $result = $userModel->deleteUser((int)$_POST['user_id']);
 
             if ($result) {
                 $this->showSuccessMessage("Пользователь удален");
@@ -2200,32 +2175,7 @@ class ImportController extends Controller
         /** @var User $userModel */
         $userModel = $this->model('User');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
+        $filter = $userModel->prepareFilter($_POST ?? []);
 
         $data = $userModel->getJournalList($filter);
 
@@ -2261,7 +2211,7 @@ class ImportController extends Controller
         $response = [];
 
         if (isset($_POST['id'])) {
-            $response = $userModel->getDepartmentsStructure($_POST['id']);
+            $response = $userModel->getDepartmentsStructure((int)$_POST['id']);
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
@@ -2283,7 +2233,7 @@ class ImportController extends Controller
         $response = [];
 
         if (isset($_POST['department_id'])) {
-            $response = $userModel->getDepartmentById($_POST['department_id']);
+            $response = $userModel->getDepartmentById((int)$_POST['department_id']);
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
@@ -2304,7 +2254,7 @@ class ImportController extends Controller
         if ( !empty($_POST['department_id']) ) {
             /** @var User $userModel */
             $userModel = $this->model('User');
-            $response = $userModel->getUsersByDeparment($_POST['department_id']);
+            $response = $userModel->getUsersByDeparment((int)$_POST['department_id']);
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
@@ -2331,7 +2281,7 @@ class ImportController extends Controller
         if (!empty($_POST["department_id"]) && !empty($_POST["users"])) {
             $usersIds = $_POST["users"];
 
-            $users = $userModel->getUsersByDeparment($_POST['department_id']);
+            $users = $userModel->getUsersByDeparment((int)$_POST['department_id']);
             $prevUserIds = array_column($users['users'], 'ID');
             $usersDiff = array_diff($prevUserIds, $usersIds);
 
@@ -2342,17 +2292,17 @@ class ImportController extends Controller
                     "UF_DEPARTMENT" => [],
                 ];
 
-                $userModel->update($userId, $dataItem);
+                $userModel->update((int)$userId, $dataItem);
             }
 
             //привязываем пользователей к подразделению
             foreach ($usersIds as $userId) {
 
                 $dataItem = [
-                    "UF_DEPARTMENT" => [$_POST["department_id"]],
+                    "UF_DEPARTMENT" => [(int)$_POST["department_id"]],
                 ];
 
-                $userModel->update($userId, $dataItem);
+                $userModel->update((int)$userId, $dataItem);
             }
         } else {
             $response = [
@@ -2415,9 +2365,9 @@ class ImportController extends Controller
         $result['assigned'] = [];
 
         if (!empty($_POST['method'])) {
-            $result['lab'] = $methodsModel->getLab($_POST['method']);
-            $result['room'] = $methodsModel->getRoom($_POST['method']);
-            $result['assigned'] = $methodsModel->getAssigned($_POST['method']);
+            $result['lab'] = $methodsModel->getLab((int)$_POST['method']);
+            $result['room'] = $methodsModel->getRoom((int)$_POST['method']);
+            $result['assigned'] = $methodsModel->getAssigned((int)$_POST['method']);
         }
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -2468,7 +2418,7 @@ class ImportController extends Controller
         ];
 
         if (!empty($_POST['id']) && $_POST['id'] > 0) {
-            $importModel->deleteOnboarding($_POST['id']);
+            $importModel->deleteOnboarding((int)$_POST['id']);
 
             $this->showSuccessMessage("Данные удалены");
 
@@ -2566,25 +2516,7 @@ class ImportController extends Controller
 
         $orgModel = new Organization();
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $orgModel->prepareFilter($_POST ?? []);
 
         $data = $orgModel->getOrgJournal($filter);
 
@@ -2616,25 +2548,7 @@ class ImportController extends Controller
 
         $orgModel = new Organization();
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $orgModel->prepareFilter($_POST ?? []);
 
         $data = $orgModel->getBranchJournal((int) $_POST['id'], $filter);
 
@@ -2666,25 +2580,7 @@ class ImportController extends Controller
 
         $orgModel = new Organization();
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $orgModel->prepareFilter($_POST ?? []);
 
         $data = $orgModel->getDepJournal((int) $_POST['id'], $filter);
 
@@ -2716,25 +2612,7 @@ class ImportController extends Controller
 
         $orgModel = new Organization();
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $orgModel->prepareFilter($_POST ?? []);
 
         $data = $orgModel->getLabJournal((int) $_POST['id'], $filter);
 
@@ -2745,7 +2623,7 @@ class ImportController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -2766,25 +2644,7 @@ class ImportController extends Controller
 
         $orgModel = new Organization();
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $orgModel->prepareFilter($_POST ?? []);
 
         $data = $orgModel->getLabRoomsJournal((int) $_POST['id'], $filter);
 
@@ -2795,7 +2655,7 @@ class ImportController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -2816,25 +2676,7 @@ class ImportController extends Controller
 
         $orgModel = new Organization();
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $orgModel->prepareFilter($_POST ?? []);
 
         $data = $orgModel->getLabUsersJournal((int) $_POST['id'], $filter);
 
@@ -2845,7 +2687,7 @@ class ImportController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,

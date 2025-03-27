@@ -93,7 +93,7 @@ class DisinfectionConditioners extends Model
 
         if ($type == null) {
             $name = array_key_first($data);
-            if (!in_array($name, $namesTable)) {
+            if (!in_array($name, $namesTable,true)) {
                 return 0;
             }
             $dataAdd = $data[$name];

@@ -8,11 +8,17 @@ class Project extends Model
 {
     public function getDataById($id = 1, $date = "")
     {
-        $transportWhere = $date ? "DATE_FORMAT(trr.date, '%Y-%m') = '{$date}'" : 1;
-        $secondmentWhere = $date ? "DATE_FORMAT(date_end, '%Y-%m') = '{$date}'" : 1;
-        $overheadWhere = $date ? "DATE_FORMAT(oo.date, '%Y-%m') = '{$date}'" : 1;
+        $dateTimestamp = strtotime($date);
+        if ($dateTimestamp) {
+            $dateFormatted = date('Y-m', $dateTimestamp);
+            $dateSafe = $this->DB->ForSql($dateFormatted);
+        } else {
+            $dateSafe = '';
+        }
 
-       // $date = $date ?: 1;
+        $transportWhere = $dateSafe ? "DATE_FORMAT(trr.date, '%Y-%m') = '{$dateSafe}'" : 1;
+        $secondmentWhere = $dateSafe ? "DATE_FORMAT(date_end, '%Y-%m') = '{$dateSafe}'" : 1;
+        $overheadWhere = $dateSafe ? "DATE_FORMAT(oo.date, '%Y-%m') = '{$dateSafe}'" : 1;
 
         $stmt = $this->DB->Query("
                     SELECT op.*, opm.plan_expenses AS plan_expenses_month,
@@ -30,7 +36,7 @@ class Project extends Model
 
         $row = $stmt->Fetch();
 
-        $row["plan_expenses"] = $date ? $row["plan_expenses_month"] : $row["plan_expenses"];
+        $row["plan_expenses"] = $dateSafe ? $row["plan_expenses_month"] : $row["plan_expenses"];
         $row["secondment_expenses"] = round($row["secondment_expenses"], 2);
         $row["fuel_sum"] = round($row["fuel_sum"], 2);
         $row["overhead_sum"] = round($row["overhead_sum"], 2);
@@ -42,10 +48,16 @@ class Project extends Model
 
     public function getFuelReportList($filter)
     {
-        $where = "tr.project_id = {$filter["project_id"]} AND ";
+        $projectId = (int)$filter["project_id"];
+        $where = "tr.project_id = {$projectId} AND ";
 
-        if ($filter["date"]) {
-            $where .= "DATE_FORMAT(date, '%Y-%m') = '{$filter["date"]}' AND ";
+        if (!empty($filter["date"])) {
+            if (preg_match('/^\d{4}-\d{2}$/', $filter["date"])) {
+                $dateSafe = $this->DB->ForSql($filter["date"]);
+                $where .= "DATE_FORMAT(date, '%Y-%m') = '{$dateSafe}' AND ";
+            } else {
+                return [];
+            }
         }
 
         $where .= 1;
@@ -53,7 +65,7 @@ class Project extends Model
                        t.model, t.number, t.consumption_rate, 
                        CONCAT(bu.LAST_NAME, ' ', UPPER(SUBSTRING(bu.NAME,1,1)), '.') AS fio, 
                        (SELECT SUM(price * gsm) FROM transport_report_row WHERE report_id = tr.id) AS row_sum
-                FROM transport_report AS tr
+                    FROM transport_report AS tr
                 LEFT JOIN transport_report_row AS trr ON trr.report_id = tr.id
                 LEFT JOIN transport AS t ON t.id = tr.transport_id 
                 LEFT JOIN b_user AS bu ON bu.ID = tr.user_id 
@@ -95,12 +107,16 @@ class Project extends Model
 
     public function getSecondmentList($projectId, $date = "")
     {
+        $projectId = (int)$projectId;
         $where = "project_id = {$projectId} AND ";
 
-        if ($date) {
-            $where .= "DATE_FORMAT(s.date_end, '%Y-%m') = '{$date}' AND ";
-        } else {
-            $date = 1;
+        if (!empty($date)) {
+            if (preg_match('/^\d{4}-\d{2}$/', $date)) {
+                $dateSafe = $this->DB->ForSql($date);
+                $where .= "DATE_FORMAT(s.date_end, '%Y-%m') = '{$dateSafe}' AND ";
+            } else {
+                return [];
+            }
         }
 
         $where .= 1;
@@ -124,12 +140,16 @@ class Project extends Model
 
     public function getOverheadList($projectId, $date = "")
     {
+        $projectId = (int)$projectId;
         $where = "project_id = {$projectId} AND ";
 
-        if ($date) {
-            $where .= "DATE_FORMAT(oo.date, '%Y-%m') = '{$date}' AND ";
-        } else {
-            $date = 1;
+        if (!empty($date)) {
+            if (preg_match('/^\d{4}-\d{2}$/', $date)) {
+                $dateSafe = $this->DB->ForSql($date);
+                $where .= "DATE_FORMAT(oo.date, '%Y-%m') = '{$dateSafe}' AND ";
+            } else {
+                return [];
+            }
         }
 
         $where .= 1;
@@ -163,8 +183,17 @@ class Project extends Model
 
     public function updateMonthProject($data, $id, $date)
     {
+        $id = (int)$id;
+        $date = trim(strip_tags($date));
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return false;
+        }
+
+        $dateSafe = $this->DB->ForSql($date);
+
         $sqlData = $this->prepearTableData('osk_project_month', $data);
-        $where = "WHERE project_id = {$id} AND date = '{$date}'";
+        $where = "WHERE project_id = {$id} AND date = '{$dateSafe}'";
         return $this->DB->Update('osk_project_month', $sqlData, $where);
     }
 
