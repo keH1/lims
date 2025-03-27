@@ -14,9 +14,21 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_card.php?OB_ID=<?=$this->data['id']?>">
-                                    Скачать карточку оборудования
-                                </a>
+                                <div class="btn-flex">
+                                    <div>
+                                        Скачать карточку оборудования
+                                    </div>
+                                    <div>
+                                        <a class="dropdown-item text-red" href="/protocol_generator/oborud_card.php?OB_ID=<?=$this->data['id']?>&type=PDF">
+                                            PDF
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a class="dropdown-item text-blue" href="/protocol_generator/oborud_card.php?OB_ID=<?=$this->data['id']?>&type=DOCX">
+                                            DOCX
+                                        </a>
+                                    </div>
+                                </div>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="/protocol_generator/oborud_akt_vvoda.php?OB_ID=<?=$this->data['id']?>">
