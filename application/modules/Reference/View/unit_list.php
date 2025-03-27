@@ -20,7 +20,7 @@
 
 <div class="panel panel-default">
     <header class="panel-heading">
-        Единици измерения
+        Единицы измерения
         <span class="tools float-end">
             <a href="#" class="fa fa-chevron-up"></a>
         </span>
