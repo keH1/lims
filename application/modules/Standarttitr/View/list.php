@@ -163,6 +163,9 @@
         Добавьте стандарт-титр
     </div>
     <div class="line-dashed-small"></div>
+
+    <input class="entity_id" type="hidden" name="standart_titr[id]">
+
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Название стандарт-титра</label>
@@ -192,8 +195,8 @@
         </div>
     </div>
     <button type="submit" class="btn btn-primary">Отправить</button>
-
 </form>
+
 <form id="add-entry-modal-form-second"
       class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative"
       action="/ulab/standarttitr/addReceive/" method="post">
@@ -201,6 +204,9 @@
         Провести стандарт-титр
     </div>
     <div class="line-dashed-small"></div>
+
+    <input id="receive_id"  type="hidden" name="receive[id]" value="">
+
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Стандарт-титр</label>
@@ -329,12 +335,6 @@
     </div>
     <div>
         <div class="row mb-3">
-            <input type="number" name="receive[id]"
-                   value="" hidden="">
-        </div>
-    </div>
-    <div>
-        <div class="row mb-3">
             <input type="number" name="receive_specification[id]"
                    value="" hidden="">
         </div>
@@ -343,6 +343,7 @@
 
     <button type="submit" class="btn btn-primary">Отправить</button>
 </form>
+
 <form id="add-entry-modal-form-third"
       class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative"
       action="/ulab/standarttitr/addManufacturer/" method="post">

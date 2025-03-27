@@ -225,16 +225,12 @@ class Standarttitr extends Model
     public function newUpdateSQL(array $newRecord, string $typeName = null): int
     {
         $nameTable = array_key_first($newRecord);
-        $filter = [$nameTable, $newRecord[$nameTable]['id']];
-        $oldRecord[$nameTable] = $this->getFromSQL('data_for_update', $filter)[0];
 
-        $idFirstAdd = $this->historyToSQL($oldRecord);
-        if (!$idFirstAdd) {
-            return 0;
-        }
+        $newRecord[$nameTable]['is_precursor'] = isset($newRecord[$nameTable]['is_precursor'])? 1 : 0;
 
-        return $this->newUpdateToSQL($newRecord);
+        $sqlData = $this->prepearTableData($nameTable, $newRecord[$nameTable]);
+
+        return $this->DB->Update($nameTable, $sqlData, "where id = {$newRecord[$nameTable]['id']}");
     }
-
 }
 
