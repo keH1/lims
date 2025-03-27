@@ -1721,7 +1721,7 @@ class Statistic extends Model
                 sum(IF(strt.state = 'complete', 1, 0)) as complete, 
                 sum(IF((SELECT state FROM `ulab_start_trials` WHERE `ugtp_id` = ugtp.id  ORDER BY id DESC LIMIT 1) <> 'complete', 1, 0)) as incomplete, 
                 ugtp.assigned_id, 
-                sum(ugtp.price) as price
+                sum(distinct ugtp.price) as price
             from ulab_gost_to_probe as ugtp
             inner join ulab_start_trials as strt on strt.ugtp_id = ugtp.id
             where year(strt.date) = {$year} and month(strt.date) = {$month} and strt.is_actual = 1 and ugtp.assigned_id > 0
