@@ -49,7 +49,7 @@ class Methods extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData((int)$_SESSION['SESS_AUTH']['USER_ID']);
 
         $idMethod = $this->DB->Insert('ulab_methods', $sqlData);
 
@@ -346,7 +346,7 @@ class Methods extends Model
         $this->DB->Query("delete from ulab_methods_lab where method_id = {$idMethod}");
 
         foreach ($data as $item) {
-            $this->DB->Insert('ulab_methods_lab', ['method_id' => $idMethod, 'lab_id' => $item]);
+            $this->DB->Insert('ulab_methods_lab', ['method_id' => $idMethod, 'lab_id' => (int)$item]);
         }
     }
 
@@ -380,7 +380,7 @@ class Methods extends Model
         $this->DB->Query("delete from ulab_methods_room where method_id = {$idMethod}");
 
         foreach ($data as $item) {
-            $this->DB->Insert('ulab_methods_room', ['method_id' => $idMethod, 'room_id' => $item]);
+            $this->DB->Insert('ulab_methods_room', ['method_id' => $idMethod, 'room_id' => (int)$item]);
         }
     }
 
@@ -412,7 +412,7 @@ class Methods extends Model
         $this->DB->Query("delete from ulab_methods_assigned where method_id = {$idMethod}");
 
         foreach ($data as $item) {
-            $this->DB->Insert('ulab_methods_assigned', ['method_id' => $idMethod, 'user_id' => $item]);
+            $this->DB->Insert('ulab_methods_assigned', ['method_id' => $idMethod, 'user_id' => (int)$item]);
         }
     }
 
@@ -1230,7 +1230,9 @@ class Methods extends Model
             $row['method_id'] = $idMethod;
             unset($row['id']);
 
-            $this->DB->Insert('ulab_methods_uncertainty', $row);
+            $sqlData = $this->prepearTableData('ulab_methods_uncertainty', $row);
+
+            $this->DB->Insert('ulab_methods_uncertainty', $sqlData);
         }
     }
 
@@ -1618,6 +1620,8 @@ class Methods extends Model
         $isSuccess = true;
         $errors = []; // тексты сообщений ошибок
         $conditionList = "<a href='".URI."/lab/conditionList'>Журнал условий</a>";
+        $dateStart = $this->DB->ForSql(trim(strip_tags($dateStart)));
+        $dateEnd = $this->DB->ForSql(trim(strip_tags($dateEnd)));
         $dateStartRu = $dateStart ? date('d.m.Y', strtotime($dateStart)) : '';
         $dateEndRu = $dateEnd ? date('d.m.Y', strtotime($dateEnd)) : '';
 

@@ -96,7 +96,7 @@ class ExecJournalController extends Controller
 
         /** @var  ExecJournal $execJournal */
         $execJournal = $this->model('ExecJournal');
-        $response = $execJournal->editJournal($_POST['id'], $_POST['name'], $_POST['value']);
+        $response = $execJournal->editJournal((int)$_POST['id'], $_POST['name'], $_POST['value']);
 
         echo json_encode($response);
     }
@@ -114,16 +114,7 @@ class ExecJournalController extends Controller
         /** @var  ExecJournal $execJournal */
         $execJournal = $this->model('ExecJournal');
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'], // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        $this->collectFilter($filter);
+        $filter = $execJournal->prepareFilter($_POST ?? []);
 
         $data = $execJournal->getDataToJournal($filter);
 
@@ -133,7 +124,7 @@ class ExecJournalController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -187,7 +178,7 @@ class ExecJournalController extends Controller
         /** @var  ExecJournal $execJournal */
         $execJournal = $this->model('ExecJournal');
 
-        $row = $execJournal->getRowById($_POST['rowId']);
+        $row = $execJournal->getRowById((int)$_POST['rowId']);
 
         echo json_encode($row, JSON_UNESCAPED_UNICODE);
     }

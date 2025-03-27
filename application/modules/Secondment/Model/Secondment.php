@@ -49,7 +49,7 @@ class Secondment extends Model
                 }
                 // Населенный пункт
                 if (isset($filter['search']['s_s_name'])) {
-                    $where .= "s_s.name LIKE '%{$filter['search']['s_s_name']}%' AND ";
+                    $where .= "f_s.settlement LIKE '%{$filter['search']['s_s_name']}%' AND ";
                 }
                 // Объект
                 if (isset($filter['search']['d_o_name'])) {
@@ -65,6 +65,9 @@ class Secondment extends Model
                 }
                 // Запланированные затраты(Итого)
                 if (isset($filter['search']['planned_expenses'])) {
+                    if ( $filter['search']['planned_expenses'] == 0 ) {
+                        $filter['search']['planned_expenses'] = '0.00';
+                    }
                     $where .= "s.planned_expenses LIKE '%{$filter['search']['planned_expenses']}%' AND ";
                 }
                 // Фактические затраты(Всего потрачено)
@@ -81,7 +84,15 @@ class Secondment extends Model
                 }
 
                 if (isset($filter['search']['stage_filter'])) {
-                    $where .= "s.stage IN ({$filter['search']['stage_filter']}) AND ";
+                    $allowedStages = ['Новая','Ожидает подтверждения','Отклонена','Нужна доработка','Подготовка приказа и СЗ','Согласована','В командировке','Подготовка отчета','Проверка отчета','Проверка перерасхода','Отчет подтвержден','Затраты не подтверждены','Завершена','Отменена'];
+                    $stages = array_map('trim', explode("','", trim($filter['search']['stage_filter'], "'")));
+
+                    $stages = array_intersect($stages, $allowedStages);
+
+                    if (!empty($stages)) {
+                        $stagesList = implode("','", $stages);
+                        $where .= "s.stage IN ('{$stagesList}') AND ";
+                    }
                 }
 
                 if (isset($filter['search']['oborud_list'])) {
@@ -191,6 +202,7 @@ class Secondment extends Model
              LEFT JOIN settlements AS s_s ON s.settlement_id = s_s.id 
              LEFT JOIN DEV_OBJECTS AS d_o ON s.object_id = d_o.ID
              LEFT JOIN secondment_oborud AS s_o ON s_o.secondment_id = s.id 
+             LEFT JOIN full_settlements AS f_s ON d_o.CITY_ID = f_s.id 
              LEFT JOIN ba_oborud AS b_o ON b_o.ID = s_o.oborud_id 
              WHERE {$where} 
              GROUP BY s.id"
@@ -629,7 +641,9 @@ class Secondment extends Model
     {
         $response = [];
 
-        $result = $this->DB->Query("SELECT * FROM full_settlements WHERE settlement LIKE '%{$name}%' GROUP BY settlement");
+        $nameEscaped = $this->sanitize($name);
+
+        $result = $this->DB->Query("SELECT * FROM full_settlements WHERE settlement LIKE '%{$nameEscaped}%' GROUP BY settlement");
 
         while ($row = $result->fetch()) {
             $arr = [

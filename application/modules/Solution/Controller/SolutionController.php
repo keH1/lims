@@ -56,7 +56,9 @@ class SolutionController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $data = $usedModel->getList($this->postToFilter($_POST));
+        $filter = $usedModel->postToFilter($_POST ?? []);
+
+        $data = $usedModel->getList($filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -65,7 +67,7 @@ class SolutionController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -80,7 +82,7 @@ class SolutionController extends Controller
         $APPLICATION->RestartBuffer();
 
         $usedModel = $this->model($this->nameModel);
-        $idRecipe = $_POST['idRecipe'];
+        $idRecipe = (int)$_POST['idRecipe'];
         $getList = $usedModel->getList('reactive', $idRecipe);
         $jsonData = [
             "draw" => $_POST['draw'],
@@ -98,7 +100,7 @@ class SolutionController extends Controller
         $APPLICATION->RestartBuffer();
 
         $usedModel = $this->model($this->nameModel);
-        $idRecipe = $_POST['idRecipe'];
+        $idRecipe = (int)$_POST['idRecipe'];
         $getList = $usedModel->getReactivesList($idRecipe);
 
         echo json_encode($getList, JSON_UNESCAPED_UNICODE);
@@ -112,7 +114,7 @@ class SolutionController extends Controller
         global $APPLICATION;
         $APPLICATION->RestartBuffer();
         $usedModel = $this->model($this->nameModel);
-        $idRecipe = $_POST['idRecipe'];
+        $idRecipe = (int)$_POST['idRecipe'];
         $getList = $usedModel->getList('solvent', $idRecipe);
         $jsonData = [
             "draw" => $_POST['draw'],

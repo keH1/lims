@@ -990,48 +990,79 @@ $(function ($) {
     /**
      * добавить оборудование
      */
-    $body.on('change', '.equipment', function () {
-        const equipmentUsed = $('.equipment-used'),
-            selectedOption = $(this).find('option:selected');
-
-        let equipmentUsedCount = equipmentUsed.length,
-            selectedText = selectedOption.text(),
-            selectedGost = selectedOption.data('gost'),
-            selectedOborud = $(this).val(),
-            aldOborudGost = JSON.parse($('#equipmentIds').val());
-
-        aldOborudGost.push(JSON.parse(selectedOborud));
-        $('#equipmentIds').val(JSON.stringify(aldOborudGost));
-
-        let newOption = `<option value="${selectedOborud}">${selectedText}</option>`
-
-        equipmentUsed.append(newOption)
+    $body.on('change', '.equipment', function() {
+        if (this.value === '')
+            return false
+        
+        const oborudId = parseInt($(this).val()),
+              oborudText = $(this).find("option:selected").text(),
+              equipmentUsedSelect = $('.equipment-used')
+        
+        let aldOborudGost = []
+        if ($('#equipmentIds').val()) {
+            aldOborudGost = JSON.parse($('#equipmentIds').val())
+        }
+        
+        let iEquipmentUsed = aldOborudGost.indexOf(oborudId)
+        if (iEquipmentUsed === -1) {
+            aldOborudGost.push(oborudId)
+            $('#equipmentIds').val(JSON.stringify(aldOborudGost))
+            
+            equipmentUsedSelect.append(`<option value="${oborudId}">${oborudText}</option>`)
+            
+            const customEquipmentList = $('.custom-equipment-list')
+            const itemContainer = $('<div>', {
+                class: 'equipment-item',
+                'data-value': oborudId
+            })
+            
+            const itemText = $('<div>', {
+                text: oborudText,
+                class: 'equipment-item-text'
+            })
+            
+            const deleteButton = $('<button>', {
+                type: 'button',
+                class: 'btn btn-sm delete-equipment',
+                html: '<i class="fa-solid fa-times"></i>',
+                'data-value': oborudId
+            })
+            
+            itemContainer.append(itemText, deleteButton)
+            customEquipmentList.append(itemContainer)
+        }
+        
+        $(this).val('').trigger('change.select2')
     })
-
-
+    
     /**
      * удалить оборудование
      */
-    $body.on('dblclick', '.equipment-used option', function () {
-        let aldOborudGost = JSON.parse($('#equipmentIds').val());
-        let iEquipmentUsed = aldOborudGost.indexOf(+this.value);
-
+    $body.on('click', '.delete-equipment', function(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        
+        const optionValue = $(this).data('value'),
+              equipmentUsedSelect = $('.equipment-used')
+        let aldOborudGost = JSON.parse($('#equipmentIds').val()),
+            iEquipmentUsed = aldOborudGost.indexOf(+optionValue)
+        
         if (iEquipmentUsed !== -1) {
-            aldOborudGost.splice(iEquipmentUsed, 1);
-        } else {
-            return false
+            aldOborudGost.splice(iEquipmentUsed, 1)
+            $('#equipmentIds').val(JSON.stringify(aldOborudGost))
+            
+            equipmentUsedSelect.find('option[value="' + optionValue + '"]').remove()
+            $(this).closest('.equipment-item').remove()
         }
-
-        $('#equipmentIds').val(JSON.stringify(aldOborudGost));
-        $('.equipment-used option').eq(iEquipmentUsed).remove()
     })
 
     /**
      * вернуть оборудование по умолчанию
      */
     $body.on('click', '.revert-default', function () {
-        let protocolId = $(this).data('protocolId')
-        let equipmentUsedSelect = $('.equipment-used')
+        let protocolId = $(this).attr('data-protocol-id'),
+            equipmentUsedSelect = $('.equipment-used'),
+            customEquipmentList = $('.custom-equipment-list')
 
         $.ajax({
             method: 'POST',
@@ -1043,6 +1074,7 @@ $(function ($) {
             success: function (data) {
                 if (data.success) {
                     equipmentUsedSelect.empty()
+                    customEquipmentList.empty()
                     
                     if (data.default_equipment) {
                         $.each(data.default_equipment, function(key, value) {
@@ -1051,6 +1083,26 @@ $(function ($) {
                                     ${value.TYPE_OBORUD} ${value.OBJECT}, инв. номер ${value.REG_NUM}
                                 </option>`
                             )
+                            
+                            const itemContainer = $('<div>', {
+                                class: 'equipment-item ' + (value.bg_color || ''),
+                                'data-value': value.b_o_id
+                            })
+                            
+                            const itemText = $('<div>', {
+                                text: `${value.TYPE_OBORUD} ${value.OBJECT}, инв. номер ${value.REG_NUM}`,
+                                class: 'equipment-item-text'
+                            })
+                            
+                            const deleteButton = $('<button>', {
+                                type: 'button',
+                                class: 'btn btn-sm delete-equipment',
+                                html: '<i class="fa-solid fa-times"></i>',
+                                'data-value': value.b_o_id
+                            })
+                            
+                            itemContainer.append(itemText, deleteButton)
+                            customEquipmentList.append(itemContainer)
                         })
                         
                         let equipmentIds = data.default_equipment_ids || []
@@ -1059,7 +1111,7 @@ $(function ($) {
                         $('#equipmentIds').val('[]')
                     }
                 } else if (data.error) {
-                    console.log(data.error.message)
+                    console.error(data.error.message)
                 }
             },
             error: function (jqXHR, exception) {
@@ -1101,7 +1153,6 @@ $(function ($) {
             </div>`
         );
 
-        // Сбрасываем значения формы
         protocolInformation.find('.verify').html('');
         protocolInformation.find('.equipment-used').html('');
         protocolInformation.find('.equipment').html('');
@@ -1121,20 +1172,36 @@ $(function ($) {
 
                 if (count) {
                     let verify = protocolInformation.find('.verify'),
-                        equipmentUsed = protocolInformation.find('.equipment-used'),
                         equipment = protocolInformation.find('#equipment')
 
                     $.each(data['assigned'], function(key, value) {
                         verify.append(`<option value="${value['user_id']}">${value['user_name']}</option>`);
                     });
 
+                    const customEquipmentList = protocolInformation.find('.custom-equipment-list')
+                    customEquipmentList.empty()
+                    
                     $.each(data['protocol_equipment'], function(key, value) {
-                        equipmentUsed.append(
-                            `<option value="${value['b_o_id']}" class="${value['bg_color']}">
-                                ${value['TYPE_OBORUD']} ${value['OBJECT']}, инв. номер ${value['REG_NUM']}
-                            </option>`
-                        );
-                    });
+                        const itemContainer = $('<div>', {
+                            class: 'equipment-item ' + (value['bg_color'] || ''),
+                            'data-value': value['b_o_id']
+                        })
+                        
+                        const itemText = $('<div>', {
+                            text: `${value['TYPE_OBORUD']} ${value['OBJECT']}, инв. номер ${value['REG_NUM']}`,
+                            class: 'equipment-item-text'
+                        })
+                        
+                        const deleteButton = $('<button>', {
+                            type: 'button',
+                            class: 'btn btn-sm delete-equipment',
+                            html: '<i class="fa-solid fa-times"></i>',
+                            'data-value': value['b_o_id']
+                        })
+                        
+                        itemContainer.append(itemText, deleteButton)
+                        customEquipmentList.append(itemContainer)
+                    })
 
                     $.each(data['oboruds'], function(key, value) {
                         equipment.append(
@@ -1142,13 +1209,13 @@ $(function ($) {
                                 ${value['TYPE_OBORUD']} ${value['OBJECT']}
                                 , инв. номер ${value['REG_NUM']} ${value['reg_doc']}, ${value['clause']}
                             </option>`
-                        );
-                    });
+                        )
+                    })
 
-                    let protocolNum = data['protocol']['NUMBER'] ? data['protocol']['NUMBER'] : 'Номер не присвоен';
+                    let protocolNum = data['protocol']['NUMBER'] ? data['protocol']['NUMBER'] : 'Номер не присвоен'
 
-                    protocolInformation.find('.title').text(`Информация по протоколу № ${protocolNum}`);
-                    protocolInformation.find('input[name="protocol_id"]').val(protocolId);
+                    protocolInformation.find('.title').text(`Информация по протоколу № ${protocolNum}`)
+                    protocolInformation.find('input[name="protocol_id"]').val(protocolId)
 
                     // Общая информация
                     let protocolType = data['protocol']['PROTOCOL_TYPE'] ? data['protocol']['PROTOCOL_TYPE'] : 0;
@@ -1209,8 +1276,8 @@ $(function ($) {
                     protocolInformation.find('.output-in-protocol').prop('checked', +data['protocol']['OUTPUT_IN_PROTOCOL']);
 
                     //Информация об оборудовании
-                    protocolInformation.find('.revert-default').data('protocolId', protocolId);
-                    protocolInformation.find('#equipmentIds').val(data['equipment_ids_json']);
+                    protocolInformation.find('.revert-default').attr('data-protocol-id', protocolId)
+                    protocolInformation.find('#equipmentIds').val(data['equipment_ids_json'])
 
                     //Данные объекта испытаний
                     protocolInformation.find('.object-description').val(data['object_data']['DESCRIPTION']);

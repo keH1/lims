@@ -62,7 +62,7 @@ class TransportController extends Controller
         if (empty($_POST["transport_id"])) {
             $transportId = $transport->create($data, 'transport');
         } else {
-            $transportId = $transport->update($data, 'transport', $_POST["transport_id"]);
+            $transportId = $transport->update($data, 'transport', (int)$_POST["transport_id"]);
         }
 
         $transportItem = $transport->getTransportById($transportId);
@@ -85,13 +85,19 @@ class TransportController extends Controller
         $transport = $this->model('Transport');
 
         $table = 'transport';
+        $deleteTransport = (int)$_POST["delete_transport"];
 
         if (isset($_POST['table'])) {
-            $table = $_POST['table'];
+            $table = $transport->sanitize($_POST['table']);
+
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+                echo json_encode("Не удалось удалить. Имя таблицы содержит недопустимые символы.");
+                return false;
+            }
         }
 
-        if (!empty($_POST["delete_transport"])) {
-            $transport->update(["del" => 1], $table, $_POST["delete_transport"]);
+        if (!empty($deleteTransport)) {
+            $transport->update(["del" => 1], $table, $deleteTransport);
             echo json_encode("Успешно удалено");
             return;
         }
@@ -110,32 +116,9 @@ class TransportController extends Controller
         /** @var Secondment $secondment */
         $transport = $this->model('Transport');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if (!empty($column['search']['value'])) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if (!empty($_POST['everywhere'])) {
-            $filter['search']['everywhere'] = $_POST['everywhere'];
-        }
+        $filter = $transport->prepareFilter($_POST ?? []);
 
         $data = $transport->getTransportListToJournal($filter);
-
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -144,7 +127,7 @@ class TransportController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -202,29 +185,7 @@ class TransportController extends Controller
         /** @var Secondment $secondment */
         $transport = $this->model('Transport');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if (!empty($column['search']['value'])) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if (!empty($_POST['everywhere'])) {
-            $filter['search']['everywhere'] = $_POST['everywhere'];
-        }
+        $filter = $transport->prepareFilter($_POST ?? []);
 
         $data = $transport->getFuelListToJournal($filter);
 
@@ -236,7 +197,7 @@ class TransportController extends Controller
 
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
@@ -285,6 +246,8 @@ class TransportController extends Controller
         $this->data["transportList"] = $transport->getTransportList();
 
 
+        $this->data["userList"] = $user->getUsersByIdArr($userIdArr);
+
         $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
         $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
         $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
@@ -325,36 +288,13 @@ class TransportController extends Controller
         /** @var Secondment $secondment */
         $transport = $this->model('Transport');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'],  // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if (!empty($column['search']['value'])) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if (isset($_POST['order']) && !empty($_POST['columns'])) {
-            $filter['order']['by'] = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
+        $filter = $transport->prepareFilter($_POST ?? []);
 
         if (!empty($_POST['date_start'])) {
-            $filter['search']['date_start'] = $_POST['date_start'];
+            $filter['search']['date_start'] = $transport->sanitize($_POST['date_start']);
         }
-
         if (!empty($_POST['date_end'])) {
-            $filter['search']['date_end'] = $_POST['date_end'];
-        }
-
-        if (!empty($_POST['manager'])) {
-            $filter['search']['manager'] = $_POST['manager'];
+            $filter['search']['date_end'] = $transport->sanitize($_POST['date_end']);
         }
 
         $data = $transport->getReposrtListToJournal($filter);
@@ -366,7 +306,7 @@ class TransportController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -395,7 +335,7 @@ class TransportController extends Controller
         if (empty($_POST["report_id"])) {
             $reportId = $transport->create($dataReport, 'transport_report');
         } else {
-            $reportId = $transport->update($dataReport, 'transport_report', $_POST["report_id"]);
+            $reportId = $transport->update($dataReport, 'transport_report', (int)$_POST["report_id"]);
         }
 
         if (isset($_POST["gsmData"])) {
@@ -415,12 +355,11 @@ class TransportController extends Controller
                 if (!isset($row["id"])) {
                     $transport->create($rowData, 'transport_report_row');
                 } else {
-                    $transport->update($rowData, 'transport_report_row', $row["id"]);
+                    $transport->update($rowData, 'transport_report_row', (int)$row["id"]);
                 }
             }
          }
 
-       // $transportItem = $transport->getTransportById($transportId);
         echo json_encode($_POST);
     }
 
@@ -449,10 +388,9 @@ class TransportController extends Controller
         if (empty($_POST["report_row_id"])) {
             $reportId = $transport->create($dataReport, 'transport_report_row');
         } else {
-            $reportId = $transport->update($dataReport, 'transport_report_row', $_POST["report_row_id"]);
+            $reportId = $transport->update($dataReport, 'transport_report_row', (int)$_POST["report_row_id"]);
         }
 
-        // $transportItem = $transport->getTransportById($transportId);
         echo json_encode($_POST);
     }
 
@@ -530,7 +468,7 @@ class TransportController extends Controller
         /** @var Secondment $secondment */
         $transport = $this->model('Transport');
 
-        $id = $_POST["report_id"];
+        $id = (int)$_POST["report_id"];
 
         $jsonData["data"] = $transport->getReportTable($id);
 
@@ -549,7 +487,7 @@ class TransportController extends Controller
         /** @var Secondment $secondment */
         $transport = $this->model('Transport');
 
-        $id = $_POST["report_id"];
+        $id = (int)$_POST["report_id"];
 
         $jsonData["data"] = $transport->getCheckTable($id);
 
@@ -576,14 +514,11 @@ class TransportController extends Controller
         ];
 
         if (empty($_POST["report_check_id"])) {
-            $test = 111;
             $reportId = $transport->create($dataReport, 'transport_report_check');
         } else {
-            $test = 222;
-            $reportId = $transport->update($dataReport, 'transport_report_check', $_POST["report_check_id"]);
+            $reportId = $transport->update($dataReport, 'transport_report_check', (int)$_POST["report_check_id"]);
         }
 
-        // $transportItem = $transport->getTransportById($transportId);
         echo json_encode($_POST, JSON_UNESCAPED_UNICODE);
     }
 
@@ -598,7 +533,7 @@ class TransportController extends Controller
 
         $transport = $this->model('Transport');
 
-        $transport->update(["del" => 1], 'transport_report_check', $_POST["report_check_id"]);
+        $transport->update(["del" => 1], 'transport_report_check', (int)$_POST["report_check_id"]);
 
         echo json_encode($_POST, JSON_UNESCAPED_UNICODE);
     }
@@ -615,7 +550,7 @@ class TransportController extends Controller
         $transport = $this->model('Transport');
         $user = $this->model('User');
 
-        $id = $_POST["report_id"];
+        $id = (int)$_POST["report_id"];
 
         $reportData =  $transport->getDataByReportId($id);
         $checkData =  $transport->getCheckTable($id);
@@ -666,7 +601,7 @@ class TransportController extends Controller
         $transport = $this->model('Transport');
         $user = $this->model('User');
 
-        $id = $_POST["report_id"];
+        $id = (int)$_POST["report_id"];
 
         $reportData = $transport->getDataByReportId($id);
         $reportTable = $transport->getReportTable($id);
@@ -727,7 +662,6 @@ class TransportController extends Controller
         $fileName = $transport->generateReportDoc($data);
 
         echo json_encode(["id" => "{$id}", "file_name" => $fileName], JSON_UNESCAPED_UNICODE);
-       // echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -742,7 +676,7 @@ class TransportController extends Controller
         $transport = $this->model('Transport');
         $user = $this->model('User');
 
-        $id = $_POST["report_id"];
+        $id = (int)$_POST["report_id"];
 
         $reportData = $transport->getDataByReportId($id);
         $reportTable = $transport->getReportTable($id);

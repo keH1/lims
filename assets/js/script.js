@@ -60,6 +60,17 @@ const dataTablesSettings = {
             }
         }
     ],
+    buttonPrint:[
+        {
+            extend: 'print',
+            titleAttr: 'Печать',
+            exportOptions: {
+                modifier: {
+                    page: 'current'
+                }
+            }
+        }
+    ],
     language:{
         processing: '<div class="processing-wrapper">Подождите...</div>',
         search: '',

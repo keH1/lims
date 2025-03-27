@@ -254,7 +254,7 @@ class Vlk extends Model
      */
     public function addMethodComponent($data)
     {
-        $data['create_user_id'] = $_SESSION['SESS_AUTH']['USER_ID'];
+        $data['create_user_id'] = (int)$_SESSION['SESS_AUTH']['USER_ID'];
 
         $sqlData = $this->prepearTableData('ulab_method_component', $data);
         return $this->DB->Insert('ulab_method_component', $sqlData);

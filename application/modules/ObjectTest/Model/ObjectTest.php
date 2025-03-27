@@ -25,8 +25,10 @@ class ObjectTest extends Model
 
     public function update(array $data, string $table, int $id)
     {
+        $sqlData = $this->prepearTableData($table, $data);
+
         $where = "WHERE ID = {$id}";
-        return $this->DB->Update($table, $data, $where);
+        return $this->DB->Update($table, $sqlData, $where);
     }
 
 

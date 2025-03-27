@@ -269,11 +269,6 @@ class StatisticController extends Controller
 		foreach ($statistic->getRadiologyRequestNew() as $item) {
 			array_push($this->data['radiologists_request'], $item);
 		}
-//
-//
-//		echo '<pre>';
-//		print_r($this->data['radiologists_request']);
-//		exit();
 
 		$this->addJs("/assets/js/statistic.js");
 
@@ -375,7 +370,7 @@ class StatisticController extends Controller
 		/** @var Statistic $statistic */
 		$statistic = $this->model('Statistic');
 
-		$id = $_POST['id'];
+		$id = (int)$_POST['id'];
 		$date = $_POST['date'];
 
 		$setDate = $statistic->setRadiologyDate($id, $date);
@@ -535,37 +530,7 @@ class StatisticController extends Controller
         /** @var Statistic $statisticModel */
         $statisticModel = $this->model('Statistic');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-        }
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
+        $filter = $statisticModel->prepareFilter($_POST ?? []);
 
         $data = $statisticModel->getJournalReportMethodList($filter);
 
@@ -578,7 +543,7 @@ class StatisticController extends Controller
         unset($data['sql']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "sql" => $sql,
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
@@ -601,31 +566,7 @@ class StatisticController extends Controller
         /** @var Statistic $statisticModel */
         $statisticModel = $this->model('Statistic');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-        }
+        $filter = $statisticModel->prepareFilter($_POST ?? []);
 
         $data = $statisticModel->getJournalReportOborudList($filter);
 
@@ -636,7 +577,7 @@ class StatisticController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -657,7 +598,7 @@ class StatisticController extends Controller
         /** @var Statistic $statisticModel */
         $statisticModel = $this->model('Statistic');
 
-        $result = $statisticModel->getStatisticEntity($_POST['entity'], $_POST['id']);
+        $result = $statisticModel->getStatisticEntity($_POST['entity'], (int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -692,34 +633,10 @@ class StatisticController extends Controller
         /** @var Statistic $statisticModel */
         $statisticModel = $this->model('Statistic');
 
+        $filter = $statisticModel->prepareFilter($_POST ?? []);
 
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'     => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['dateStart']) ) {
-            $filter['search']['dateStart'] = date('Y-m-d', strtotime($_POST['dateStart'])) . ' 00:00:00';
-            $filter['search']['dateEnd'] = date('Y-m-d', strtotime($_POST['dateEnd'])) . ' 23:59:59';
-        }
-
-        $filter['entity']['key'] = $_POST['entity'];
-        $filter['entity']['column'] = $_POST['column'];
+        $filter['entity']['key'] = $statisticModel->sanitize($_POST['entity']);
+        $filter['entity']['column'] = array_map($this->sanitize, $_POST['column']);
 
         $data = $statisticModel->getStatisticConstructorJournal($filter);
 
@@ -733,7 +650,7 @@ class StatisticController extends Controller
 
         $jsonData = [
             "chart" => $chart,
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,

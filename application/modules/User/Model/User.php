@@ -197,7 +197,8 @@ class User extends Model
             ];
             if ($isFirst) $isFirst = false;
 
-            $resultInsert = $this->DB->Insert('assigned_to_request', $data);
+            $sqlData = $this->prepearTableData('assigned_to_request', $data);
+            $resultInsert = $this->DB->Insert('assigned_to_request', $sqlData);
 
             if ( $resultInsert === false ) {
                 return false;
@@ -687,6 +688,9 @@ class User extends Model
 
     public function updateUserDepartment($userId, $departmentId)
     {
+        $userId = (int)$userId;
+        $departmentId = (int)$departmentId;
+
         $fieldsToUpdate = array(
             "UF_DEPARTMENT" => array($departmentId)
         );
@@ -696,10 +700,8 @@ class User extends Model
 
         if ($updateResult) {
             return true;
-            //echo "Данные пользователя успешно обновлены";
         } else {
             return false;
-            //echo "Ошибка при обновлении данных пользователя: " . $user->LAST_ERROR;
         }
     }
 
@@ -954,6 +956,9 @@ class User extends Model
      */
     public function updateStatus($userId, $statusId)
     {
+        $userId = (int)$userId;
+        $statusId = $this->sanitize($statusId);
+
         $count = $this->DB->Query("SELECT COUNT(*) AS val FROM `ulab_user_status` WHERE `user_id` = {$userId}")->fetch()['val'];
 
         if ($count > 0) {
@@ -988,6 +993,9 @@ class User extends Model
 
     public function updateJob($userId, $text)
     {
+        $userId = (int)$userId;
+        $text = $this->sanitize($text);
+
         $count = $this->DB->Query("SELECT COUNT(*) AS val FROM `ulab_user_status` WHERE `user_id` = {$userId}")->fetch()['val'];
 
         if ($count > 0) {
@@ -999,6 +1007,9 @@ class User extends Model
 
     public function updateNote($userId, $text)
     {
+        $userId = (int)$userId;
+        $text = $this->sanitize($text);
+
         $count = $this->DB->Query("SELECT COUNT(*) AS val FROM `ulab_user_status` WHERE `user_id` = {$userId}")->fetch()['val'];
 
         if ($count > 0) {

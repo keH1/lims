@@ -69,34 +69,7 @@ class VlkController extends Controller
         /** @var  Vlk $vlkModel*/
         $vlkModel = $this->model('Vlk');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['stage']) ) {
-            $filter['search']['stage'] = $_POST['stage'];
-        }
-
-        if ( !empty($_POST['lab']) ) {
-            $filter['search']['lab'] = $_POST['lab'];
-        }
+        $filter = $vlkModel->prepareFilter($_POST ?? []);
 
         $data = $vlkModel->getMethodList($filter);
 
@@ -107,7 +80,7 @@ class VlkController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,
@@ -428,7 +401,7 @@ class VlkController extends Controller
         /** @var  Vlk $vlkModel*/
         $vlkModel = $this->model('Vlk');
 
-        $result = $vlkModel->getVlkMeasuringById($_POST['uvm_id']);
+        $result = $vlkModel->getVlkMeasuringById((int)$_POST['uvm_id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -488,30 +461,7 @@ class VlkController extends Controller
         /** @var  Vlk $vlkModel*/
         $vlkModel = $this->model('Vlk');
 
-
-        $filter = [
-            'paginate' => [
-                'length'    => $_POST['length'],  // кол-во строк на страницу
-                'start'      => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        if ( !empty($_POST['umc_id']) ) {
-            $filter['search']['umc_id'] = $_POST['umc_id'];
-        }
+        $filter = $vlkModel->prepareFilter($_POST ?? []);
 
         $data = $vlkModel->getVlkMeasuringList($filter);
 
@@ -522,7 +472,7 @@ class VlkController extends Controller
         unset($data['recordsFiltered']);
 
         $jsonData = [
-            "draw" => $_POST['draw'],
+            "draw" => (int)$_POST['draw'],
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
             "data" => $data,

@@ -113,11 +113,13 @@ class Grain extends Model
 
     public function update(int $grainListID, array $post)
     {
-        $data['NAME'] = $this->quoteStr($post['grain_list_name']);
+        $data['NAME'] = $post['grain_list_name'];
         $data['GOST_ID'] = isset($post['grain_list_gost']) ? $post['grain_list_gost'] : "";
-        $data['DATA'] =  $this->quoteStr(json_encode($post['grain'], JSON_UNESCAPED_UNICODE));
+        $data['DATA'] =  json_encode($post['grain'], JSON_UNESCAPED_UNICODE);
 
-        $this->DB->Update("ZERN", $data,
+        $sqlData = $this->prepearTableData('ZERN', $data);
+
+        $this->DB->Update("ZERN", $sqlData,
                           "WHERE ID = " . $grainListID);
     }
 

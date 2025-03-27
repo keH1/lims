@@ -156,6 +156,8 @@ class SampleController extends Controller
             $this->redirect('/request/list/');
         }
 
+        $idZ = (int)$tz['ID_Z'];
+
         $_SESSION['requirement_post'] = $_POST;
         
         $location = $tz['ID_Z'] >= DEAL_START_NEW_AREA? "/requirement/card/{$tzId}" : "/requirement/card_old/{$tzId}";
@@ -202,9 +204,9 @@ class SampleController extends Controller
 
 
         //TODO: Временное получение данных сделки, для сохранения данных в сериалезованном виде, для работы остальных скриптов до их рефакторинга
-        $deal = $request->getDealById($tz['ID_Z']);
+        $deal = $request->getDealById($idZ);
         if ( empty($deal) ) {
-            $this->showErrorMessage("Заявки с ИД {$tz['ID_Z']} не существует");
+            $this->showErrorMessage("Заявки с ИД {$idZ} не существует");
             $this->redirect('/request/list/');
         }
         //start
@@ -354,7 +356,7 @@ class SampleController extends Controller
 
         $newAssignedToRequest = array_unique($newAssignedToRequest);
 
-        $request->addAssignedToRequest($tz['ID_Z'], $newAssignedToRequest);
+        $request->addAssignedToRequest($idZ, $newAssignedToRequest);
 
         $methodsNotInOA = $sample->getMethodsNotInOA($methodsId);
 
@@ -400,15 +402,15 @@ class SampleController extends Controller
 
         //TODO: Доделать сохранение INSERT INTO `PODGOTOVKA`
 
-        $materialProbeGost = $sample->updateMaterialProbeGostToRequest($tz['ID_Z'], $materialDataList, $_POST['amount']);
+        $materialProbeGost = $sample->updateMaterialProbeGostToRequest($idZ, $materialDataList, $_POST['amount']);
         $invoice = $sample->getInvoice((int)$tzId);
         $sample->saveHistory($historyData);
-        $request->updateStageDeal($tz['ID_Z'], 'PREPARATION');
+        $request->updateStageDeal($idZ, 'PREPARATION');
 
         // собирает шифры для проб в заявке
-        $material->fillCipher($tz['ID_Z']);
+        $material->fillCipher($idZ);
         //собирает шифры для проб в заявке, для таблицы ulab_material_to_request
-        $material->addCipher($tz['ID_Z']);
+        $material->addCipher($idZ);
 
         if (!empty($materialProbeGost['error'])) {
             $this->showErrorMessage($materialProbeGost['error']);
@@ -576,8 +578,8 @@ class SampleController extends Controller
 		/** @var Gost $gost */
 		$gost = $this->model('Gost');
 
-		$response = [];
-		$idGost = $_POST['id'];
+        $response = [];
+        $idGost = (int)$_POST['id'];
 
 		$arrTU = $gost->getTuByGostID($idGost);
 
@@ -604,7 +606,7 @@ class SampleController extends Controller
 		/** @var Gost $gost */
 		$gost = $this->model('Gost');
 
-		$gostId = $_POST['id'];
+        $gostId = (int)$_POST['id'];
 
 		global $APPLICATION;
 
@@ -620,7 +622,7 @@ class SampleController extends Controller
         /** @var Gost $gost */
         $gost = $this->model('Gost');
 
-        $gostId = $_POST['id'];
+        $gostId = (int)$_POST['id'];
 
         global $APPLICATION;
 

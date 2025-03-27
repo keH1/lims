@@ -227,6 +227,7 @@ class Material extends Model
             $groupName = StringHelper::removeSpace($group['name']);
             $sqlData = $this->prepearTableData('materials_groups', ['material_id' => $materialId, 'name' => $groupName]);
 
+            $groupId = (int)$groupId;
             $this->DB->Update('materials_groups', $sqlData, "where id = {$groupId}");
 
             $this->updateTuGroupMaterial($groupId, $group['tu']);
@@ -460,10 +461,11 @@ class Material extends Model
                 'ID_DEAL' => $dealId,
                 'ID_MATERIAL' => $material['id'],
                 'OBIEM' => $material['count'],
-                'NAME_MATERIAL' => $this->quoteStr($this->DB->ForSql($material['name'])),
+                'NAME_MATERIAL' => $material['name'],
             ];
             // TODO: устарело
-            $mtrId = $this->DB->Insert('MATERIALS_TO_REQUESTS', $data);
+            $sqlData = $this->prepearTableData('MATERIALS_TO_REQUESTS', $data);
+            $mtrId = $this->DB->Insert('MATERIALS_TO_REQUESTS', $sqlData);
             $mtrArrayId[] = $mtrId;
 
             $dataProbe = [
@@ -475,7 +477,8 @@ class Material extends Model
 
             for ($i = 0; $i < $material['count']; $i++) {
                 $dataProbe['probe_number'] = $k;
-                $this->DB->Insert('ulab_material_to_request', $dataProbe);
+                $sqlDataProbe = $this->prepearTableData('ulab_material_to_request', $dataProbe);
+                $this->DB->Insert('ulab_material_to_request', $sqlDataProbe);
                 $k++;
             }
 
@@ -493,7 +496,7 @@ class Material extends Model
     public function add($name)
     {
         $name = StringHelper::removeSpace($name);
-
+        $name = $this->DB->ForSql($name);
         $sql = $this->DB->Query("select ID from MATERIALS where NAME like '{$name}'")->Fetch();
 
         if ( !empty($sql['ID']) ) {
@@ -782,7 +785,8 @@ class Material extends Model
                 'material_id' => $id,
             ];
 
-            $this->DB->Insert('gost_to_material', $dataGost);
+            $sqlData = $this->prepearTableData('gost_to_material', $dataGost);
+            $this->DB->Insert('gost_to_material', $sqlData);
 
         }
     }
@@ -901,7 +905,9 @@ class Material extends Model
         if (!empty($data)) {
             foreach ($data as $gost) {
                 $gost['scheme_id'] = $id;
-                $this->DB->Insert('ulab_scheme_param', $gost);
+
+                $sqlData = $this->prepearTableData('ulab_scheme_param', $gost);
+                $this->DB->Insert('ulab_scheme_param', $sqlData);
             }
         }
     }

@@ -461,7 +461,7 @@ class RequirementController extends Controller
         $probe = [];
         $key_p = 1;
         //end
-        $tzId = (int)$_POST['tz_id'] ?? '';
+        $tzId = (int)$_POST['tz_id'];
         $materialDataList = [];
         $methodsId = [];
         $sumPrice = 0;
@@ -480,9 +480,11 @@ class RequirementController extends Controller
             $this->redirect('/request/list/');
         }
 
+        $idZ = (int)$tz['ID_Z'];
+
         $_SESSION['requirement_post'] = $_POST;
 
-        $location = $tz['ID_Z'] >= DEAL_START_NEW_AREA? "/requirement/card/{$tzId}" : "/requirement/card_old/{$tzId}";
+        $location = $idZ >= DEAL_START_NEW_AREA? "/requirement/card/{$tzId}" : "/requirement/card_old/{$tzId}";
 
         $successMsg = 'Техническое задание успешно изменено';
 
@@ -526,9 +528,9 @@ class RequirementController extends Controller
 
 
         //TODO: Временное получение данных сделки, для сохранения данных в сериалезованном виде, для работы остальных скриптов до их рефакторинга
-        $deal = $request->getDealById($tz['ID_Z']);
+        $deal = $request->getDealById($idZ);
         if ( empty($deal) ) {
-            $this->showErrorMessage("Заявки с ИД {$tz['ID_Z']} не существует");
+            $this->showErrorMessage("Заявки с ИД {$idZ} не существует");
             $this->redirect('/request/list/');
         }
         //start
@@ -678,7 +680,7 @@ class RequirementController extends Controller
 
         $newAssignedToRequest = array_unique($newAssignedToRequest);
 
-        $request->addAssignedToRequest($tz['ID_Z'], $newAssignedToRequest);
+        $request->addAssignedToRequest($idZ, $newAssignedToRequest);
 
         $methodsNotInOA = $requirement->getMethodsNotInOA($methodsId);
 
@@ -724,15 +726,15 @@ class RequirementController extends Controller
 
         //TODO: Доделать сохранение INSERT INTO `PODGOTOVKA`
 
-        $materialProbeGost = $requirement->updateMaterialProbeGostToRequest($tz['ID_Z'], $materialDataList, $_POST['amount']);
+        $materialProbeGost = $requirement->updateMaterialProbeGostToRequest($idZ, $materialDataList, $_POST['amount']);
         $invoice = $requirement->getInvoice((int)$tzId);
         $requirement->saveHistory($historyData);
-        $request->updateStageDeal($tz['ID_Z'], 'PREPARATION');
+        $request->updateStageDeal($idZ, 'PREPARATION');
 
         // собирает шифры для проб в заявке
-        $material->fillCipher($tz['ID_Z']);
+        $material->fillCipher($idZ);
         //собирает шифры для проб в заявке, для таблицы ulab_material_to_request
-        $material->addCipher($tz['ID_Z']);
+        $material->addCipher($idZ);
 
         if (!empty($materialProbeGost['error'])) {
             $this->showErrorMessage($materialProbeGost['error']);
@@ -767,14 +769,14 @@ class RequirementController extends Controller
         /** @var Order $orderModel */
         $orderModel = $this->model('Order');
 
-        $tzId = $_POST['tz_id'];
-        $dealId = $_POST['deal_id'];
+        $tzId = (int)$_POST['tz_id'];
+        $dealId = (int)$_POST['deal_id'];
         $dataTz = $_POST['tz'];
 
         $requirementModel->updateTzByIdTz($tzId, $dataTz);
 
         if (!empty($_POST['tz']['TAKEN_ID_DEAL'])) {
-            $orderModel->changeOrderByHeadRequest($_POST['tz']['TAKEN_ID_DEAL'], $dealId);
+            $orderModel->changeOrderByHeadRequest((int)$_POST['tz']['TAKEN_ID_DEAL'], $dealId);
         }
 
         $requirementModel->updateMaterial($dealId, $_POST['material_id']);
@@ -853,6 +855,7 @@ class RequirementController extends Controller
             $this->redirect("/requirement/card_new/{$_POST['tz_id']}");
         }
 
+        $dealId = (int)$_POST['deal_id'];
         $probeIdList = explode(',', $_POST['probe_id_list']);
 
         /** @var Requirement $requirementModel */
@@ -861,13 +864,13 @@ class RequirementController extends Controller
         $requestModel = $this->model('Request');
 
         // обновляем схему у заявки (позже обновить)
-        $requestModel->updateDealScheme((int)$_POST['deal_id'], (int)$_POST['scheme_id']);
+        $requestModel->updateDealScheme($dealId, (int)$_POST['scheme_id']);
 
         // добавляем методики
         $requirementModel->addMethodsToProbe($probeIdList, $_POST['form']);
 
         // обновляем цены у заявки
-        $requirementModel->updatePrice($_POST['deal_id']);
+        $requirementModel->updatePrice($dealId);
 
         $this->showSuccessMessage("Добавлены методики");
         $this->redirect("/requirement/card_new/{$_POST['tz_id']}");
@@ -934,7 +937,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzSent($_POST['deal_id']);
+        $requirementModel->confirmTzSent((int)$_POST['deal_id']);
     }
 
     /**
@@ -949,7 +952,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzApprove($_POST['tz_id'], $_SESSION['SESS_AUTH']['USER_ID']);
+        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID']);
     }
 
     /**
@@ -964,9 +967,9 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzSent($_POST['deal_id']);
+        $requirementModel->confirmTzSent((int)$_POST['deal_id']);
 
-        $requirementModel->confirmTzApprove($_POST['tz_id'], $_SESSION['SESS_AUTH']['USER_ID']);
+        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID']);
     }
 
     /**
@@ -981,7 +984,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzNotApprove($_POST['tz_id'], $_SESSION['SESS_AUTH']['USER_ID'], $_POST['desc']);
+        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID'], $_POST['desc']);
     }
 
     /**
@@ -996,7 +999,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzNotApprove($_POST['tz_id'], $_SESSION['SESS_AUTH']['USER_ID']);
+        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID']);
     }
 
     /**
@@ -1014,7 +1017,7 @@ class RequirementController extends Controller
             /** @var Requirement $requirement */
             $requirement = $this->model('Requirement');
 
-            $response = $requirement->getGostsByName($_POST['gost'], $_POST['deal_id']);
+            $response = $requirement->getGostsByName($_POST['gost'], (int)$_POST['deal_id']);
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
@@ -1058,9 +1061,10 @@ class RequirementController extends Controller
             /** @var User $user */
             $user = $this->model('User');
 
+            $methodsId = array_map('intval', $_POST['methods_id']);
 
             $dealId = $requirement->getDealIdByTzId((int)$_POST['id']);
-            $labsToMethod = $requirement->getLabsByMethodsId($_POST['methods_id']);
+            $labsToMethod = $requirement->getLabsByMethodsId($methodsId);
             $assigned = $user->getAssignedByDealId($dealId);
 
             $department = array_column($assigned, 'department');
@@ -1108,7 +1112,7 @@ class RequirementController extends Controller
         $gost = $this->model('Gost');
 
         $response = [];
-        $idGost = $_POST['id'];
+        $idGost = (int)$_POST['id'];
 
         $arrTU = $gost->getTuByGostID($idGost);
 
@@ -1116,7 +1120,7 @@ class RequirementController extends Controller
 
         foreach ($tu as $item) {
 
-            $tuForOption = $gost->getGostForOption($item);
+            $tuForOption = $gost->getGostForOption((int)$item);
 
             $response[] = [
                 'ID' => $tuForOption['ID'],
@@ -1138,7 +1142,7 @@ class RequirementController extends Controller
         /** @var Gost $gost */
         $gost = $this->model('Gost');
 
-        $gostId = $_POST['id'];
+        $gostId = (int)$_POST['id'];
 
         global $APPLICATION;
 
@@ -1157,7 +1161,7 @@ class RequirementController extends Controller
         /** @var Gost $gost */
         $gost = $this->model('Gost');
 
-        $gostId = $_POST['id'];
+        $gostId = (int)$_POST['id'];
 
         global $APPLICATION;
 
@@ -1180,7 +1184,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->deleteMaterial($_POST['deal_id'], $_POST['material_id'], $_POST['mtr_id'], $_POST['number']);
+        $requirementModel->deleteMaterial((int)$_POST['deal_id'], (int)$_POST['material_id'], (int)$_POST['mtr_id'], (int)$_POST['number']);
     }
 
     /**
@@ -1195,7 +1199,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->deleteMaterialGost($_POST['gtp_id'], $_POST['deal_id'], $_POST['material_id'], $_POST['numberGost'], $_POST['number']);
+        $requirementModel->deleteMaterialGost((int)$_POST['gtp_id'], (int)$_POST['deal_id'], (int)$_POST['material_id'], (int)$_POST['numberGost'], (int)$_POST['number']);
     }
 
     /**
@@ -1227,7 +1231,7 @@ class RequirementController extends Controller
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
-        $result = $methodsModel->get($_POST['id']);
+        $result = $methodsModel->get((int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -1279,7 +1283,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $result = $requirementModel->deleteProbeMethod($_POST['tz_id'], $_POST['id']);
+        $result = $requirementModel->deleteProbeMethod((int)$_POST['tz_id'], (int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -1297,7 +1301,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $result = $requirementModel->deleteProbe($_POST['deal_id'], $_POST['id']);
+        $result = $requirementModel->deleteProbe((int)$_POST['deal_id'], (int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -1315,7 +1319,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $result = $requirementModel->deleteMaterialNew($_POST['deal_id'], $_POST['id']);
+        $result = $requirementModel->deleteMaterialNew((int)$_POST['deal_id'], (int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -1369,35 +1373,13 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'], // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( $column['search']['value'] !== '' ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
-
-        if ( !empty($_POST['material_id']) ) {
-            $filter['search']['material_id'] = $_POST['material_id'];
-        }
+        $filter = $requirementModel->prepareFilter($_POST ?? []);
 
         if ( $_POST['cipher'] !== '' ) {
             $filter['search']['cipher'] = $_POST['cipher'];
         }
 
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        $data = $requirementModel->getMaterialProbeJournal($_POST['deal_id'], $filter);
+        $data = $requirementModel->getMaterialProbeJournal((int)$_POST['deal_id'], $filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -1428,31 +1410,14 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $filter = [
-            'paginate' => [
-                'length' => $_POST['length'], // кол-во строк на страницу
-                'start' => $_POST['start'],  // текущая страница
-            ],
-            'search' => [],
-            'order' => []
-        ];
-
-        foreach ($_POST['columns'] as $column) {
-            if ( !empty($column['search']['value']) ) {
-                $filter['search'][$column['data']] = $column['search']['value'];
-            }
-        }
+        $filter = $requirementModel->prepareFilter($_POST ?? []);
 
         if ( !empty($_POST['probe_id']) ) {
-            $filter['search']['probe_id'] = $_POST['probe_id'];
+            $filter['search']['probe_id'] =
+                is_array($_POST['probe_id']) ? array_map('intval', $_POST['probe_id']) : [];
         }
 
-        if ( isset($_POST['order']) && !empty($_POST['columns']) ) {
-            $filter['order']['by']  = $_POST['columns'][$_POST['order'][0]['column']]['data'];
-            $filter['order']['dir'] = $_POST['order'][0]['dir'];
-        }
-
-        $data = $requirementModel->getMethodJournal($_POST['deal_id'], $filter);
+        $data = $requirementModel->getMethodJournal((int)$_POST['deal_id'], $filter);
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
@@ -1524,8 +1489,6 @@ class RequirementController extends Controller
                 'assigned_id' => $_POST['val'],
             ],
             'tu' => [
-//                'tech_condition_id' => $_POST['val'],
-//                'conditions_id' => $_POST['val'],
                 'norm_doc_method_id' => $_POST['val'],
             ],
             'method' => [

@@ -4,7 +4,10 @@ class SchemeEditor extends Model
 {
     public function createRow(string $workType, string $object)
     {
-        $this->DB->Insert("osk_scheme_editor", ['work_type' => '"' . $workType . '"', 'object' => '"' . $object . '"', 'type' => 0]);
+        $data = ['work_type' => $workType, 'object' => $object, 'type' => 0];
+
+        $sqlData = $this->prepearTableData('osk_scheme_editor', $data);
+        $this->DB->Insert("osk_scheme_editor", $sqlData);
     }
 
     public function getDataToJournal(array $filter): array
@@ -112,10 +115,13 @@ class SchemeEditor extends Model
 
     public function editScheme(array $attrs)
     {
-        $this->DB->Update("osk_scheme_editor", [
-            'work_type' => '"' . $attrs['work_type'] . '"',
-            'object' => '"' . $attrs['object'] . '"',
-        ], "WHERE id = {$attrs['work_type_id']}");
+        $data = [
+            'work_type' => $attrs['work_type'],
+            'object' => $attrs['object']
+        ];
+
+        $sqlData = $this->prepearTableData('osk_scheme_editor', $data);
+        $this->DB->Update("osk_scheme_editor", $sqlData, "WHERE id = " . (int)$attrs['work_type_id']);
     }
 
     public function delete(int $workTypeId)

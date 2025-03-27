@@ -81,7 +81,7 @@ class ProjectController extends Controller
 
         $project = $this->model('Project');
 
-        $data[] = $project->getDataById($_POST["project_id"], $_POST["date"]);
+        $data[] = $project->getDataById((int)$_POST["project_id"], $_POST["date"]);
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -97,7 +97,7 @@ class ProjectController extends Controller
         $project = $this->model('Project');
 
         $filter = [
-            "project_id" => $_POST["project_id"],
+            "project_id" => (int)$_POST["project_id"],
             "date" => $_POST["date"]
         ];
 
@@ -119,7 +119,7 @@ class ProjectController extends Controller
         $data = [];
 
         if ($_POST["project_id"]) {
-            $data = $project->getSecondmentList($_POST["project_id"], $_POST["date"]);
+            $data = $project->getSecondmentList((int)$_POST["project_id"], $_POST["date"]);
         }
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
@@ -138,7 +138,7 @@ class ProjectController extends Controller
         $data = [];
 
         if ($_POST["project_id"]) {
-            $data = $project->getOverheadList($_POST["project_id"], $_POST["date"]);
+            $data = $project->getOverheadList((int)$_POST["project_id"], $_POST["date"]);
         }
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
@@ -158,7 +158,7 @@ class ProjectController extends Controller
                 "plan_expenses" => $_POST["plan_expenses"]
             ];
 
-            $monthArr = $project->getProjectMonth($_POST["project_id"]);
+            $monthArr = $project->getProjectMonth((int)$_POST["project_id"]);
             $monthExists = false;
 
             $location = "/project/dashboard/{$_POST["project_id"]}";
@@ -197,7 +197,7 @@ class ProjectController extends Controller
 
         $project = $this->model('Project');
 
-        $id = $_POST["project_id"];
+        $id = (int)$_POST["project_id"];
 
         $data = [
             "plan_expenses" => $_POST["plan_expenses"]
@@ -220,7 +220,7 @@ class ProjectController extends Controller
 
         $project = $this->model('Project');
 
-        $id = $_POST["project_id"];
+        $id = (int)$_POST["project_id"];
         $date = $_POST["date"] . "-01";
 
         $data = [
@@ -301,7 +301,7 @@ class ProjectController extends Controller
 
         $project = $this->model('Project');
 
-        $id = $_POST["id"];
+        $id = (int)$_POST["id"];
 
         $data = [
             "name" => $_POST["name"],
@@ -314,7 +314,6 @@ class ProjectController extends Controller
             $project->insertProject($data);
         }
 
-        // echo json_encode($id, JSON_UNESCAPED_UNICODE);
         echo json_encode($_POST, JSON_UNESCAPED_UNICODE);
     }
 }
