@@ -1507,7 +1507,9 @@ class Request extends Model
                     $where .= "b.LABA_ID LIKE '%{$filter['search']['lab']}%' AND ";
                 }
                 if ( isset($filter['search']['LAB']) ) {
-                    $sql = $this->DB->Query("select `id_dep` from ba_laba where (`NAME` like '%{$filter['search']['LAB']}%' or `short_name` like '%{$filter['search']['LAB']}%' )");
+                    $sql = $this->DB->Query(
+                        "select `id_dep` from ba_laba where (`NAME` like '%{$filter['search']['LAB']}%' or `short_name` like '%{$filter['search']['LAB']}%' )"
+                    );
 
                     $depsId = [];
 
@@ -1520,6 +1522,8 @@ class Request extends Model
 
                     if ( !empty($depsId) ) {
                         $where .= $tmpWhere;
+                    } else {
+                        $where .= "0 and ";
                     }
                 }
                 // Протокол
