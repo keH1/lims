@@ -216,9 +216,9 @@ class Model
                     case 'float':
                     case 'double':
                         if (is_numeric($rawValue)) {
-                            $value = $this->quoteStr($this->DB->ForSql($rawValue));
+                            $value = floatval($rawValue);
                         } else {
-                            $value = $nullable ? "NULL" : 0;
+                            $value = $nullable ? "NULL" : 0.0;
                         }
                         $sqlData[$column] = $value;
                         break;

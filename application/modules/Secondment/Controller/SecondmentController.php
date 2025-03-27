@@ -131,6 +131,10 @@ class SecondmentController extends Controller
 
         $filter = $secondment->prepareFilter($_POST ?? []);
 
+        if (!empty($_POST['stage_filter'])) {
+            $filter['search']['stage_filter'] = $_POST['stage_filter'];
+        }
+
         $data = $secondment->getDataToSecondmentJournal($filter);
 
         $recordsTotal = $data['recordsTotal'];
