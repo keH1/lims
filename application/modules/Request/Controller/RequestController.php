@@ -437,6 +437,9 @@ class RequestController extends Controller
             case '8':
                 $type = "Н";
                 break;
+            case '9':
+                $type = "ГР";
+                break;
             default:
                 $type = "ИЦ";
         }

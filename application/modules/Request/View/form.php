@@ -460,6 +460,7 @@
                         <option value="4" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] == '4') ? 'selected': ''?>>НК</option>
                         <option value="8" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] == '8') ? 'selected': ''?>>Н</option>
                         <option value="7" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] == '7') ? 'selected': ''?>>ПР</option>
+                        <option value="9" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] == '9') ? 'selected': ''?>>ГР</option>
                     </select>
                 </div>
                 <div class="col-sm-2"></div>

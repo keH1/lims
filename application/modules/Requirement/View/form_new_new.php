@@ -54,6 +54,65 @@
         <input type="hidden" id="deal_id" name="deal_id" value="<?= $this->data['deal_id'] ?>">
         <input type="hidden" id="clear_confirm" name="clear_confirm" value="0">
 
+        <?php if ($this->data['tz']['TYPE_ID'] == '9'): ?>
+        <div class="panel panel-default">
+            <header class="panel-heading">
+                Работы
+                <span class="tools float-end">
+                    <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
+                    <a href="#" class="fa fa-chevron-up"></a>
+                 </span>
+            </header>
+            <div class="panel-body">
+                <table id="work_table" class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">
+                            <input type="radio" class="form-check-input work_radio" name="work_radio">
+                        </th>
+                        <th scope="col">Гос работа (наименование)</th>
+                        <th scope="col">Объект</th>
+                        <th scope="col">Материал</th>
+                        <th scope="col">Кол-во материала</th>
+                        <th scope="col">Испытание в лаборатории (статус)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($this->data['work_list'] as $row): ?>
+                    <tr>
+                        <td>
+                            <input type="radio" class="form-check-input work_radio" name="work_radio" id="work_radio_<?=$row['id']?>" value="<?=$row['id']?>">
+                        </td>
+                        <td>
+                            <label for="work_radio_<?=$row['id']?>"><?=$row['name']?></label>
+                        </td>
+                        <td>
+                            <?=$row['object']?>
+                        </td>
+                        <td>
+                            <?=$row['material_name']?>
+                        </td>
+                        <td>
+                            <?=$row['probe_count']?>
+                        </td>
+                        <td>
+                            <?=$row['work_status']?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <tr>
+                        <td colspan="6">
+                            <button type="button" class="btn btn-success btn-square add-work" title="Добавить работу">
+                                <i class="fa-solid fa-plus icon-fix"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <?php endif; ?>
+
 
         <div class="panel panel-default">
             <header class="panel-heading">
