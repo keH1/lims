@@ -67,8 +67,8 @@
                 <table id="work_table" class="table">
                     <thead>
                     <tr>
-                        <th scope="col">
-                            <input type="radio" class="form-check-input work_radio" name="work_radio">
+                        <th scope="col" class="text-center">
+                            <input type="radio" class="form-check-input work_radio" name="work_radio" value="" checked>
                         </th>
                         <th scope="col">Гос работа (наименование)</th>
                         <th scope="col">Объект</th>
@@ -80,7 +80,7 @@
                     <tbody>
                     <?php foreach ($this->data['work_list'] as $row): ?>
                     <tr>
-                        <td>
+                        <td class="text-center">
                             <input type="radio" class="form-check-input work_radio" name="work_radio" id="work_radio_<?=$row['id']?>" value="<?=$row['id']?>">
                         </td>
                         <td>
@@ -96,16 +96,17 @@
                             <?=$row['probe_count']?>
                         </td>
                         <td>
-                            <?=$row['work_status']?>
+                            <?=$row['work_status']?? 'Испытания не начаты'?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
-                    <tr>
-                        <td colspan="6">
-                            <button type="button" class="btn btn-success btn-square add-work" title="Добавить работу">
+                    <tr id="work_table_last_row">
+                        <td class="text-center">
+                            <a href="#add-work-modal-form" class="popup-with-form btn btn-success btn-square add-work" title="Добавить работу">
                                 <i class="fa-solid fa-plus icon-fix"></i>
-                            </button>
+                            </a>
                         </td>
+                        <td colspan="5"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -336,11 +337,13 @@
 
                     <div class="col-auto">
                         <div class="js-sticky-widget2">
-                            <div class="col-auto mb-3">
-                                <a href="#add-material-modal-form" class="popup-with-form btn btn-success w125 btn-sm">
-                                    <i class="fa-solid fa-plus icon-fix"></i> Объект
-                                </a>
-                            </div>
+                            <?php if ($this->data['tz']['TYPE_ID'] != '9'): ?>
+                                <div class="col-auto mb-3">
+                                    <a href="#add-material-modal-form" class="popup-with-form btn btn-success w125 btn-sm">
+                                        <i class="fa-solid fa-plus icon-fix"></i> Объект
+                                    </a>
+                                </div>
+                            <?php endif; ?>
 
                             <div class="col-auto mb-3">
                                 <a href="#add-probe-modal-form" class="popup-with-form btn btn-success w125 btn-sm">
@@ -743,4 +746,48 @@
     <div class="line-dashed-small"></div>
 
     <button type="submit" class="btn btn-primary"><i class="fa-regular fa-paper-plane"></i> Передать</button>
+</form>
+
+<form id="add-work-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/requirement/addWork/" method="post">
+    <div class="title mb-3 h-2">
+        Добавить работу
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <div class="mb-3">
+        <label class="form-label">Гос работа (наименование) <span class="redStars">*</span></label>
+
+        <input type="text" class="form-control" name="form[name]" value="" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Объект</label>
+
+        <input type="text" class="form-control" name="form[object]" value="">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Материал <span class="redStars">*</span></label>
+
+        <select class="form-control select2" name="form[material_id]" data-placeholder="Выбрать материал" required>
+            <option value="">Выбрать материал</option>
+            <?php foreach ($this->data['material_list'] as $material): ?>
+                <option value="<?=$material['ID']?>"><?=$material['NAME']?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Количество материала <span class="redStars">*</span></label>
+
+        <input type="number" class="form-control bg-white" name="form[probe_count]" min="1" value="1" required>
+    </div>
+
+    <input name="form[deal_id]" value="<?=$this->data['deal_id']?>" type="hidden">
+    <input name="tz_id" value="<?=$this->data['tz_id']?>" type="hidden">
+
+    <div class="line-dashed-small"></div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>

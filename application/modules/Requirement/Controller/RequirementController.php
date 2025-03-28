@@ -372,6 +372,9 @@ class RequirementController extends Controller
         // Заявка учтена
         $this->data['requests_to_company'] = $requirementModel->getRequestsToCompany($dealId, $dealData['COMPANY_ID']);
 
+        // Работы
+        $this->data['work_list'] = $requirementModel->getWorksMaterialRequest($dealId);
+
         //// общая информация
         // Основание для проведения испытаний (договор)
         $this->data['contract_number'] = $contractData['NUMBER'] ?? '';
@@ -1378,6 +1381,9 @@ class RequirementController extends Controller
         if ( $_POST['cipher'] !== '' ) {
             $filter['search']['cipher'] = $_POST['cipher'];
         }
+        if ( $_POST['work_id'] !== '' ) {
+            $filter['search']['work_id'] = intval($_POST['work_id']);
+        }
 
         $data = $requirementModel->getMaterialProbeJournal((int)$_POST['deal_id'], $filter);
 
@@ -1570,5 +1576,23 @@ class RequirementController extends Controller
         $requirementModel->updatePrice($_POST['deal_id']);
 
         return true;
+    }
+
+
+    /**
+     * @desc добавление работы в тз аяксом
+     */
+    public function addWorkAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        /** @var Requirement $requirementModel */
+        $requirementModel = $this->model('Requirement');
+
+        $result = $requirementModel->addWork($_POST['form']);
+
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
 }
