@@ -809,7 +809,7 @@
                     </td>
                     <td class="link-place">
                         <?php if (isset($this->data['method_oborud_list'][0]['id_oborud'])): ?>
-                            <a class="text-dark fs-4"  title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$this->data['method_oborud_list'][0]['id_oborud']?>">
+                            <a class="text-dark fs-4"  title="Перейти в оборудование" target="_blank" href="/ulab/oborud/edit/<?=$this->data['method_oborud_list'][0]['id_oborud']?>">
                                 <i class="fa-regular fa-clipboard"></i>
                             </a>
                         <?php endif; ?>
@@ -859,7 +859,7 @@
                             </select>
                         </td>
                         <td class="link-place">
-                            <a class="text-dark fs-4"  title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$item['id_oborud']?>">
+                            <a class="text-dark fs-4"  title="Перейти в оборудование" target="_blank" href="/ulab/oborud/edit/<?=$item['id_oborud']?>">
                                 <i class="fa-regular fa-clipboard"></i>
                             </a>
                         </td>

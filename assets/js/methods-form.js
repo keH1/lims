@@ -200,7 +200,7 @@ $(function () {
             success: function (data) {
                 if ( data.IDENT !== undefined ) {
                     $identPlace.text(data.IDENT)
-                    $linkPlace.html(`<a class="text-dark fs-4"  title="Перейти в оборудование" href="/ulab/oborud/edit/${data.ID}"><i class="fa-regular fa-clipboard"></i></a>`)
+                    $linkPlace.html(`<a class="text-dark fs-4"  title="Перейти в оборудование" target="_blank" href="/ulab/oborud/edit/${data.ID}"><i class="fa-regular fa-clipboard"></i></a>`)
                 } else {
                     $identPlace.text('')
                     $linkPlace.text('')
