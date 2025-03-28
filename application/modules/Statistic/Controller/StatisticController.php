@@ -163,6 +163,8 @@ class StatisticController extends Controller
 
         $this->data['user_methods'] = $statisticModel->getStatisticUserMethods($monthReport);
 
+        $this->data['fin_report'] = $statisticModel->getFinReport($monthReport);
+
         $this->data['field_report_protocol'] = [
             'Протоколы',
             'count' => 'Общее количество протоколов, шт',
@@ -180,6 +182,43 @@ class StatisticController extends Controller
             'percent_complete' => "Процент завершенных испытаний<br> относительно лаборатории, %:",
             'price' => 'Стоимость выполненных методик, руб:',
             'percent_price' => "Процент от общей стоимости<br> выполненных методик лаборатории, %",
+        ];
+
+        $this->data['fin_report_rows'] = [
+            'all_price_new' => 'Общая стоимость новых заявок, руб',
+            'year_price_new' => '-- С начала года, руб',
+            'all_full_paid' => 'Всего оплачено, руб',
+            'all_no_paid_count' => 'Всего неоплачено заявок, шт',
+            'all_no_paid_price' => '-- На сумму, руб',
+            'year_no_paid_price' => '-- С начала года, руб',
+            'all_part_paid_count' => 'Оплачено частично, шт',
+            'all_part_paid_price' => '-- На сумму, руб',
+            'year_part_paid_price' => '-- С начала года, руб',
+        ];
+
+        $this->data['mfc_report_rows'] = [
+            'Заявка',
+            'a' => 'Общее количество заявок, шт',
+            'b' => 'Успешные, шт',
+            'c' => 'Неуспешные, шт',
+            'd' => 'Уникальные (одна лаб.), шт',
+            'e' => 'Совместные (несколько лаб.), шт',
+            'Клиент',
+            'f' => 'Новый клиентов, шт:',
+            'Акты приемки',
+            'g' => 'Общее количество актов приемки проб, шт',
+            'k' => 'Завершенные, шт',
+            'l' => 'Незавершенные, шт',
+            'Договоры',
+            'n' => 'Сфоромированно, шт',
+            'm' => 'Подписаны, шт',
+            'o' => 'Не подписаны, шт',
+            'Техническое задание',
+            'p' => 'Отправлены клиенту, шт',
+            'Счета',
+            'r' => 'Сформировано, шт',
+            's' => 'Сформировано на сумму, руб',
+            't' => 'Оплачено на сумму, руб',
         ];
 
         $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
@@ -492,6 +531,7 @@ class StatisticController extends Controller
 
 		echo json_encode($response, JSON_UNESCAPED_UNICODE);
 	}
+
 
     /**
      * @desc Получает статистику персонала по месяцам для диаграммы

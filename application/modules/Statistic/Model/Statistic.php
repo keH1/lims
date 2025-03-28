@@ -1703,6 +1703,32 @@ class Statistic extends Model
     }
 
 
+    public function getFinReport($dataReport)
+    {
+        $month = date('m', strtotime($dataReport));
+        $year = date('Y', strtotime($dataReport));
+
+        $result = [];
+
+        $countDealYear = $this->DB->Query(
+            "select ID from ba_tz as tz where year(DATE_CREATE) = {$year}"
+        )->SelectedRowsCount();
+        $countDealMonth = $countDealMonthYear = $this->DB->Query(
+            "select ID from ba_tz as tz where year(DATE_CREATE) = {$year} and month(DATE_CREATE) = {$month}"
+        )->SelectedRowsCount();
+
+        // Общая стоимость новых заявок, С начала года, руб
+        $allPriceYear = $this->DB->Query("select sum(tz.price_discount) as price from ba_tz as tz where year(DATE_CREATE_TIMESTAMP) = {$year}")->Fetch();
+        // Общая стоимость новых заявок за месяц
+        $allPriceMonth = $this->DB->Query("select sum(tz.price_discount) as price from ba_tz as tz where year(DATE_CREATE_TIMESTAMP) = {$year} and month(DATE_CREATE_TIMESTAMP) = {$month}")->Fetch();
+
+        $result['all_all_price_new'] = $allPriceMonth['price'];
+        $result['all_year_price_new'] = $allPriceYear['price'];
+
+        return $result;
+    }
+
+
     /**
      * получает кол-во завершенных, не завершенных испытаний и стоимость испытаний по пользователям за определенный месяц
      * @param $dataReport
@@ -1713,17 +1739,17 @@ class Statistic extends Model
         $month = date('m', strtotime($dataReport));
         $year = date('Y', strtotime($dataReport));
 
-        $labModel = new Lab();
         $userModel = new User();
 
         $sql = $this->DB->Query(
             "select 
                 sum(IF(strt.state = 'complete', 1, 0)) as complete, 
-                sum(IF((SELECT state FROM `ulab_start_trials` WHERE `ugtp_id` = ugtp.id  ORDER BY id DESC LIMIT 1) <> 'complete', 1, 0)) as incomplete, 
+                sum(IF(strt.state <> 'complete', 1, 0)) as incomplete,
                 ugtp.assigned_id, 
-                sum(distinct ugtp.price) as price
+                sum(IF(strt.state = 'complete', ugtp.price, 0)) as price
             from ulab_gost_to_probe as ugtp
             inner join ulab_start_trials as strt on strt.ugtp_id = ugtp.id
+            inner join (select pi.id, MAX(pi.id) as maxpostid from ulab_start_trials as pi group by pi.ugtp_id) as p2 ON (strt.id = p2.maxpostid)
             where year(strt.date) = {$year} and month(strt.date) = {$month} and strt.is_actual = 1 and ugtp.assigned_id > 0
             group by ugtp.assigned_id"
         );
