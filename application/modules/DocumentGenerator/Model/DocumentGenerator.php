@@ -825,16 +825,16 @@ class DocumentGenerator extends Model
 		$verifyArr = [];
 		$arrVerify = unserialize($protocol['VERIFY']);
 
-		foreach ($arrVerify as $userVerify) {
-			$user = $userModel->getUserShortById($userVerify);
-
-			$verifyArr[] = [
-				'WorkPos' => $user['work_position'],
-				'Ispolnitel' => $user['short_name'],
-				'Ispolnitel2' => 'подписано ' . $user['short_name'],
-				'IC' => ($user['department'] == 58 ? '' : ' ИЦ')
-			];
-		}
+//		foreach ($arrVerify as $userVerify) {
+//			$user = $userModel->getUserShortById($userVerify);
+//
+//			$verifyArr[] = [
+//				'WorkPos' => $user['work_position'],
+//				'Ispolnitel' => $user['short_name'],
+//				'Ispolnitel2' => 'подписано ' . $user['short_name'],
+//				'IC' => ($user['department'] == 58 ? '' : ' ИЦ')
+//			];
+//		}
 
 		$order111 = array("\r\n", "\n", "\r");
 		$replace111 = '<w:br/>';
