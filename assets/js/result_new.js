@@ -1362,7 +1362,7 @@ $(function ($) {
                 if ( data.success ) {
                     success = true
                 } else {
-                    success = false
+                    success = true
                     $.each(data.errors, function (i, item) {
                         showErrorMessage(item)
                     })
