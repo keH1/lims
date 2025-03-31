@@ -1,4 +1,6 @@
 $(function () {
+    const $body = $('body');
+
     $('.select2').select2({
         theme: 'bootstrap-5',
         width: 'resolve',
@@ -23,6 +25,14 @@ $(function () {
             $('.range_text_elem').removeClass('d-none')
         } else {
             $('.range_text_elem').addClass('d-none')
+        }
+    })
+
+    $body.on('input', '.usage-time', function(){
+        let value = parseFloat($(this).val())
+        if (!isNaN(value) && value < 0) {
+            alert("Время использования не может быть отрицательным!")
+            $(this).val(0)
         }
     })
 
@@ -158,7 +168,7 @@ $(function () {
                     <td class="link-place"></td>
                     <td class="ident-place"></td>
                     <td>
-                        <input type="number" step="0.1" class="form-control" name="oborud[${countOborud}][usage_time]" value="">
+                        <input type="number" step="0.1" min="0" class="form-control usage-time" name="oborud[${countOborud}][usage_time]" value="">
                     </td>
                     <td>
                         <input

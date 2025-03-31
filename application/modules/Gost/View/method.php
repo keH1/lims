@@ -818,7 +818,7 @@
                         <?=$this->data['method_oborud_list'][0]['ident'] ?? ''?>
                     </td>
                     <td>
-                        <input type="number" step="0.1" class="form-control" name="oborud[0][usage_time]" value="<?=$this->data['method_oborud_list'][0]['usage_time'] ?? ''?>">
+                        <input type="number" step="0.1" min="0" class="form-control usage-time" name="oborud[0][usage_time]" value="<?=$this->data['method_oborud_list'][0]['usage_time'] ?? ''?>">
                     </td>
                     <td>
                         <input
@@ -867,7 +867,7 @@
                             <?=$item['ident']?>
                         </td>
                         <td>
-                            <input type="number" step="0.1" class="form-control" name="oborud[<?=$key?>][usage_time]" value="<?=$item['usage_time']?>">
+                            <input type="number" step="0.1" min="0" class="form-control usage-time" name="oborud[<?=$key?>][usage_time]" value="<?=$item['usage_time']?>">
                         </td>
                         <td>
                             <input

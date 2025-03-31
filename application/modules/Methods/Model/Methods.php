@@ -1316,6 +1316,12 @@ class Methods extends Model
 //                continue;
 //            }
 
+            if (!isset($row['usage_time']) || !is_numeric($row['usage_time']) || (float)$row['usage_time'] < 0) {
+                $row['usage_time'] = 0;
+            } else {
+                $row['usage_time'] = (float)$row['usage_time'];
+            }
+
             $row['method_id'] = $idMethod;
             unset($row['id']);
 
