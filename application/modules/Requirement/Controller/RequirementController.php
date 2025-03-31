@@ -373,7 +373,9 @@ class RequirementController extends Controller
         $this->data['requests_to_company'] = $requirementModel->getRequestsToCompany($dealId, $dealData['COMPANY_ID']);
 
         // Работы
-        $this->data['work_list'] = $requirementModel->getWorksMaterialRequest($dealId);
+        if ($tzData['TYPE_ID'] == '9') {
+            $this->data['work_list'] = $requirementModel->getWorksMaterialRequest($dealId);
+        }
 
         //// общая информация
         // Основание для проведения испытаний (договор)
@@ -1381,7 +1383,7 @@ class RequirementController extends Controller
         if ( $_POST['cipher'] !== '' ) {
             $filter['search']['cipher'] = $_POST['cipher'];
         }
-        if ( $_POST['work_id'] !== '' ) {
+        if ( !is_null($_POST['work_id']) && $_POST['work_id'] !== '' ) {
             $filter['search']['work_id'] = intval($_POST['work_id']);
         }
 
