@@ -35,7 +35,7 @@ $(function () {
         columns: [
             {
                 data: 'is_confirm',
-                orderable: true,
+                orderable: false,
                 render: function (data, type, item) {
                     if (item.is_confirm == 1) {
                         return `<span class="text-green" title="Методика потверждена"><i class="fa-regular fa-circle-check"></i></span>`
@@ -81,6 +81,7 @@ $(function () {
             },
             {
                 data: 'buttons',
+                orderable: false,
                 render: function (data, type, item) {
                     return `<div class="text-end d-flex justify-content-around">
                                 <a
