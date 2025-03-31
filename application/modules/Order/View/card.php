@@ -98,12 +98,9 @@
 						<?php endif; ?>
 					</li>
 					<li class="nav-item me-2">
-						<a class="nav-link link-card"
+						<a class="nav-link link-card <?=$this->data['order']['is_pdf']? '' : 'disabled'?>"
 						   href="/protocol_generator/archive_dog/<?= $this->data['order']['id'] ?>/<?= $this->data['order']['actual_ver'] ?>.pdf"
 						   title="Скачать договор">
-							<!--							<svg class="icon" width="30" height="30">-->
-							<!--								<use xlink:href="/ulab/assets/images/icons.svg#edit"></use>-->
-							<!--							</svg>-->
 							<i class="fa-regular fa-share-from-square" style="font-size: 1.9rem; color: #0b0b0b"></i>
 						</a>
 					</li>
