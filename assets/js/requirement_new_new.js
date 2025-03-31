@@ -161,7 +161,7 @@ $(function ($) {
                 d.deal_id = dealId
                 d.material_id = $('#filter-material option:selected').val()
                 d.cipher = $('#filter-cipher').val()
-                d.work_id = $('.work_radio:checked').val()
+                d.work_id = $('.work_radio:checked')?.val()
             },
             url : '/ulab/requirement/getMaterialProbeJournalAjax/',
             dataSrc: function (json) {
