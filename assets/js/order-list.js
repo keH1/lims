@@ -52,6 +52,8 @@ $(function ($) {
             },
             {
                 data: 'linkName',
+                className: 'text-center text-wrap',
+                width: '150px',
                 orderable: false,
                 render: function (data, type, item) {
                     if ( item['order_pdf'] === '' ) {
@@ -66,6 +68,7 @@ $(function ($) {
             },
             {
                 data: 'linkName2',
+                className: 'text-center',
                 width: '150px',
                 orderable: false,
                 render: function (data, type, item) {

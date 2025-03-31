@@ -43,12 +43,8 @@ Class OrderController extends Controller
         $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
         $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
         $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-        $this->addJS("/assets/plugins/modal/modalWindow.js");
 
         $this->addJs('/assets/js/order-list.js');
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
 
         $this->view('list');
     }
