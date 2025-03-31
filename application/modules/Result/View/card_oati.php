@@ -699,7 +699,6 @@
                                 <option value="1">Стандартный с ЭЦП</option>
                                 <option value='33'>Упрощенный</option>
                                 <option value="43">Форма заказчика</option>
-								<option value="2" <?= $_SESSION['SESS_AUTH']['USER_ID'] == 61 ? '' : 'class="d-none"'?>>Тестовый! Не нажимать</option>
 							</select>
                         </div>
                     </div>
