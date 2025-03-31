@@ -161,6 +161,7 @@ $(function ($) {
                 d.deal_id = dealId
                 d.material_id = $('#filter-material option:selected').val()
                 d.cipher = $('#filter-cipher').val()
+                d.work_id = $('.work_radio:checked').val()
             },
             url : '/ulab/requirement/getMaterialProbeJournalAjax/',
             dataSrc: function (json) {
@@ -282,7 +283,7 @@ $(function ($) {
         $('#journal_material_2').DataTable().columns.adjust()
     })
 
-    $('.filter').on('input', function () {
+    $body.on('input', '.filter, .work_radio', function () {
         journalDataTable.ajax.reload()
 
         let $btnGroupEdit = $('.btn-group-edit')
@@ -716,6 +717,62 @@ $(function ($) {
             method: "POST",
             complete: function () {
                 $form.find('.method-container').empty()
+
+                journalDataTable.ajax.reload()
+
+                $button.html(btnHtml)
+                $button.removeClass('disabled')
+
+                $.magnificPopup.close()
+            }
+        })
+
+        return false
+    })
+
+    // Добавление работы
+    $('#add-work-modal-form').on('submit', function () {
+        let $form = $(this)
+        let $workLastRow = $('#work_table_last_row')
+        let $button = $form.find(`button[type="submit"]`)
+        let btnHtml = $button.html()
+
+        $button.html(`<i class="fa-solid fa-arrows-rotate spinner-animation"></i>`)
+        $button.addClass('disabled')
+
+        $.ajax({
+            url: "/ulab/requirement/addWorkAjax/",
+            data: $form.serialize(),
+            dataType: "json",
+            async: true,
+            method: "POST",
+            success: function (json) {
+                $workLastRow.before(`
+                <tr>
+                    <td class="text-center">
+                        <input type="radio" class="form-check-input work_radio" name="work_radio" id="work_radio_${json?.data?.work_id??0}" value="${json?.data?.work_id??0}">
+                    </td>
+                    <td>
+                        <label for="work_radio_${json?.data?.work_id??0}">${json?.data?.name?? ''}</label>
+                    </td>
+                    <td>
+                        ${json?.data?.object?? ''}
+                    </td>
+                    <td>
+                        ${json?.data?.material_name?? ''}
+                    </td>
+                    <td>
+                        ${json?.data?.probe_count?? 1}
+                    </td>
+                    <td>
+                        Испытания не начаты
+                    </td>
+                </tr>
+                `)
+            },
+            complete: function () {
+                $form.find('input[type="text"]').val('')
+                $form.find('input[type="number"]').val(1)
 
                 journalDataTable.ajax.reload()
 
