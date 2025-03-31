@@ -48,7 +48,6 @@ $(function ($) {
             },
             {
                 data: 'COMPANY_TITLE',
-                width: '100%',
                 render: $.fn.dataTable.render.ellipsis(45, true)
             },
             {
@@ -56,7 +55,7 @@ $(function ($) {
                 orderable: false,
                 render: function (data, type, item) {
                     if ( item['order_pdf'] === '' ) {
-                        return 'Не сформирована';
+                        return 'Не сформирован';
                     } else {
                         return `<a class="results-link"
                                href="/protocol_generator/archive_dog/${item['order_pdf']}" >
@@ -67,6 +66,7 @@ $(function ($) {
             },
             {
                 data: 'linkName2',
+                width: '150px',
                 orderable: false,
                 render: function (data, type, item) {
                     if ( item['PDF'] === '' ) {

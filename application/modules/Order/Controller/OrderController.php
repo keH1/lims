@@ -213,6 +213,7 @@ Class OrderController extends Controller
         $this->data['order']['summ'] = $contract['SUMM'];
         $this->data['order']['finance'] = $contract['finance'];
         $this->data['order']['date'] = date('Y-m-d', strtotime($contract['DATE']));
+        $this->data['order']['is_pdf'] = is_file(PROTOCOL_PATH . "archive_dog/{$contract['ID']}/{$contract['ACTUAL_VER']}.pdf");
         $this->data['client']['phone'] = $requisite['RQ_PHONE'];
         $this->data['client']['email'] = $requisite['RQ_EMAIL'];
         $this->data['client']['contact'] = $requisite['RQ_NAME'];
