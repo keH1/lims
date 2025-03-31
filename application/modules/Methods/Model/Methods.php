@@ -580,6 +580,9 @@ class Methods extends Model
                 case 'year':
                     $order['by'] = 'g.year';
                     break;
+                case 'materials':
+                    $order['by'] = 'g.materials';
+                    break;
                 case 'name':
                     $order['by'] = 'm.name';
                     break;
