@@ -14,6 +14,29 @@ class Request extends Model
 
 
     /**
+     * получает текст типа заявки по ид типа.
+     * @param $typeId
+     * @return string
+     */
+    public function getTypeRequest($typeId)
+    {
+        $type = [
+            'SALE' => "ИЦ",
+            'COMPLEX' => "ОСК",
+            '1' => "ВЛК",
+            '2' => "МСИ",
+            '4' => "НК",
+            '5' => "АП",
+            '7' => "ПР",
+            '8' => "Н",
+            '9' => "ГР",
+        ];
+
+        return $type[$typeId]?? "ИЦ";
+    }
+
+
+    /**
      * получить ID сделки с которого начинается рефакторинг "Результатов испытания"
      * получить
      * @return int
@@ -805,6 +828,10 @@ class Request extends Model
                 if ( isset($filter['search']['DEADLINE_TABLE']) ) {
                     $where .= "b.DEADLINE_TABLE LIKE '%{$filter['search']['DEADLINE_TABLE']}%' AND ";
                 }
+                // Тип заявки
+                if ( isset($filter['search']['TYPE_ID']) ) {
+                    $where .= "b.TYPE_ID = '9' AND ";
+                }
                 // Счет
                 if ( isset($filter['search']['ACCOUNT']) ) {
                     $where .= "b.ACCOUNT LIKE '%{$filter['search']['ACCOUNT']}%' AND ";
@@ -1059,8 +1086,6 @@ class Request extends Model
                 $row['ASSIGNED'] = implode(', ', $arrAss);
             }
 
-            $baTzIds[] = $row['b_id'];
-
             $protocolsData = [];
             $firstProtocol = [];
             $mangoClass = '';
@@ -1114,14 +1139,12 @@ class Request extends Model
 				$row['bgPrice'] = 'bg-light-red';
 			}
 
-			//Название компании
+            $row['type_text'] = $this->getTypeRequest($row['TYPE_ID']);
+
+			// Название компании
 			if (!empty($row['COMPANY_ID'])) {
 				$row['COMPANY_TITLE'] = $row['company_title_bcc'];
 			}
-
-
-            //ID Сделки с которого начинается рефакторинг Результатов испытания (TODO: Для новых лабораторий удалить или добавить если производится рефакторинг результатов испытаний, так же убрать из карточки card.php)
-            $row['is_result_refactoring'] = $row['ID_Z'] > self::RESULT_REFACTORING_START_ID;
 
             $row['linkName'] = $row['b_id'] && $row['ACT_NUM'] ? 'Открыть' : '';
 

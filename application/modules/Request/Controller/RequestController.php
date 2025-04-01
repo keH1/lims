@@ -412,37 +412,7 @@ class RequestController extends Controller
             //$resetId = $requisite['PRESET_ID'];
         }
 
-        switch ($_POST['REQ_TYPE']) {
-            case 'SALE':
-                $type = "ИЦ";
-                break;
-            case 'COMPLEX':
-                $type = "ОСК";
-                break;
-            case '1':
-                $type = "ВЛК";
-                break;
-            case '2':
-                $type = "МСИ";
-                break;
-            case '4':
-                $type = "НК";
-                break;
-            case '5':
-                $type = "АП";
-                break;
-            case '7':
-                $type = "ПР";
-                break;
-            case '8':
-                $type = "Н";
-                break;
-            case '9':
-                $type = "ГР";
-                break;
-            default:
-                $type = "ИЦ";
-        }
+        $type = $request->getTypeRequest($_POST['REQ_TYPE']);
 
         $arrAssigned['VALUE'] = [];
         for ( $i = 1; $i < count($_POST['id_assign']); $i++ ) {
@@ -1488,6 +1458,10 @@ class RequestController extends Controller
         $userId = (int)$currentUser['ID'];
 
         $filter = $request->prepareFilter($_POST ?? []);
+
+        if ( $_POST['type_journal'] === 'gov' ) {
+            $filter['search']['TYPE_ID'] = 9; // 9 - ид типа заявки Гос работы
+        }
 
         $data = $request->getDataToJournalRequests($userId, $filter);
 
