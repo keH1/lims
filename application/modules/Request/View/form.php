@@ -124,7 +124,7 @@
         </div>
     </div>
 
-    <div class="panel panel-default type-specific-block type-sale-block <?=isset($this->data['request']['id']) ? ((isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] == 'SALE') ? '' : 'visually-hidden') : 'visually-hidden'?>" id="sale-materials-block">
+    <div class="panel panel-default type-specific-block type-sale-block <?=$this->data['display']['sale_materials'] ?? 'visually-hidden'?>" id="sale-materials-block">
         <header class="panel-heading">
             Материалы
             <span class="tools float-end">
@@ -206,7 +206,7 @@
         </div>
     </div>
     
-    <div class="panel panel-default type-specific-block type-gov-block <?=isset($this->data['request']['id']) ? ((isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] == '9') ? '' : 'visually-hidden') : 'visually-hidden'?>">
+    <div class="panel panel-default type-specific-block type-gov-block <?=$this->data['display']['gov'] ?? 'visually-hidden'?>">
         <header class="panel-heading">
             Сведения о государственных работах
             <span class="tools float-end">
@@ -249,8 +249,8 @@
                                     <th>Сроки</th>
                                     <th>Ответственный</th>
                                     <th>Дата выезда</th>
-                                    <th>Лаб. испытания</th>
-                                    <th>Действия</th>
+                                    <th>Испытания в лаборатории</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -381,7 +381,7 @@
         </div>
     </div>
 
-    <div class="panel panel-default type-specific-block type-sale-block <?=isset($this->data['request']['id']) ? ((isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] == 'SALE') ? '' : 'visually-hidden') : 'visually-hidden'?>">
+    <div class="panel panel-default type-specific-block type-sale-block <?=$this->data['display']['sale'] ?? 'visually-hidden'?>">
         <header class="panel-heading">
             Реквизиты
             <span class="tools float-end">

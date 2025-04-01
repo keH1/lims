@@ -235,101 +235,12 @@ $(function ($) {
         $(this).find('.tooltiptext').remove()
     })
 
-
-    // $body.on('submit', 'form', function () {
-    //     $(this).find('input[type=submit], button[type=submit]').addClass('disabled')
-    // })
     $body.on('click', '.disable-after-click', function () {
         $(this).addClass('disabled')
     })
-
-    // $body.on("click", "button.add_email", function () {
-    //     let $formGroupContainer = $(this).parents('.form-group')
-    //     let countAddedEmail = $('.added_mail').length + 1
-
-    //     if (countAddedEmail > 1) {
-    //         $formGroupContainer = $('.form-horizontal .added_mail').last()
-    //     }
-
-    //     $formGroupContainer.after(
-    //         `<div class="form-group row added_mail">
-    //             <label class="col-sm-2 col-form-label">Дополнительный E-mail ${countAddedEmail}</label>
-    //             <div class="col-sm-8">
-    //                 <input type="email" name="addEmail[]" class="form-control" placeholder="_@_._">
-    //             </div>
-    //             <div class="col-sm-2">
-    //                 <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
-    //             </div>
-    //         </div>`
-    //     )
-    // })
-
-    // let countAddedMaterial = $('.added_material').length + 1
-    // $body.on("click", "button.add_material", function () {
-    //     let $formGroupContainer = $(this).parents('.form-group')
-    //     countAddedMaterial++
-
-    //     $formGroupContainer.after(
-    //         `<div class="form-group row material-wrapper">
-    //             <label class="col-sm-2 col-form-label"></label>
-    //             <div class="col-sm-8">
-    //                 <div class="input-group">
-    //                     <input id="material${countAddedMaterial}" type="text" list="materials" name="material[${countAddedMaterial}][name]" class="form-control" required>
-    //                     <span class="input-group-text">Кол-во:</span>
-    //                     <input type="number" name="material[${countAddedMaterial}][count]" class="form-control material-count" min="1" step="1" required value="1">
-    //                 </div>
-    //                 <input type="hidden" name="material[${countAddedMaterial}][id]" class="material_id" id="material${countAddedMaterial}-hidden">
-    //             </div>
-    //             <div class="col-sm-2">
-    //                 <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
-    //             </div>
-    //         </div>`
-    //     )
-    // })
-
-    // $body.on("click", "button.add_assigned", function () {
-    //     let $formGroupContainer = $(this).parents('.form-group')
-    //     let countAddedAssigned = $('.added_assigned').length + 1
-    //     let arrAssigned = []
-
-    //     $('.assigned-select').each(function(index, selectVal) {
-    //         arrAssigned.push($(selectVal).val())
-    //     })
-
-    //     $.ajax({
-    //         method: 'POST',
-    //         url: '/ulab/request/getAssignedUserListAjax/',
-    //         success: function(data) {
-    //             users = JSON.parse(data)
-
-    //             let option = '<option value="" disabled selected>Выберите ответственного</option>'
-
-    //             const notIntersectingUsers = users.filter(value => !arrAssigned.includes(value.ID))
-    //             notIntersectingUsers.forEach((user) => {
-    //                 option += `<option value="${user.ID}">${user.LAST_NAME + " " + user.NAME}</option>`
-    //             })
-
-    //             $formGroupContainer.after(
-    //                 `<div class="form-group row">
-    //                     <label class="col-sm-2 col-form-label">Ответственный</label>
-    //                     <div class="col-sm-8">
-    //                         <select id="assigned${countAddedAssigned}" class="form-control assigned-select" name="ASSIGNED[]" required>
-    //                             ${option}
-    //                         </select>
-    //                         <input id="assigned${countAddedAssigned}-hidden" name="id_assign[]" type="hidden" value="">
-    //                     </div>
-    //                     <div class="col-sm-2">
-    //                         <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
-    //                     </div>
-    //                 </div>`
-    //             )
-    //         }
-    //     })
-    // })
-
+    
     $body.on("click", ".form-group button.remove_this", function () {
         let $formGroupContainer = $(this).parents('.form-group')
-
         $formGroupContainer.remove()
     })
 
@@ -394,7 +305,6 @@ $(function ($) {
     //     }
     // })
 
-    // $('#company').on('change', function () {
     $body.on('change', '#company', function() {
         // clear form
         let $selectContract = $('select[name="NUM_DOGOVOR"]')
@@ -635,7 +545,7 @@ function getNumberOfDays(start, end) {
     return diffInDays;
 }
 
-function showErrorMessage(msg, anchor = '#error-message') {
+function showErrorMessage(msg, anchor = '') {
     // Создаем уникальный ID для сообщения
     const messageId = 'error-message-' + new Date().getTime();
     

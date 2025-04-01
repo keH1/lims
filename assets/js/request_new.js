@@ -1,12 +1,19 @@
 $(function ($) {
+    const $body = $('body')
     // Новая или существующая заявка
     const isNewRequest = !$('input[name="id"]').length
+    // Модальное окно для редактирования ячеек
+    let currentEditCell = null
+    window.labsList = window.labsList || []
+
+    initForm()
     
     /**
      * @desc Переключает тип заявки
      */
     function toggleRequestType() {
         const reqType = $('#req-type-select').val()
+        const hasId = $('input[name="id"]').length > 0
         
         // Сначала скрываем все специфичные для типов блоки
         $('.type-specific-block').addClass('visually-hidden')
@@ -28,14 +35,25 @@ $(function ($) {
             $('.type-gov-block [data-conditionally-required="true"]').prop('required', true)
             
             // Работа с таблицей гос. работ
+            initializeResponsibleSelects()
+            loadLaboratories()
+            initializeExistingRows()
             initializeEditableCells()
             
         } else if (reqType === 'SALE') {
-            $('.type-sale-block').removeClass('visually-hidden')
+            $('.type-sale-block').not('#sale-materials-block').removeClass('visually-hidden')
+            
+            if (!hasId) {
+                $('#sale-materials-block').removeClass('visually-hidden')
+                $('#sale-materials-block input, #sale-materials-block select').prop('disabled', false)
+            } else {
+                $('#sale-materials-block').addClass('visually-hidden')
+                $('#sale-materials-block input, #sale-materials-block select').prop('disabled', true)
+            }
             
             // Активация полей и required для отображаемых блоков
-            $('.type-sale-block input, .type-sale-block select').prop('disabled', false)
-            $('.type-sale-block [data-conditionally-required="true"]').prop('required', true)
+            $('.type-sale-block').not('#sale-materials-block').find('input, select').prop('disabled', false)
+            $('.type-sale-block').not('#sale-materials-block').find('[data-conditionally-required="true"]').prop('required', true)
         }
     }
     
@@ -43,8 +61,6 @@ $(function ($) {
      * @desc Инициализация при загрузке страницы
      */
     function initForm() {
-        $('select#req-type-select').prop('required', true)
-        
         if (isNewRequest) {
             // Скрываем все блоки для новой заявки
             $('.type-specific-block').addClass('visually-hidden')
@@ -63,14 +79,12 @@ $(function ($) {
         }
     }
     
-    initForm()
-    
-    $('#req-type-select').on('change', function() {
+    $body.on('change', '#req-type-select', function() {
         toggleRequestType()
     })
     
     // Вероятно надо использовать id для формы
-    $('form').on('submit', function(e) {
+    $body.on('submit', 'form', function(e) {
         const reqType = $('#req-type-select').val()
         
         if (!reqType) {
@@ -146,6 +160,51 @@ $(function ($) {
                 emptyFieldName = 'Количество'
                 emptyFieldRow = row
                 return false
+            }
+            
+            // Поле сроки
+            const deadlineCell = row.find('[data-type="date"][data-required="true"]').filter(function() {
+                return $(this).find('input[name^="gov_works[deadline]"]').length > 0
+            })
+            
+            if (deadlineCell.length) {
+                const deadlineInput = deadlineCell.find('input')
+                if (!deadlineInput.val()) {
+                    hasEmptyRequired = true
+                    emptyFieldName = 'Сроки'
+                    emptyFieldRow = row
+                    return false
+                }
+            }
+            
+            // Поле ответственного
+            const responsibleCell = row.find('[data-type="select"][data-required="true"]').filter(function() {
+                return $(this).find('select[name^="gov_works[assigned_id]"]').length > 0
+            })
+            
+            if (responsibleCell.length) {
+                const responsibleSelect = responsibleCell.find('select')
+                if (!responsibleSelect.val()) {
+                    hasEmptyRequired = true
+                    emptyFieldName = 'Ответственный'
+                    emptyFieldRow = row
+                    return false
+                }
+            }
+            
+            // Поле лаборатории
+            const labCell = row.find('[data-type="select"][data-required="true"]').filter(function() {
+                return $(this).find('select[name^="gov_works[lab_id]"]').length > 0
+            })
+            
+            if (labCell.length) {
+                const labSelect = labCell.find('select')
+                if (!labSelect.val()) {
+                    hasEmptyRequired = true
+                    emptyFieldName = 'Испытания в лаборатории'
+                    emptyFieldRow = row
+                    return false
+                }
             }
         })
         
@@ -251,17 +310,17 @@ $(function ($) {
                 <td>
                     <div class="editable-cell" data-type="number" data-required="true">
                         <span class="cell-display">1</span>
-                        <input type="number" name="gov_works[quantity][]" class="cell-input visually-hidden form-control-sm" value="1">
+                        <input type="number" name="gov_works[quantity][]" class="cell-input visually-hidden form-control-sm" value="1" min="1" step="1">
                     </div>
                 </td>
                 <td>
-                    <div class="editable-cell" data-type="date">
+                    <div class="editable-cell" data-type="date" data-required="true">
                         <span class="cell-display"></span>
                         <input type="date" name="gov_works[deadline][]" class="cell-input visually-hidden form-control-sm" value="">
                     </div>
                 </td>
                 <td>
-                    <div class="editable-cell" data-type="select">
+                    <div class="editable-cell" data-type="select" data-required="true">
                         <span class="cell-display"></span>
                         <select name="gov_works[assigned_id][]" class="cell-input visually-hidden form-control-sm">
                             ${responsibleOptions}
@@ -275,7 +334,7 @@ $(function ($) {
                     </div>
                 </td>
                 <td>
-                    <div class="editable-cell" data-type="select">
+                    <div class="editable-cell" data-type="select" data-required="true">
                         <span class="cell-display"></span>
                         <select name="gov_works[lab_id][]" class="cell-input visually-hidden form-control-sm">
                             ${labOptions}
@@ -287,180 +346,155 @@ $(function ($) {
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </td>
-            </tr>
-        `
+            </tr>`
         
         $('#govWorksTable tbody').append(newRow)
         
         initializeEditableCells()
         updateGovWorksResponsibles()
     }
-    
-    $(document).ready(function() {
-        window.labsList = window.labsList || []
+
+    $body.on('click', '.add_material', function() {
+        const lastMaterial = $('.added_material').last()
+        let index = 1
         
-        destroyAllTooltips()
-        loadLaboratories()
-        
-        // toggleRequestType()
-        
-        // Если есть таблица на странице, инициализируем редактируемые ячейки
-        if ($('.gov-work-row').length > 0) {
-            initializeEditableCells()
+        if (lastMaterial.length > 0) {
+            const lastMaterialId = lastMaterial.find('input[id^="material"]').attr('id')
+            index = parseInt(lastMaterialId.replace('material', '')) + 1
         }
         
-        $('#req-type-select').on('change', function() {
-            toggleRequestType()
-        })
-        
-        $('.add_material').on('click', function() {
-            const lastMaterial = $('.added_material').last()
-            let index = 1
-            
-            if (lastMaterial.length > 0) {
-                const lastMaterialId = lastMaterial.find('input[id^="material"]').attr('id')
-                index = parseInt(lastMaterialId.replace('material', '')) + 1
-            }
-            
-            const newMaterial = `
-                <div class="form-group row added_material">
-                    <label class="col-sm-2 col-form-label"></label>
-                    <div class="col-sm-8">
-                        <div class="input-group">
-                            <input
-                                type="text"
-                                id="material${index}"
-                                list="materials"
-                                name="material[${index}][name]"
-                                class="form-control"
-                                required
-                                autocomplete="off"
-                            >
-                            <span class="input-group-text">Кол-во:</span>
-                            <input type="number" name="material[${index}][count]" class="form-control material-count" min="1" step="1" required value="1">
-                        </div>
-                        <input type="hidden" name="material[${index}][id]" id="material${index}-hidden" class="material_id" value="">
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-danger remove_this btn-add-del" type="button">
-                            <i class="fa-solid fa-minus icon-fix"></i>
-                        </button>
-                    </div>
-                </div>`
-            
-            if (lastMaterial.length > 0) {
-                lastMaterial.after(newMaterial)
-            } else {
-                $('#material-block').after(newMaterial)
-            }
-        })
-              
-        $('.add_assigned').on('click', function() {
-            const lastAssigned = $('.added_assigned').last()
-            let index = 1
-            
-            if (lastAssigned.length > 0) {
-                const lastAssignedId = lastAssigned.find('select[id^="assigned"]').attr('id')
-                index = parseInt(lastAssignedId.replace('assigned', '')) + 1
-            }
-            
-            const options = $('#assigned0').html()
-            
-            const newAssigned = `
-                <div class="form-group row added_assigned">
-                    <label class="col-sm-2 col-form-label">Ответственный</label>
-                    <div class="col-sm-8">
-                        <select class="form-control assigned-select"
-                                id="assigned${index}"
-                                required
-                                name="ASSIGNED[]"
+        const newMaterial = `
+            <div class="form-group row added_material">
+                <label class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            id="material${index}"
+                            list="materials"
+                            name="material[${index}][name]"
+                            class="form-control"
+                            required
+                            autocomplete="off"
                         >
-                            ${options}
-                        </select>
-                        <input name="id_assign[]" id="assigned${index}-hidden" class="assigned_id" type="hidden" value="">
+                        <span class="input-group-text">Кол-во:</span>
+                        <input type="number" name="material[${index}][count]" class="form-control material-count" min="1" step="1" required value="1">
                     </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-danger remove_this btn-add-del" type="button">
-                            <i class="fa-solid fa-minus icon-fix"></i>
-                        </button>
-                    </div>
-                </div>`
+                    <input type="hidden" name="material[${index}][id]" id="material${index}-hidden" class="material_id" value="">
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-danger remove_this btn-add-del" type="button">
+                        <i class="fa-solid fa-minus icon-fix"></i>
+                    </button>
+                </div>
+            </div>`
+        
+        if (lastMaterial.length > 0) {
+            lastMaterial.after(newMaterial)
+        } else {
+            $('#material-block').after(newMaterial)
+        }
+    })
             
-            if (lastAssigned.length > 0) {
-                lastAssigned.after(newAssigned)
-            } else {
-                $('#main-responsible-block').after(newAssigned)
-            }
-        })
+    $body.on('click', '.add_assigned', function() {
+        const lastAssigned = $('.added_assigned').last()
+        let index = 1
+        
+        if (lastAssigned.length > 0) {
+            const lastAssignedId = lastAssigned.find('select[id^="assigned"]').attr('id')
+            index = parseInt(lastAssignedId.replace('assigned', '')) + 1
+        }
+        
+        const options = $('#assigned0').html()
+        
+        const newAssigned = `
+            <div class="form-group row added_assigned">
+                <label class="col-sm-2 col-form-label">Ответственный</label>
+                <div class="col-sm-8">
+                    <select class="form-control assigned-select"
+                            id="assigned${index}"
+                            required
+                            name="ASSIGNED[]"
+                    >
+                        ${options}
+                    </select>
+                    <input name="id_assign[]" id="assigned${index}-hidden" class="assigned_id" type="hidden" value="">
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-danger remove_this btn-add-del" type="button">
+                        <i class="fa-solid fa-minus icon-fix"></i>
+                    </button>
+                </div>
+            </div>`
+        
+        if (lastAssigned.length > 0) {
+            lastAssigned.after(newAssigned)
+        } else {
+            $('#main-responsible-block').after(newAssigned)
+        }
+    })
 
-        $(document).on('click', '.add_email', function() {
-            let $formGroupContainer = $(this).parents('.form-group'),
-                countAddedEmail = $('.added_mail').length + 1
-    
-            if (countAddedEmail > 1) {
-                $formGroupContainer = $('.form-horizontal .added_mail').last()
-            }
-    
-            $formGroupContainer.after(
-                `<div class="form-group row added_mail">
-                    <label class="col-sm-2 col-form-label">Дополнительный E-mail ${countAddedEmail}</label>
-                    <div class="col-sm-8">
-                        <input type="email" name="addEmail[]" class="form-control" placeholder="_@_._">
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
-                    </div>
-                </div>`
-            )
-        })
+    $body.on('click', '.add_email', function() {
+        let $formGroupContainer = $(this).parents('.form-group'),
+            countAddedEmail = $('.added_mail').length + 1
 
-        $(document).on('change', '.assigned-select', function(e) {
-            let $select = $(e.target),
-                $hiddenInput = $('#' + $select.attr('id') + '-hidden')
+        if (countAddedEmail > 1) {
+            $formGroupContainer = $('.form-horizontal .added_mail').last()
+        }
 
-            $hiddenInput.val($($select).val())
-            $(this).parents('.form-group').find('.add_assigned').removeAttr('disabled')
-        })
-        
-        $(document).on('click', '#addGovWork', function() {
-            addGovWorkRow()
-        })
-        
-        $(document).on('click', '.remove-gov-work', function() {
-            $(this).closest('tr').remove()
-        })
-        
-        // Синхронизация поля объекта между блоком гос. работ и таблицей
-        $('#object').on('change', function() {
-            const objectValue = $(this).val()
-            
-            $('.gov-work-row').each(function() {
-                const objectCell = $(this).find('.editable-cell[data-type="text"]').eq(1)
-                objectCell.find('.cell-display').text(objectValue)
-                objectCell.find('input').val(objectValue)
-                
-                if (objectValue && objectValue.trim() !== '') {
-                    objectCell.find('.cell-display').attr('title', objectValue)
-                } else {
-                    objectCell.find('.cell-display').removeAttr('title')
-                }
-            })
-            
-            destroyAllTooltips()
-            if (typeof $.fn.tooltip === 'function') {
-                $('.editable-cell .cell-display[title]').tooltip({
-                    container: 'body',
-                    trigger: 'hover'
-                })
-            }
-        })
-        
-        initializeEditableCells()
-        initializeResponsibleSelects()
+        $formGroupContainer.after(
+            `<div class="form-group row added_mail">
+                <label class="col-sm-2 col-form-label">Дополнительный E-mail ${countAddedEmail}</label>
+                <div class="col-sm-8">
+                    <input type="email" name="addEmail[]" class="form-control" placeholder="_@_._">
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
+                </div>
+            </div>`
+        )
+    })
+
+    $body.on('change', '.assigned-select', function(e) {
+        let $select = $(e.target),
+            $hiddenInput = $('#' + $select.attr('id') + '-hidden')
+
+        $hiddenInput.val($($select).val())
+        $(this).parents('.form-group').find('.add_assigned').removeAttr('disabled')
     })
     
-    // Модальное окно для редактирования ячеек
-    let currentEditCell = null
+    $body.on('click', '#addGovWork', function() {
+        addGovWorkRow()
+    })
+    
+    $body.on('click', '.remove-gov-work', function() {
+        $(this).closest('tr').remove()
+    })
+    
+    // Синхронизация поля объекта между блоком гос. работ и таблицей
+    $body.on('change', '#object', function() {
+        const objectValue = $(this).val()
+        
+        $('.gov-work-row').each(function() {
+            const objectCell = $(this).find('.editable-cell[data-type="text"]').eq(1)
+            objectCell.find('.cell-display').text(objectValue)
+            objectCell.find('input').val(objectValue)
+            
+            if (objectValue && objectValue.trim() !== '') {
+                objectCell.find('.cell-display').attr('title', objectValue)
+            } else {
+                objectCell.find('.cell-display').removeAttr('title')
+            }
+        })
+        
+        destroyAllTooltips()
+        if (typeof $.fn.tooltip === 'function') {
+            $('.editable-cell .cell-display[title]').tooltip({
+                container: 'body',
+                trigger: 'hover'
+            })
+        }
+    })
     
     /**
      * @desc Уничтожает все подсказки на странице
@@ -504,6 +538,25 @@ $(function ($) {
             }
         })
         
+        // Установка min и step для полей количества
+        $('.editable-cell[data-type="number"]').each(function() {
+            const cell = $(this),
+                  input = cell.find('.cell-input')
+            
+            if (input.attr('name').includes('quantity')) {
+                input.attr('min', '1')
+                input.attr('step', '1')
+                
+                // Если значение отрицательное или дробное, исправляем
+                let value = input.val()
+                if (value <= 0) {
+                    input.val(1)
+                } else if (value % 1 !== 0) {
+                    input.val(Math.floor(value))
+                }
+            }
+        })
+        
         // Добавляем title ко всем непустым ячейкам (не только обязательным)
         $('.editable-cell .cell-display').each(function() {
             const display = $(this)
@@ -541,7 +594,7 @@ $(function ($) {
         }
         
         // Обработчик клика по ячейке
-        $('.editable-cell .cell-display').off('click').on('click', function() {
+        $body.off('click', '.editable-cell .cell-display').on('click', '.editable-cell .cell-display', function() {
             const cell = $(this).closest('.editable-cell')
             currentEditCell = cell
             
@@ -634,7 +687,7 @@ $(function ($) {
                     </div>
                 </div>`
             
-            $('body').append(modalHtml)
+            $body.append(modalHtml)
             
             if (cellType === 'select') {
                 if (modalSelect) {
@@ -688,11 +741,11 @@ $(function ($) {
      * @desc Обработчик событий модального окна
      */
     function setupModalHandlers() {
-        $(document).off('click', '.modal-edit-close').on('click', '.modal-edit-close', function() {
+        $body.off('click', '.modal-edit-close').on('click', '.modal-edit-close', function() {
             closeModal()
         })
         
-        $(document).off('change', '.modal-input').on('change', '.modal-input', function() {
+        $body.off('change', '.modal-input').on('change', '.modal-input', function() {
             if (!currentEditCell) return
             
             const cellType = currentEditCell.data('type'),
@@ -706,9 +759,20 @@ $(function ($) {
                     inputElement.val(newValue)
                 }
             }
+            
+            if (cellType === 'number' && inputElement.attr('name').includes('quantity')) {
+                const modalInput = $(this)
+                let value = modalInput.val()
+
+                if (value <= 0) {
+                    modalInput.val(1)
+                } else if (value % 1 !== 0) {
+                    modalInput.val(Math.floor(value))
+                }
+            }
         })
         
-        $(document).off('click', '.modal-edit-save').on('click', '.modal-edit-save', function() {
+        $body.off('click', '.modal-edit-save').on('click', '.modal-edit-save', function() {
             if (currentEditCell) {
                 const cellType = currentEditCell.data('type'),
                       inputElement = currentEditCell.find('.cell-input'),
@@ -723,6 +787,16 @@ $(function ($) {
                 
                 let newValue = modalInput.val(),
                     displayValue = newValue
+                
+                if (cellType === 'number' && inputElement.attr('name').includes('quantity')) {
+                    if (newValue <= 0) {
+                        newValue = 1
+                    } else if (newValue % 1 !== 0) {
+                        newValue = Math.floor(newValue)
+                    }
+                    displayValue = newValue
+                    modalInput.val(newValue)
+                }
                 
                 if (cellType === 'select' && newValue) {
                     displayValue = modalInput.find('option:selected').text()
@@ -799,19 +873,19 @@ $(function ($) {
             }
         })
         
-        $(document).off('click', '.modal-edit-cell').on('click', '.modal-edit-cell', function(e) {
+        $body.off('click', '.modal-edit-cell').on('click', '.modal-edit-cell', function(e) {
             if ($(e.target).hasClass('modal-edit-cell')) {
                 closeModal()
             }
         })
         
-        $(document).off('keydown').on('keydown', function(e) {
+        $body.off('keydown').on('keydown', function(e) {
             if (e.key === 'Escape' && $('.modal-edit-cell').is(':visible')) {
                 closeModal()
             }
         })
         
-        $(document).off('keydown', '.modal-input').on('keydown', '.modal-input', function(e) {
+        $body.off('keydown', '.modal-input').on('keydown', '.modal-input', function(e) {
             if (e.key === 'Enter' && !$(this).is('textarea') && !$(this).is('select')) {
                 e.preventDefault()
                 $('.modal-edit-save').click()
@@ -875,8 +949,6 @@ $(function ($) {
         currentEditCell = null
     }
     
-    initializeEditableCells()
-    
     /**
      * @desc Инициализация существующих строк таблицы
      */
@@ -914,8 +986,6 @@ $(function ($) {
         
         initializeEditableCells()
     }
-    
-    initializeExistingRows()
     
     /**
      * @desc Заполнения всех селектов ответственных в таблице гос. работ

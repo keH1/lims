@@ -183,12 +183,13 @@ class RequestController extends Controller
         $this->data['materials'] = $material->getList();
         $this->data['companies'] = $company->getList();
         $this->data['laboratories'] = $lab->getLabList();
+        $this->data['display'] = $this->getDisplayClass();
 
         $this->addJs('/assets/js/request_new.js');
 
         $this->view('form');
     }
-
+    
 
     /**
      * @desc Сохраняет или обновляет данные заявки
@@ -1602,7 +1603,8 @@ class RequestController extends Controller
      * @param $location
      * @return array
      */
-    private function processMaterials($materialPost, $material, $location) {
+    private function processMaterials(array $materialPost, $material, string $location): array
+    {
         $arrMaterialName = [];
         $materialDataList = [];
         
@@ -1632,7 +1634,7 @@ class RequestController extends Controller
      * @param $post
      * @param $location
      */
-    private function validationForAll($post, $location)
+    private function validationForAll(array $post, string $location): void
     {
         // Проверка поля организации/компании (общая для всех типов)
         $valid = $this->validateField($post['company'], "Клиент");
@@ -1665,7 +1667,7 @@ class RequestController extends Controller
      * @param $post
      * @param $location
      */
-    public function validationSale($post, $location)
+    private function validationSale(array $post, string $location): void
     {
         // Материал для исследования
         if (isset($post['material'])) {
@@ -1821,7 +1823,7 @@ class RequestController extends Controller
      * @param $post
      * @param $location
      */
-    public function validationGovernment($post, $location)
+    private function validationGovernment(array $post, string $location): void
     {
         $valid = $this->validateField($post['object'], "Объект", false);
         if (!$valid['success']) {
@@ -1859,7 +1861,7 @@ class RequestController extends Controller
             }
             
             if (empty($post['gov_works']['deadline'][$key])) {
-                $this->showErrorMessage("Поле 'Срок' обязательно для заполнения");
+                $this->showErrorMessage("Поле 'Сроки' обязательно для заполнения");
                 $this->redirect($location);
             }
             
@@ -1869,9 +1871,43 @@ class RequestController extends Controller
             }
 
             if (empty($post['gov_works']['lab_id'][$key])) {
-                $this->showErrorMessage("Поле 'Лаборатория' обязательно для заполнения");
+                $this->showErrorMessage("Поле 'Испытания в лаборатории' обязательно для заполнения");
                 $this->redirect($location);
             }
         }
+    }
+
+    /**
+     * @desc Возвращает классы для отображения блоков в зависимости от типа заявки
+     * @return array Массив с классами для каждого типа блока
+     */
+    private function getDisplayClass(): array
+    {
+        $displayClass = [
+            'gov' => 'visually-hidden',
+            'sale' => 'visually-hidden',
+            'sale_materials' => 'visually-hidden'
+        ];
+        
+        if (isset($this->data['request']['REQ_TYPE'])) {
+            $reqType = $this->data['request']['REQ_TYPE'];
+            
+            if ($reqType === '9') {
+                $displayClass['gov'] = '';
+                $displayClass['sale'] = 'visually-hidden';
+                $displayClass['sale_materials'] = 'visually-hidden';
+            } elseif ($reqType === 'SALE') {
+                $displayClass['gov'] = 'visually-hidden';
+                $displayClass['sale'] = '';
+                
+                if (isset($this->data['request']['id'])) {
+                    $displayClass['sale_materials'] = 'visually-hidden';
+                } else {
+                    $displayClass['sale_materials'] = '';
+                }
+            }
+        }
+        
+        return $displayClass;
     }
 }
