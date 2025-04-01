@@ -148,31 +148,30 @@ class Protocol extends Model
                     
                     $searchNames = explode(',', $searchText);
                     $whereNames = [];
-                    
+
                     foreach ($searchNames as $searchName) {
                         $searchName = trim($searchName);
                         if (empty($searchName)) continue;
-                        
+
                         if (mb_strlen($searchName, 'UTF-8') === 1) {
                             $whereNames[] = "(EXISTS (
-                                SELECT 1 FROM assigned_to_request AS ass 
-                                JOIN b_user AS usr ON ass.user_id = usr.ID 
+                                SELECT 1 FROM assigned_to_request AS ass
+                                JOIN b_user AS usr ON ass.user_id = usr.ID
                                 WHERE ass.deal_id = b.ID_Z AND
-                                (usr.NAME LIKE '{$searchName}%' OR 
+                                (usr.NAME LIKE '{$searchName}%' OR
                                     usr.LAST_NAME LIKE '{$searchName}%')
                             ))";
                         } else {
                             $whereNames[] = "(EXISTS (
-                                SELECT 1 FROM assigned_to_request AS ass 
-                                JOIN b_user AS usr ON ass.user_id = usr.ID 
+                                SELECT 1 FROM assigned_to_request AS ass
+                                JOIN b_user AS usr ON ass.user_id = usr.ID
                                 WHERE ass.deal_id = b.ID_Z AND
-                                (usr.NAME LIKE '%{$searchName}%' OR 
-                                    usr.LAST_NAME LIKE '%{$searchName}%' OR
+                                (usr.LAST_NAME LIKE '%{$searchName}%' OR 
                                     CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) LIKE '%{$searchName}%')
                             ))";
                         }
                     }
-                    
+
                     if (!empty($whereNames)) {
                         $where .= "(" . implode(' OR ', $whereNames) . ") AND ";
                     }
@@ -257,8 +256,7 @@ class Protocol extends Model
                         OR b.DATE_OPLATA LIKE '%{$filter['search']['everywhere']}%' 
                         OR b.PRICE LIKE '%{$filter['search']['everywhere']}%' 
                         OR b.DOGOVOR_TABLE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.ID LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.ASSIGNED LIKE '%{$filter['search']['everywhere']}%'   
+                        OR b.ID LIKE '%{$filter['search']['everywhere']}%'  
                         OR b.REQUEST_TITLE LIKE '%{$filter['search']['everywhere']}%' 
                         OR p.NUMBER_AND_YEAR LIKE '%{$filter['search']['everywhere']}%' 
                         OR p.DATE LIKE '%{$filter['search']['everywhere']}%' 
@@ -295,12 +293,21 @@ class Protocol extends Model
                         $order['by'] = 'b.MATERIAL';
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = "(SELECT SUBSTRING(usr.NAME, 1, 1) 
-                                        FROM assigned_to_request AS ass 
-                                        JOIN b_user AS usr ON ass.user_id = usr.ID 
-                                        WHERE ass.deal_id = b.ID_Z 
-                                        ORDER BY ass.is_main DESC
-                                        LIMIT 1)";
+                        $order['by'] = "LEFT(
+                                            SUBSTRING_INDEX(
+                                                IFNULL(
+                                                    GROUP_CONCAT(
+                                                        DISTINCT CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME)
+                                                        ORDER BY usr.NAME ASC 
+                                                        SEPARATOR ', '
+                                                    ),
+                                                    ''
+                                                ),
+                                                ', ',
+                                                1
+                                            ),
+                                            1
+                                        )";
                         break;
                     case 'DOGOVOR_TABLE':
                         $order['by'] = 'b.DOGOVOR_TABLE';
@@ -339,14 +346,22 @@ class Protocol extends Model
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.TZ, b.STAGE_ID, b.ID_Z, b.REQUEST_TITLE, b.ACT_NUM, 
                           b.COMPANY_TITLE, b.ACCOUNT, p.PROBE, b.MATERIAL, b.RESULTS, b.TAKEN_ID_DEAL, 
-                          b.ASSIGNED, b.DOGOVOR_TABLE, b.PRICE, b.OPLATA, b.DATE_OPLATA, b.PDF,
+                          b.DOGOVOR_TABLE, b.PRICE, b.OPLATA, b.DATE_OPLATA, b.PDF,
                           b.USER_HISTORY, p.NUMBER_AND_YEAR, p.DATE, p.ID protocol_id, 
                           p.NUMBER, p.PROTOCOL_TYPE, p.PDF protocol_pdf, p.PROTOCOL_OUTSIDE_LIS, p.ACTUAL_VERSION, p.is_non_actual,  
                     CASE 
                         WHEN p.IN_ATTESTAT_DIAPASON = 1 
                             THEN 'A' 
                         ELSE '' 
-                    END AS ATTESTAT 
+                    END AS ATTESTAT, 
+                    IFNULL(
+                        GROUP_CONCAT(
+                            DISTINCT CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) 
+                            ORDER BY usr.NAME ASC 
+                            SEPARATOR ', '
+                        ),
+                        ''
+                    ) AS ASSIGNED 
                     FROM ba_tz b
                     INNER JOIN PROTOCOLS p on p.ID_TZ = b.ID and p.NUMBER_AND_YEAR is not NULL
                     LEFT JOIN protocol_lab pl on pl.protocol_id = p.ID 
@@ -380,17 +395,6 @@ class Protocol extends Model
 
         $result = [];
         while ($row = $data->Fetch()) {
-
-            $assigned = $this->getAssignedByDealId($row['ID_Z']);
-            $arrAss = [];
-            foreach ($assigned as $item) {
-                $arrAss[] = $item['short_name'];
-            }
-
-            if ( !empty($arrAss) ) {
-                $row['ASSIGNED'] = implode(', ', $arrAss);
-            }
-
             $row['date_end_trials'] = $this->getDateEndTrials($row['protocol_id']);
 
             $yearProtocol = !empty($row['DATE']) ? date("Y", strtotime($row['DATE'])) : '';
