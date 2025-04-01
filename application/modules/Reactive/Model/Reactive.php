@@ -26,6 +26,18 @@ class Reactive extends Model
         $filtersForGetList = $this->filtersForGetListDefault;
         $filtersForGetList['order'] = "date_receive DESC";
 
+        // работа с сортировкой
+        if (!empty($filter['order'])) {
+            if ($filter['order']['dir'] === 'asc') {
+                $order['dir'] = 'ASC';
+            } else {
+                $order['dir'] = 'DESC';
+            }
+
+            $filtersForGetList['order'] = "{$filter['order']['by']} {$order['dir']}";
+
+        }
+
         $result['recordsTotal'] = count($this->getFromSQL('getList', $filtersForGetList));
         //всю допфильтрацию вставлять после $result['recordsTotal'] = ... до $result['recordsFiltered'] = ...
 
@@ -91,6 +103,7 @@ class Reactive extends Model
     private function getFromSQL(string $typeName, array $filters = null): array
     {
         if ($typeName == 'getList') {
+
             $request = "
                 SELECT CONCAT(reactive.number,IFNULL(CONCAT('-',reactive_receive.number),'' )) AS number, 
                         reactive_model.name,                       
@@ -116,9 +129,10 @@ class Reactive extends Model
             LEFT JOIN b_user ON  reactive_receive.global_assigned =b_user.ID
             HAVING id {$filters['idWhichFilter']}             
                  AND                   {$filters['having']}
-                ORDER BY date_receive IS NULL DESC, {$filters['order']}
+                ORDER BY {$filters['order']}
                 {$filters['limit']}    
         ";
+
             // AND  (date_receive >= {$filters['dateStart']} AND date_receive <= {$filters['dateEnd']} OR date_receive IS NULL)
         } elseif ($typeName == 'data_for_update') {
             $request = "

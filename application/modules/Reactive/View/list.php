@@ -19,7 +19,7 @@
             </button>
         </div>
         <div class="col">
-            <select id="selectReactiveUpdate" class="form-control h-auto select-reactive reactive-update">
+            <select id="selectReactiveUpdate" class="form-control h-auto select-reactive reactive-update" data-placeholder="Выберите реактив">
                 <?php
                 foreach ($this->data['reactive_receive'] as $val): ?>
                     <option value="" selected disabled></option>
