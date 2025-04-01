@@ -104,7 +104,7 @@ $(function ($) {
     $("body").on('click', '[data-js-update]', function () {
         let id = $(this).attr("data-js-update")
         let isIdEmpty = (id === null || id === '')
-        let title = isIdEmpty ? c;
+        let title = isIdEmpty ? 'Добавить транспорт' : 'Редактировать транспорт';
 
         $('#add-entry-modal-form').find('.title').text(title)
 
