@@ -17,15 +17,7 @@ class Oborud extends Model {
      */
     private function prepearData($data)
     {
-        $columns = $this->getColumnsByTable('ba_oborud');
-
-        $sqlData = [];
-
-        foreach ($columns as $column) {
-            if ( isset($data[$column]) ) {
-                $sqlData[$column] = $this->quoteStr($this->DB->ForSql(strip_tags($data[$column])));
-            }
-        }
+        $sqlData = $this->prepearTableData('ba_oborud', $data);
 
         $sqlData['IN_AREA']             = isset($data['IN_AREA'])? 1 : 0;
         $sqlData['IN_STOCK']            = isset($data['IN_STOCK'])? 1 : 0;
