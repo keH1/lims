@@ -62,7 +62,7 @@ $(function () {
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 1, "desc" ]],
-        dom: 'frtB<"bottom"lip>',
+        dom: 'frt<"bottom"lip>',
         buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX:       true,
