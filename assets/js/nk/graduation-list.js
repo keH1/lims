@@ -55,7 +55,6 @@ $(function () {
         order: [[0, "desc"]],
         colReorder: true,
         dom: 'frt<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX: true,
         fixedHeader: true,

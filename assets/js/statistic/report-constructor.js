@@ -203,7 +203,6 @@ $(function () {
                     pageLength: 25,
                     order: [defaultOrder],
                     dom: 'frt<"bottom"lip>',
-                    buttons: dataTablesSettings.buttons,
                 });
 
                 journalDataTable.columns().every( function () {

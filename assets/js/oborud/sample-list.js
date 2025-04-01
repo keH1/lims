@@ -63,7 +63,6 @@ $(function () {
         pageLength: 25,
         order: [[ 1, "desc" ]],
         dom: 'frt<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX:       true,
     });

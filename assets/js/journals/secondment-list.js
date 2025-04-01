@@ -142,7 +142,6 @@ $( document ).ready(function() {
         order: [[ 2, "desc" ]],
         colReorder: true,
         dom: 'frt<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX:       true,
         //fixedHeader:   true,
