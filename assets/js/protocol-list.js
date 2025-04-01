@@ -137,7 +137,7 @@ $(function ($) {
         order: [[ 2, "desc" ]],
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
+        buttons: dataTablesSettings.buttonPrint,
         bSortCellsTop: true,
         scrollX:       true,
         fixedHeader:   true,
