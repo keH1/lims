@@ -2315,6 +2315,120 @@ class Methods extends Model
         return $result;
     }
 
+    /**
+     * Проверяет диапазон определения
+     * @param array $data
+     * @return string|null
+     */
+    public function validateDynamicRange(array $data): ?string
+    {
+        $rangeType = $data['definition_range_type'] ?? null;
+        $from = $data['definition_range_1'] ?? null;
+        $to = $data['definition_range_2'] ?? null;
+
+        $isFromEmpty = ($from === null || $from === '');
+        $isToEmpty = ($to === null || $to === '');
+
+        // Если хотя бы одно поле заполнено
+        if (!$isFromEmpty || !$isToEmpty) {
+            if (!is_numeric($from) || !is_numeric($to)) {
+                return 'Значения диапазона определения должны быть числами';
+            }
+
+            $numFrom = (float)$from;
+            $numTo = (float)$to;
+
+            // Проверка условий диапазона
+            if ($rangeType === '1' && $numTo < $numFrom) {
+                return 'Для внутреннего диапазона определения: "до" ≥ "от"';
+            }
+            if ($rangeType === '2' && $numTo < $numFrom) {
+                return 'Для внешнего диапазона определения: "до" ≤ "от"';
+            }
+            if ($rangeType === '3' && $numTo < $numFrom) { // "Не нормируется"
+                return 'Не корректный диапазон определения';
+            }
+            if ($numTo < $numFrom) {
+                return 'Неизвестный тип диапазона';
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Проверяет температуру, влажность и давление
+     * @param array $data
+     * @return string|null
+     */
+    public function validateSimpleRanges(array $data): ?string
+    {
+        $prefixes = ['cond_temp', 'cond_wet', 'cond_pressure'];
+
+        foreach ($prefixes as $prefix) {
+            $from = $data["{$prefix}_1"] ?? null;
+            $to = $data["{$prefix}_2"] ?? null;
+
+            // Не нормируется
+            if (isset($data["is_not_{$prefix}"]) && $data["is_not_{$prefix}"] === '1') {
+                continue;
+            }
+
+            $isFromEmpty = ($from === null || $from === '');
+            $isToEmpty = ($to === null || $to === '');
+
+            // Если хотя бы одно поле заполнено
+            if (!$isFromEmpty || !$isToEmpty) {
+                if (!is_numeric($from) || !is_numeric($to)) {
+                    return "Некорректные числовые значения в условиях применения";
+                }
+
+                $numFrom = (float)$from;
+                $numTo = (float)$to;
+                if ($numFrom > $numTo) {
+                    return "Для условий применения: значение 'до' должно быть больше 'от'";
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Проверяет блок неопределенности
+     * @param array $data
+     * @return string|null
+     */
+    public function validateUncertainty(array $data): ?string
+    {
+        if (!isset($data)) {
+            return null;
+        }
+
+        foreach ($data as $index => $values) {
+            $from = $values['uncertainty_1'] ?? null;
+            $to = $values['uncertainty_2'] ?? null;
+
+            $isFromEmpty = ($from === null || $from === '');
+            $isToEmpty = ($to === null || $to === '');
+
+            // Если хотя бы одно поле заполнено
+            if (!$isFromEmpty || !$isToEmpty) {
+                if (!is_numeric($from) || !is_numeric($to)) {
+                    return "Некорректные числовые значения в блоке неопределенности";
+                }
+
+                $numFrom = (float)$from;
+                $numTo = (float)$to;
+                if ($numFrom > $numTo) {
+                    return "В блоке неопределенности: значение 'до' не может быть меньше 'от'";
+                }
+            }
+        }
+
+        return null;
+    }
+
 //	public function handleFormSubmission($data)
 //	{
 //		$values = [];
