@@ -738,7 +738,7 @@ class GostController extends Controller
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $result = $oborudModel->getOborudById($_POST['id']);
+        $result = $oborudModel->getOborudById((int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
