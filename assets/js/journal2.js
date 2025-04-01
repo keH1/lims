@@ -668,7 +668,5 @@ $(function ($) {
 
             journalDataTable = getJournalDataTable($journalGov, columnsGovJournal)
         }
-
-        // journalDataTable.ajax.reload()
     })
 })

@@ -92,7 +92,11 @@
             <input type="text" class="form-control search">
         </th>
         <th scope="col">
-            <input type="text" class="form-control search">
+            <select class="form-control search">
+                <option value=""></option>
+                <option value="n">Не подписано</option>
+                <option value="y">Подписано</option>
+            </select>
         </th>
         <th scope="col">
             <input type="text" class="form-control search">

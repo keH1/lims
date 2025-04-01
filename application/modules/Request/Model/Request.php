@@ -29,7 +29,7 @@ class Request extends Model
             '5' => "АП",
             '7' => "ПР",
             '8' => "Н",
-            '9' => "ГР",
+            '9' => "Гос",
         ];
 
         return $type[$typeId]?? "ИЦ";
@@ -828,6 +828,9 @@ class Request extends Model
                 if ( isset($filter['search']['DEADLINE_TABLE']) ) {
                     $where .= "b.DEADLINE_TABLE LIKE '%{$filter['search']['DEADLINE_TABLE']}%' AND ";
                 }
+                if ( isset($filter['search']['departure_date']) ) {
+                    $where .= "gw.departure_date LIKE '%{$filter['search']['departure_date']}%' AND ";
+                }
                 // Тип заявки
                 if ( isset($filter['search']['TYPE_ID']) ) {
                     $where .= "b.TYPE_ID = '9' AND ";
@@ -988,6 +991,9 @@ class Request extends Model
                     case 'USER_HISTORY':
                         $order['by'] = 'b.USER_HISTORY';
                         break;
+                    case 'departure_date':
+                        $order['by'] = 'gw.departure_date';
+                        break;
                 }
             }
 
@@ -1019,7 +1025,8 @@ class Request extends Model
                         b.MANUFACTURER_TITLE, b.USER_HISTORY, b.LABA_ID, b.ACTUAL_VER b_actual_ver, c.leader, c.confirm,
                         bcc.TITLE as company_title_bcc,
                         count(c.id) c_count, count(c.date_return) с_date_return, k.ID k_id , d.IS_ACTION, CONCAT(d.CONTRACT_TYPE, ' ', d.NUMBER, ' от ', DATE_FORMAT(d.DATE, '%d.%m.%Y')) as DOGOVOR_TABLE,
-                        tzdoc.pdf tz_pdf
+                        tzdoc.pdf tz_pdf,
+                        gw.departure_date
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ c ON b.ID=c.tz_id
@@ -1032,6 +1039,7 @@ class Request extends Model
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID 
+                    LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
                     GROUP BY b.ID ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
@@ -1206,6 +1214,10 @@ class Request extends Model
 
             $row['dateCreateRu'] = !empty($row['DATE_CREATE_TIMESTAMP']) && $row['DATE_CREATE_TIMESTAMP'] != "0000-00-00 00:00:00"
                 ? date('d.m.Y',  strtotime($row['DATE_CREATE_TIMESTAMP']))
+                : '';
+
+            $row['departure_date'] = !empty($row['departure_date']) && $row['departure_date'] != "0000-00-00"
+                ? date('d.m.Y',  strtotime($row['departure_date']))
                 : '';
 
             $result[] = $row;
