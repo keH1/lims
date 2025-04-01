@@ -2212,8 +2212,6 @@ class ResultController extends Controller
             $this->redirect($location);
         }
 
-        // Открепляем пробы от протокола
-        $resultModel->unpinProbe($protocolId, $_POST);
         // Прикрепляем пробы к протоколу
         $resultModel->attachProbe($dealId, $protocolId, $_POST);
         if ($deal['TYPE_ID'] != TYPE_DEAL_NK) {
@@ -3712,6 +3710,29 @@ class ResultController extends Controller
 
         unset($_SESSION['result_post']);
         $this->showSuccessMessage($successMsg);
+        $this->redirect($location);
+    }
+
+    /**
+     * Открепляет пробы от протокола
+     */
+    public function unboundProtocol()
+    {
+        /** @var Result $result */
+        $result = $this->model('Result');
+
+        $protocolId = (int)$_POST['protocol_id'];
+        $dealId = (int)$_POST['deal_id'];
+        $location = $protocolId ? "/result/card_oati/{$dealId}?protocol_id={$protocolId}" : "/result/card_oati/{$dealId}";
+
+        $probeIdList = explode(',', $_POST['probe_id_list']);
+
+        foreach ($probeIdList as $ugtpId) {
+            $ugtpId = (int)$ugtpId;
+            $result->unboundProtocol($ugtpId);
+        }
+
+        $this->showSuccessMessage("Пробы отвязаны от протокола");
         $this->redirect($location);
     }
 
