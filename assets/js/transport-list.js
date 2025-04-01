@@ -102,6 +102,12 @@ $(function ($) {
 
     // Добавить транспорт
     $("body").on('click', '[data-js-update]', function () {
+        let id = $(this).attr("data-js-update")
+        let isIdEmpty = (id === null || id === '')
+        let title = isIdEmpty ? c;
+
+        $('#add-entry-modal-form').find('.title').text(title)
+
         $.magnificPopup.open({
             items: {
                 src: '#add-entry-modal-form',
@@ -110,7 +116,6 @@ $(function ($) {
             fixedContentPos: false
         });
 
-        let id = $(this).attr("data-js-update")
         $("#transport_id").val(id)
 
         if (id) {
