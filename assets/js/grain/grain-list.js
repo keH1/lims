@@ -20,11 +20,9 @@ $(function ($) {
         language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
-        dom: 'fBrt<"bottom"lip>',
         order: [[0, "asc"]],
         colReorder: true,
-        dom: 'frtB<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
+        dom: 'frt<"bottom"lip>',
         bSortCellsTop: true,
         // scrollX:       true,
         fixedHeader:   true

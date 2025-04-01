@@ -113,7 +113,7 @@ $(function ($) {
         order: [[ 2, "asc" ]],
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
+        buttons: dataTablesSettings.buttonPrint,
     });
 
     journalDataTable.columns().every(function () {

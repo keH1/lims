@@ -69,7 +69,7 @@ $(function () {
         pageLength: 25,
         order: [[ 1, "desc" ]],
         dom: 'frtB<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
+        buttons: dataTablesSettings.buttonPrint,
     });
 
     journalDataTable.columns().every(function () {

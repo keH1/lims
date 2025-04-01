@@ -74,7 +74,7 @@ $(function () {
         pageLength: 25,
         order: [[ 4, "desc" ]],
         dom: 'frtB<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
+        buttons: dataTablesSettings.buttonPrint,
     });
 
 
