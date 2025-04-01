@@ -243,102 +243,89 @@ $(function ($) {
         $(this).addClass('disabled')
     })
 
-    $body.on("click", "button.add_email", function () {
-        let $formGroupContainer = $(this).parents('.form-group')
-        let countAddedEmail = $('.added_mail').length + 1
+    // $body.on("click", "button.add_email", function () {
+    //     let $formGroupContainer = $(this).parents('.form-group')
+    //     let countAddedEmail = $('.added_mail').length + 1
 
-        if (countAddedEmail > 1) {
-            $formGroupContainer = $('.form-horizontal .added_mail').last()
-        }
+    //     if (countAddedEmail > 1) {
+    //         $formGroupContainer = $('.form-horizontal .added_mail').last()
+    //     }
 
-        $formGroupContainer.after(
-            `<div class="form-group row added_mail">
-                <label class="col-sm-2 col-form-label">Дополнительный E-mail ${countAddedEmail}</label>
-                <div class="col-sm-8">
-                    <input type="email" name="addEmail[]" class="form-control" placeholder="_@_._">
-                </div>
-                <div class="col-sm-2">
-                    <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
-                </div>
-            </div>`
-        )
-    })
+    //     $formGroupContainer.after(
+    //         `<div class="form-group row added_mail">
+    //             <label class="col-sm-2 col-form-label">Дополнительный E-mail ${countAddedEmail}</label>
+    //             <div class="col-sm-8">
+    //                 <input type="email" name="addEmail[]" class="form-control" placeholder="_@_._">
+    //             </div>
+    //             <div class="col-sm-2">
+    //                 <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
+    //             </div>
+    //         </div>`
+    //     )
+    // })
 
-    let countAddedMaterial = $('.added_material').length + 1
-    $body.on("click", "button.add_material", function () {
-        let $formGroupContainer = $(this).parents('.form-group')
-        countAddedMaterial++
+    // let countAddedMaterial = $('.added_material').length + 1
+    // $body.on("click", "button.add_material", function () {
+    //     let $formGroupContainer = $(this).parents('.form-group')
+    //     countAddedMaterial++
 
-        $formGroupContainer.after(
-            `<div class="form-group row material-wrapper">
-                <label class="col-sm-2 col-form-label"></label>
-                <div class="col-sm-8">
-                    <div class="input-group">
-                        <input id="material${countAddedMaterial}" type="text" list="materials" name="material[${countAddedMaterial}][name]" class="form-control" required>
-                        <span class="input-group-text">Кол-во:</span>
-                        <input type="number" name="material[${countAddedMaterial}][count]" class="form-control material-count" min="1" step="1" required value="1">
-                    </div>
-                    <input type="hidden" name="material[${countAddedMaterial}][id]" class="material_id" id="material${countAddedMaterial}-hidden">
-                </div>
-                <div class="col-sm-2">
-                    <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
-                </div>
-            </div>`
-        )
-    })
+    //     $formGroupContainer.after(
+    //         `<div class="form-group row material-wrapper">
+    //             <label class="col-sm-2 col-form-label"></label>
+    //             <div class="col-sm-8">
+    //                 <div class="input-group">
+    //                     <input id="material${countAddedMaterial}" type="text" list="materials" name="material[${countAddedMaterial}][name]" class="form-control" required>
+    //                     <span class="input-group-text">Кол-во:</span>
+    //                     <input type="number" name="material[${countAddedMaterial}][count]" class="form-control material-count" min="1" step="1" required value="1">
+    //                 </div>
+    //                 <input type="hidden" name="material[${countAddedMaterial}][id]" class="material_id" id="material${countAddedMaterial}-hidden">
+    //             </div>
+    //             <div class="col-sm-2">
+    //                 <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
+    //             </div>
+    //         </div>`
+    //     )
+    // })
 
-    $body.on("click", "button.add_assigned", function () {
-        let $formGroupContainer = $(this).parents('.form-group')
-        let countAddedAssigned = $('.added_assigned').length + 1
-        let arrAssigned = []
+    // $body.on("click", "button.add_assigned", function () {
+    //     let $formGroupContainer = $(this).parents('.form-group')
+    //     let countAddedAssigned = $('.added_assigned').length + 1
+    //     let arrAssigned = []
 
-        $('.assigned-select').each(function(index, selectVal) {
-            arrAssigned.push($(selectVal).val())
-        })
+    //     $('.assigned-select').each(function(index, selectVal) {
+    //         arrAssigned.push($(selectVal).val())
+    //     })
 
-        $.ajax({
-            method: 'POST',
-            url: '/ulab/request/getAssignedUserListAjax/',
-            success: function(data) {
-                users = JSON.parse(data)
+    //     $.ajax({
+    //         method: 'POST',
+    //         url: '/ulab/request/getAssignedUserListAjax/',
+    //         success: function(data) {
+    //             users = JSON.parse(data)
 
-                let option = '<option value="" disabled selected>Выберите ответственного</option>'
+    //             let option = '<option value="" disabled selected>Выберите ответственного</option>'
 
-                const notIntersectingUsers = users.filter(value => !arrAssigned.includes(value.ID))
-                notIntersectingUsers.forEach((user) => {
-                    option += `<option value="${user.ID}">${user.LAST_NAME + " " + user.NAME}</option>`
-                })
+    //             const notIntersectingUsers = users.filter(value => !arrAssigned.includes(value.ID))
+    //             notIntersectingUsers.forEach((user) => {
+    //                 option += `<option value="${user.ID}">${user.LAST_NAME + " " + user.NAME}</option>`
+    //             })
 
-                $formGroupContainer.after(
-                    `<div class="form-group row">
-                        <label class="col-sm-2 col-form-label">Ответственный</label>
-                        <div class="col-sm-8">
-                            <select id="assigned${countAddedAssigned}" class="form-control assigned-select" name="ASSIGNED[]" required>
-                                ${option}
-                            </select>
-                            <input id="assigned${countAddedAssigned}-hidden" name="id_assign[]" type="hidden" value="">
-                        </div>
-                        <div class="col-sm-2">
-                            <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
-                        </div>
-                    </div>`
-                )
-            }
-        })
-
-        // $formGroupContainer.after(
-        //     `<div class="form-group row">
-        //         <label class="col-sm-2 col-form-label">Ответственный</label>
-        //         <div class="col-sm-8">
-        //             <input id="assigned${countAddedAssigned}" class="form-control" type="text" list="assigneds" name="ASSIGNED[]" size="20" required>
-        //             <input id="assigned${countAddedAssigned}-hidden" name="id_assign[]" type="hidden" value="">
-        //         </div>
-        //         <div class="col-sm-2">
-        //             <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
-        //         </div>
-        //     </div>`
-        // )
-    })
+    //             $formGroupContainer.after(
+    //                 `<div class="form-group row">
+    //                     <label class="col-sm-2 col-form-label">Ответственный</label>
+    //                     <div class="col-sm-8">
+    //                         <select id="assigned${countAddedAssigned}" class="form-control assigned-select" name="ASSIGNED[]" required>
+    //                             ${option}
+    //                         </select>
+    //                         <input id="assigned${countAddedAssigned}-hidden" name="id_assign[]" type="hidden" value="">
+    //                     </div>
+    //                     <div class="col-sm-2">
+    //                         <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
+    //                     </div>
+    //                 </div>`
+    //             )
+    //         }
+    //     })
+    // })
 
     $body.on("click", ".form-group button.remove_this", function () {
         let $formGroupContainer = $(this).parents('.form-group')
@@ -407,7 +394,8 @@ $(function ($) {
     //     }
     // })
 
-    $('#company').on('change', function () {
+    // $('#company').on('change', function () {
+    $body.on('change', '#company', function() {
         // clear form
         let $selectContract = $('select[name="NUM_DOGOVOR"]')
         $selectContract.empty().append(`<option value=""></option>`)
@@ -647,9 +635,13 @@ function getNumberOfDays(start, end) {
     return diffInDays;
 }
 
-function showErrorMessage(msg) {
+function showErrorMessage(msg, anchor = '#error-message') {
+    // Создаем уникальный ID для сообщения
+    const messageId = 'error-message-' + new Date().getTime();
+    
+    // Добавляем сообщение с ID
     $('.messages').append(
-        `<div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
+        `<div id="${messageId}" class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
                 <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
             </svg>
@@ -658,7 +650,27 @@ function showErrorMessage(msg) {
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>`
-    )
+    );
+    
+    // Прокручиваем к сообщению
+    if (anchor) {
+        if (anchor === '#error-message') {
+            // Если указан якорь по умолчанию, прокручиваем к новому сообщению
+            $('html, body').animate({
+                scrollTop: $('#' + messageId).offset().top - 100
+            }, 200);
+        } else {
+            // Иначе прокручиваем к указанному якорю
+            $('html, body').animate({
+                scrollTop: $(anchor).offset().top - 100
+            }, 200);
+        }
+    }
+    
+    // Автоматически скрываем сообщение через 5 секунд
+    setTimeout(function() {
+        $('#' + messageId).alert('close');
+    }, 5000);
 }
 
 function showSuccessMessage(msg) {

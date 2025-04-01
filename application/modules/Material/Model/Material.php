@@ -446,15 +446,33 @@ class Material extends Model
      * @param $dataList
      * @return array
      */
-    public function setMaterialToRequest($dealId, $dataList)
+    public function setMaterialToRequest($dealId, $dataList, $additionalData = false)
     {
         // TODO: не помню зачем, возможно не надо
 //        $this->DB->Query("DELETE FROM `MATERIALS_TO_REQUESTS` WHERE ID_DEAL = {$dealId}");
 
         $mtrArrayId = [];
 
+        $existingWorkIds = [];
+        if ($additionalData) {
+            foreach ($additionalData as $data) {
+                if (!empty($data['id'])) {
+                    $existingWorkIds[] = $data['id'];
+                }
+            }
+            
+            if (!empty($existingWorkIds)) {
+                $existingWorkIdsStr = implode(',', $existingWorkIds);
+                $this->DB->Query("DELETE FROM ulab_material_to_request WHERE deal_id = {$dealId} AND work_id NOT IN ({$existingWorkIdsStr})");
+                $this->DB->Query("DELETE FROM government_work WHERE deal_id = {$dealId} AND id NOT IN ({$existingWorkIdsStr})");
+            } else {
+                $this->DB->Query("DELETE FROM ulab_material_to_request WHERE deal_id = {$dealId}");
+                $this->DB->Query("DELETE FROM government_work WHERE deal_id = {$dealId}");
+            }
+        }
+
         $m_number = 1;
-        foreach ($dataList as $material) {
+        foreach ($dataList as $key => $material) {
             $k = 1;
 
             $data = [
@@ -468,11 +486,33 @@ class Material extends Model
             $mtrId = $this->DB->Insert('MATERIALS_TO_REQUESTS', $sqlData);
             $mtrArrayId[] = $mtrId;
 
+            if ($additionalData) {
+                $workId = 0;
+                
+                if (!empty($additionalData[$key]['id'])) {
+                    $workId = $additionalData[$key]['id'];
+                    $additionalData[$key]['deal_id'] = $dealId;
+                    $sqlAdditionalData = $this->prepearTableData('government_work', $additionalData[$key]);
+                    $this->DB->Update('government_work', $sqlAdditionalData, "WHERE id = {$workId}");
+                    
+                    $this->DB->Query("UPDATE ulab_material_to_request SET material_id = {$material['id']} WHERE deal_id = {$dealId} AND work_id = {$workId}");
+                } else {
+                    $additionalData[$key]['deal_id'] = $dealId;
+                    $sqlAdditionalData = $this->prepearTableData('government_work', $additionalData[$key]);
+                    $workId = $this->DB->Insert('government_work', $sqlAdditionalData);
+                }
+                
+                if ($workId > 0) {
+                    $this->DB->Query("DELETE FROM ulab_material_to_request WHERE deal_id = {$dealId} AND work_id = {$workId}");
+                }
+            }
+
             $dataProbe = [
                 'mtr_id' => $mtrId,
                 'deal_id' => $dealId,
                 'material_id' => $material['id'],
-                'material_number' => $m_number
+                'material_number' => $m_number,
+                'work_id' => $workId
             ];
 
             for ($i = 0; $i < $material['count']; $i++) {

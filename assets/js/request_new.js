@@ -1,0 +1,1039 @@
+$(function ($) {
+    // Новая или существующая заявка
+    const isNewRequest = !$('input[name="id"]').length
+    
+    /**
+     * @desc Переключает тип заявки
+     */
+    function toggleRequestType() {
+        const reqType = $('#req-type-select').val()
+        
+        // Сначала скрываем все специфичные для типов блоки
+        $('.type-specific-block').addClass('visually-hidden')
+        
+        // Для сохранения заявки со скрытыми обязательными полями
+        $('.type-specific-block input, .type-specific-block select').prop('disabled', true)
+        $('.type-specific-block [data-conditionally-required="true"]').prop('required', false)
+        
+        if (!reqType) { return }
+        
+        destroyAllTooltips()
+        
+        // Гос. работы
+        if (reqType === '9') {
+            $('.type-gov-block').removeClass('visually-hidden')
+            
+            // Активация полей и required для отображаемых блоков
+            $('.type-gov-block input, .type-gov-block select').prop('disabled', false)
+            $('.type-gov-block [data-conditionally-required="true"]').prop('required', true)
+            
+            // Работа с таблицей гос. работ
+            initializeEditableCells()
+            
+        } else if (reqType === 'SALE') {
+            $('.type-sale-block').removeClass('visually-hidden')
+            
+            // Активация полей и required для отображаемых блоков
+            $('.type-sale-block input, .type-sale-block select').prop('disabled', false)
+            $('.type-sale-block [data-conditionally-required="true"]').prop('required', true)
+        }
+    }
+    
+    /**
+     * @desc Инициализация при загрузке страницы
+     */
+    function initForm() {
+        $('select#req-type-select').prop('required', true)
+        
+        if (isNewRequest) {
+            // Скрываем все блоки для новой заявки
+            $('.type-specific-block').addClass('visually-hidden')
+            
+            // Отключаем required и делаем поля недоступными
+            $('.type-specific-block input, .type-specific-block select').prop('disabled', true)
+            $('.type-specific-block [data-conditionally-required="true"]').prop('required', false)
+        } else {
+            const reqType = $('#req-type-select').val()
+            
+            if (reqType) {
+                toggleRequestType()
+            } else {
+                $('.type-specific-block').addClass('visually-hidden')
+            }
+        }
+    }
+    
+    initForm()
+    
+    $('#req-type-select').on('change', function() {
+        toggleRequestType()
+    })
+    
+    // Вероятно надо использовать id для формы
+    $('form').on('submit', function(e) {
+        const reqType = $('#req-type-select').val()
+        
+        if (!reqType) {
+            e.preventDefault()
+            showErrorMessage('Пожалуйста, выберите тип заявки')
+            return false
+        }
+        
+        if (reqType === '9') {
+            if (!validateGovWorksForm(e)) {
+                e.preventDefault()
+                return false
+            }
+        }
+    })
+    
+    /**
+     * @desc Валидация для заявок гос. работа
+     */
+    function validateGovWorksForm() {
+        const company = $('#company').val(),
+              responsible = $('#assigned0').val(),
+              responsibleHidden = $('#assigned0-hidden').val(),
+              workRows = $('.gov-works-table tbody tr.gov-work-row')
+        
+        if (!company || (!responsible && !responsibleHidden) || workRows.length === 0) {
+            if (!company) {
+                showErrorMessage('Пожалуйста, укажите организацию', '#company')
+            } else if (!responsible && !responsibleHidden) {
+                showErrorMessage('Пожалуйста, выберите ответственного', '#error-message')
+            } else {
+                showErrorMessage('Пожалуйста, добавьте хотя бы одну работу', '#error-message')
+            }
+            return false
+        }
+        
+        // Обязательные поля в работах
+        let hasEmptyRequired = false,
+            emptyFieldName = '',
+            emptyFieldRow = null
+        
+        workRows.each(function(rowIndex) {
+            const row = $(this)
+            
+            // Поле названия работы
+            const nameCell = row.find('[data-type="text"][data-required="true"]')
+            if (nameCell.length && !nameCell.find('.cell-input').val()) {
+                hasEmptyRequired = true
+                emptyFieldName = 'Название работы'
+                emptyFieldRow = row
+                return false
+            }
+            
+            // Поле материала
+            const materialCell = row.find('[data-type="select"][data-required="true"]').filter(function() {
+                return $(this).find('select[name^="gov_works[material]"]').length > 0
+            })
+            
+            if (materialCell.length) {
+                const materialSelect = materialCell.find('select')
+                if (!materialSelect.val()) {
+                    hasEmptyRequired = true
+                    emptyFieldName = 'Материал'
+                    emptyFieldRow = row
+                    return false
+                }
+            }
+            
+            // Поле количества
+            const quantityCell = row.find('[data-type="number"][data-required="true"]')
+            if (quantityCell.length && !quantityCell.find('.cell-input').val()) {
+                hasEmptyRequired = true
+                emptyFieldName = 'Количество'
+                emptyFieldRow = row
+                return false
+            }
+        })
+        
+        if (hasEmptyRequired) {
+            const rowNumber = emptyFieldRow ? $('.gov-works-table tbody tr.gov-work-row').index(emptyFieldRow) + 1 : '',
+                  rowText = rowNumber ? ` в строке ${rowNumber}` : ''
+            
+            showErrorMessage(`Пожалуйста, заполните обязательное поле "${emptyFieldName}"${rowText}`, '#error-message')
+            return false
+        }
+        
+        return true
+    }
+
+    /**
+     * @desc Получает список материалов
+     */
+    function getMaterialOptions() {
+        let materialOptions = '<option value="">Выберите материал</option>'
+        $('#materials option').each(function() {
+            const value = $(this).data('value'),
+                  text = $(this).text()
+            if (value && text) {
+                materialOptions += `<option value="${value}">${text}</option>`
+            }
+        })
+        return materialOptions
+    }
+    
+    /**
+     * @desc Получает список лабораторий
+     */
+    function getLabOptions() {
+        let labOptions = '<option value="">Выберите лабораторию</option>'
+        if (window.labsList && window.labsList.length > 0) {
+            window.labsList.forEach(function(lab) {
+                labOptions += `<option value="${lab.ID}">${lab.NAME}</option>`
+            })
+        }
+        return labOptions
+    }
+    
+    /**
+     * @desc Добавление новой строки с работой
+     */
+    function addGovWorkRow() {
+        const objectValue = $('#object').val()
+        
+        let responsibleOptions = '<option value="">Выберите ответственного</option>'
+        
+        /* Запрет выбора ответственных
+        const selectedResponsibles = []
+        $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
+            const value = $(this).val()
+            if (value) {
+                selectedResponsibles.push(value)
+            }
+        })
+        
+        $('#assigned0 option').each(function() {
+            const value = $(this).val(),
+                  text = $(this).text()
+            if (value && selectedResponsibles.indexOf(value) === -1) {
+                responsibleOptions += `<option value="${value}">${text}</option>`
+            }
+        })
+        */
+        
+        $('#assigned0 option').each(function() {
+            const value = $(this).val(),
+                  text = $(this).text()
+            if (value) {
+                responsibleOptions += `<option value="${value}">${text}</option>`
+            }
+        })
+        
+        const labOptions = getLabOptions(),
+              materialOptions = getMaterialOptions()
+        
+        const newRow = `
+            <tr class="gov-work-row">
+                <td>
+                    <div class="editable-cell" data-type="text" data-required="true">
+                        <span class="cell-display"></span>
+                        <input type="text" name="gov_works[name][]" class="cell-input visually-hidden form-control-sm" value="">
+                        <input type="hidden" name="gov_works[work_id][]" value="">
+                    </div>
+                </td>
+                <td>
+                    <div class="editable-cell" data-type="text">
+                        <span class="cell-display">${objectValue || ''}</span>
+                        <input type="text" name="gov_works[object][]" class="cell-input visually-hidden form-control-sm" value="${objectValue || ''}">
+                    </div>
+                </td>
+                <td>
+                    <div class="editable-cell" data-type="select" data-required="true">
+                        <span class="cell-display"></span>
+                        <select name="gov_works[material][]" class="cell-input visually-hidden form-control-sm">
+                            ${materialOptions}
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="editable-cell" data-type="number" data-required="true">
+                        <span class="cell-display">1</span>
+                        <input type="number" name="gov_works[quantity][]" class="cell-input visually-hidden form-control-sm" value="1">
+                    </div>
+                </td>
+                <td>
+                    <div class="editable-cell" data-type="date">
+                        <span class="cell-display"></span>
+                        <input type="date" name="gov_works[deadline][]" class="cell-input visually-hidden form-control-sm" value="">
+                    </div>
+                </td>
+                <td>
+                    <div class="editable-cell" data-type="select">
+                        <span class="cell-display"></span>
+                        <select name="gov_works[assigned_id][]" class="cell-input visually-hidden form-control-sm">
+                            ${responsibleOptions}
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="editable-cell" data-type="date">
+                        <span class="cell-display"></span>
+                        <input type="date" name="gov_works[departure_date][]" class="cell-input visually-hidden form-control-sm" value="">
+                    </div>
+                </td>
+                <td>
+                    <div class="editable-cell" data-type="select">
+                        <span class="cell-display"></span>
+                        <select name="gov_works[lab_id][]" class="cell-input visually-hidden form-control-sm">
+                            ${labOptions}
+                        </select>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm remove-gov-work">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </td>
+            </tr>
+        `
+        
+        $('#govWorksTable tbody').append(newRow)
+        
+        initializeEditableCells()
+        updateGovWorksResponsibles()
+    }
+    
+    $(document).ready(function() {
+        window.labsList = window.labsList || []
+        
+        destroyAllTooltips()
+        loadLaboratories()
+        
+        // toggleRequestType()
+        
+        // Если есть таблица на странице, инициализируем редактируемые ячейки
+        if ($('.gov-work-row').length > 0) {
+            initializeEditableCells()
+        }
+        
+        $('#req-type-select').on('change', function() {
+            toggleRequestType()
+        })
+        
+        $('.add_material').on('click', function() {
+            const lastMaterial = $('.added_material').last()
+            let index = 1
+            
+            if (lastMaterial.length > 0) {
+                const lastMaterialId = lastMaterial.find('input[id^="material"]').attr('id')
+                index = parseInt(lastMaterialId.replace('material', '')) + 1
+            }
+            
+            const newMaterial = `
+                <div class="form-group row added_material">
+                    <label class="col-sm-2 col-form-label"></label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                id="material${index}"
+                                list="materials"
+                                name="material[${index}][name]"
+                                class="form-control"
+                                required
+                                autocomplete="off"
+                            >
+                            <span class="input-group-text">Кол-во:</span>
+                            <input type="number" name="material[${index}][count]" class="form-control material-count" min="1" step="1" required value="1">
+                        </div>
+                        <input type="hidden" name="material[${index}][id]" id="material${index}-hidden" class="material_id" value="">
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-danger remove_this btn-add-del" type="button">
+                            <i class="fa-solid fa-minus icon-fix"></i>
+                        </button>
+                    </div>
+                </div>`
+            
+            if (lastMaterial.length > 0) {
+                lastMaterial.after(newMaterial)
+            } else {
+                $('#material-block').after(newMaterial)
+            }
+        })
+              
+        $('.add_assigned').on('click', function() {
+            const lastAssigned = $('.added_assigned').last()
+            let index = 1
+            
+            if (lastAssigned.length > 0) {
+                const lastAssignedId = lastAssigned.find('select[id^="assigned"]').attr('id')
+                index = parseInt(lastAssignedId.replace('assigned', '')) + 1
+            }
+            
+            const options = $('#assigned0').html()
+            
+            const newAssigned = `
+                <div class="form-group row added_assigned">
+                    <label class="col-sm-2 col-form-label">Ответственный</label>
+                    <div class="col-sm-8">
+                        <select class="form-control assigned-select"
+                                id="assigned${index}"
+                                required
+                                name="ASSIGNED[]"
+                        >
+                            ${options}
+                        </select>
+                        <input name="id_assign[]" id="assigned${index}-hidden" class="assigned_id" type="hidden" value="">
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-danger remove_this btn-add-del" type="button">
+                            <i class="fa-solid fa-minus icon-fix"></i>
+                        </button>
+                    </div>
+                </div>`
+            
+            if (lastAssigned.length > 0) {
+                lastAssigned.after(newAssigned)
+            } else {
+                $('#main-responsible-block').after(newAssigned)
+            }
+        })
+
+        $(document).on('click', '.add_email', function() {
+            let $formGroupContainer = $(this).parents('.form-group'),
+                countAddedEmail = $('.added_mail').length + 1
+    
+            if (countAddedEmail > 1) {
+                $formGroupContainer = $('.form-horizontal .added_mail').last()
+            }
+    
+            $formGroupContainer.after(
+                `<div class="form-group row added_mail">
+                    <label class="col-sm-2 col-form-label">Дополнительный E-mail ${countAddedEmail}</label>
+                    <div class="col-sm-8">
+                        <input type="email" name="addEmail[]" class="form-control" placeholder="_@_._">
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-danger remove_this btn-add-del" type="button"><i class="fa-solid fa-minus icon-fix"></i></button>
+                    </div>
+                </div>`
+            )
+        })
+
+        $(document).on('change', '.assigned-select', function(e) {
+            let $select = $(e.target),
+                $hiddenInput = $('#' + $select.attr('id') + '-hidden')
+
+            $hiddenInput.val($($select).val())
+            $(this).parents('.form-group').find('.add_assigned').removeAttr('disabled')
+        })
+        
+        $(document).on('click', '#addGovWork', function() {
+            addGovWorkRow()
+        })
+        
+        $(document).on('click', '.remove-gov-work', function() {
+            $(this).closest('tr').remove()
+        })
+        
+        // Синхронизация поля объекта между блоком гос. работ и таблицей
+        $('#object').on('change', function() {
+            const objectValue = $(this).val()
+            
+            $('.gov-work-row').each(function() {
+                const objectCell = $(this).find('.editable-cell[data-type="text"]').eq(1)
+                objectCell.find('.cell-display').text(objectValue)
+                objectCell.find('input').val(objectValue)
+                
+                if (objectValue && objectValue.trim() !== '') {
+                    objectCell.find('.cell-display').attr('title', objectValue)
+                } else {
+                    objectCell.find('.cell-display').removeAttr('title')
+                }
+            })
+            
+            destroyAllTooltips()
+            if (typeof $.fn.tooltip === 'function') {
+                $('.editable-cell .cell-display[title]').tooltip({
+                    container: 'body',
+                    trigger: 'hover'
+                })
+            }
+        })
+        
+        initializeEditableCells()
+        initializeResponsibleSelects()
+    })
+    
+    // Модальное окно для редактирования ячеек
+    let currentEditCell = null
+    
+    /**
+     * @desc Уничтожает все подсказки на странице
+     */
+    function destroyAllTooltips() {
+        if (typeof $.fn.tooltip === 'function') {
+            $('[data-bs-toggle="tooltip"]').tooltip('dispose')
+            $('.tooltip').remove()
+            $('[title]').tooltip('dispose')
+            $('.editable-cell .cell-display[title]').tooltip('dispose')
+        }
+    }
+    
+    /**
+     * @desc Инициализации редактируемых ячеек
+     */
+    function initializeEditableCells() {
+        destroyAllTooltips()
+        
+        // Выделяем пустые обязательные поля
+        $('.editable-cell[data-required="true"]').each(function() {
+            const cell = $(this),
+            //   input = cell.find('.cell-input'),
+                  display = cell.find('.cell-display')
+            
+            // if (!input.val()) {
+            //     display.addClass('empty-required')
+            // } else {
+            //     display.removeClass('empty-required')
+            // }
+            
+            // Удаляем data-bs-* атрибуты, если они есть от предыдущих инициализаций
+            display.removeAttr('data-bs-original-title')
+            display.removeAttr('data-bs-toggle')
+            display.removeAttr('aria-describedby')
+            
+            if (display.text() && display.text().trim() !== '') {
+                display.attr('title', display.text().trim())
+            } else {
+                display.removeAttr('title')
+            }
+        })
+        
+        // Добавляем title ко всем непустым ячейкам (не только обязательным)
+        $('.editable-cell .cell-display').each(function() {
+            const display = $(this)
+            // Удаляем data-bs-* атрибуты, если они есть от предыдущих инициализаций
+            display.removeAttr('data-bs-original-title')
+            display.removeAttr('data-bs-toggle')
+            display.removeAttr('aria-describedby')
+            
+            if (display.text() && display.text().trim() !== '') {
+                display.attr('title', display.text().trim())
+            } else {
+                display.removeAttr('title')
+            }
+        })
+        
+        // Инициализация Bootstrap tooltip'ов, если они доступны
+        if (typeof $.fn.tooltip === 'function') {
+            // Для Bootstrap 5 добавляем атрибут data-bs-toggle
+            if (typeof bootstrap !== 'undefined') {
+                $('.editable-cell .cell-display[title]').attr('data-bs-toggle', 'tooltip')
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl, {
+                        container: 'body',
+                        trigger: 'hover'
+                    })
+                })
+            } else {
+                // Для Bootstrap 4 и ниже используем jQuery метод
+                $('.editable-cell .cell-display[title]').tooltip({
+                    container: 'body',
+                    trigger: 'hover'
+                })
+            }
+        }
+        
+        // Обработчик клика по ячейке
+        $('.editable-cell .cell-display').off('click').on('click', function() {
+            const cell = $(this).closest('.editable-cell')
+            currentEditCell = cell
+            
+            const cellType = cell.data('type'),
+                  inputElement = cell.find('.cell-input'),
+                  currentValue = inputElement.val(),
+                  isRequired = cell.data('required') === true
+            
+            let modalTitle = 'Редактирование поля',
+                modalContent = '',
+                modalSelect = null
+            
+            if (cellType === 'text' || cellType === 'number') {
+                modalContent = `
+                    <div class="modal-form-group">
+                        <label class="form-label">${isRequired ? 'Введите значение *' : 'Введите значение'}</label>
+                        <input type="${cellType}" class="form-control modal-input" value="${currentValue}" ${isRequired ? 'required' : ''}>
+                        <div class="invalid-feedback">Это поле обязательно для заполнения</div>
+                    </div>`
+            } else if (cellType === 'date') {
+                modalContent = `
+                    <div class="modal-form-group">
+                        <label class="form-label">${isRequired ? 'Выберите дату *' : 'Выберите дату'}</label>
+                        <input type="date" class="form-control modal-input" value="${currentValue}" ${isRequired ? 'required' : ''}>
+                        <div class="invalid-feedback">Это поле обязательно для заполнения</div>
+                    </div>`
+            } else if (cellType === 'select') {
+                if (inputElement.attr('name').includes('assigned_id')) {
+                    modalTitle = 'Выберите ответственного'
+                    
+                    if (!inputElement.html() || inputElement.find('option').length === 0) {
+                        const responsibleOptions = $('#assigned0').html() || ''
+                        inputElement.html(responsibleOptions)
+                    }
+                } else if (inputElement.attr('name').includes('lab_id')) {
+                    modalTitle = 'Выберите лабораторию'
+                    
+                    if (!inputElement.html() || inputElement.find('option').length === 0) {
+                        inputElement.html(getLabOptions())
+                    }
+                } else if (inputElement.attr('name').includes('material')) {
+                    modalTitle = 'Выберите материал'
+                    
+                    // Сохраняем текущее значение материала перед обновлением опций
+                    const currentMaterialValue = inputElement.val(),
+                          currentMaterialText = currentMaterialValue ? inputElement.find(`option[value="${currentMaterialValue}"]`).text() : ''
+                    
+                    inputElement.html(getMaterialOptions())
+                    
+                    if (currentMaterialValue && inputElement.find(`option[value="${currentMaterialValue}"]`).length === 0) {
+                        inputElement.append(`<option value="${currentMaterialValue}">${currentMaterialText || currentMaterialValue}</option>`)
+                    }
+                    
+                    if (currentMaterialValue) {
+                        inputElement.val(currentMaterialValue)
+                    }
+                }
+
+                modalSelect = $(`<select class="form-control modal-input" ${isRequired ? 'required' : ''}></select>`)
+                
+                inputElement.find('option').each(function() {
+                    const option = $(this).clone()
+                    modalSelect.append(option)
+                })
+                
+                modalSelect.val(currentValue)
+                
+                modalContent = `
+                    <div class="modal-form-group">
+                        <label class="form-label">${isRequired ? 'Выберите значение *' : 'Выберите значение'}</label>
+                        <div class="select-container"></div>
+                        <div class="invalid-feedback">Это поле обязательно для заполнения</div>
+                    </div>`
+            }
+            
+            const modalHtml = `
+                <div class="modal-edit-cell">
+                    <div class="modal-edit-content">
+                        <div class="modal-edit-header">
+                            <h5>${modalTitle}</h5>
+                            <button type="button" class="btn-close modal-edit-close" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-edit-body">
+                            ${modalContent}
+                        </div>
+                        <div class="modal-edit-footer">
+                            <button type="button" class="btn btn-secondary modal-edit-close">Отмена</button>
+                            <button type="button" class="btn btn-primary modal-edit-save">Сохранить</button>
+                        </div>
+                    </div>
+                </div>`
+            
+            $('body').append(modalHtml)
+            
+            if (cellType === 'select') {
+                if (modalSelect) {
+                    $('.select-container').append(modalSelect)
+                }
+            } else {
+                const modalInput = $('.modal-input')
+                modalInput.val(currentValue)
+            }
+            
+            /* Запрет выбора ответственных
+            if (cellType === 'select' && inputElement.attr('name').includes('assigned_id')) {
+                const modalInput = $('.modal-input')
+                if (modalInput.length > 0) {
+                    const selectedResponsibles = []
+                    
+                    $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
+                        const select = $(this),
+                              value = select.val()
+                        if (value && select.get(0) !== inputElement.get(0)) {
+                            selectedResponsibles.push(value)
+                        }
+                    })
+                    
+                    modalInput.find('option').each(function() {
+                        const option = $(this),
+                              value = option.val()
+                        if (value && selectedResponsibles.includes(value)) {
+                            option.remove()
+                        }
+                    })
+                    
+                    if (modalInput.find('option').length <= 1) {
+                        modalInput.html('<option value="" disabled>Нет доступных вариантов</option>')
+                    }
+                }
+            }
+            */
+            
+            $('.modal-edit-cell').css('display', 'flex').fadeIn(200)
+            
+            if ($('.modal-input').length > 0) {
+                $('.modal-input').focus()
+            }
+        })
+        
+        setupModalHandlers()
+    }
+    
+    /**
+     * @desc Обработчик событий модального окна
+     */
+    function setupModalHandlers() {
+        $(document).off('click', '.modal-edit-close').on('click', '.modal-edit-close', function() {
+            closeModal()
+        })
+        
+        $(document).off('change', '.modal-input').on('change', '.modal-input', function() {
+            if (!currentEditCell) return
+            
+            const cellType = currentEditCell.data('type'),
+                  inputElement = currentEditCell.find('.cell-input')
+            
+            if (cellType === 'select' && inputElement.attr('name').includes('material')) {
+                const modalSelect = $(this),
+                      newValue = modalSelect.val()
+                
+                if (newValue) {
+                    inputElement.val(newValue)
+                }
+            }
+        })
+        
+        $(document).off('click', '.modal-edit-save').on('click', '.modal-edit-save', function() {
+            if (currentEditCell) {
+                const cellType = currentEditCell.data('type'),
+                      inputElement = currentEditCell.find('.cell-input'),
+                      displayElement = currentEditCell.find('.cell-display'),
+                      modalInput = $('.modal-input'),
+                      oldValue = inputElement.val()
+                
+                if (currentEditCell.data('required') && !modalInput.val()) {
+                    modalInput.addClass('is-invalid')
+                    return
+                }
+                
+                let newValue = modalInput.val(),
+                    displayValue = newValue
+                
+                if (cellType === 'select' && newValue) {
+                    displayValue = modalInput.find('option:selected').text()
+                    
+                    if (inputElement.attr('name').includes('assigned_id')) {
+                        inputElement.val(newValue)
+                    } else if (inputElement.attr('name').includes('lab_id')) {
+                        if (!inputElement.html() || inputElement.find('option').length <= 1) {
+                            inputElement.html(getLabOptions())
+                        }
+                        inputElement.val(newValue)
+                    } else if (inputElement.attr('name').includes('material')) {
+                        if (!inputElement.html() || inputElement.find('option').length <= 1) {
+                            inputElement.html(getMaterialOptions())
+                        }
+                        
+                        if (newValue && inputElement.find(`option[value="${newValue}"]`).length === 0) {
+                            inputElement.append(`<option value="${newValue}">${displayValue}</option>`)
+                        }
+                        
+                        inputElement.val(newValue)
+                    } else {
+                        inputElement.val(newValue)
+                    }
+                    
+                    if (inputElement.attr('name').includes('assigned_id') && oldValue !== newValue) {
+                        updateGovWorksResponsibles()
+                    }
+                } else {
+                    inputElement.val(newValue)
+                }
+                
+                if (cellType === 'date' && newValue) {
+                    const dateObj = new Date(newValue)
+                    displayValue = dateObj.toLocaleDateString('ru-RU')
+                }
+                
+                displayElement.text(displayValue || '')
+                
+                if (displayValue && displayValue.trim() !== '') {
+                    displayElement.removeAttr('title')
+                    displayElement.removeAttr('data-bs-original-title')
+                    displayElement.removeAttr('data-bs-toggle')
+                    displayElement.removeAttr('aria-describedby')
+                    
+                    displayElement.attr('title', displayValue)
+                    
+                    destroyAllTooltips()
+                    
+                    if (typeof $.fn.tooltip === 'function') {
+                        displayElement.tooltip({
+                            container: 'body',
+                            trigger: 'hover'
+                        })
+                    }
+                } else {
+                    displayElement.removeAttr('title')
+                    displayElement.removeAttr('data-bs-original-title')
+                    displayElement.removeAttr('data-bs-toggle')
+                    displayElement.removeAttr('aria-describedby')
+                    
+                    if (typeof $.fn.tooltip === 'function') {
+                        displayElement.tooltip('dispose')
+                    }
+                }
+                
+                // if (currentEditCell.data('required') && !newValue) {
+                //     displayElement.addClass('empty-required')
+                // } else {
+                //     displayElement.removeClass('empty-required')
+                // }
+                
+                closeModal()
+            }
+        })
+        
+        $(document).off('click', '.modal-edit-cell').on('click', '.modal-edit-cell', function(e) {
+            if ($(e.target).hasClass('modal-edit-cell')) {
+                closeModal()
+            }
+        })
+        
+        $(document).off('keydown').on('keydown', function(e) {
+            if (e.key === 'Escape' && $('.modal-edit-cell').is(':visible')) {
+                closeModal()
+            }
+        })
+        
+        $(document).off('keydown', '.modal-input').on('keydown', '.modal-input', function(e) {
+            if (e.key === 'Enter' && !$(this).is('textarea') && !$(this).is('select')) {
+                e.preventDefault()
+                $('.modal-edit-save').click()
+            }
+        })
+    }
+    
+    /**
+     * @desc Закрытие модального окна
+     */
+    function closeModal() {
+        const currentCell = currentEditCell,
+              currentModalInput = $('.modal-input')
+        
+        // Сохраняем текущее значение перед закрытием, чтобы восстановить его при следующем открытии
+        if (currentCell && currentCell.data('type') === 'select') {
+            const inputElement = currentCell.find('.cell-input')
+            
+            if (inputElement.attr('name').includes('material')) {
+                if (currentModalInput.length > 0 && currentModalInput.is('select')) {
+                    const modalValue = currentModalInput.val()
+                    if (modalValue) {
+                        if (inputElement.find(`option[value="${modalValue}"]`).length === 0) {
+                            const modalText = currentModalInput.find('option:selected').text()
+                            inputElement.append(`<option value="${modalValue}">${modalText}</option>`)
+                        }
+                        inputElement.val(modalValue)
+                    }
+                }
+            }
+        }
+        
+        $('.modal-edit-cell').fadeOut(200, function() {
+            $(this).remove()
+            
+            if (currentEditCell) {
+                const displayElement = currentEditCell.find('.cell-display')
+                const currentText = displayElement.text().trim()
+                
+                displayElement.removeAttr('data-bs-original-title')
+                displayElement.removeAttr('data-bs-toggle')
+                displayElement.removeAttr('aria-describedby')
+                
+                if (currentText) {
+                    displayElement.attr('title', currentText)
+                } else {
+                    displayElement.removeAttr('title')
+                }
+                
+                destroyAllTooltips()
+                
+                // Переинициализация подсказок для всех элементов с title
+                if (typeof $.fn.tooltip === 'function') {
+                    $('.editable-cell .cell-display[title]').tooltip({
+                        container: 'body',
+                        trigger: 'hover'
+                    })
+                }
+            }
+        })
+        currentEditCell = null
+    }
+    
+    initializeEditableCells()
+    
+    /**
+     * @desc Инициализация существующих строк таблицы
+     */
+    function initializeExistingRows() {
+        $('.gov-works-table tbody tr').each(function() {
+            const row = $(this)
+            
+            row.find('input, select').each(function() {
+                const input = $(this),
+                      cell = input.parent(),
+                      inputType = input.attr('type') || (input.is('select') ? 'select' : 'text'),
+                      isRequired = input.prop('required')
+                
+                if (cell.hasClass('editable-cell')) {
+                    return
+                }
+                
+                let currentValue = input.val(),
+                    displayValue = currentValue
+                
+                if (inputType === 'select' || input.is('select')) {
+                    displayValue = input.find('option:selected').text()
+                }
+                
+                if (inputType === 'date' && currentValue) {
+                    const dateObj = new Date(currentValue)
+                    displayValue = dateObj.toLocaleDateString('ru-RU')
+                }
+                
+                input.wrap(`<div class="editable-cell" data-type="${inputType}" ${isRequired ? 'data-required="true"' : ''}></div>`)
+                input.addClass('cell-input visually-hidden')
+                input.after(`<div class="cell-display truncate" title="${displayValue || ''}">${displayValue || ''}</div>`)
+            })
+        })
+        
+        initializeEditableCells()
+    }
+    
+    initializeExistingRows()
+    
+    /**
+     * @desc Заполнения всех селектов ответственных в таблице гос. работ
+     */
+    function initializeResponsibleSelects() {
+        const responsibleOptions = $('#assigned0').html() || ''
+        
+        $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
+            const select = $(this)
+            
+            if (!select.html() || select.find('option').length === 0) {
+                select.html(responsibleOptions)
+            }
+            
+            select.find('option[value=""]').remove()
+        })
+        
+        updateGovWorksResponsibles()
+    }
+    
+    /**
+     * @desc Загрузка лабораторий
+     */
+    function loadLaboratories() {
+        $.ajax({
+            url: '/ulab/lab/getLabListAjax/',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response && Array.isArray(response)) {
+                    window.labsList = response
+                    
+                    const labOptions = getLabOptions()
+                    updateLabSelects(labOptions)
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Ошибка при загрузке лабораторий:', error)
+            }
+        })
+    }
+    
+    /**
+     * @desc Обновление всех селектов лабораторий
+     */
+    function updateLabSelects(labOptions) {
+        $('select[name$="[lab_id]"]').each(function() {
+            const select = $(this),
+                  currentValue = select.val()
+            
+            select.empty().html(labOptions)
+            
+            if (currentValue) {
+                select.val(currentValue)
+            }
+        })
+    }
+    
+    /**
+     * @desc Обновление всех селектов ответственных в таблице гос. работ
+     */
+    function updateGovWorksResponsibles() {
+        /* Запрет выбора ответственных
+        const selectedResponsibles = []
+        $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
+            const value = $(this).val()
+            if (value) {
+                selectedResponsibles.push(value)
+            }
+        })
+        */
+        
+        const allOptions = $('#assigned0 option').clone()
+        
+        $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
+            const select = $(this),
+                  currentValue = select.val()
+            
+            if (!currentValue) {
+                select.empty()
+                select.append('<option value="">Выберите ответственного</option>')
+                
+                allOptions.each(function() {
+                    const option = $(this).clone(),
+                          optionValue = option.val()
+                    
+                    if (!optionValue) {
+                        return
+                    }
+                    
+                    /* Запрет выбора ответственных
+                    if (selectedResponsibles.indexOf(optionValue) === -1) {
+                        select.append(option)
+                    }
+                    */
+                    select.append(option)
+                })
+            } else {
+                select.empty()
+                
+                allOptions.each(function() {
+                    const option = $(this).clone(),
+                          optionValue = option.val()
+                    
+                    if (!optionValue) {
+                        return
+                    }
+                    
+                    /* Запрет выбора ответственных
+                    if (optionValue === currentValue || selectedResponsibles.indexOf(optionValue) === -1) {
+                        select.append(option)
+                    }
+                    */
+                    select.append(option)
+                })
+                
+                select.val(currentValue)
+            }
+        })
+    }
+})
