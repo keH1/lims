@@ -54,7 +54,7 @@ $(function () {
         pageLength: 25,
         order: [[0, "desc"]],
         colReorder: true,
-        dom: 'frtB<"bottom"lip>',
+        dom: 'frt<"bottom"lip>',
         buttons: dataTablesSettings.buttons,
         bSortCellsTop: true,
         scrollX: true,
