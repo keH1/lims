@@ -28,28 +28,28 @@ window.initDataTable = initDataTable
 
 const dataTablesSettings = {
     buttons:[
-        // {
-        //     extend: 'colvis',
-        //     titleAttr: 'Выбрать'
-        // },
-        // {
-        //     extend: 'copy',
-        //     titleAttr: 'Копировать',
-        //     exportOptions: {
-        //         modifier: {
-        //             page: 'current'
-        //         }
-        //     }
-        // },
-        // {
-        //     extend: 'excel',
-        //     titleAttr: 'excel',
-        //     exportOptions: {
-        //         modifier: {
-        //             page: 'current'
-        //         }
-        //     }
-        // },
+        {
+            extend: 'colvis',
+            titleAttr: 'Выбрать'
+        },
+        {
+            extend: 'copy',
+            titleAttr: 'Копировать',
+            exportOptions: {
+                modifier: {
+                    page: 'current'
+                }
+            }
+        },
+        {
+            extend: 'excel',
+            titleAttr: 'excel',
+            exportOptions: {
+                modifier: {
+                    page: 'current'
+                }
+            }
+        },
         {
             extend: 'print',
             titleAttr: 'Печать',
