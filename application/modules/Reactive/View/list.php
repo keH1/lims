@@ -1,5 +1,5 @@
 <div class="mb-4">
-    <div class="row">
+    <div class="row flex-nowrap">
         <div class="col-auto">
             <button type="button" name="add_entry"
                     class="btn btn-primary popup-first btn-add-entry w-100 mw-100 mt-0">
@@ -18,7 +18,7 @@
                 Провести реактив
             </button>
         </div>
-        <div class="col">
+        <div class="col-auto">
             <select id="selectReactiveUpdate" class="form-control h-auto select-reactive reactive-update" data-placeholder="Выберите реактив">
                 <?php
                 foreach ($this->data['reactive_receive'] as $val): ?>
