@@ -404,9 +404,7 @@ class Request extends Model
     public function create($data)
     {
         $year = $this->getCurrentY();
-
-        $isGovWork = ($data['type'] == '9');
-        $countDeal = $this->getCountDeal($isGovWork ? '9' : '') + 1;
+        $countDeal = $this->getCountDeal($data['type']) + 1;
 
         $newDeal = new CCrmDeal;
 
