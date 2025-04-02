@@ -94,7 +94,7 @@ $(function ($) {
         order: [[ 0, "desc" ]],
         language: dataTablesSettings.language,
         dom: 'frtB<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
+        buttons: dataTablesSettings.buttonPrint,
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
         pageLength: 25,
     });

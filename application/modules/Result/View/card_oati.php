@@ -933,6 +933,7 @@
 
         <input name="deal_id" value="<?=$this->data['deal_id']?>" type="hidden">
         <input class="probe-id-list" name="probe_id_list" value="" type="hidden">
+        <input class="unbound-protocol" name="protocol_id" value="" type="hidden">
 
         <div class="row mb-3">
             <label for="inputEmail3" class="col col-form-label">Выбрано проб: <span class="count-selected-probe"></span></label>

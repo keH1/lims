@@ -961,8 +961,11 @@ $(function ($) {
             return $(this).val();
         }).get()
 
+        let selectedProtocolId = +$('.selected_protocol_id').val()
+
         $('.count-selected-probe').text(probeIdList.length)
         $('.probe-id-list').val(probeIdList)
+        $('.unbound-protocol').val(selectedProtocolId)
     })
 
 
