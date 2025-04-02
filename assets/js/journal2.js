@@ -248,7 +248,7 @@ $(function ($) {
             orderable: false,
         },
         {
-            data: 'MATERIAL',
+            data: 'object_gov',
             render: $.fn.dataTable.render.ellipsis(40, true)
         },
         {

@@ -831,6 +831,9 @@ class Request extends Model
                 if ( isset($filter['search']['departure_date']) ) {
                     $where .= "gw.departure_date LIKE '%{$filter['search']['departure_date']}%' AND ";
                 }
+                if ( isset($filter['search']['object_gov']) ) {
+                    $where .= "gw.object LIKE '%{$filter['search']['object_gov']}%' AND ";
+                }
                 // Тип заявки
                 if ( isset($filter['search']['TYPE_ID']) ) {
                     $where .= "b.TYPE_ID = '9' AND ";
@@ -994,6 +997,9 @@ class Request extends Model
                     case 'departure_date':
                         $order['by'] = 'gw.departure_date';
                         break;
+                    case 'object_gov':
+                        $order['by'] = 'gw.object';
+                        break;
                 }
             }
 
@@ -1026,7 +1032,7 @@ class Request extends Model
                         bcc.TITLE as company_title_bcc,
                         count(c.id) c_count, count(c.date_return) с_date_return, k.ID k_id , d.IS_ACTION, CONCAT(d.CONTRACT_TYPE, ' ', d.NUMBER, ' от ', DATE_FORMAT(d.DATE, '%d.%m.%Y')) as DOGOVOR_TABLE,
                         tzdoc.pdf tz_pdf,
-                        gw.departure_date
+                        gw.departure_date, gw.object as object_gov
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ c ON b.ID=c.tz_id
