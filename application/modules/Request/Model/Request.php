@@ -2017,4 +2017,48 @@ class Request extends Model
     {
         return $this->DB->Query("SELECT name FROM ulab_material_scheme WHERE id = '{$schemeId}'")->Fetch()['name'];
     }
+
+    /**
+     * @desc Получает специфичные данные для разных типов заявок
+     * @param int $dealId
+     * @param string $table
+     * @return array
+     */
+    public function getApplicationTypeData(int $dealId, string $table)
+    {
+        $query = $this->DB->Query(
+            "SELECT t.*,
+                    umtr.material_id,
+                    l.NAME AS laboratory_name,
+                    m.NAME AS material_name,
+                    (SELECT COUNT(*) 
+                     FROM ulab_material_to_request 
+                     WHERE deal_id = {$dealId} 
+                        AND work_id = t.id 
+                        AND material_id = umtr.material_id) AS quantity
+             FROM {$table} AS t 
+
+             LEFT JOIN (
+                SELECT DISTINCT work_id, material_id 
+                FROM ulab_material_to_request 
+                WHERE deal_id = {$dealId}
+             ) AS umtr
+             ON t.id = umtr.work_id 
+
+             LEFT JOIN ba_laba AS l
+             ON t.lab_id = l.ID
+
+             LEFT JOIN MATERIALS AS m
+             ON umtr.material_id = m.ID
+
+             WHERE t.deal_id = {$dealId}"
+        );
+
+        $result = [];
+        while ($row = $query->Fetch()) {
+            $result[] = $row;
+        }
+
+        return $result;
+    }
 }
