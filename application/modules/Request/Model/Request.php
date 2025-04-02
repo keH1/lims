@@ -377,8 +377,7 @@ class Request extends Model
         if (!empty($type)) {
             $filter['TYPE_ID'] = "'{$type}'";
         } else {
-            $filter['!TYPE_ID'] = "1";
-            $filter['!=TYPE_ID'] = "9";
+            $filter['!TYPE_ID'] = [1, 9];
         }
         
         $deals = CCrmDeal::GetList(['DATE_CREATE' => 'DESC'], $filter);
