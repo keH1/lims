@@ -648,7 +648,6 @@ $(function ($) {
     body.on('click', '#selectRoom', function () {
         const navItemDropdown = $('#navItemDropdown');
         let room = +$('#selectRoom').val();
-        let roomId = +$(this).val() - 100;
 
         if (room <= 0) {
             if (!navItemDropdown.hasClass('d-none')) {
@@ -661,43 +660,6 @@ $(function ($) {
                 navItemDropdown.addClass('d-block');
             }
         }
-
-        $.ajax({
-            method: 'POST',
-            url: '/ulab/lab/getMeanConditionsAjax',
-            data: {
-                room_id: roomId
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data['success']) {
-                    const conditionsModalForm = $('#conditionsModalForm');
-
-                    conditionsModalForm.find('#temp').val(data['data']['random_temp']);
-                    conditionsModalForm.find('#humidity').val(data['data']['random_wet']);
-                    //conditionsModalForm.find('#pressure').val(data['data']['random_pressure']);
-                }
-            },
-            error: function (jqXHR, exception) {
-                let msg = '';
-                if (jqXHR.status === 0) {
-                    msg = 'Not connect.\n Verify Network.';
-                } else if (jqXHR.status === 404) {
-                    msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status === 500) {
-                    msg = 'Internal Server Error [500].';
-                } else if (exception === 'parsererror') {
-                    msg = '1 Requested JSON parse failed.';
-                } else if (exception === 'timeout') {
-                    msg = 'Time out error.';
-                } else if (exception === 'abort') {
-                    msg = 'Ajax request aborted.';
-                } else {
-                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
-                }
-                console.log(msg)
-            }
-        });
     });
 
     /**
@@ -713,50 +675,5 @@ $(function ($) {
         if (roomId && yearId) {
             window.open(`/Condition/condition_doc_new.php?ID=${roomId}&year=${yearId}&month=${monthId}`);
         }
-    });
-
-    /**
-     * получить средние значение условий
-     */
-    body.on('change', '#room', function (e) {
-        let roomId = +$(this).val() - 100;
-
-        $.ajax({
-            method: 'POST',
-            url: '/ulab/lab/getMeanConditionsAjax',
-            data: {
-                room_id: roomId
-            },
-            dataType: "json",
-            success: function (data) {
-                console.log('data', data)
-                if (data['success']) {
-                    const conditionsModalForm = $('#conditionsModalForm');
-
-                    conditionsModalForm.find('#temp').val(data['data']['random_temp']);
-                    conditionsModalForm.find('#humidity').val(data['data']['random_wet']);
-                    conditionsModalForm.find('#pressure').val(data['data']['random_pressure']);
-                }
-            },
-            error: function (jqXHR, exception) {
-                let msg = '';
-                if (jqXHR.status === 0) {
-                    msg = 'Not connect.\n Verify Network.';
-                } else if (jqXHR.status === 404) {
-                    msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status === 500) {
-                    msg = 'Internal Server Error [500].';
-                } else if (exception === 'parsererror') {
-                    msg = '1 Requested JSON parse failed.';
-                } else if (exception === 'timeout') {
-                    msg = 'Time out error.';
-                } else if (exception === 'abort') {
-                    msg = 'Ajax request aborted.';
-                } else {
-                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
-                }
-                console.log(msg)
-            }
-        });
     });
 });
