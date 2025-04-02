@@ -561,7 +561,7 @@
                                 </div>
                             </div>
 
-                            <div class="col">
+                            <div class="col" style="max-width: 100%; overflow-x: hidden;">
                                 <div class="row mb-2">
                                     <div class="col text-center">
                                         Испытания
@@ -604,30 +604,34 @@
                                     </div>
                                 </div>
 
-                                <table class="table -table-striped journal table-hover table-sm table-light row-border" id="journal_methods" style="font-size: 14px">
-                                    <thead>
-                                    <tr class="table-secondary align-middle">
-                                        <th scope="col">Методика</th>
-                                        <th scope="col" class="text-nowrap">
-                                            <label class=""><input class="form-check-input all-check" type="checkbox"> Всё</label>
-                                        </th>
-                                        <th scope="col">Материал</th>
-                                        <th scope="col">Проба</th>
-                                        <th scope="col">Испытание</th>
-                                        <th scope="col">Лист<br> измерения</th>
-                                        <th scope="col">Ед. изм.</th>
-                                        <th scope="col">Нормативная документация</th>
-                                        <th scope="col">Нормативное значение</th>
-                                        <th scope="col">Фактическое значение</th>
-                                        <th scope="col">Соответствие требованиям</th>
-                                        <th scope="col">В ОА</th>
-                                        <th scope="col">Номер протокола</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
+                                <div class="table-responsive">
+                                    <table class="table -table-striped journal table-hover table-sm table-light row-border"
+                                           id="journal_methods" style="font-size: 14px; width: 100%;"
+                                    >
+                                        <thead>
+                                            <tr class="table-secondary align-middle">
+                                                <th scope="col">Методика</th>
+                                                <th scope="col" class="text-nowrap">
+                                                    <label class=""><input class="form-check-input all-check" type="checkbox"> Всё</label>
+                                                </th>
+                                                <th scope="col" style="min-width: 80px;">Материал</th>
+                                                <th scope="col" style="min-width: 80px;">Проба</th>
+                                                <th scope="col" style="width: 40px;">Испытание</th>
+                                                <th scope="col" style="width: 40px;">Лист<br> измерения</th>
+                                                <th scope="col" style="width: 40px;">Ед. изм.</th>
+                                                <th scope="col" style="min-width: 180px;">Нормативная документация</th>
+                                                <th scope="col" style="min-width: 100px;">Нормативное значение</th>
+                                                <th scope="col" style="min-width: 120px;">Фактическое значение</th>
+                                                <th scope="col" style="min-width: 140px;">Соответствие требованиям</th>
+                                                <th scope="col" style="width: 40px;">В ОА</th>
+                                                <th scope="col" style="min-width: 40px;">Номер протокола</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
 
                             </div>
                         </div>
