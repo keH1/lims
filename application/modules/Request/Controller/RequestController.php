@@ -189,7 +189,7 @@ class RequestController extends Controller
 
         $this->view('form');
     }
-    
+
 
     /**
      * @desc Сохраняет или обновляет данные заявки
@@ -280,7 +280,7 @@ class RequestController extends Controller
 
             $additionalData = [];
             $workCount = count($_POST['gov_works']['name'] ?? []);
-            
+
             for ($i = 0; $i < $workCount; $i++) {
                 $work = [
                     'id' => $_POST['gov_works']['work_id'][$i] ?? '',
@@ -295,7 +295,7 @@ class RequestController extends Controller
                 $_POST['material'][$i]['id'] = $_POST['gov_works']['material'][$i];
                 $_POST['material'][$i]['name'] = $material->getById($_POST['gov_works']['material'][$i])['NAME'];
                 $_POST['material'][$i]['count'] = $_POST['gov_works']['quantity'][$i];
-                
+
                 $additionalData[] = $work;
             }
 
@@ -305,38 +305,8 @@ class RequestController extends Controller
             $saveMail = 'N;';
             $orderName = '';
         }
-        
-        switch ($_POST['REQ_TYPE']) {
-            case 'SALE':
-                $type = "ИЦ";
-                break;
-            case 'COMPLEX':
-                $type = "ОСК";
-                break;
-            case '1':
-                $type = "ВЛК";
-                break;
-            case '2':
-                $type = "МСИ";
-                break;
-            case '4':
-                $type = "НК";
-                break;
-            case '5':
-                $type = "АП";
-                break;
-            case '7':
-                $type = "ПРР";
-                break;
-            case '8':
-                $type = "Н";
-                break;
-            case '9':
-                $type = "ПР";
-                break;
-            default:
-                $type = "ИЦ";
-        }
+
+        $type = $request->getTypeRequest($_POST['REQ_TYPE']);
 
         $arrAssigned['VALUE'] = [];
         for ( $i = 1; $i < count($_POST['id_assign']); $i++ ) {
@@ -391,7 +361,7 @@ class RequestController extends Controller
             if (isset($_POST['material']) && !empty($_POST['material'])) {
                 $materialData = $this->processMaterials($_POST['material'], $material, $location);
                 $material->setMaterialToRequest($dealId, $materialData['materialDataList'], $additionalData);
-                
+
                 if (!isset($dataTz['MATERIAL']) || empty($dataTz['MATERIAL'])) {
                     $dataTz['MATERIAL'] = implode(', ', $materialData['arrMaterialName']);
                 }
@@ -1327,6 +1297,10 @@ class RequestController extends Controller
 
         $filter = $request->prepareFilter($_POST ?? []);
 
+        if ( $_POST['type_journal'] === 'gov' ) {
+            $filter['search']['TYPE_ID'] = 9; // 9 - ид типа заявки Гос работы
+        }
+
         $data = $request->getDataToJournalRequests($userId, $filter);
 
         $recordsTotal = $data['recordsTotal'];
@@ -1595,7 +1569,7 @@ class RequestController extends Controller
         $data = $user->getAssignedUserList();
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    
+
     /**
      * @desc Обрабатывает материалы
      * @param $materialPost
@@ -1607,7 +1581,7 @@ class RequestController extends Controller
     {
         $arrMaterialName = [];
         $materialDataList = [];
-        
+
         foreach ($materialPost as $item) {
             $arrMaterialName[] = $item['name'];
             if (empty($item['id'])) {
@@ -1622,7 +1596,7 @@ class RequestController extends Controller
             }
             $materialDataList[] = $item;
         }
-        
+
         return [
             'arrMaterialName' => $arrMaterialName,
             'materialDataList' => $materialDataList
@@ -1679,7 +1653,7 @@ class RequestController extends Controller
                 }
             }
         }
-        
+
         // E-mail *
         $valid = $this->validateEmail($post['POST_MAIL']);
         if (!$valid['success']) {
@@ -1693,7 +1667,7 @@ class RequestController extends Controller
             $this->showErrorMessage($valid['error']);
             $this->redirect($location);
         }
-        
+
         // Полное наименование компании
         $valid = $this->validateField($post['CompanyFullName'], "Полное наименование компании", false);
         if (!$valid['success']) {
@@ -1719,7 +1693,7 @@ class RequestController extends Controller
             $this->showErrorMessage($valid['error']);
             $this->redirect($location);
         }
-        
+
         $valid = $this->validateField($post['ADDR'], "Адрес", false);
         if (!$valid['success']) {
             $this->showErrorMessage($valid['error']);
@@ -1830,7 +1804,7 @@ class RequestController extends Controller
             $this->showErrorMessage($valid['error']);
             $this->redirect($location);
         }
-        
+
         $valid = $this->validateField($post['gov_deadline'], "Срок заявки", false);
         if (!$valid['success']) {
             $this->showErrorMessage($valid['error']);
@@ -1842,29 +1816,29 @@ class RequestController extends Controller
             $this->showErrorMessage("Необходимо добавить хотя бы одну работу");
             $this->redirect($location);
         }
-        
+
         // Проверка заполненности обязательных полей в работах
         foreach ($post['gov_works']['name'] as $key => $name) {
             if (empty($name)) {
                 $this->showErrorMessage("Поле 'Наименование работы' обязательно для заполнения");
                 $this->redirect($location);
             }
-            
+
             if (empty($post['gov_works']['material'][$key])) {
                 $this->showErrorMessage("Поле 'Материал' обязательно для заполнения");
                 $this->redirect($location);
             }
-            
+
             if (empty($post['gov_works']['quantity'][$key])) {
                 $this->showErrorMessage("Поле 'Кол-во' обязательно для заполнения");
                 $this->redirect($location);
             }
-            
+
             if (empty($post['gov_works']['deadline'][$key])) {
                 $this->showErrorMessage("Поле 'Сроки' обязательно для заполнения");
                 $this->redirect($location);
             }
-            
+
             if (empty($post['gov_works']['assigned_id'][$key])) {
                 $this->showErrorMessage("Поле 'Ответственный' обязательно для заполнения");
                 $this->redirect($location);
@@ -1888,10 +1862,10 @@ class RequestController extends Controller
             'sale' => 'visually-hidden',
             'sale_materials' => 'visually-hidden'
         ];
-        
+
         if (isset($this->data['request']['REQ_TYPE'])) {
             $reqType = $this->data['request']['REQ_TYPE'];
-            
+
             if ($reqType === '9') {
                 $displayClass['gov'] = '';
                 $displayClass['sale'] = 'visually-hidden';
@@ -1899,7 +1873,7 @@ class RequestController extends Controller
             } elseif ($reqType === 'SALE') {
                 $displayClass['gov'] = 'visually-hidden';
                 $displayClass['sale'] = '';
-                
+
                 if (isset($this->data['request']['id'])) {
                     $displayClass['sale_materials'] = 'visually-hidden';
                 } else {
@@ -1907,7 +1881,7 @@ class RequestController extends Controller
                 }
             }
         }
-        
+
         return $displayClass;
     }
 }
