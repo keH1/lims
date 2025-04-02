@@ -54,6 +54,66 @@
         <input type="hidden" id="deal_id" name="deal_id" value="<?= $this->data['deal_id'] ?>">
         <input type="hidden" id="clear_confirm" name="clear_confirm" value="0">
 
+        <?php if ($this->data['tz']['TYPE_ID'] == '9'): ?>
+        <div class="panel panel-default">
+            <header class="panel-heading">
+                Работы
+                <span class="tools float-end">
+                    <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
+                    <a href="#" class="fa fa-chevron-up"></a>
+                 </span>
+            </header>
+            <div class="panel-body">
+                <table id="work_table" class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col" class="text-center">
+                            <input type="radio" class="form-check-input work_radio" name="work_radio" value="" checked>
+                        </th>
+                        <th scope="col">Гос работа (наименование)</th>
+                        <th scope="col">Объект</th>
+                        <th scope="col">Материал</th>
+                        <th scope="col">Кол-во материала</th>
+                        <th scope="col">Испытание в лаборатории (статус)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($this->data['work_list'] as $row): ?>
+                    <tr>
+                        <td class="text-center">
+                            <input type="radio" class="form-check-input work_radio" name="work_radio" id="work_radio_<?=$row['id']?>" value="<?=$row['id']?>">
+                        </td>
+                        <td>
+                            <label for="work_radio_<?=$row['id']?>"><?=$row['name']?></label>
+                        </td>
+                        <td>
+                            <?=$row['object']?>
+                        </td>
+                        <td>
+                            <?=$row['material_name']?>
+                        </td>
+                        <td>
+                            <?=$row['probe_count']?>
+                        </td>
+                        <td>
+                            <?=$row['work_status']?? 'Испытания не начаты'?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <tr id="work_table_last_row">
+                        <td class="text-center">
+                            <a href="#add-work-modal-form" class="popup-with-form btn btn-success btn-square add-work" title="Добавить работу">
+                                <i class="fa-solid fa-plus icon-fix"></i>
+                            </a>
+                        </td>
+                        <td colspan="5"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <?php endif; ?>
+
 
         <div class="panel panel-default">
             <header class="panel-heading">
@@ -71,11 +131,15 @@
                             <label class="form-label mb-1">Основание для проведения испытаний</label>
                             <div>
                                 <strong>
+                                <?php if ($this->data['tz']['TYPE_ID'] == '9'): ?>
                                     <?php if ( !empty($this->data['contract_number']) ): ?>
                                         <?= $this->data['contract_type'] ?> №<?= $this->data['contract_number'] ?> от <?= $this->data['contract_date'] ?>
                                     <?php else: ?>
                                         Договор еще не составлен
                                     <?php endif; ?>
+                                <?php else: ?>
+                                    Экспертное задание
+                                <?php endif; ?>
                                 </strong>
                             </div>
                         </div>
@@ -209,50 +273,52 @@
                  </span>
             </header>
             <div class="panel-body">
-                <div class="wrapper-add-info mt-2 flex-column">
-                    <div class="row">
-                        <div class="form-group col-sm-6">
+                <div class="wrapper-add-info mt-2 --flex-column">
+                    <div class="row row-cols-2">
+                        <div class="form-group col">
                             <label class="form-label mb-1" for="infoObject">Объект строительства</label>
                             <textarea class="form-control mw-100 clear_confirm_change" name="tz[OBJECT]"><?= $this->data['tz']['OBJECT'] ?></textarea>
                         </div>
 
-                        <div class="form-group col-sm-6">
-                            <label class="form-label mb-1" for="commentKp">Комментарий к КП</label>
-                            <textarea class="form-control mw-100 comment-kp clear_confirm_change" id="commentKp" name="tz[COMMENT_KP]" placeholder="Введите текст"><?= $this->data['tz']['COMMENT_KP'] ?></textarea>
-                        </div>
-                    </div>
+                        <?php if ($this->data['tz']['TYPE_ID'] != '9'): ?>
+                            <div class="form-group col">
+                                <label class="form-label mb-1" for="commentKp">Комментарий к КП</label>
+                                <textarea class="form-control mw-100 comment-kp clear_confirm_change" id="commentKp" name="tz[COMMENT_KP]" placeholder="Введите текст"><?= $this->data['tz']['COMMENT_KP'] ?></textarea>
+                            </div>
+                        <?php endif; ?>
 
-                    <div class="row mb-2">
-                        <div class="form-group col-sm-6">
+                        <div class="form-group col">
                             <label class="form-label mb-1" for="commentTz">Комментарий к ТЗ</label>
                             <textarea class="form-control mw-100 comment-requirement clear_confirm_change" id="commentTz" name="tz[COMMENT_TZ]" placeholder="Введите текст"><?= $this->data['tz']['COMMENT_TZ'] ?></textarea>
                         </div>
 
-                        <div class="form-group col-sm-6 row">
-                            <?php if ($this->data['requirement']['creation_stage'] !== 'new'): ?>
-                                <div class="col-sm-9">
-                                    <label class="form-label mb-1">Заявка учтена</label>
-                                    <select class="form-control select2 clear_confirm_change" name="tz[TAKEN_ID_DEAL]">
-                                        <option value="">Нет</option>
-                                        <?php foreach ($this->data['requests_to_company'] as $request): ?>
-                                            <option value="<?= $request['ID_Z'] ?>" <?= $this->data['tz']['TAKEN_ID_DEAL'] == $request['ID_Z'] ? 'selected' : '' ?>>
-                                                Заявка <?= $request['REQUEST_TITLE'] ?>, <?= $request['COMPANY_TITLE'] ?>, от <?= $request['DATE_CREATE'] ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            <?php endif; ?>
-                            <div class="col-sm-3">
-                                <label class="form-label mb-1">Серт. испытания</label>
-                                <div class="d-flex align-items-center taken-request-wrapper">
-                                    <div>
-                                        <label class="switch">
-                                            <input class="form-check-input clear_confirm_change" name="tz[TAKEN_SERT_ISP]" type="checkbox" value="1"
-                                                <?= $this->data['tz']['TAKEN_SERT_ISP'] == 1 ? 'checked' : '' ?>>
-                                            <span class="slider"></span>
-                                        </label>
+                        <div class="form-group col">
+                            <div class="row">
+                                <?php if ($this->data['requirement']['creation_stage'] !== 'new'): ?>
+                                    <div class="col-sm-9">
+                                        <label class="form-label mb-1">Заявка учтена</label>
+                                        <select class="form-control select2 clear_confirm_change" name="tz[TAKEN_ID_DEAL]">
+                                            <option value="">Нет</option>
+                                            <?php foreach ($this->data['requests_to_company'] as $request): ?>
+                                                <option value="<?= $request['ID_Z'] ?>" <?= $this->data['tz']['TAKEN_ID_DEAL'] == $request['ID_Z'] ? 'selected' : '' ?>>
+                                                    Заявка <?= $request['REQUEST_TITLE'] ?>, <?= $request['COMPANY_TITLE'] ?>, от <?= $request['DATE_CREATE'] ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
-                                    <input type="hidden" class="hidden-taken">
+                                <?php endif; ?>
+                                <div class="col-sm-3">
+                                    <label class="form-label mb-1">Серт. испытания</label>
+                                    <div class="d-flex align-items-center taken-request-wrapper">
+                                        <div>
+                                            <label class="switch">
+                                                <input class="form-check-input clear_confirm_change" name="tz[TAKEN_SERT_ISP]" type="checkbox" value="1"
+                                                    <?= $this->data['tz']['TAKEN_SERT_ISP'] == 1 ? 'checked' : '' ?>>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <input type="hidden" class="hidden-taken">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -277,11 +343,13 @@
 
                     <div class="col-auto">
                         <div class="js-sticky-widget2">
-                            <div class="col-auto mb-3">
-                                <a href="#add-material-modal-form" class="popup-with-form btn btn-success w125 btn-sm">
-                                    <i class="fa-solid fa-plus icon-fix"></i> Объект
-                                </a>
-                            </div>
+                            <?php if ($this->data['tz']['TYPE_ID'] != '9'): ?>
+                                <div class="col-auto mb-3">
+                                    <a href="#add-material-modal-form" class="popup-with-form btn btn-success w125 btn-sm">
+                                        <i class="fa-solid fa-plus icon-fix"></i> Объект
+                                    </a>
+                                </div>
+                            <?php endif; ?>
 
                             <div class="col-auto mb-3">
                                 <a href="#add-probe-modal-form" class="popup-with-form btn btn-success w125 btn-sm">
@@ -336,6 +404,7 @@
                     </div>
                 </div>
 
+                <?php if ($this->data['tz']['TYPE_ID'] != '9'): ?>
                 <div class="line-dashed"></div>
 
                 <div class="wrapper-discount bg-light-secondary p-2">
@@ -360,7 +429,7 @@
                         </div>
                     </div>
                 </div>
-
+                <?php endif; ?>
             </div>
         </div>
 
@@ -684,4 +753,48 @@
     <div class="line-dashed-small"></div>
 
     <button type="submit" class="btn btn-primary"><i class="fa-regular fa-paper-plane"></i> Передать</button>
+</form>
+
+<form id="add-work-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/requirement/addWork/" method="post">
+    <div class="title mb-3 h-2">
+        Добавить работу
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <div class="mb-3">
+        <label class="form-label">Гос работа (наименование) <span class="redStars">*</span></label>
+
+        <input type="text" class="form-control" name="form[name]" value="" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Объект</label>
+
+        <input type="text" class="form-control" name="form[object]" value="">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Материал <span class="redStars">*</span></label>
+
+        <select class="form-control select2" name="form[material_id]" data-placeholder="Выбрать материал" required>
+            <option value="">Выбрать материал</option>
+            <?php foreach ($this->data['material_list'] as $material): ?>
+                <option value="<?=$material['ID']?>"><?=$material['NAME']?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Количество материала <span class="redStars">*</span></label>
+
+        <input type="number" class="form-control bg-white" name="form[probe_count]" min="1" value="1" required>
+    </div>
+
+    <input name="form[deal_id]" value="<?=$this->data['deal_id']?>" type="hidden">
+    <input name="tz_id" value="<?=$this->data['tz_id']?>" type="hidden">
+
+    <div class="line-dashed-small"></div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>

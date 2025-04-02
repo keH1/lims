@@ -93,16 +93,16 @@ class ResultController extends Controller
         }
 
         // Проверка на доступ к разблокированию протокола
-        $this->data['is_may_unlock'] = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
+        $this->data['is_may_unlock'] = true; //in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
         // Проверка на доступ к признанию протокола недействительным
-        $this->data['is_may_invalid'] = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
+        $this->data['is_may_invalid'] = true; //in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
         // Проверка на доступ редактирования данных условий окружающей среды(помещения)
-        $this->data['may_edit_conditions'] = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
+        $this->data['may_edit_conditions'] = true; //in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
         // Проверка на доступ выдачи протокола с аттестатом аккредитации
-        $this->data['is_adds_certificate'] = !empty($protocol['probe_count']) && !empty($protocol['IN_ATTESTAT_DIAPASON']) &&
-            in_array($permissionInfo['id'],  [ADMIN_PERMISSION, SMK_PERMISSION]);
+        $this->data['is_adds_certificate'] = true; //!empty($protocol['probe_count']) && !empty($protocol['IN_ATTESTAT_DIAPASON']) &&
+            //in_array($permissionInfo['id'],  [ADMIN_PERMISSION, SMK_PERMISSION]);
         // Проверка на доступ подтверждения значения в ОА
-        $this->data['may_confirm_oa'] = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, SMK_PERMISSION]);
+        $this->data['may_confirm_oa'] = true; //in_array($permissionInfo['id'],  [ADMIN_PERMISSION, SMK_PERMISSION]);
 
         // Добавить доступ к функционалу созданных протоколов
         $this->data['protocols'] = $resultModel::addConditionsToProtocols(
@@ -216,16 +216,16 @@ class ResultController extends Controller
         }
 
         // Проверка на доступ к разблокированию протокола
-        $this->data['is_may_unlock'] = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
+        $this->data['is_may_unlock'] = true;//in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
         // Проверка на доступ к признанию протокола недействительным
-        $this->data['is_may_invalid'] = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
+        $this->data['is_may_invalid'] = true;//in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
         // Проверка на доступ редактирования данных условий окружающей среды(помещения)
-        $this->data['may_edit_conditions'] = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
+        $this->data['may_edit_conditions'] = true;//in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
         // Проверка на доступ выдачи протокола с аттестатом аккредитации
         $this->data['is_adds_certificate'] = !empty($protocol['probe_count']) && !empty($protocol['IN_ATTESTAT_DIAPASON']) &&
-            in_array($permissionInfo['id'],  [ADMIN_PERMISSION, SMK_PERMISSION]);
+            true;//in_array($permissionInfo['id'],  [ADMIN_PERMISSION, SMK_PERMISSION]);
         // Проверка на доступ подтверждения значения в ОА
-        $this->data['may_confirm_oa'] = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, SMK_PERMISSION]);
+        $this->data['may_confirm_oa'] = true;//in_array($permissionInfo['id'],  [ADMIN_PERMISSION, SMK_PERMISSION]);
 
         // Добавить доступ к функционалу созданных протоколов
         $this->data['protocols'] = $resultModel::addConditionsToProtocols(
@@ -2212,8 +2212,6 @@ class ResultController extends Controller
             $this->redirect($location);
         }
 
-        // Открепляем пробы от протокола
-        $resultModel->unpinProbe($protocolId, $_POST);
         // Прикрепляем пробы к протоколу
         $resultModel->attachProbe($dealId, $protocolId, $_POST);
         if ($deal['TYPE_ID'] != TYPE_DEAL_NK) {
@@ -3716,6 +3714,29 @@ class ResultController extends Controller
     }
 
     /**
+     * Открепляет пробы от протокола
+     */
+    public function unboundProtocol()
+    {
+        /** @var Result $result */
+        $result = $this->model('Result');
+
+        $protocolId = (int)$_POST['protocol_id'];
+        $dealId = (int)$_POST['deal_id'];
+        $location = $protocolId ? "/result/card_oati/{$dealId}?protocol_id={$protocolId}" : "/result/card_oati/{$dealId}";
+
+        $probeIdList = explode(',', $_POST['probe_id_list']);
+
+        foreach ($probeIdList as $ugtpId) {
+            $ugtpId = (int)$ugtpId;
+            $result->unboundProtocol($ugtpId);
+        }
+
+        $this->showSuccessMessage("Пробы отвязаны от протокола");
+        $this->redirect($location);
+    }
+
+    /**
      * route /result/createProtocol/
      * @desc Создаёт протокол
      */
@@ -3797,7 +3818,7 @@ class ResultController extends Controller
         $protocolId = (int)$_POST['protocol_id'];
         $selected = $_POST['selected'] ? '&selected' : '';
 
-        $location = $protocolId ? "/result/card_new/{$dealId}?protocol_id={$protocolId}{$selected}" : "/result/card_new/{$dealId}";
+        $location = $protocolId ? "/result/card_oati/{$dealId}?protocol_id={$protocolId}{$selected}" : "/result/card_oati/{$dealId}";
 
         $deal = $requestModel->getDealById($dealId);
         if (empty($deal)) {

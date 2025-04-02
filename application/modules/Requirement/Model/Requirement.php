@@ -228,6 +228,10 @@ class Requirement extends Model
                 if ( isset($filter['search']['cipher']) ) {
                     $where .= "mtr.cipher LIKE '%{$filter['search']['cipher']}%' AND ";
                 }
+                // работа
+                if ( isset($filter['search']['work_id']) ) {
+                    $where .= "mtr.work_id = {$filter['search']['work_id']} AND ";
+                }
             }
 
             // работа с пагинацией
@@ -2471,5 +2475,80 @@ class Requirement extends Model
         }
 
         return $result;
+    }
+
+
+    /**
+     * получает работы и материалы в заявке
+     * @param int $dealId
+     * @return array
+     */
+    public function getWorksMaterialRequest(int $dealId)
+    {
+        $sql = $this->DB->Query(
+            "select wrk.*, umtr.material_id, count(umtr.id) as probe_count, m.NAME as material_name
+            from government_work as wrk 
+            inner join ulab_material_to_request as umtr on umtr.work_id = wrk.id
+            inner join MATERIALS as m on m.ID = umtr.material_id
+            where umtr.deal_id = {$dealId} and wrk.id is not null
+            group by wrk.id, umtr.material_id"
+        );
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+            $result[] = $row;
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * добавляет материал к заявке, добавляет работу
+     * @param $data
+     * @return array
+     */
+    public function addWork($data)
+    {
+        $materialModel = new Material();
+        $dealId = intval($data['deal_id']);
+
+        $sqlData = $this->prepearTableData('government_work', $data);
+
+        $id = $this->DB->Insert('government_work', $sqlData);
+
+        if ( !empty($id) ) {
+            $maxMaterial = $this->DB->Query("select max(material_number) as max_number from ulab_material_to_request where deal_id = {$dealId}")->Fetch();
+            $material = $materialModel->getById($data['material_id']);
+
+            if ( empty($maxMaterial['max_number']) ) {
+                $data['material_number'] = 0;
+            } else {
+                $data['material_number'] = $maxMaterial['max_number'] + 1;
+            }
+
+            $data['work_id'] = $id;
+
+            for ($i = 0; $i < $data['probe_count']; $i++) {
+                $data['probe_number'] = $i;
+
+                $sqlMaterialData = $this->prepearTableData('ulab_material_to_request', $data);
+
+                $this->DB->Insert('ulab_material_to_request', $sqlMaterialData);
+            }
+
+            $data['material_name'] = $material['NAME'];
+        } else {
+            return [
+                'success' => false,
+                'error' => 'Работа не создана'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'data' => $data,
+        ];
     }
 }

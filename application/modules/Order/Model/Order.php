@@ -150,8 +150,10 @@ class Order extends Model {
                 $row['bgStage'] = 'bg-red';
             }
 
-            if ( !empty($row['ACTUAL_VER']) ) {
+            if ( !empty($row['ACTUAL_VER']) && is_file(PROTOCOL_PATH . "archive_dog/{$row['d_id']}/{$row['ACTUAL_VER']}.pdf") ) {
                 $row['order_pdf'] = "{$row['d_id']}/{$row['ACTUAL_VER']}.pdf";
+            } else if (is_file(PROTOCOL_PATH . "archive_dog/{$row['d_id']}/{$row['ACTUAL_VER']}.docx")) {
+                $row['order_pdf'] = "{$row['d_id']}/{$row['ACTUAL_VER']}.docx";
             } else {
                 $row['order_pdf'] = '';
             }

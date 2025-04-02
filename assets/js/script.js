@@ -168,7 +168,7 @@ $(function ($) {
                 })
             },
             afterClose: function() {
-                $('#add-certificate-modal-form')[0].reset()
+                $('#add-certificate-modal-form')[0]?.reset()
             }
         }
     })

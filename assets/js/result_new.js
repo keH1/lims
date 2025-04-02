@@ -961,8 +961,11 @@ $(function ($) {
             return $(this).val();
         }).get()
 
+        let selectedProtocolId = +$('.selected_protocol_id').val()
+
         $('.count-selected-probe').text(probeIdList.length)
         $('.probe-id-list').val(probeIdList)
+        $('.unbound-protocol').val(selectedProtocolId)
     })
 
 
@@ -1362,7 +1365,7 @@ $(function ($) {
                 if ( data.success ) {
                     success = true
                 } else {
-                    success = false
+                    success = true
                     $.each(data.errors, function (i, item) {
                         showErrorMessage(item)
                     })

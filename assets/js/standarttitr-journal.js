@@ -70,7 +70,7 @@ $(function ($) {
         order: [],
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
+        buttons: dataTablesSettings.buttonPrint,
         bSortCellsTop: true,
         scrollX: true,
         fixedHeader: false,

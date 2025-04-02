@@ -285,6 +285,24 @@ class GostController extends Controller
         $data['is_text_fact'] = $_POST['form']['is_text_fact'] ?? 0;
         $data['is_range_text'] = $_POST['form']['is_range_text'] ?? 0;
 
+        $dynamicError = $methodsModel->validateDynamicRange($data);
+        if (!empty($dynamicError)) {
+            $this->showErrorMessage($dynamicError);
+            $this->redirect($location);
+        }
+
+        $simpleError = $methodsModel->validateSimpleRanges($data);
+        if (!empty($simpleError)) {
+            $this->showErrorMessage($simpleError);
+            $this->redirect($location);
+        }
+
+        $uncertaintyError = $methodsModel->validateUncertainty($_POST['uncertainty']??[]);
+        if (!empty($uncertaintyError)) {
+            $this->showErrorMessage($uncertaintyError);
+            $this->redirect($location);
+        }
+
         $methodsModel->updateLab($methodId, $data['lab']);
         $methodsModel->updateRoom($methodId, $data['room']);
         $methodsModel->updateAssigned($methodId, $data['assigned']);
@@ -720,7 +738,7 @@ class GostController extends Controller
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $result = $oborudModel->getOborudById($_POST['id']);
+        $result = $oborudModel->getOborudById((int)$_POST['id']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }

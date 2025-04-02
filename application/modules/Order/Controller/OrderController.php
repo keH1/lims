@@ -43,12 +43,8 @@ Class OrderController extends Controller
         $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
         $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
         $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-        $this->addJS("/assets/plugins/modal/modalWindow.js");
 
         $this->addJs('/assets/js/order-list.js');
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
 
         $this->view('list');
     }
@@ -213,6 +209,7 @@ Class OrderController extends Controller
         $this->data['order']['summ'] = $contract['SUMM'];
         $this->data['order']['finance'] = $contract['finance'];
         $this->data['order']['date'] = date('Y-m-d', strtotime($contract['DATE']));
+        $this->data['order']['is_pdf'] = is_file(PROTOCOL_PATH . "archive_dog/{$contract['ID']}/{$contract['ACTUAL_VER']}.pdf");
         $this->data['client']['phone'] = $requisite['RQ_PHONE'];
         $this->data['client']['email'] = $requisite['RQ_EMAIL'];
         $this->data['client']['contact'] = $requisite['RQ_NAME'];

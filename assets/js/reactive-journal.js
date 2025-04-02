@@ -73,40 +73,8 @@ $(function ($) {
         pageLength: 25,
         order: [],
         colReorder: true,
-        dom: 'fBrt<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        dom: 'frtB<"bottom"lip>',
+        buttons: dataTablesSettings.buttonPrint,
         bSortCellsTop: true,
         scrollX: true,
         fixedHeader: false,
@@ -154,8 +122,8 @@ $(function ($) {
         fixedContentPos: false
     })
     $('.select-reactive').select2({
-        placeholder: 'Выбирете реактив',
-        width: '100%',
+        theme: 'bootstrap-5',
+        placeholder: $(this).data('placeholder'),
     })
     $("body").on('change', '.all-reactive', function () {
         let unit = $(".all-reactive option:selected").data('unit')

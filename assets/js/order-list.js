@@ -48,15 +48,16 @@ $(function ($) {
             },
             {
                 data: 'COMPANY_TITLE',
-                width: '100%',
                 render: $.fn.dataTable.render.ellipsis(45, true)
             },
             {
                 data: 'linkName',
+                className: 'text-center text-wrap',
+                width: '150px',
                 orderable: false,
                 render: function (data, type, item) {
                     if ( item['order_pdf'] === '' ) {
-                        return 'Не сформирована';
+                        return 'Не сформирован';
                     } else {
                         return `<a class="results-link"
                                href="/protocol_generator/archive_dog/${item['order_pdf']}" >
@@ -67,6 +68,8 @@ $(function ($) {
             },
             {
                 data: 'linkName2',
+                className: 'text-center',
+                width: '150px',
                 orderable: false,
                 render: function (data, type, item) {
                     if ( item['PDF'] === '' ) {
@@ -86,39 +89,7 @@ $(function ($) {
         order: [[ 2, "desc" ]],
         colReorder: true,
         dom: 'frtB<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        buttons: dataTablesSettings.buttonPrint,
         bSortCellsTop: true,
         scrollX:       true,
         fixedHeader:   false,

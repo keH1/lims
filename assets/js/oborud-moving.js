@@ -121,8 +121,7 @@ $(function ($) {
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 2, 'desc' ]],
-        dom: 'frtB<"bottom"lip>',
-        buttons: dataTablesSettings.buttons,
+        dom: 'frt<"bottom"lip>'
     })
 
     journalDataTable.columns().every(function() {

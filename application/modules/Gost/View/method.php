@@ -151,7 +151,7 @@
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">Диапазон определения</label>
                     <div class="col-sm-8">
-                        <div class="input-group">
+                        <div class="input-group" id="definition-range-block">
                             <span class="input-group-text text-def-1"><?=$this->data['form']['definition_range_type'] == 2? 'до' : 'от'?></span>
                             <input type="number" class="form-control" step="0.001" name="form[definition_range_1]" value="<?=$this->data['form']['definition_range_1'] ?? ''?>">
                             <span class="input-group-text text-def-2"><?=$this->data['form']['definition_range_type'] == 2? 'от' : 'до'?></span>
@@ -436,7 +436,7 @@
                         <input
                                 type="number"
                                 step="0.001"
-                                class="form-control"
+                                class="form-control range-from"
                                 name="form[cond_temp_1]"
                                 value="<?=$this->data['form']['cond_temp_1'] ?? ''?>"
                             <?=$this->data['form']['is_not_cond_temp'] != 1? '' : 'readonly'?>
@@ -445,7 +445,7 @@
                         <input
                                 type="number"
                                 step="0.001"
-                                class="form-control"
+                                class="form-control range-to"
                                 name="form[cond_temp_2]"
                                 value="<?=$this->data['form']['cond_temp_2'] ?? ''?>"
                             <?=$this->data['form']['is_not_cond_temp'] != 1? '' : 'readonly'?>
@@ -478,7 +478,7 @@
                         <input
                                 type="number"
                                 step="0.001"
-                                class="form-control"
+                                class="form-control range-from"
                                 name="form[cond_wet_1]"
                                 value="<?=$this->data['form']['cond_wet_1'] ?? ''?>"
                             <?=$this->data['form']['is_not_cond_wet'] != 1? '' : 'readonly'?>
@@ -487,7 +487,7 @@
                         <input
                                 type="number"
                                 step="0.001"
-                                class="form-control"
+                                class="form-control range-to"
                                 name="form[cond_wet_2]"
                                 value="<?=$this->data['form']['cond_wet_2'] ?? ''?>"
                             <?=$this->data['form']['is_not_cond_wet'] != 1? '' : 'readonly'?>
@@ -520,7 +520,7 @@
                         <input
                                 type="number"
                                 step="0.001"
-                                class="form-control"
+                                class="form-control range-from"
                                 name="form[cond_pressure_1]"
                                 value="<?=$this->data['form']['cond_pressure_1'] ?? ''?>"
                             <?=$this->data['form']['is_not_cond_pressure'] != 1? '' : 'readonly'?>
@@ -529,7 +529,7 @@
                         <input
                                 type="number"
                                 step="0.001"
-                                class="form-control"
+                                class="form-control range-to"
                                 name="form[cond_pressure_2]"
                                 value="<?=$this->data['form']['cond_pressure_2'] ?? ''?>"
                             <?=$this->data['form']['is_not_cond_pressure'] != 1? '' : 'readonly'?>
@@ -645,12 +645,12 @@
                     Неопределенность
                 </label>
                 <div class="col-sm-8">
-                    <div class="input-group">
+                    <div class="input-group uncertainty-group">
                         <span class="input-group-text">от</span>
                         <input
                                 type="number"
                                 step="0.001"
-                                class="form-control"
+                                class="form-control uncertainty-from"
                                 name="uncertainty[0][uncertainty_1]"
                                 value="<?=$this->data['uncertainty'][0]['uncertainty_1'] ?? ''?>"
                         >
@@ -658,7 +658,7 @@
                         <input
                                 type="number"
                                 step="0.001"
-                                class="form-control"
+                                class="form-control uncertainty-to"
                                 name="uncertainty[0][uncertainty_2]"
                                 value="<?=$this->data['uncertainty'][0]['uncertainty_2'] ?? ''?>"
                         >
@@ -715,12 +715,12 @@
                     <label class="col-sm-2 col-form-label">
                     </label>
                     <div class="col-sm-8">
-                        <div class="input-group">
+                        <div class="input-group uncertainty-group">
                             <span class="input-group-text">от</span>
                             <input
                                     type="number"
                                     step="0.001"
-                                    class="form-control"
+                                    class="form-control uncertainty-from"
                                     name="uncertainty[<?=$k?>>][uncertainty_1]"
                                     value="<?=$item['uncertainty_1']?>"
                             >
@@ -728,7 +728,7 @@
                             <input
                                     type="number"
                                     step="0.001"
-                                    class="form-control"
+                                    class="form-control uncertainty-to"
                                     name="uncertainty[<?=$k?>][uncertainty_2]"
                                     value="<?=$item['uncertainty_2']?>"
                             >
@@ -809,7 +809,7 @@
                     </td>
                     <td class="link-place">
                         <?php if (isset($this->data['method_oborud_list'][0]['id_oborud'])): ?>
-                            <a class="text-dark fs-4"  title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$this->data['method_oborud_list'][0]['id_oborud']?>">
+                            <a class="text-dark fs-4"  title="Перейти в оборудование" target="_blank" href="/ulab/oborud/edit/<?=$this->data['method_oborud_list'][0]['id_oborud']?>">
                                 <i class="fa-regular fa-clipboard"></i>
                             </a>
                         <?php endif; ?>
@@ -818,7 +818,7 @@
                         <?=$this->data['method_oborud_list'][0]['ident'] ?? ''?>
                     </td>
                     <td>
-                        <input type="number" step="0.1" class="form-control" name="oborud[0][usage_time]" value="<?=$this->data['method_oborud_list'][0]['usage_time'] ?? ''?>">
+                        <input type="number" step="0.1" min="0" class="form-control usage-time" name="oborud[0][usage_time]" value="<?=$this->data['method_oborud_list'][0]['usage_time'] ?? ''?>">
                     </td>
                     <td>
                         <input
@@ -859,7 +859,7 @@
                             </select>
                         </td>
                         <td class="link-place">
-                            <a class="text-dark fs-4"  title="Перейти в оборудование" href="/ulab/oborud/edit/<?=$item['id_oborud']?>">
+                            <a class="text-dark fs-4"  title="Перейти в оборудование" target="_blank" href="/ulab/oborud/edit/<?=$item['id_oborud']?>">
                                 <i class="fa-regular fa-clipboard"></i>
                             </a>
                         </td>
@@ -867,7 +867,7 @@
                             <?=$item['ident']?>
                         </td>
                         <td>
-                            <input type="number" step="0.1" class="form-control" name="oborud[<?=$key?>][usage_time]" value="<?=$item['usage_time']?>">
+                            <input type="number" step="0.1" min="0" class="form-control usage-time" name="oborud[<?=$key?>][usage_time]" value="<?=$item['usage_time']?>">
                         </td>
                         <td>
                             <input
