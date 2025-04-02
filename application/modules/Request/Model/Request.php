@@ -359,16 +359,29 @@ class Request extends Model
 
     public function getCountDeal($type = '')
     {
-        $typeFilter = [];
-
-        if ( !empty($type) ) {
-            $typeFilter = [
-                'TYPE_ID' => "'{$type}'"
-            ];
-        }
-
         $curYear = date("Y");
-        $deals = CCrmDeal::GetList(['DATE_CREATE' => 'DESC'], ['>DATE_CREATE' => "01.01.{$curYear} 00:00:00", '!TYPE_ID' => "1"]); // TODO: разобраться
+        
+        if ($type == '9') {
+            $deals = CCrmDeal::GetList(
+                ['DATE_CREATE' => 'DESC'], 
+                [
+                    '>DATE_CREATE' => "01.01.{$curYear} 00:00:00",
+                    'TYPE_ID' => "'9'"
+                ]
+            );
+            return $deals->SelectedRowsCount();
+        }
+        
+        $filter = ['>DATE_CREATE' => "01.01.{$curYear} 00:00:00"];
+        
+        if (!empty($type)) {
+            $filter['TYPE_ID'] = "'{$type}'";
+        } else {
+            $filter['!TYPE_ID'] = "1";
+            $filter['!=TYPE_ID'] = "9";
+        }
+        
+        $deals = CCrmDeal::GetList(['DATE_CREATE' => 'DESC'], $filter);
 
         // TODO: разобраться
         $count = $deals->SelectedRowsCount();
@@ -388,22 +401,23 @@ class Request extends Model
      * @param $data
      * @return false|int
      */
-    public function create( $data )
+    public function create($data)
     {
-        $year = (int)date("Y")%10 ? substr(date("Y"), -2) : date("Y");
-        $countDeal = $this->getCountDeal() + 1;
+        $year = $this->getCurrentY();
+
+        $isGovWork = ($data['type'] == '9');
+        $countDeal = $this->getCountDeal($isGovWork ? '9' : '') + 1;
 
         $newDeal = new CCrmDeal;
 
         // TODO: убрать костыль
         while (1) {
             $typeRus = $this->DB->ForSql(trim(strip_tags($data['type_rus'])));
-
             $title = "{$typeRus} №{$countDeal}/{$year}";
 
             $tmp = $this->DB->Query("SELECT ID FROM `b_crm_deal` WHERE `TITLE` = '{$title}'")->Fetch();
 
-            if ( empty($tmp) ) {
+            if (empty($tmp)) {
                 break;
             } else {
                 $countDeal++;
