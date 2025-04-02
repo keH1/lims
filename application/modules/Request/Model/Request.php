@@ -29,7 +29,7 @@ class Request extends Model
             '5' => "АП",
             '7' => "ПРР",
             '8' => "Н",
-            '9' => "ПР",
+            '9' => "ГОС",
         ];
 
         return $type[$typeId]?? "ИЦ";
