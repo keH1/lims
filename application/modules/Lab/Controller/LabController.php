@@ -506,48 +506,6 @@ class LabController extends Controller
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
-    /**
-     * @desc Получает средние значение температуры, влажности, давления для помещения
-     */
-    public function getMeanConditionsAjax()
-    {
-        global $APPLICATION;
-
-        $APPLICATION->RestartBuffer();
-
-        /** @var Lab $labModel */
-        $labModel = $this->model('Lab');
-
-
-        $response = [
-            'success' => false,
-            'error' => [
-                'message' => "Не удалось получить средние значение условий, не указан или указан неверно ИД помещения",
-            ]
-        ];
-
-
-        if (!empty($_POST['room_id']) && (int)$_POST['room_id'] > 0) {
-            $result = $labModel->getMeanConditions((int)$_POST['room_id']);
-
-            if (!empty($result)) {
-
-                $response = [
-                    'success' => true,
-                    'data' => $result
-                ];
-            } else {
-                $response = [
-                    'success' => false,
-                    'error' => [
-                        'message' => "Не удалось получить средние значение условий",
-                    ]
-                ];
-            }
-        }
-
-        echo json_encode($response, JSON_UNESCAPED_UNICODE);
-    }
 
     /**
      * @desc Получает список лабораторий
