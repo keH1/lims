@@ -14,6 +14,29 @@ class Request extends Model
 
 
     /**
+     * получает текст типа заявки по ид типа.
+     * @param $typeId
+     * @return string
+     */
+    public function getTypeRequest($typeId)
+    {
+        $type = [
+            'SALE' => "ИЦ",
+            'COMPLEX' => "ОСК",
+            '1' => "ВЛК",
+            '2' => "МСИ",
+            '4' => "НК",
+            '5' => "АП",
+            '7' => "ПРР",
+            '8' => "Н",
+            '9' => "ГОС",
+        ];
+
+        return $type[$typeId]?? "ИЦ";
+    }
+
+
+    /**
      * получить ID сделки с которого начинается рефакторинг "Результатов испытания"
      * получить
      * @return int
@@ -805,6 +828,18 @@ class Request extends Model
                 if ( isset($filter['search']['DEADLINE_TABLE']) ) {
                     $where .= "b.DEADLINE_TABLE LIKE '%{$filter['search']['DEADLINE_TABLE']}%' AND ";
                 }
+                if ( isset($filter['search']['departure_date']) ) {
+                    $where .= "gw.departure_date LIKE '%{$filter['search']['departure_date']}%' AND ";
+                }
+                if ( isset($filter['search']['object_gov']) ) {
+                    $where .= "gw.object LIKE '%{$filter['search']['object_gov']}%' AND ";
+                }
+                // Тип заявки
+                if ( isset($filter['search']['TYPE_ID']) ) {
+                    $where .= "b.TYPE_ID = '9' AND ";
+                } else {
+                    $where .= "b.TYPE_ID <> '9' AND ";
+                }
                 // Счет
                 if ( isset($filter['search']['ACCOUNT']) ) {
                     $where .= "b.ACCOUNT LIKE '%{$filter['search']['ACCOUNT']}%' AND ";
@@ -961,6 +996,12 @@ class Request extends Model
                     case 'USER_HISTORY':
                         $order['by'] = 'b.USER_HISTORY';
                         break;
+                    case 'departure_date':
+                        $order['by'] = 'gw.departure_date';
+                        break;
+                    case 'object_gov':
+                        $order['by'] = 'gw.object';
+                        break;
                 }
             }
 
@@ -992,7 +1033,8 @@ class Request extends Model
                         b.MANUFACTURER_TITLE, b.USER_HISTORY, b.LABA_ID, b.ACTUAL_VER b_actual_ver, c.leader, c.confirm,
                         bcc.TITLE as company_title_bcc,
                         count(c.id) c_count, count(c.date_return) с_date_return, k.ID k_id , d.IS_ACTION, CONCAT(d.CONTRACT_TYPE, ' ', d.NUMBER, ' от ', DATE_FORMAT(d.DATE, '%d.%m.%Y')) as DOGOVOR_TABLE,
-                        tzdoc.pdf tz_pdf
+                        tzdoc.pdf tz_pdf,
+                        gw.departure_date, gw.object as object_gov
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ c ON b.ID=c.tz_id
@@ -1005,6 +1047,7 @@ class Request extends Model
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID 
+                    LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
                     GROUP BY b.ID ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
@@ -1059,8 +1102,6 @@ class Request extends Model
                 $row['ASSIGNED'] = implode(', ', $arrAss);
             }
 
-            $baTzIds[] = $row['b_id'];
-
             $protocolsData = [];
             $firstProtocol = [];
             $mangoClass = '';
@@ -1114,14 +1155,12 @@ class Request extends Model
 				$row['bgPrice'] = 'bg-light-red';
 			}
 
-			//Название компании
+            $row['type_text'] = $this->getTypeRequest($row['TYPE_ID']);
+
+			// Название компании
 			if (!empty($row['COMPANY_ID'])) {
 				$row['COMPANY_TITLE'] = $row['company_title_bcc'];
 			}
-
-
-            //ID Сделки с которого начинается рефакторинг Результатов испытания (TODO: Для новых лабораторий удалить или добавить если производится рефакторинг результатов испытаний, так же убрать из карточки card.php)
-            $row['is_result_refactoring'] = $row['ID_Z'] > self::RESULT_REFACTORING_START_ID;
 
             $row['linkName'] = $row['b_id'] && $row['ACT_NUM'] ? 'Открыть' : '';
 
@@ -1183,6 +1222,10 @@ class Request extends Model
 
             $row['dateCreateRu'] = !empty($row['DATE_CREATE_TIMESTAMP']) && $row['DATE_CREATE_TIMESTAMP'] != "0000-00-00 00:00:00"
                 ? date('d.m.Y',  strtotime($row['DATE_CREATE_TIMESTAMP']))
+                : '';
+
+            $row['departure_date'] = !empty($row['departure_date']) && $row['departure_date'] != "0000-00-00"
+                ? date('d.m.Y',  strtotime($row['departure_date']))
                 : '';
 
             $result[] = $row;
@@ -2016,5 +2059,49 @@ class Request extends Model
     public function getDealScheme($schemeId)
     {
         return $this->DB->Query("SELECT name FROM ulab_material_scheme WHERE id = '{$schemeId}'")->Fetch()['name'];
+    }
+
+    /**
+     * @desc Получает специфичные данные для разных типов заявок
+     * @param int $dealId
+     * @param string $table
+     * @return array
+     */
+    public function getApplicationTypeData(int $dealId, string $table)
+    {
+        $query = $this->DB->Query(
+            "SELECT t.*,
+                    umtr.material_id,
+                    l.NAME AS laboratory_name,
+                    m.NAME AS material_name,
+                    (SELECT COUNT(*) 
+                     FROM ulab_material_to_request 
+                     WHERE deal_id = {$dealId} 
+                        AND work_id = t.id 
+                        AND material_id = umtr.material_id) AS quantity
+             FROM {$table} AS t 
+
+             LEFT JOIN (
+                SELECT DISTINCT work_id, material_id 
+                FROM ulab_material_to_request 
+                WHERE deal_id = {$dealId}
+             ) AS umtr
+             ON t.id = umtr.work_id 
+
+             LEFT JOIN ba_laba AS l
+             ON t.lab_id = l.ID
+
+             LEFT JOIN MATERIALS AS m
+             ON umtr.material_id = m.ID
+
+             WHERE t.deal_id = {$dealId}"
+        );
+
+        $result = [];
+        while ($row = $query->Fetch()) {
+            $result[] = $row;
+        }
+
+        return $result;
     }
 }

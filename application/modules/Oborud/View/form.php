@@ -14,32 +14,44 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_card.php?OB_ID=<?=$this->data['id']?>">
+                                <a class="dropdown-item ps-2" href="/protocol_generator/oborud_card.php?OB_ID=<?=$this->data['id']?>">
                                     Скачать карточку оборудования
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_akt_vvoda.php?OB_ID=<?=$this->data['id']?>">
-                                    Скачать акт ввода
-                                </a>
+                                <div class="d-flex align-items-center ps-2 pe-3 py-1">
+                                    <span class="me-2">Скачать акт ввода</span>
+                                    <a class="btn btn-sm btn-link text-red p-0 me-2" href="/protocol_generator/oborud_akt_vvoda.php?OB_ID=<?=$this->data['id']?>&type=PDF">
+                                        PDF
+                                    </a>
+                                    <a class="btn btn-sm btn-link text-blue p-0" href="/protocol_generator/oborud_akt_vvoda.php?OB_ID=<?=$this->data['id']?>&type=DOCX">
+                                        DOCX
+                                    </a>
+                                </div>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_akt_sp.php?OB_ID=<?=$this->data['id']?>">
-                                    Скачать акт списания
-                                </a>
+                                <div class="d-flex align-items-center ps-2 pe-3 py-1">
+                                    <span class="me-2">Скачать акт списания</span>
+                                    <a class="btn btn-sm btn-link text-red p-0 me-2" href="/protocol_generator/oborud_akt_sp.php?OB_ID=<?=$this->data['id']?>&type=PDF">
+                                        PDF
+                                    </a>
+                                    <a class="btn btn-sm btn-link text-blue p-0" href="/protocol_generator/oborud_akt_sp.php?OB_ID=<?=$this->data['id']?>&type=DOCX">
+                                        DOCX
+                                    </a>
+                                </div>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_akt_post.php?OB_ID=<?=$this->data['id']?>">
+                                <a class="dropdown-item ps-2" href="/protocol_generator/oborud_akt_post.php?OB_ID=<?=$this->data['id']?>">
                                     Скачать акт о постановке на длительное хранение
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_akt_ver.php?OB_ID=<?=$this->data['id']?>">
+                                <a class="dropdown-item ps-2" href="/protocol_generator/oborud_akt_ver.php?OB_ID=<?=$this->data['id']?>">
                                     Скачать акт о верификации оборудования
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/protocol_generator/oborud_card_once.php?OB_ID=<?=$this->data['id']?>">
+                                <a class="dropdown-item ps-2" href="/protocol_generator/oborud_card_once.php?OB_ID=<?=$this->data['id']?>">
                                     Скачать этикетку оборудования
                                 </a>
                             </li>
@@ -804,6 +816,7 @@
                     <table id="precision_table" class="table">
                         <thead>
                         <tr>
+                            <th scope="col"></th>
                             <th scope="col">Наименование показателя/характеристики</th>
                             <th scope="col">Ед. изм.</th>
                             <th scope="col">Диапазон измерения</th>
@@ -813,7 +826,13 @@
                         </tr>
                         </thead>
                         <tbody class="precision_table--container">
-                        <tr class="precision_table--block" data-number-row="0">
+                        <?php $subRowCount = count($this->data['oborud']['precision_table'][0]['ot']?? []); ?>
+                        <tr class="precision_table--block" data-number-row="0" data-number-subrow="<?=$subRowCount?>">
+                            <td>
+                                <button type="button" class="btn btn-success btn-square add-precision" title="Добавить наименование показателя/характеристики">
+                                    <i class="fa-solid fa-plus icon-fix"></i>
+                                </button>
+                            </td>
                             <td>
                                 <input type="text" class="form-control" name="precision_table[0][name]" value="<?=$this->data['oborud']['precision_table'][0]['name']?? ''?>">
                             </td>
@@ -821,25 +840,19 @@
                                 <input type="text" class="form-control" name="precision_table[0][unit1]" value="<?=$this->data['oborud']['precision_table'][0]['unit1']?? ''?>">
                             </td>
                             <td class="precision_table--range-container">
-                                <div class="input-group precision_table--range-start-block">
+                                <div class="input-group precision_table--range-block" data-subrow_number="0">
                                     <span class="input-group-text">от</span>
                                     <input type="text" class="form-control" name="precision_table[0][ot][]" value="<?=$this->data['oborud']['precision_table'][0]['ot'][0]?? ''?>">
                                     <span class="input-group-text">до</span>
                                     <input type="text" class="form-control" name="precision_table[0][do][]" value="<?=$this->data['oborud']['precision_table'][0]['do'][0]?? ''?>">
-                                    <button type="button" class="btn btn-success btn-square add-range" title="Добавить">
-                                        <i class="fa-solid fa-plus icon-fix"></i>
-                                    </button>
                                 </div>
 
-                                <?php for ($j = 1; $j < count($this->data['oborud']['precision_table'][0]['ot'] ?? []); $j++): ?>
-                                    <div class="input-group precision_table--range-block pt-2">
+                                <?php for ($j = 1; $j < $subRowCount; $j++): ?>
+                                    <div class="input-group precision_table--range-block pt-2 subrow_0_<?=$j?>" data-subrow_number="<?=$j?>">
                                         <span class="input-group-text">от</span>
                                         <input type="text" class="form-control" name="precision_table[0][ot][]" value="<?=$this->data['oborud']['precision_table'][0]['ot'][$j]?? ''?>">
                                         <span class="input-group-text">до</span>
                                         <input type="text" class="form-control" name="precision_table[0][do][]" value="<?=$this->data['oborud']['precision_table'][0]['do'][$j]?? ''?>">
-                                        <button type="button" class="btn btn-danger btn-square delete-range" title="Удалить">
-                                            <i class="fa-solid fa-minus icon-fix"></i>
-                                        </button>
                                     </div>
                                 <?php endfor; ?>
                             </td>
@@ -847,21 +860,46 @@
                                 <div class="precision_table--pg-block">
                                     <input type="text" class="form-control" name="precision_table[0][pg][]" value="<?=$this->data['oborud']['precision_table'][0]['pg'][0]?? $this->data['oborud']['precision_table'][0]['pg']?? ''?>">
                                 </div>
+                                <?php for ($j = 1; $j < $subRowCount; $j++): ?>
+                                    <div class="precision_table--pg-block pt-2 subrow_0_<?=$j?>">
+                                        <input type="text" class="form-control" name="precision_table[0][pg][]" value="<?=$this->data['oborud']['precision_table'][0]['pg'][$j]?? ''?>">
+                                    </div>
+                                <?php endfor; ?>
                             </td>
                             <td>
                                 <div class="precision_table--unit2-block">
                                     <input type="text" class="form-control" name="precision_table[0][unit2][]" value="<?=$this->data['oborud']['precision_table'][0]['unit2'][0]?? $this->data['oborud']['precision_table'][0]['unit2']?? ''?>">
                                 </div>
+                                <?php for ($j = 1; $j < $subRowCount; $j++): ?>
+                                    <div class="precision_table--unit2-block pt-2 subrow_0_<?=$j?>">
+                                        <input type="text" class="form-control" name="precision_table[0][unit2][]" value="<?=$this->data['oborud']['precision_table'][0]['unit2'][$j]?? ''?>">
+                                    </div>
+                                <?php endfor; ?>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-success btn-square add-precision" title="Добавить">
-                                    <i class="fa-solid fa-plus icon-fix"></i>
-                                </button>
+                                <div class="precision_table--btn-block">
+                                    <button type="button" class="btn btn-success btn-square add-range" title="Добавить диапазон измерения">
+                                        <i class="fa-solid fa-plus icon-fix"></i>
+                                    </button>
+                                </div>
+                                <?php for ($j = 1; $j < $subRowCount; $j++): ?>
+                                    <div class="precision_table--btn-block pt-2 subrow_0_<?=$j?>">
+                                        <button type="button" class="btn btn-danger btn-square delete-range" data-subrow="0_<?=$j?>" title="Удалить диапазон измерения">
+                                            <i class="fa-solid fa-minus icon-fix"></i>
+                                        </button>
+                                    </div>
+                                <?php endfor; ?>
                             </td>
                         </tr>
 
                         <?php for ($i = 1; $i < count($this->data['oborud']['precision_table']?? []); $i++): ?>
-                            <tr class="precision_table--block" data-number-row="<?=$i?>">
+                            <?php $subRowCount = count($this->data['oborud']['precision_table'][$i]['ot']?? []); ?>
+                            <tr class="precision_table--block" data-number-row="<?=$i?>" data-number-subrow="<?=$subRowCount?>">
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-square delete-precision" title="Удалить">
+                                        <i class="fa-solid fa-minus icon-fix"></i>
+                                    </button>
+                                </td>
                                 <td>
                                     <input type="text" class="form-control" name="precision_table[<?=$i?>][name]" value="<?=$this->data['oborud']['precision_table'][$i]['name']?? ''?>">
                                 </td>
@@ -874,47 +912,51 @@
                                         <input type="text" class="form-control" name="precision_table[<?=$i?>][ot][]" value="<?=$this->data['oborud']['precision_table'][$i]['ot'][0]?? ''?>">
                                         <span class="input-group-text">до</span>
                                         <input type="text" class="form-control" name="precision_table[<?=$i?>][do][]" value="<?=$this->data['oborud']['precision_table'][$i]['do'][0]?? ''?>">
-                                        <button type="button" class="btn btn-success btn-square add-range" title="Добавить">
-                                            <i class="fa-solid fa-plus icon-fix"></i>
-                                        </button>
                                     </div>
 
-                                    <?php for ($j = 1; $j < count($this->data['oborud']['precision_table'][$i]['ot']?? []); $j++): ?>
-                                        <div class="input-group precision_table--range-block pt-2">
+
+                                    <?php for ($j = 1; $j < $subRowCount; $j++): ?>
+                                        <div class="input-group precision_table--range-block pt-2 subrow_<?=$i?>_<?=$j?>" data-subrow_number="<?=$j?>">
                                             <span class="input-group-text">от</span>
                                             <input type="text" class="form-control" name="precision_table[<?=$i?>][ot][]" value="<?=$this->data['oborud']['precision_table'][$i]['ot'][$j]?? ''?>">
                                             <span class="input-group-text">до</span>
                                             <input type="text" class="form-control" name="precision_table[<?=$i?>][do][]" value="<?=$this->data['oborud']['precision_table'][$i]['do'][$j]?? ''?>">
-                                            <button type="button" class="btn btn-danger btn-square delete-range" title="Удалить">
-                                                <i class="fa-solid fa-minus icon-fix"></i>
-                                            </button>
                                         </div>
                                     <?php endfor; ?>
                                 </td>
                                 <td>
-                                    <div class="input-group precision_table--pg-block">
+                                    <div class="precision_table--pg-block">
                                         <input type="text" class="form-control" name="precision_table[<?=$i?>][pg][]" value="<?=$this->data['oborud']['precision_table'][$i]['pg'][0]?? $this->data['oborud']['precision_table'][$i]['pg']?? ''?>">
                                     </div>
-                                    <?php for ($j = 1; $j < count($this->data['oborud']['precision_table'][$i]['pg']?? []); $j++): ?>
-                                        <div class="precision_table--pg-block pt-2">
+                                    <?php for ($j = 1; $j < $subRowCount; $j++): ?>
+                                        <div class="precision_table--pg-block pt-2 subrow_<?=$i?>_<?=$j?>">
                                             <input type="text" class="form-control" name="precision_table[<?=$i?>][pg][]" value="<?=$this->data['oborud']['precision_table'][$i]['pg'][$j]?? ''?>">
                                         </div>
                                     <?php endfor; ?>
                                 </td>
                                 <td>
-                                    <div class="input-group precision_table--unit2-block">
+                                    <div class="precision_table--unit2-block">
                                         <input type="text" class="form-control" name="precision_table[<?=$i?>][unit2][]" value="<?=$this->data['oborud']['precision_table'][$i]['unit2'][0]?? $this->data['oborud']['precision_table'][$i]['unit2']?? ''?>">
                                     </div>
-                                    <?php for ($j = 1; $j < count($this->data['oborud']['precision_table'][$i]['unit2']?? []); $j++): ?>
-                                        <div class="precision_table--unit2-block pt-2">
+                                    <?php for ($j = 1; $j < $subRowCount; $j++): ?>
+                                        <div class="precision_table--unit2-block pt-2 subrow_<?=$i?>_<?=$j?>">
                                             <input type="text" class="form-control" name="precision_table[<?=$i?>][unit2][]" value="<?=$this->data['oborud']['precision_table'][$i]['unit2'][$j]?? ''?>">
                                         </div>
                                     <?php endfor; ?>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-danger btn-square delete-precision" title="Удалить">
-                                        <i class="fa-solid fa-minus icon-fix"></i>
-                                    </button>
+                                    <div class="precision_table--btn-block">
+                                        <button type="button" class="btn btn-success btn-square add-range" title="Добавить диапазон измерения">
+                                            <i class="fa-solid fa-plus icon-fix"></i>
+                                        </button>
+                                    </div>
+                                    <?php for ($j = 1; $j < $subRowCount; $j++): ?>
+                                        <div class="precision_table--btn-block pt-2 subrow_<?=$i?>_<?=$j?>">
+                                            <button type="button" class="btn btn-danger btn-square delete-range" data-subrow="<?=$i?>_<?=$j?>" title="Удалить диапазон измерения">
+                                                <i class="fa-solid fa-minus icon-fix"></i>
+                                            </button>
+                                        </div>
+                                    <?php endfor; ?>
                                 </td>
                             </tr>
                         <?php endfor; ?>

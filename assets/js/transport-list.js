@@ -57,40 +57,7 @@ $(function ($) {
         pageLength: 25,
         order: [[ 0, "desc" ]],
         colReorder: true,
-        dom: 'frtB<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        dom: 'frt<"bottom"lip>',
         bSortCellsTop: true,
        // scrollX:       true,
         // fixedHeader:   true,
@@ -135,6 +102,12 @@ $(function ($) {
 
     // Добавить транспорт
     $("body").on('click', '[data-js-update]', function () {
+        let id = $(this).attr("data-js-update")
+        let isIdEmpty = (id === null || id === '')
+        let title = isIdEmpty ? 'Добавить транспорт' : 'Редактировать транспорт';
+
+        $('#add-entry-modal-form').find('.title').text(title)
+
         $.magnificPopup.open({
             items: {
                 src: '#add-entry-modal-form',
@@ -143,7 +116,6 @@ $(function ($) {
             fixedContentPos: false
         });
 
-        let id = $(this).attr("data-js-update")
         $("#transport_id").val(id)
 
         if (id) {

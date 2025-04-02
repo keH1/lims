@@ -118,7 +118,7 @@ class Lab extends Model
      */
     public function get($labId)
     {
-        if (empty($id)) { return []; }
+        if (empty($labId)) { return []; }
 
         return $this->DB->Query("select * from ba_laba where ID = {$labId}")->Fetch();
     }
@@ -462,121 +462,6 @@ class Lab extends Model
         $this->DB->Query("DELETE FROM ulab_conditions WHERE id = {$id}");
     }
 
-    /**
-     * получить средние значение условий
-     * @param int $id
-     * @return array
-     */
-    public function getMeanConditions(int $id): array
-    {
-        $response = [];
-
-        if (empty($id) || $id < 0) {
-            return $response;
-        }
-
-        $resultTemp = $this->DB->Query(
-            "select FLOOR(RAND() * (avg_max_temp-avg_min_temp) + avg_min_temp) as random_temp 
-                FROM (
-                    select MAX(m.min_temp) avg_min_temp, MIN(m.max_temp) avg_max_temp 
-                        FROM (
-                            select MAX(um.cond_temp_1) min_temp, MIN(um.cond_temp_2) max_temp  
-                                FROM ulab_methods um 
-                                    inner join ulab_methods_room umr on umr.method_id = um.id 
-                                    where umr.room_id = {$id} AND is_not_cond_temp <> 1
-                                    union all 
-                            select MAX(bo.TOO_EX + 0) min_temp, MIN(bo.TOO_EX2 + 0) max_temp  
-                                FROM ba_oborud bo where bo.roomnumber = {$id} AND TEMPERATURE <> 1
-                        ) AS m
-                ) r"
-        )->Fetch();
-
-        /*$resultTemp = $this->DB->Query(
-            "select FLOOR(RAND() * (avg_max_temp-avg_min_temp) + avg_min_temp) as random_temp
-                FROM (
-                    select (((MAX(m.max_temp) + MIN(m.min_temp))/2)+5) avg_max_temp, (((MAX(m.max_temp) + MIN(m.min_temp))/2)-5) avg_min_temp
-                        FROM (
-                            select MAX(um.cond_temp_2) max_temp, MIN(um.cond_temp_1) min_temp
-                                FROM ulab_methods um
-                                    inner join ulab_methods_room umr on umr.method_id = um.id
-                                    where umr.room_id = {$id} AND is_not_cond_temp <> 1
-                                    union all
-                            select MAX(bo.TOO_EX2) max_temp, MIN(bo.TOO_EX) min_temp
-                                FROM ba_oborud bo where bo.roomnumber = {$id} AND TEMPERATURE <> 1
-                        ) AS m
-                ) r"
-            )->Fetch();*/
-
-        $resultWet = $this->DB->Query(
-            "select FLOOR(RAND() * (avg_max_wet-avg_min_wet) + avg_min_wet) as random_wet
-                FROM (
-                    select MAX(m.min_wet) avg_min_wet, MIN(m.max_wet) avg_max_wet
-                        FROM (
-                            select MAX(um.cond_wet_1) min_wet, MIN(um.cond_wet_2) max_wet
-                                FROM ulab_methods um
-                                    inner join ulab_methods_room umr on umr.method_id = um.id
-                                    where umr.room_id = {$id} AND is_not_cond_wet <> 1
-                                    union all
-                            select MAX(bo.OVV_EX + 0) min_wet, MIN(bo.OVV_EX2 + 0) max_wet
-                                FROM ba_oborud bo where bo.roomnumber = {$id} AND TEMPERATURE <> 1
-                        ) AS m
-                ) r"
-        )->Fetch();
-        /*$resultWet = $this->DB->Query(
-            "select FLOOR(RAND() * (avg_max_wet-avg_min_wet) + avg_min_wet) as random_wet
-                FROM (
-                    select (((MAX(m.max_wet) + MIN(m.min_wet))/2)+5) avg_max_wet, (((MAX(m.max_wet) + MIN(m.min_wet))/2)-5) avg_min_wet
-                        FROM (
-                            select MAX(um.cond_wet_2) max_wet, MIN(um.cond_wet_1) min_wet
-                                FROM ulab_methods um
-                                    inner join ulab_methods_room umr on umr.method_id = um.id
-                                    where umr.room_id = {$id} AND is_not_cond_wet <> 1
-                                    union all
-                            select MAX(bo.OVV_EX2) max_wet, MIN(bo.OVV_EX) min_wet
-                                FROM ba_oborud bo where bo.roomnumber = {$id} AND HUMIDITY <> 1
-                        ) AS m
-                ) r"
-        )->Fetch();*/
-
-        $resultPressure = $this->DB->Query(
-            "select FLOOR(RAND() * (avg_max_pressure-avg_min_pressure) + avg_min_pressure) as random_pressure
-                FROM (
-                    select MAX(m.min_pressure) avg_min_pressure, MIN(m.max_pressure) avg_max_pressure
-                        FROM (
-                            select MAX(um.cond_pressure_1) min_pressure, MIN(um.cond_pressure_2) max_pressure
-                                FROM ulab_methods um
-                                    inner join ulab_methods_room umr on umr.method_id = um.id
-                                    where umr.room_id = {$id} AND is_not_cond_pressure <> 1
-                                    union all
-                            select MAX(bo.AD_EX + 0) min_pressure, MIN(bo.AD_EX2 + 0) max_pressure
-                                FROM ba_oborud bo where bo.roomnumber = {$id} AND TEMPERATURE <> 1
-                        ) AS m
-                ) r"
-        )->Fetch();
-        /*$resultPressure = $this->DB->Query(
-            "select FLOOR(RAND() * (avg_max_pressure-avg_min_pressure) + avg_min_pressure) as random_pressure
-                FROM (
-                    select (((MAX(m.max_pressure) + MIN(m.min_pressure))/2)+5) avg_max_pressure, (((MAX(m.max_pressure) + MIN(m.min_pressure))/2)-5) avg_min_pressure
-                        FROM (
-                            select MAX(um.cond_pressure_2) max_pressure, MIN(um.cond_pressure_1) min_pressure
-                                FROM ulab_methods um
-                                    inner join ulab_methods_room umr on umr.method_id = um.id
-                                    where umr.room_id = {$id} AND is_not_cond_pressure <> 1
-                                    union all
-                            select MAX(bo.AD_EX2) max_pressure, MIN(bo.AD_EX) min_pressure
-                                FROM ba_oborud bo where bo.roomnumber = {$id} AND PRESSURE <> 1
-                        ) AS m
-                ) r"
-        )->Fetch();*/
-
-        if (!empty($resultTemp) || !empty($resultWet) || !empty($resultPressure)) {
-            $response['random_temp'] = $resultTemp['random_temp'] ?? null;
-            $response['random_wet'] = $resultWet['random_wet'] ?? null;
-            $response['random_pressure'] = $resultPressure['random_pressure'] ?? null;
-        }
-
-        return $response;
-    }
 
 	public function getLabList()
 	{

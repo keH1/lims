@@ -1,15 +1,26 @@
-<div style="display: none"><pre><?=print_r($this->data['confirm_not_account'])?></pre></div>
+<div class="mb-4">
+    <label class="form-label"><strong>Отображение заявок</strong></label>
+
+    <div class="col-12"></div>
+
+    <input type="radio" class="btn-check" name="type_journal" id="type_journal_gov" value="gov" autocomplete="off" checked>
+    <label class="btn btn-outline-primary w150" for="type_journal_gov">Гос</label>
+
+    <input type="radio" class="btn-check" name="type_journal" id="type_journal_comm" value="comm" autocomplete="off">
+    <label class="btn btn-outline-primary w150" for="type_journal_comm">Коммерческие</label>
+</div>
+
 <div class="filters mb-4">
     <div class="row">
-        <div class="col">
+        <div class="col view-comm" style="display: none">
             <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="<?= $this->data['date_start'] ?? '' ?>" placeholder="Введите дату начала:">
         </div>
 
-        <div class="col">
+        <div class="col view-comm" style="display: none">
             <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="<?= date('Y-m-d') ?>" placeholder="Введите дату окончания:">
         </div>
 
-        <div class="col">
+        <div class="col view-comm" style="display: none">
             <select id="selectStage" class="form-control filter filter-stage">
                 <option value='0' selected>Все стадии</option>
                 <option value="1">Пробы не поступили</option>
@@ -47,78 +58,139 @@
     </div>
 </div>
 
-<table id="journal_requests" class="table table-striped journal">
+<table id="journal_gov" class="table table-striped journal view-gov">
+    <thead>
+    <tr class="table-light">
+        <th></th>
+        <th scope="col" class="text-nowrap">Заявка</th>
+        <th scope="col" class="text-nowrap">Дата</th>
+        <th scope="col" class="text-nowrap">Тип заявки</th>
+        <th scope="col">Объект испытаний</th>
+        <th scope="col" class="text-nowrap">Ответственный</th>
+        <th scope="col" class="text-nowrap">ТЗ</th>
+        <th scope="col" class="text-nowrap">Акт ПП</th>
+        <th scope="col" class="text-nowrap">Организация</th>
+        <th scope="col">Плановая дата выезда</th>
+        <th scope="col" class="text-nowrap">Протокол</th>
+        <th scope="col" class="text-nowrap">Рез-ты испытаний</th>
+    </tr>
+    <tr class="header-search">
+        <th></th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control" disabled>
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <select class="form-control search">
+                <option value=""></option>
+                <option value="n">Не подписано</option>
+                <option value="y">Подписано</option>
+            </select>
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search" disabled>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<table id="journal_requests" class="table table-striped journal view-comm" style="display: none">
 <thead>
-<tr class="table-light">
-    <th scope="col"></th>
-    <th scope="col" class="text-nowrap">Заявка</th>
-    <th scope="col" class="text-nowrap">Дата</th>
-    <th scope="col" class="text-nowrap">Клиент</th>
-    <th scope="col" class="text-nowrap">Объект испытаний</th>
-    <th scope="col" class="text-nowrap">Ответственный</th>
-    <th scope="col" class="text-nowrap">ТЗ</th>
-    <th scope="col" class="text-nowrap">Договор</th>
-    <th scope="col" class="text-nowrap">Акт ПП</th>
-    <th scope="col" class="text-nowrap">Счет</th>
-    <th scope="col" class="text-nowrap">Стоимость</th>
-    <th scope="col" class="text-nowrap">Дата опл</th>
-    <th scope="col" class="text-nowrap">Рез-ты исп</th>
-    <th scope="col" class="text-nowrap">Протокол</th>
-    <th scope="col" class="text-nowrap">Фото исп</th>
-    <th scope="col" class="text-nowrap">Cрок до</th>
-</tr>
-<tr class="header-search">
-    <th scope="col"></th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <select class="form-control search">
-            <option value=""></option>
-            <option value="n">Не подписано</option>
-            <option value="y">Подписано</option>
-        </select>
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search" disabled>
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-    <th scope="col">
-        <input type="text" class="form-control search">
-    </th>
-</tr>
+    <tr class="table-light">
+        <th scope="col"></th>
+        <th scope="col" class="text-nowrap">Заявка</th>
+        <th scope="col" class="text-nowrap">Дата</th>
+        <th scope="col" class="text-nowrap">Клиент</th>
+        <th scope="col" class="text-nowrap">Объект испытаний</th>
+        <th scope="col" class="text-nowrap">Ответственный</th>
+        <th scope="col" class="text-nowrap">ТЗ</th>
+        <th scope="col" class="text-nowrap">Договор</th>
+        <th scope="col" class="text-nowrap">Акт ПП</th>
+        <th scope="col" class="text-nowrap">Счет</th>
+        <th scope="col" class="text-nowrap">Стоимость</th>
+        <th scope="col" class="text-nowrap">Дата опл</th>
+        <th scope="col" class="text-nowrap">Рез-ты исп</th>
+        <th scope="col" class="text-nowrap">Протокол</th>
+        <th scope="col" class="text-nowrap">Фото исп</th>
+        <th scope="col" class="text-nowrap">Cрок до</th>
+    </tr>
+    <tr class="header-search">
+        <th scope="col"></th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <select class="form-control search">
+                <option value=""></option>
+                <option value="n">Не подписано</option>
+                <option value="y">Подписано</option>
+            </select>
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search" disabled>
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+    </tr>
 </thead>
 <tbody>
 </tbody>

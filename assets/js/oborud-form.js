@@ -137,20 +137,22 @@ $(function ($) {
         $('.precision_table--container').append(
             `<tr class="precision_table--block" data-number-row="${countRow}">
                 <td>
+                    <button type="button" class="btn btn-danger btn-square delete-precision" title="Удалить наименование показателя/характеристики">
+                        <i class="fa-solid fa-minus icon-fix"></i>
+                    </button>
+                </td>
+                <td>
                     <input type="text" class="form-control" name="precision_table[${countRow}][name]">
                 </td>
                 <td>
                     <input type="text" class="form-control" name="precision_table[${countRow}][unit1]">
                 </td>
                 <td class="precision_table--range-container">
-                    <div class="input-group precision_table--range-start-block">
+                    <div class="input-group precision_table--range-block" data-subrow_number="0">
                         <span class="input-group-text">от</span>
                         <input type="text" class="form-control" name="precision_table[${countRow}][ot][]">
                         <span class="input-group-text">до</span>
                         <input type="text" class="form-control" name="precision_table[${countRow}][do][]">
-                        <button type="button" class="btn btn-success btn-square add-range" title="Добавить">
-                            <i class="fa-solid fa-plus icon-fix"></i>
-                        </button>
                     </div>
                 </td>
                 <td>
@@ -164,43 +166,57 @@ $(function ($) {
                     </div>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-square delete-precision" title="Удалить">
-                        <i class="fa-solid fa-minus icon-fix"></i>
-                    </button>
+                    <div class="precision_table--btn-block">
+                        <button type="button" class="btn btn-success btn-square add-range" title="Добавить диапазон измерения">
+                            <i class="fa-solid fa-plus icon-fix"></i>
+                        </button>
+                    </div>
                 </td>
             </tr> `
         )
     })
 
     $body.on('click', '.delete-range', function () {
-        $(this).parents('.precision_table--range-block').remove()
+        let subRowStr = $(this).data('subrow')
+        $(`.subrow_${subRowStr}`).remove()
     })
 
     $body.on('click', '.add-range', function () {
         let $parent = $(this).parents('.precision_table--block')
         let i = $parent.data('number-row')
 
+        let num = $parent.find('.precision_table--range-block').map(function() {
+            return $(this).data('subrow_number');
+        }).get();
+
+        let maxCount = Math.max.apply(Math, num) + 1
+
         $parent.find('.precision_table--range-container').append(
-            `<div class="input-group precision_table--range-block pt-2 added_row_${i}">
+            `<div class="input-group precision_table--range-block pt-2 added_row_${i} subrow_${i}_${maxCount}" data-subrow_number="${maxCount}">
                 <span class="input-group-text">от</span>
                 <input type="text" class="form-control" name="precision_table[${i}][ot][]">
                 <span class="input-group-text">до</span>
                 <input type="text" class="form-control" name="precision_table[${i}][do][]">
-                <button type="button" class="btn btn-danger btn-square delete-range" data-number="${i}" title="Удалить">
-                    <i class="fa-solid fa-minus icon-fix"></i>
-                </button>
             </div>`
         )
 
         $parent.find('.precision_table--pg-block:last-child').after(
-            `<div class="input-group precision_table--pg-block pt-2 added_row_${i}">
+            `<div class="precision_table--pg-block pt-2 added_row_${i} subrow_${i}_${maxCount}">
                 <input type="text" class="form-control" name="precision_table[${i}][pg][]" value="">
             </div>`
         )
 
         $parent.find('.precision_table--unit2-block:last-child').after(
-            `<div class="input-group precision_table--unit2-block pt-2 added_row_${i}">
+            `<div class="precision_table--unit2-block pt-2 added_row_${i} subrow_${i}_${maxCount}">
                 <input type="text" class="form-control" name="precision_table[${i}][unit2][]" value="">
+            </div>`
+        )
+
+        $parent.find('.precision_table--btn-block:last-child').after(
+            `<div class="precision_table--btn-block pt-2 added_row_${i} subrow_${i}_${maxCount}">
+                <button type="button" class="btn btn-danger btn-square delete-range" data-number="${i}" data-subrow="${i}_${maxCount}" title="Удалить диапазон измерения">
+                    <i class="fa-solid fa-minus icon-fix"></i>
+                </button>
             </div>`
         )
     })

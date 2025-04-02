@@ -22,6 +22,15 @@ class Gost extends Model
             if ( $column == 'id' ) {
                 continue;
             }
+            if ($column === 'year') {
+                if (isset($data[$column]) && is_numeric($data[$column])) {
+                    $sqlData[$column] = intval($data[$column]);
+                } else {
+                    $sqlData[$column] = "NULL";
+                }
+                continue;
+            }
+
             if ( isset($data[$column]) ) {
                 $sqlData[$column] = $this->quoteStr($this->DB->ForSql(trim($data[$column])));
             }

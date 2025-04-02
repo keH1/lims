@@ -64,51 +64,24 @@ $(function ($) {
         pageLength: 25,
         order: [],
         colReorder: true,
-        dom: 'fBrt<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        dom: 'frtB<"bottom"lip>',
+        buttons: dataTablesSettings.buttonPrint,
         bSortCellsTop: false,
         scrollX: true,
         fixedHeader: false,
     })
 
-    solutionJournal.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-            solutionJournal
-                .column($(this).parent().index())
-                .search(this.value)
-                .draw()
+    solutionJournal.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                solutionJournal
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 
@@ -342,8 +315,8 @@ $(function ($) {
     })
 
     $('.select-recipe').select2({
-        placeholder: 'Выберите рецепт',
-        width: '100%'
+        theme: 'bootstrap-5',
+        placeholder: $(this).data('placeholder'),
     })
 
 
