@@ -837,6 +837,8 @@ class Request extends Model
                 // Тип заявки
                 if ( isset($filter['search']['TYPE_ID']) ) {
                     $where .= "b.TYPE_ID = '9' AND ";
+                } else {
+                    $where .= "b.TYPE_ID <> '9' AND ";
                 }
                 // Счет
                 if ( isset($filter['search']['ACCOUNT']) ) {
