@@ -31,9 +31,9 @@ class Water extends Model
     {
         if ($typeName == null) {
             $dataAdd = $data;
-        } elseif ($typeName == 'addMeasurement') {
-            $dataAdd['electric_control'] = $data['electric_control'];
-            $dataAdd['electric_control']['id_water_norm'] = 1;
+        } elseif ($typeName == 'addAnalysis') {
+            $dataAdd['water'] = $data['water'];
+            $dataAdd['water']['id_water_norm'] = 1;
         } else {
             throw new InvalidArgumentException("Неизвестный аргумент $typeName в функции addToSQL");
         }
