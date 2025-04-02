@@ -81,7 +81,7 @@
 
 
 <form id="add-entry-modal-form"
-      class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative"
+      class="bg-light mfp-hide col-6 m-auto p-3 position-relative"
       method="post"
     action="<?=URI?>/solution/addSolutionAndConsume/">
     <div class="title mb-3 h-2">
@@ -109,6 +109,7 @@
             <label class="form-label">Выберите рецепт </label>
             <select name="toSQL[id_recipe_model]"
                     class="form-control select-recipe h-auto"
+                    data-placeholder="Выберите рецепт"
                     required>
                 <option value="" selected disabled></option>
                 <?php
