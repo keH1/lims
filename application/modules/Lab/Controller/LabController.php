@@ -558,4 +558,18 @@ class LabController extends Controller
 
 		return $results ?? [];
 	}
+
+    public function getLabListAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var Lab $labModel */
+        $labModel = $this->model('Lab');
+
+        $labs = $labModel->getLabList();
+       
+        echo json_encode($labs, JSON_UNESCAPED_UNICODE);
+        exit();
+    }
 }

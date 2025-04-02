@@ -54,6 +54,8 @@ class RequestController extends Controller
         $material = $this->model('Material');
         /** @var Company $company */
         $company = $this->model('Company');
+        /** @var Lab $lab */
+        $lab = $this->model('Lab');
 
         $this->data['clients'] = $user->getAssignedUserList();
 
@@ -63,10 +65,15 @@ class RequestController extends Controller
 
         $this->data['companies'] = $company->getList();
 
+        $this->data['laboratories'] = $lab->getLabList();
+
+
         $this->data['contracts'] = [];
 
         $this->addCSS("/assets/plugins/popup/main.popup.bundle.css");
         $this->addJs('/assets/plugins/popup/main.popup.bundle.js');
+
+        $this->addJs('/assets/js/request_new.js');
 
         $this->view('form');
     }
@@ -91,6 +98,8 @@ class RequestController extends Controller
         $material = $this->model('Material');
         /** @var Company $company */
         $company = $this->model('Company');
+        /** @var Lab $lab */
+        $lab = $this->model('Lab');
 
         $this->data['test'] = $_SESSION['request_post'];
 
@@ -159,24 +168,24 @@ class RequestController extends Controller
             $this->data['request']['ACTS_BASIS']        = htmlentities($clientCompany['address'][1]['ADDRESS_2']);
 
             $this->data['request']['assign']            = $user->getAssignedByDealId($dealId);
-            $this->data['request']['material']          = $material->getMaterialsToRequest($dealId);
+            // $this->data['request']['material']          = $material->getMaterialsToRequest($dealId);
             $this->data['request']['act_information']   = $requestData['act_information'];
+            $this->data['request']['object']            = $requestData['OBJECT'];
+            $this->data['request']['deadline']          = $requestData['DEADLINE'];
+
+            $this->data['request']['application_type']  = $request->getApplicationTypeData($dealId, 'government_work');
             //// конец блока заполения формы
         }
 
-        //// блок заполненя select и datalist
-
         $this->data['contracts'] = $request->getContractsByCompanyId($deal['COMPANY_ID']);
-
         $this->data['clients'] = $user->getAssignedUserList();
-
         $this->data['clients_main'] = $user->getAssignedUserList(true);
-
         $this->data['materials'] = $material->getList();
-
         $this->data['companies'] = $company->getList();
+        $this->data['laboratories'] = $lab->getLabList();
+        $this->data['display'] = $this->getDisplayClass();
 
-        //// конец блока заполнения select и datalist
+        $this->addJs('/assets/js/request_new.js');
 
         $this->view('form');
     }
@@ -201,215 +210,100 @@ class RequestController extends Controller
         $location   = empty($_POST['id'])? '/request/new/' : "/request/edit/{$_POST['id']}";
         $successMsg = empty($_POST['id'])? 'Заявка успешно создана' : "Заявка успешно изменена";
 
+        $companyId = null;
+
         // сохраним пост в сессию, что бы при ошибке не заполнять поля заново
         $_SESSION['request_post'] = $_POST;
 
-        foreach ($_POST['ASSIGNED'] as $k => $ass) {
-            $_SESSION['request_post']['assign'][$k]['user_name'] = $ass;
-        }
-        foreach ($_POST['id_assign'] as $k => $ass) {
-            $_SESSION['request_post']['assign'][$k]['user_id'] = $ass;
-        }
+        $this->validationForAll($_POST, $location);
 
-        $valid = $this->validateAssigned($_POST['ASSIGNED']);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
+        if ($_POST['REQ_TYPE'] === 'SALE') {
+            $this->validationSale($_POST, $location);
 
-        //// блок проверок
+            // Только для типа заявки SALE
+            $resetId = 1;
+            if ( empty($_POST['company_id']) ) {
+                $companyId = $company->add($_POST['company']);
 
-        // Клиент *
-        $valid = $this->validateField($_POST['company'], "Клиент");
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
+                if ( $companyId === false ) {
+                    $this->showErrorMessage("Не удалось создать нового Клиента");
+                    $this->redirect($location);
+                }
+            } else {
+                $companyId = (int)$_POST['company_id'];
+            }
 
-        // Полное наименование компании
-        $valid = $this->validateField($_POST['CompanyFullName'], "Полное наименование компании", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
+            $dataBank = [
+                'ENTITY_ID'                 => $companyId,
+                'ENTITY_TYPE_ID'            => CCrmOwnerType::Company,
+                'PRESET_ID'                 => $resetId,
+                'NAME'                      => $_POST['company'],
+                'SORT'                      => 500,
+                'ACTIVE'                    => 'Y',
+                'RQ_INN'                    => $_POST['INN'],
+                'RQ_ACCOUNTANT'             => $_POST['ADDR'],
+                'RQ_OGRN'                   => $_POST['OGRN'],
+                'RQ_OGRNIP'                 => $_POST['OGRNIP'],
+                'RQ_EMAIL'                  => $_POST['POST_MAIL'],
+                'RQ_PHONE'                  => $_POST['PHONE'],
+                'RQ_NAME'                   => $_POST['CONTACT'],
+                'RQ_KPP'                    => $_POST['KPP'],
+                'RQ_COMPANY_REG_DATE'       => $_POST['Position2'],
+                'RQ_COMPANY_FULL_NAME'      => $_POST['CompanyFullName'],
+                'RQ_DIRECTOR'               => $_POST['DirectorFIO'],
+                'RQ_ACC_NUM'                => $_POST['RaschSchet'],
+                'RQ_COR_ACC_NUM'            => $_POST['KSchet'],
+                'RQ_BIK'                    => $_POST['BIK'],
+                'RQ_BANK_NAME'              => $_POST['BankName'],
+                'RQ_FIRST_NAME'             => $_POST['EMAIL'],
+                'RQ_COMPANY_NAME'           => $_POST['mailingAddress'],
+                'RQ_ADDR'                   => [
+                                                1 => [
+                                                    'ADDRESS_1' => $_POST["ACTUAL_ADDRESS"],
+                                                    'ADDRESS_2' => $_POST['ACTS_BASIS'],
+                                                    'REGION'    => $_POST['OGRNIP']
+                                                ]
+                                            ],
+                'COMMENTS'                  => $_POST['l_schet'],
+            ];
 
-        // ИНН
-        if ( strlen($_POST['INN']) !== 0 && strlen($_POST['INN']) !== 10 && strlen($_POST['INN']) !== 12 ) {
-            $l = strlen($_POST['INN']);
-            $this->showErrorMessage("В поле ИНН введено {$l} символов. Должно быть 10 или 12");
-            $this->redirect($location);
-        }
-        $valid = $this->validateNumber($_POST['INN'], "ИНН", false, 12);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // ОГРН
-        $valid = $this->validateNumber($_POST['OGRN'], "ОГРН", false, 13);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // Адрес
-        $valid = $this->validateField($_POST['ADDR'], "Адрес",false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // Фактический адрес
-        $valid = $this->validateField($_POST['ACTUAL_ADDRESS'], "Фактический адрес", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // Почтовый адрес
-        $valid = $this->validateField($_POST['mailingAddress'], "Почтовый адрес", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // E-mail для договора
-        $valid = $this->validateEmail($_POST['EMAIL'], false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // E-mail *
-        $valid = $this->validateEmail($_POST['POST_MAIL']);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // Дополнительный E-mail
-        foreach ($_POST['addEmail'] as $item) {
-            $valid = $this->validateEmail($item, false);
-            if ( !$valid['success'] ) {
-                $this->showErrorMessage($valid['error']);
+            $requisiteResult = $company->setRequisiteByCompanyId((int)$companyId, $dataBank);
+            if ( !$requisiteResult['success'] ) {
+                $this->showErrorMessage($requisiteResult['error']);
                 $this->redirect($location);
             }
-        }
 
-        // Телефон *
-        $valid = $this->validateField($_POST['PHONE'], "Телефон");
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
+            $saveMail = serialize($_POST['addEmail']);
+            $orderName = '';
+        } else if ($_POST['REQ_TYPE'] === '9') {
+            $this->validationGovernment($_POST, $location);
 
-        // Контактное лицо
-        $valid = $this->validateNumber($_POST['company_id'], "Контактное лицо", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
+            $additionalData = [];
+            $workCount = count($_POST['gov_works']['name'] ?? []);
 
-        // КПП
-        $valid = $this->validateNumber($_POST['KPP'], "КПП", false, 9);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
+            for ($i = 0; $i < $workCount; $i++) {
+                $work = [
+                    'id' => $_POST['gov_works']['work_id'][$i] ?? '',
+                    'name' => $_POST['gov_works']['name'][$i],
+                    'object' => $_POST['gov_works']['object'][$i] ?? '',
+                    'deadline' => $_POST['gov_works']['deadline'][$i] ?? '',
+                    'assigned_id' => $_POST['gov_works']['assigned_id'][$i] ?? '',
+                    'departure_date' => $_POST['gov_works']['departure_date'][$i] ?? '',
+                    'lab_id' => $_POST['gov_works']['lab_id'][$i] ?? ''
+                ];
 
-        // Должность руководителя
-        $valid = $this->validateField($_POST['Position2'], "Должность руководителя", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
+                $_POST['material'][$i]['id'] = $_POST['gov_works']['material'][$i];
+                $_POST['material'][$i]['name'] = $material->getById($_POST['gov_works']['material'][$i])['NAME'];
+                $_POST['material'][$i]['count'] = $_POST['gov_works']['quantity'][$i];
 
-        // Должность руководителя в родительном падеже
-        $valid = $this->validateField($_POST['PositionGenitive'], "Должность руководителя в родительном падеже", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // ФИО руководителя
-        $valid = $this->validateField($_POST['DirectorFIO'], "ФИО руководителя", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // Расчетный счет
-        $valid = $this->validateField($_POST['RaschSchet'], "Расчетный счет", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // Кор. счёт
-        $valid = $this->validateField($_POST['KSchet'], "Кор. счёт", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // Лицевой счёт
-        $valid = $this->validateField($_POST['l_schet'], "Лицевой счёт", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // БИК
-        $valid = $this->validateField($_POST['BIK'], "БИК", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // Наименование банка
-        $valid = $this->validateField($_POST['BankName'], "Наименование банка", false);
-        if ( !$valid['success'] ) {
-            $this->showErrorMessage($valid['error']);
-            $this->redirect($location);
-        }
-
-        // Материал для исследования *
-        foreach ($_POST['material'] as $item) {
-            $valid = $this->validateField($item['name'], "Материал для исследования");
-            if ( !$valid['success'] ) {
-                $this->showErrorMessage($valid['error']);
-                $this->redirect($location);
+                $additionalData[] = $work;
             }
-            if ( (int) $item['count'] <= 0 ) {
-                $this->showErrorMessage("Количество материала должно быть больше нуля");
-                $this->redirect($location);
-            }
-        }
 
-        // Главный Ответственный *
-        foreach ($_POST['id_assign'] as $item) {
-            $valid = $this->validateNumber($item, "Ответственный");
-            if ( !$valid['success'] ) {
-                $this->showErrorMessage("Не выбран ответственный");
-                $this->redirect($location);
-            }
-        }
-
-        //// конец блок проверок
-
-        $resetId = 1;
-        if ( empty($_POST['company_id']) ) {
-            $companyId = $company->add($_POST['company']);
-
-            if ( $companyId === false ) {
-                $this->showErrorMessage("Не удалось создать нового Клиента");
-                $this->redirect($location);
-            }
-        } else {
+            //Для типа заявки гос. работ возвращаем только company_id
             $companyId = (int)$_POST['company_id'];
 
-            $requisite = $company->getRequisiteByCompanyId($companyId);
-            //$resetId = $requisite['PRESET_ID'];
+            $saveMail = 'N;';
+            $orderName = '';
         }
 
         $type = $request->getTypeRequest($_POST['REQ_TYPE']);
@@ -427,43 +321,6 @@ class RequestController extends Controller
             'arrAssigned' => $arrAssigned,
         ];
 
-        $dataBank = [
-            'ENTITY_ID'                 => $companyId,
-            'ENTITY_TYPE_ID'            => CCrmOwnerType::Company,
-            'PRESET_ID'                 => $resetId,
-            'NAME'                      => $_POST['company'],
-            'SORT'                      => 500,
-            'ACTIVE'                    => 'Y',
-            'RQ_INN'                    => $_POST['INN'],
-            'RQ_ACCOUNTANT'             => $_POST['ADDR'],
-            'RQ_OGRN'                   => $_POST['OGRN'],
-            'RQ_OGRNIP'                 => $_POST['OGRNIP'],
-            'RQ_EMAIL'                  => $_POST['POST_MAIL'],
-            'RQ_PHONE'                  => $_POST['PHONE'],
-            'RQ_NAME'                   => $_POST['CONTACT'],
-            'RQ_KPP'                    => $_POST['KPP'],
-            'RQ_COMPANY_REG_DATE'       => $_POST['Position2'],
-            'RQ_COMPANY_FULL_NAME'      => $_POST['CompanyFullName'],
-            'RQ_DIRECTOR'               => $_POST['DirectorFIO'],
-            'RQ_ACC_NUM'                => $_POST['RaschSchet'],
-            'RQ_COR_ACC_NUM'            => $_POST['KSchet'],
-            'RQ_BIK'                    => $_POST['BIK'],
-            'RQ_BANK_NAME'              => $_POST['BankName'],
-            'RQ_FIRST_NAME'             => $_POST['EMAIL'],
-            'RQ_COMPANY_NAME'           => $_POST['mailingAddress'],
-            'RQ_ADDR'                   => [
-                                            1 => [
-                                                'ADDRESS_1' => $_POST["ACTUAL_ADDRESS"],
-                                                'ADDRESS_2' => $_POST['ACTS_BASIS'],
-                                                'REGION'    => $_POST['OGRNIP']
-                                            ]
-                                        ],
-            'COMMENTS'                  => $_POST['l_schet'],
-        ];
-
-        $saveMail = serialize($_POST['addEmail']);
-        $orderName = '';
-
         if ( !empty($_POST['NUM_DOGOVOR']) ) {
             $contract = $order->getContractById((int)$_POST['NUM_DOGOVOR']);
             if (!empty($contract)) {
@@ -471,7 +328,6 @@ class RequestController extends Controller
             }
         }
 
-        $actInformation = json_encode($_POST['information'], JSON_UNESCAPED_UNICODE);
         $dataTz = [
             'COMPANY_TITLE' => htmlspecialchars($_POST['company']), //TODO: надо убрать из таблицы это поле
             'COMPANY_ID' => $companyId,
@@ -481,23 +337,13 @@ class RequestController extends Controller
             'DOGOVOR_NUM' => $_POST['NUM_DOGOVOR'],
             'DOGOVOR_TABLE' => $orderName,
             'POSIT_LEADS' => $_POST['PositionGenitive'],
-            'order_type' => (int)$_POST['order_type']
+            'order_type' => (int)$_POST['order_type'],
+            'OBJECT' => $_POST['object'] ?? '',
+            'DEADLINE' => $_POST['gov_deadline'] ?? '',
+            'ASSIGNED' => $_POST['id_assign'][0] ?? ''
         ];
 
-
-        $requisiteResult = $company->setRequisiteByCompanyId((int)$companyId, $dataBank);
-        if ( !$requisiteResult['success'] ) {
-            $this->showErrorMessage($requisiteResult['error']);
-            $this->redirect($location);
-        }
-
         if ( !empty($_POST['id']) ) { // редактирование
-
-//            if ( empty($_POST['save']) || $_POST['save'] !== $this->secretCode($_POST['id']) ) {
-//                $this->showErrorMessage("Ошибка");
-//                $this->redirect($location);
-//            }
-
             $dealId = $dataRequest['ID'] = (int)$_POST['id'];
 
             $currDeal = $request->getDealById($dealId);
@@ -512,6 +358,15 @@ class RequestController extends Controller
                 $this->redirect($location);
             }
 
+            if (isset($_POST['material']) && !empty($_POST['material'])) {
+                $materialData = $this->processMaterials($_POST['material'], $material, $location);
+                $material->setMaterialToRequest($dealId, $materialData['materialDataList'], $additionalData);
+
+                if (!isset($dataTz['MATERIAL']) || empty($dataTz['MATERIAL'])) {
+                    $dataTz['MATERIAL'] = implode(', ', $materialData['arrMaterialName']);
+                }
+            }
+
             $dataTz['REQUEST_TITLE'] = $currTitle;
             $resultUpdateTz = $request->updateTz($dealId, $dataTz);
             
@@ -520,24 +375,9 @@ class RequestController extends Controller
                 $this->redirect($location);
             }
         } else { // создание новой
-
-            // создать материал, если такого нет
-            $arrMaterialName = [];
-            $materialDataList = [];
-            foreach ($_POST['material'] as $item) {
-                $arrMaterialName[] = $item['name'];
-                if ( empty($item['id']) ) {
-                    $resultAddMaterial = $material->add($item['name']);
-
-                    if ( empty($resultAddMaterial) ) {
-                        $this->showErrorMessage("Не удалось создать материал '{$item['name']}'");
-                        $this->redirect($location);
-                    } else {
-                        $item['id'] = $resultAddMaterial;
-                    }
-                }
-                $materialDataList[] = $item;
-            }
+            $materialData = $this->processMaterials($_POST['material'], $material, $location);
+            $materialDataList = $materialData['materialDataList'];
+            $arrMaterialName = $materialData['arrMaterialName'];
 
             $dealId = $request->create( $dataRequest );
 
@@ -562,7 +402,7 @@ class RequestController extends Controller
                 $this->redirect($location);
             }
 
-            $material->setMaterialToRequest($dealId, $materialDataList);
+            $material->setMaterialToRequest($dealId, $materialDataList, $additionalData);
         }
 
         $order->deleteContractFromRequest($dealId);
@@ -592,8 +432,6 @@ class RequestController extends Controller
         ];
 
         $request->updateTz($dealId, $updateData);
-        //======================================
-
 
         $this->showSuccessMessage($successMsg);
         unset($_SESSION['request_post']);
@@ -1730,5 +1568,320 @@ class RequestController extends Controller
 
         $data = $user->getAssignedUserList();
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @desc Обрабатывает материалы
+     * @param $materialPost
+     * @param $material
+     * @param $location
+     * @return array
+     */
+    private function processMaterials(array $materialPost, $material, string $location): array
+    {
+        $arrMaterialName = [];
+        $materialDataList = [];
+
+        foreach ($materialPost as $item) {
+            $arrMaterialName[] = $item['name'];
+            if (empty($item['id'])) {
+                $resultAddMaterial = $material->add($item['name']);
+
+                if (empty($resultAddMaterial)) {
+                    $this->showErrorMessage("Не удалось создать материал '{$item['name']}'");
+                    $this->redirect($location);
+                } else {
+                    $item['id'] = $resultAddMaterial;
+                }
+            }
+            $materialDataList[] = $item;
+        }
+
+        return [
+            'arrMaterialName' => $arrMaterialName,
+            'materialDataList' => $materialDataList
+        ];
+    }
+
+    /**
+     * @desc Валидация общих полей для всех заявок
+     * @param $post
+     * @param $location
+     */
+    private function validationForAll(array $post, string $location): void
+    {
+        // Проверка поля организации/компании (общая для всех типов)
+        $valid = $this->validateField($post['company'], "Клиент");
+        if ( !$valid['success'] ) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        // Назначенные ответственные
+        if (isset($post['ASSIGNED'])) {
+            foreach ($post['ASSIGNED'] as $k => $ass) {
+                $_SESSION['request_post']['assign'][$k]['user_name'] = $ass;
+            }
+        }
+        if (isset($post['id_assign'])) {
+            foreach ($post['id_assign'] as $k => $ass) {
+                $_SESSION['request_post']['assign'][$k]['user_id'] = $ass;
+            }
+        }
+
+        $valid = $this->validateAssigned($post['ASSIGNED'] ?? []);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+    }
+
+    /**
+     * @desc Валидация для заявок SALE
+     * @param $post
+     * @param $location
+     */
+    private function validationSale(array $post, string $location): void
+    {
+        // Материал для исследования
+        if (isset($post['material'])) {
+            foreach ($post['material'] as $item) {
+                $valid = $this->validateField($item['name'], "Материал для исследования");
+                if (!$valid['success']) {
+                    $this->showErrorMessage($valid['error']);
+                    $this->redirect($location);
+                }
+            }
+        }
+
+        // E-mail *
+        $valid = $this->validateEmail($post['POST_MAIL']);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        // Телефон *
+        $valid = $this->validateField($post['PHONE'], "Телефон");
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        // Полное наименование компании
+        $valid = $this->validateField($post['CompanyFullName'], "Полное наименование компании", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        // ИНН
+        if (strlen($post['INN']) !== 0 && strlen($post['INN']) !== 10 && strlen($post['INN']) !== 12) {
+            $l = strlen($post['INN']);
+            $this->showErrorMessage("В поле ИНН введено {$l} символов. Должно быть 10 или 12");
+            $this->redirect($location);
+        }
+        $valid = $this->validateNumber($post['INN'], "ИНН", false, 12);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        // ОГРН
+        $valid = $this->validateNumber($post['OGRN'], "ОГРН", false, 13);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['ADDR'], "Адрес", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['ACTUAL_ADDRESS'], "Фактический адрес", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['mailingAddress'], "Почтовый адрес", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateEmail($post['EMAIL'], false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        // Дополнительный E-mail
+        if (isset($post['addEmail'])) {
+            foreach ($post['addEmail'] as $item) {
+                $valid = $this->validateEmail($item, false);
+                if (!$valid['success']) {
+                    $this->showErrorMessage($valid['error']);
+                    $this->redirect($location);
+                }
+            }
+        }
+
+        // Контактное лицо
+        $valid = $this->validateNumber($post['company_id'], "Контактное лицо", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        // КПП
+        $valid = $this->validateNumber($post['KPP'], "КПП", false, 9);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['Position2'], "Должность руководителя", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['PositionGenitive'], "Должность руководителя в родительном падеже", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['DirectorFIO'], "ФИО руководителя", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['RaschSchet'], "Расчетный счет", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['KSchet'], "Кор. счёт", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['l_schet'], "Лицевой счёт", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['BIK'], "БИК", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['BankName'], "Наименование банка", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+    }
+
+    /**
+     * @desc Валидация для заявок гос. работа
+     * @param $post
+     * @param $location
+     */
+    private function validationGovernment(array $post, string $location): void
+    {
+        $valid = $this->validateField($post['object'], "Объект", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        $valid = $this->validateField($post['gov_deadline'], "Срок заявки", false);
+        if (!$valid['success']) {
+            $this->showErrorMessage($valid['error']);
+            $this->redirect($location);
+        }
+
+        // Проверка наличия хотя бы одной работы
+        if (empty($post['gov_works']) || !isset($post['gov_works']['name']) || count($post['gov_works']['name']) === 0) {
+            $this->showErrorMessage("Необходимо добавить хотя бы одну работу");
+            $this->redirect($location);
+        }
+
+        // Проверка заполненности обязательных полей в работах
+        foreach ($post['gov_works']['name'] as $key => $name) {
+            if (empty($name)) {
+                $this->showErrorMessage("Поле 'Наименование работы' обязательно для заполнения");
+                $this->redirect($location);
+            }
+
+            if (empty($post['gov_works']['material'][$key])) {
+                $this->showErrorMessage("Поле 'Материал' обязательно для заполнения");
+                $this->redirect($location);
+            }
+
+            if (empty($post['gov_works']['quantity'][$key])) {
+                $this->showErrorMessage("Поле 'Кол-во' обязательно для заполнения");
+                $this->redirect($location);
+            }
+
+            if (empty($post['gov_works']['deadline'][$key])) {
+                $this->showErrorMessage("Поле 'Сроки' обязательно для заполнения");
+                $this->redirect($location);
+            }
+
+            if (empty($post['gov_works']['assigned_id'][$key])) {
+                $this->showErrorMessage("Поле 'Ответственный' обязательно для заполнения");
+                $this->redirect($location);
+            }
+
+            if (empty($post['gov_works']['lab_id'][$key])) {
+                $this->showErrorMessage("Поле 'Испытания в лаборатории' обязательно для заполнения");
+                $this->redirect($location);
+            }
+        }
+    }
+
+    /**
+     * @desc Возвращает классы для отображения блоков в зависимости от типа заявки
+     * @return array Массив с классами для каждого типа блока
+     */
+    private function getDisplayClass(): array
+    {
+        $displayClass = [
+            'gov' => 'visually-hidden',
+            'sale' => 'visually-hidden',
+            'sale_materials' => 'visually-hidden'
+        ];
+
+        if (isset($this->data['request']['REQ_TYPE'])) {
+            $reqType = $this->data['request']['REQ_TYPE'];
+
+            if ($reqType === '9') {
+                $displayClass['gov'] = '';
+                $displayClass['sale'] = 'visually-hidden';
+                $displayClass['sale_materials'] = 'visually-hidden';
+            } elseif ($reqType === 'SALE') {
+                $displayClass['gov'] = 'visually-hidden';
+                $displayClass['sale'] = '';
+
+                if (isset($this->data['request']['id'])) {
+                    $displayClass['sale_materials'] = 'visually-hidden';
+                } else {
+                    $displayClass['sale_materials'] = '';
+                }
+            }
+        }
+
+        return $displayClass;
     }
 }

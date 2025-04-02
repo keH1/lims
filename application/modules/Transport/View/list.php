@@ -53,7 +53,7 @@
 </table>
 
 <form id="add-entry-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative">
-    <h3>
+    <h3 class="title">
         Добавить транспорт
     </h3>
     <input type="number" id="transport_id" name="transport_id" class="form-control" aria-describedby="transport_id" style="display: none">
