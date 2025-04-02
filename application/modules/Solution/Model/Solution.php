@@ -228,9 +228,7 @@ class Solution extends Model
                 return 0;
             }
             $dataAdd = $data[$name];
-        }
-
-        if ($type == 'solutionAndConsume') {
+        } else if ($type == 'solutionAndConsume') {
             $idRecipeModelCount = $this->getByID('idRecipeModelCount',
                 $data['id_recipe_model'])[0];
             $unitsReactive = $this->getByID('unitsReactive',
@@ -274,6 +272,7 @@ class Solution extends Model
                 = $idSecondAdd;
 
             $idThirdAdd = $this->addToSQL($dataThirdAdd);
+
             if (!$idThirdAdd) {
                 return 0;
             }
@@ -285,12 +284,6 @@ class Solution extends Model
             foreach ($unitsReactive as $item) {
                 $unitsReactiveId[] = $item['id_library_reactive'];
             }
-            $differendReactiveId = array_merge(array_diff($reactivesId,
-                $unitsReactiveId), array_diff($unitsReactiveId, $reactivesId));
-            if (!empty($differendReactiveId)) {
-                return 0;
-            }
-
 
             $itemAdd['reactive_consume']['date']
                 = $data['date_preparation'];
