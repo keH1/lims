@@ -432,11 +432,19 @@
                     <?php endif; ?>
                 </td>
                 <td>
-                    <a class="no-decoration me-1" href="<?=$this->data['sample']['link']?>" title="Скачать акт приемки проб">
-                        <svg class="icon" width="35" height="35">
-                            <use xlink:href="<?=URI?>/assets/images/icons.svg#doc-send"/>
-                        </svg>
-                    </a>
+                    <?php if ($this->data['tz']['check'] && $this->data['sample']['check']): ?>
+                        <a class="no-decoration me-1" href="<?=$this->data['sample']['link']?>" title="Скачать акт приемки проб">
+                            <svg class="icon" width="35" height="35">
+                                <use xlink:href="<?=URI?>/assets/images/icons.svg#doc-send"/>
+                            </svg>
+                        </a>
+                    <?php else: ?>
+                        <a class="no-decoration disabled me-1" href="#" title="Скачать акт приемки проб">
+                            <svg class="icon" width="35" height="35">
+                                <use xlink:href="<?=URI?>/assets/images/icons.svg#doc-send"/>
+                            </svg>
+                        </a>
+                    <?php endif; ?>
                 </td>
                 <td></td>
                 <td></td>
