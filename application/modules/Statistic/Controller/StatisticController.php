@@ -185,14 +185,14 @@ class StatisticController extends Controller
         ];
 
         $this->data['fin_report_rows'] = [
-            'all_price_new' => 'Общая стоимость новых заявок, руб',
+            'month_price_new' => 'Общая стоимость новых заявок, руб',
             'year_price_new' => '-- С начала года, руб',
-            'all_full_paid' => 'Всего оплачено, руб',
-            'all_no_paid_count' => 'Всего неоплачено заявок, шт',
-            'all_no_paid_price' => '-- На сумму, руб',
+            'month_full_paid' => 'Всего оплачено, руб',
+            'month_no_paid_count' => 'Всего неоплачено заявок, шт',
+            'month_no_paid_price' => '-- На сумму, руб',
             'year_no_paid_price' => '-- С начала года, руб',
-            'all_part_paid_count' => 'Оплачено частично, шт',
-            'all_part_paid_price' => '-- На сумму, руб',
+            'month_part_paid_count' => 'Оплачено частично, шт',
+            'month_part_paid_price' => '-- На сумму, руб',
             'year_part_paid_price' => '-- С начала года, руб',
         ];
 
