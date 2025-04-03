@@ -639,7 +639,7 @@ class ImportController extends Controller
         $labModel = $this->model('Lab');
         $oborudModel = $this->model('Oborud');
 
-        $this->data['title'] = 'Внесения сведений о помещениях';
+        $this->data['title'] = 'Справочник помещений';
         $this->data['lab_id'] = (int)$labId;
 
         $this->data['labs'] = $labModel->getList();
@@ -662,6 +662,21 @@ class ImportController extends Controller
         $this->addCSS("/assets/plugins/select2/css/select2-bootstrap-5-theme.min.css");
 
         $this->addJs('/assets/plugins/select2/js/select2.min.js');
+
+        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
+        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
+        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
+
+        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
+        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
+        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
+        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
+        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
+        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
+        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
 
         $this->addJs('/assets/js/import/rooms.js');
 
@@ -1363,11 +1378,13 @@ class ImportController extends Controller
      */
     public function insertUpdateRoom($roomId)
     {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');
         $oborudModel = $this->model('Oborud');
 
-        $location = "/import/rooms/{$_POST['form_room']['LAB_ID']}";
         $successMsg = !empty($_POST['form_room']['room_id']) ? 'Помещение успешно изменено' : 'Помещение успешно сохранено';
 
         $_SESSION['room_post'] = $_POST;
@@ -1383,12 +1400,10 @@ class ImportController extends Controller
         }
 
         if (empty($result)) {
-            $this->showErrorMessage('Помещение не удалось сохранить');
-            $this->redirect($location);
+            echo json_encode(['success' => false, 'error' => 'Помещение не удалось сохранить']);
         } else {
-            $this->showSuccessMessage($successMsg);
+            echo json_encode(['success' => true, 'message' => $successMsg]);
             unset($_SESSION['room_post']);
-            $this->redirect($location);
         }
     }
 
