@@ -495,7 +495,6 @@ $(function ($) {
                 probe_id_list: probeIdList,
             },
             success: function (json) {
-                console.log(json)
                 $.magnificPopup.open({
                     items: {
                         src: '#gost_room_form',
@@ -870,7 +869,6 @@ $(function ($) {
                  <i class="fa-solid fa-minus icon-fix"></i>
             </button>`
         );
-        console.log(actualValueWrapper, tdActualValue)
 
         tdActualValue.append(cloneActualValueWrapper);
     })
