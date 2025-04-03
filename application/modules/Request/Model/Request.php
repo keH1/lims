@@ -359,16 +359,28 @@ class Request extends Model
 
     public function getCountDeal($type = '')
     {
-        $typeFilter = [];
-
-        if ( !empty($type) ) {
-            $typeFilter = [
-                'TYPE_ID' => "'{$type}'"
-            ];
-        }
-
         $curYear = date("Y");
-        $deals = CCrmDeal::GetList(['DATE_CREATE' => 'DESC'], ['>DATE_CREATE' => "01.01.{$curYear} 00:00:00", '!TYPE_ID' => "1"]); // TODO: разобраться
+        
+        if ($type == '9') {
+            $deals = CCrmDeal::GetList(
+                ['DATE_CREATE' => 'DESC'], 
+                [
+                    '>DATE_CREATE' => "01.01.{$curYear} 00:00:00",
+                    'TYPE_ID' => "'9'"
+                ]
+            );
+            return $deals->SelectedRowsCount();
+        }
+        
+        $filter = ['>DATE_CREATE' => "01.01.{$curYear} 00:00:00"];
+        
+        if (!empty($type)) {
+            $filter['TYPE_ID'] = "'{$type}'";
+        } else {
+            $filter['!TYPE_ID'] = [1, 9];
+        }
+        
+        $deals = CCrmDeal::GetList(['DATE_CREATE' => 'DESC'], $filter);
 
         // TODO: разобраться
         $count = $deals->SelectedRowsCount();
@@ -388,22 +400,21 @@ class Request extends Model
      * @param $data
      * @return false|int
      */
-    public function create( $data )
+    public function create($data)
     {
-        $year = (int)date("Y")%10 ? substr(date("Y"), -2) : date("Y");
-        $countDeal = $this->getCountDeal() + 1;
+        $year = $this->getCurrentY();
+        $countDeal = $this->getCountDeal($data['type']) + 1;
 
         $newDeal = new CCrmDeal;
 
         // TODO: убрать костыль
         while (1) {
             $typeRus = $this->DB->ForSql(trim(strip_tags($data['type_rus'])));
-
             $title = "{$typeRus} №{$countDeal}/{$year}";
 
             $tmp = $this->DB->Query("SELECT ID FROM `b_crm_deal` WHERE `TITLE` = '{$title}'")->Fetch();
 
-            if ( empty($tmp) ) {
+            if (empty($tmp)) {
                 break;
             } else {
                 $countDeal++;
@@ -1743,10 +1754,10 @@ class Request extends Model
                     $where .= "LOCATE('{$filter['search']['DATE_ACT_VR']}', DATE_FORMAT(a.DATE, '%d.%m.%Y')) > 0 AND ";
                 }
                 // Сумма
-                if ( isset($filter['search']['PRICE']) ) {
-                    $price = (float)str_replace([' ', 'руб.', ','], ['', '', '.'], $filter['search']['PRICE']);
+                if ( isset($filter['search']['price_discount']) ) {
+                    $price = (float)str_replace([' ', 'руб.', ','], ['', '', '.'], $filter['search']['price_discount']);
                     
-                    $where .= "b.PRICE = {$price} AND ";
+                    $where .= "b.price_discount like '%{$price}%' AND ";
                 }
                 // Act VR
                 if ( isset($filter['search']['ACT_VR']) ) {
@@ -1795,10 +1806,6 @@ class Request extends Model
                             ))";
                         }
                     }
-                    
-                    if (!empty($whereNames)) {
-                        $where .= "(" . implode(' OR ', $whereNames) . ") AND ";
-                    }
                 }
                 // Акт ПП
                 if ( isset($filter['search']['NUM_ACT_TABLE']) ) {
@@ -1815,16 +1822,16 @@ class Request extends Model
                 // Стадия
                 if ( isset($filter['search']['stage']) ) {
                     switch ($filter['search']['stage']) { // PRICE OPLATA
-                        case '0': // Счет не оплачен
-                            $where .= "b.PRICE > 0 and (b.OPLATA = 0 or b.OPLATA is NULL) AND ";
+                        case '1': // Счет не оплачен
+                            $where .= "b.price_discount > 0 and (b.OPLATA = 0 or b.OPLATA is NULL) AND ";
                             break;
-                        case '1': // Счет оплачен не полностью
-                            $where .= "b.PRICE > 0 and b.OPLATA > 0 and b.OPLATA < b.PRICE AND ";
+                        case '2': // Счет оплачен не полностью
+                            $where .= "b.price_discount > 0 and b.OPLATA > 0 and b.OPLATA < b.price_discount AND ";
                             break;
-                        case '2': // Счет оплачен полностью
-                            $where .= "b.PRICE > 0 and b.OPLATA > 0 and b.OPLATA = b.PRICE AND ";
+                        case '3': // Счет оплачен полностью
+                            $where .= "b.price_discount > 0 and b.OPLATA >= b.price_discount AND ";
                             break;
-                        case '3': // Акт ВР сформирован и не отправлен
+                        case '4': // Акт ВР сформирован и не отправлен
                             break;
                         default: // Все счета
                     }
@@ -1841,8 +1848,8 @@ class Request extends Model
                     case 'ACCOUNT':
                         $order['by'] = 'year(i.DATE) desc, b.ACCOUNT';
                         break;
-                    case 'PRICE':
-                        $order['by'] = 'b.PRICE';
+                    case 'price_discount':
+                        $order['by'] = 'b.price_discount';
                         break;
                     case 'ACT_VR':
                         $order['by'] = 'a.NUMBER';
@@ -1904,7 +1911,7 @@ class Request extends Model
 
         $data = $this->DB->Query(
             "SELECT DISTINCT 
-                        b.ID_Z, b.ID, b.REQUEST_TITLE, b.DOGOVOR_TABLE, b.MATERIAL, b.ASSIGNED, b.COMPANY_TITLE, b.ACCOUNT, b.PRICE, b.OPLATA, b.STAGE_ID, 
+                        b.ID_Z, b.ID, b.REQUEST_TITLE, b.DOGOVOR_TABLE, b.MATERIAL, b.ASSIGNED, b.COMPANY_TITLE, b.ACCOUNT, b.price_discount, b.OPLATA, b.STAGE_ID, 
                         i.DATE, 
                         a.DATE AS DATE_ACT_VR, a.SEND_DATE AS SEND_DATE_ACT_VR, a.NUMBER AS ACT_VR 
                     FROM `ba_tz` b 
@@ -1953,27 +1960,33 @@ class Request extends Model
 
             if (
                 in_array($row['STAGE_ID'], $stageArray)
-                && !empty($row['PRICE'])
+                && !empty($row['price_discount'])
                 && empty($row['OPLATA'])
             ) {
                 $row['color'] = 'bg-red';
                 $row['title'] = 'Счет не оплачен';
             } else if (
                 in_array($row['STAGE_ID'], $stageArray)
-                && !empty($row['PRICE'])
+                && !empty($row['price_discount'])
                 && !empty($row['OPLATA'])
-                && $row['PRICE'] > $row['OPLATA']
+                && $row['price_discount'] > $row['OPLATA']
             ) {
                 $row['color'] = 'bg-light-pink';
                 $row['title'] = 'Счет оплачен не полностью';
             } else if (
                 in_array($row['STAGE_ID'], $stageArray)
-                && !empty($row['PRICE'])
+                && !empty($row['price_discount'])
                 && !empty($row['OPLATA'])
-                && $row['PRICE'] <= $row['OPLATA'] //TODO: скидка учитывается? см. карточка
+                && $row['price_discount'] <= $row['OPLATA']
             ) {
                 $row['color'] = 'bg-green';
                 $row['title'] = 'Счет оплачен полностью';
+            } else if (
+                in_array($row['STAGE_ID'], $stageArray)
+                && empty($row['price_discount'])
+            ) {
+                $row['color'] = 'bg-grey';
+                $row['title'] = 'Счет не выставлен';
             } else {
                 $row['color'] = 'bg-grey';
                 $row['title'] = 'Заявка неуспешна';

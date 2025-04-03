@@ -2,8 +2,15 @@ $(function ($) {
 
     /*journal requests*/
     let transportJournal = $('#transportJournal').DataTable({
+        bAutoWidth: false,
+        autoWidth: false,
+        fixedColumns: false,
         processing: true,
         serverSide: true,
+        bSortCellsTop: true,
+        scrollX: true,
+        fixedHeader: false,
+        colReorder: true,
         ajax: {
             type : 'POST',
             data: function ( d ) {
@@ -56,14 +63,7 @@ $(function ($) {
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 0, "desc" ]],
-        colReorder: true,
-        dom: 'frtB<"bottom"lip>',
-        buttons: dataTablesSettings.buttonPrint,
-        bSortCellsTop: true,
-       // scrollX:       true,
-        // fixedHeader:   true,
-        //autoWidth: false
-
+        dom: 'frt<"bottom"lip>',
     });
 
     transportJournal.columns().every(function () {
