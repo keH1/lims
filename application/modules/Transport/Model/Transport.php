@@ -142,6 +142,18 @@ class Transport extends Model {
             }
         }
 
+        if (isset($filter['paginate'])) {
+            $offset = 0;
+            if (isset($filter['paginate']['length']) && $filter['paginate']['length'] > 0) {
+                $length = $filter['paginate']['length'];
+
+                if (isset($filter['paginate']['start']) && $filter['paginate']['start'] > 0) {
+                    $offset = $filter['paginate']['start'];
+                }
+                $limit = "LIMIT {$offset}, {$length}";
+            }
+        }
+
         $where .= "1 ";
 
         $result = [];
