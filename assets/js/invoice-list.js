@@ -72,7 +72,7 @@ $(function ($) {
                 data: 'DATE_ACT_VR'
             },
             {
-                data: 'SEND_DATE_ACT_VR'
+                data: 'SEND_DATE_ACT_VR',
             }
         ],
         language: dataTablesSettings.language,
