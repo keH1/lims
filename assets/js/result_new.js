@@ -495,6 +495,7 @@ $(function ($) {
                 probe_id_list: probeIdList,
             },
             success: function (json) {
+                console.log(json)
                 $.magnificPopup.open({
                     items: {
                         src: '#gost_room_form',
@@ -521,7 +522,9 @@ $(function ($) {
 
                             if ( json.length === 0 ) {
                                 $contentBlock.append(`<p>Нечего стартовать</p>`)
+                                $('#gost_room_form button').hide()
                             } else {
+                                $('#gost_room_form button').show()
                                 $.each(json, function (i, probe) {
 
                                     if ( probe[0].rooms.length === 0 ) { return true }
