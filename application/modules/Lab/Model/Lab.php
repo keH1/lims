@@ -289,15 +289,14 @@ class Lab extends Model
                     $where .= "u_c.pressure LIKE '%{$filter['search']['pressure']}%' AND ";
                 }
                 // помещение
-                if (isset($filter['search']['room'])) {
-                    $where .= "u_c.room_id IN (SELECT r.ID FROM ROOMS r WHERE CONCAT(r.NAME, ' ', r.NUMBER) COLLATE utf8mb3_unicode_ci LIKE '%{$filter['search']['room']}%') AND ";
+                if (isset($filter['search']['room_name'])) {
+                    $where .= "u_c.room_id IN (SELECT r.ID FROM ROOMS r WHERE CONCAT(r.NAME, ' ', r.NUMBER) COLLATE utf8mb3_unicode_ci LIKE '%{$filter['search']['room_name']}%') AND ";
                 }
-            }
-
-            // везде
-            if (isset($filter['search']['everywhere'])) {
-                $where .=
-                    "";
+                // помещение (верхний фильтр)
+                if (isset($filter['search']['room'])) {
+                    $roomId = intval($filter['search']['room']) - 100;
+                    $where .= "u_c.room_id = {$roomId} AND ";
+                }
             }
         }
 
@@ -341,7 +340,7 @@ class Lab extends Model
         $result = [];
 
         $data = $this->DB->Query(
-            "SELECT u_c.*, u_c.id u_c_id, CONCAT(r.NAME, ' ', r.NUMBER) room  
+            "SELECT u_c.*, u_c.id u_c_id, CONCAT(r.NAME, ' ', r.NUMBER) room_name  
              FROM ulab_conditions u_c 
              LEFT JOIN ROOMS AS r
              ON r.ID = u_c.room_id 
@@ -350,14 +349,14 @@ class Lab extends Model
         );
 
         $dataTotal = $this->DB->Query(
-            "SELECT u_c.*, u_c.id u_c_id, CONCAT(r.NAME, ' ', r.NUMBER) room
+            "SELECT u_c.*, u_c.id u_c_id
                     FROM ulab_conditions u_c 
                     LEFT JOIN ROOMS AS r ON r.ID = u_c.room_id 
-                    WHERE {$where}"
+                    WHERE 1"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT u_c.*, u_c.id u_c_id, CONCAT(r.NAME, ' ', r.NUMBER) room
+            "SELECT u_c.*, u_c.id u_c_id
                     FROM ulab_conditions u_c 
                     LEFT JOIN ROOMS AS r ON r.ID = u_c.room_id 
                     WHERE {$where}"
