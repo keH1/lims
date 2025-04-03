@@ -68,7 +68,7 @@ $(function ($) {
         $('.method-not-found').hide()
 
         let tr = `<tr>
-                    <td><a href="/obl_acc.php?ID=${gostId}" >${gost}</a><input type="hidden" value="${gostId}" name="arrGost[]"></td>
+                    <td><a href="/ulab/gost/method/${gostId}" >${gost}</a><input type="hidden" value="${gostId}" name="arrGost[]"></td>
                     <td>${spec}</td>
                     <td><button type="button" class="btn btn-outline-danger del-gost btn-square-new"><i class="fa-solid fa-xmark"></i></button></td>
                 </tr>`

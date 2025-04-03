@@ -83,7 +83,7 @@
                             <tr class="trGost">
                                 <input type="hidden" class="gost-to-material-id" value="<?= $arrGost['id'] ?>">
                                 <td>
-                                    <a href="/obl_acc.php?ID=<?= $arrGost['id'] ?>"
+                                    <a href="/ulab/gost/method/<?= $arrGost['id'] ?>"
                                     ><?= $arrGost['view_gost'] ?></a>
                                     <input class="gostId"
                                         type="hidden" value="<?= $arrGost['id'] ?>"
