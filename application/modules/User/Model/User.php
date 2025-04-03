@@ -39,7 +39,7 @@ class User extends Model
      */
     public function getUsers()
     {
-        $order = ["NAME", "LAST_NAME"];
+        $order = 'ASC';
         $by='ID';
         $filter = ['ACTIVE' => 'Y'];
         $tmp = 'sort';
