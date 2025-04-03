@@ -508,13 +508,14 @@ class Methods extends Model
                 }
                 // Единица измерения
                 if ( isset($filter['search']['unit_rus']) ) {
-                    $where .= "d.unit_rus LIKE '%{$filter['search']['unit_rus']}%' AND ";
+                    $escapedValue = str_replace(['%', '_'], ['\%', '\_'], $filter['search']['unit_rus']);
+                    $where .= "d.unit_rus LIKE '%{$escapedValue}%' ESCAPE '\\\\' AND ";
                 }
-                // Единица измерения
+                // В области аккредитации?
                 if ( isset($filter['search']['in_field']) ) {
                     $where .= "m.in_field = '%{$filter['search']['in_field']}%' AND ";
                 }
-                // Единица измерения
+                // Расширенная область?
                 if ( isset($filter['search']['is_extended_field']) ) {
                     $where .= "m.is_extended_field = '%{$filter['search']['is_extended_field']}%' AND ";
                 }
