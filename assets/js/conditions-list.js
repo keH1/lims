@@ -369,7 +369,6 @@ $(function ($) {
                 d.dateStart = $('#inputDateStart').val();
                 d.dateEnd = $('#inputDateEnd').val();
                 d.room = $('#selectRoom option:selected').val();
-                d.everywhere = $('#filter_everywhere').val();
             },
             url: '/ulab/lab/getJournalConditionAjax/',
             dataSrc: function (json) {
@@ -422,7 +421,7 @@ $(function ($) {
                 data: 'pressure',
             },
             {
-                data: 'room',
+                data: 'room_name',
                 orderable: false,
             },
         ],

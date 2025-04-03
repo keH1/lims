@@ -9,7 +9,7 @@
                     </button>
                 </li>
                 <?php if ( !empty($this->data['may_edit_pressure']) ): ?>
-                    <li class="nav-item me-1">
+                    <li class="nav-item me-1 d-none">
                         <a class="nav-link add-pressure" href="#" title="Добавить давление">
                             <i class="fa-solid fa-gauge-high icon-big"></i>
                         </a>
