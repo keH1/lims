@@ -48,6 +48,10 @@ class NormDocGost extends Model
                 if ( isset($filter['search']['name']) ) {
                     $where .= "m.name LIKE '%{$filter['search']['name']}%' AND ";
                 }
+                // Пункт документа
+                if ( isset($filter['search']['clause']) ) {
+                    $where .= "m.clause LIKE '%{$filter['search']['clause']}%' AND ";
+                }
                 // Метод
                 if ( isset($filter['search']['test_method']) ) {
                     $where .= "tm.name LIKE '%{$filter['search']['test_method']}%' AND ";
@@ -86,6 +90,9 @@ class NormDocGost extends Model
                     break;
                 case 'year':
                     $order['by'] = 'g.year';
+                    break;
+                case 'materials':
+                    $order['by'] = 'g.materials';
                     break;
                 case 'name':
                     $order['by'] = 'm.name';
