@@ -7,39 +7,19 @@
 class TransportController extends Controller
 {
     /**
-     * @desc Справочник транспорта
+     * @desc Журнал автотранспорта
      */
     public function list()
     {
-        $this->data['title'] = 'Справочник транспорта';
-
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-        $this->addJS('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-
-        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
-        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->data['title'] = 'Журнал автотранспорта';
 
         $this->addJs("/assets/js/transport-list.js?v=" . rand());
 
-        $this->view('list');
+        $this->view('list', '', 'template_journal');
     }
 
     /**
-     * @desc Добавляет транспорт в справочник транспорта
+     * @desc Добавляет транспорт в журнал автотранспорта
      * route /protocol/results/
      */
     public function addTransportAjax()
