@@ -313,6 +313,7 @@ class User extends Model
             $user['short_name'] = "{$shortName}. {$user['LAST_NAME']}";
             $user['user_name'] = "{$user['LAST_NAME']} {$user['NAME']}";
             $user['groups'] = $USER->GetUserGroupArray();
+            $user['id'] = $user['ID'];
 
             $response = $user;
         }
