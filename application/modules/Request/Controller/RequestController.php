@@ -548,6 +548,8 @@ class RequestController extends Controller
         $resultModel = $this->model('Result');
         /** @var Permission $permissionModel */
         $permissionModel = $this->model('Permission');
+        /** @var Organization $organizationModel */
+        $organizationModel = $this->model('Organization');
 
         $this->data['title'] = "Карточка заявки";
 
@@ -711,7 +713,6 @@ class RequestController extends Controller
         }
 
         $this->data['order']['date'] = !empty($dogovorData['DATE'])? StringHelper::dateRu($dogovorData['DATE']) : '--';
-//		$request->pre($dogovorData);
         $this->data['order']['attach'] = $dogovorData['ACTUAL_VER'];
         $this->data['order']['date_send'] = !empty($dogovorData['SEND_DATE'])? StringHelper::dateRu($dogovorData['SEND_DATE']) : 'Не отправлялся из ЛИС';
         $this->data['order']['is_disable_form'] =
@@ -764,13 +765,6 @@ class RequestController extends Controller
 
 
         // Оплата
-        $discount = 0;
-        if ( !empty($requestData['DISCOUNT']) ) {
-            $discount = $requestData['DISCOUNT'];
-        }
-
-        //TODO:Проверить оплату со скидкой
-//        $this->data['payment']['surcharge'] = (float)$requestData['PRICE'] - (float)$requestData['PRICE'] * (float)$discount / 100 - (float)$requestData['OPLATA'];
         $this->data['payment']['surcharge'] = (float)$requestData['price_discount'] - (float)$requestData['OPLATA'];
 
 		$this->data['payment']['check'] = !empty($requestData['price_discount']) && $isExistTz && $this->data['payment']['surcharge'] == 0;
@@ -897,8 +891,8 @@ class RequestController extends Controller
 		$this->data['act_complete']['is_disable_form'] = false && !in_array($_SESSION['SESS_AUTH']['USER_ID'], [61, 88, 1, 25]) || 0;
 //		$this->data['act_complete']['is_disable_form'] = !($deal['STAGE_ID'] == 2) || ;
         $this->data['act_complete']['is_disable_mail'] = empty($actVr) || 0;
-        // 4 - Роль руководителя лаборатории
-        $this->data['act_complete']['assigned_users'] = $user->getUsersByRoleId(4);
+        //TODO: пока ид организации задано жестко 1. потом переделать на получение к какой организации принадлежит заявка
+        $this->data['act_complete']['assigned_users'] = $organizationModel->getAllLeaders(1);
 
 
 
