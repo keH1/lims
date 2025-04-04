@@ -572,4 +572,35 @@ class LabController extends Controller
         echo json_encode($labs, JSON_UNESCAPED_UNICODE);
         exit();
     }
+
+    /**
+     * @desc Получает список помещений для лаборатории
+     */
+    public function getRoomsListForLabAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var Lab $labModel */
+        $labModel = $this->model('Lab');
+
+        $filter = $labModel->prepareFilter($_POST ?? []);
+
+        $data = $labModel->getRoomsListForLab($filter);
+
+        $recordsTotal = $data['recordsTotal'];
+        $recordsFiltered = $data['recordsFiltered'];
+
+        unset($data['recordsTotal']);
+        unset($data['recordsFiltered']);
+
+        $jsonData = [
+            "draw" => (int)$_POST['draw'],
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+        ];
+
+        echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
+    }
 }

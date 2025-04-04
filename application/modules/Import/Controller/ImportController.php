@@ -639,7 +639,7 @@ class ImportController extends Controller
         $labModel = $this->model('Lab');
         $oborudModel = $this->model('Oborud');
 
-        $this->data['title'] = 'Внесения сведений о помещениях';
+        $this->data['title'] = 'Справочник помещений';
         $this->data['lab_id'] = (int)$labId;
 
         $this->data['labs'] = $labModel->getList();
@@ -655,9 +655,6 @@ class ImportController extends Controller
             $this->data['form_room'] = $labModel->getRoomByLabId($labId);
         }
 
-        $this->addCSS('/assets/plugins/magnific-popup/magnific-popup.css');
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-
         $this->addCSS("/assets/plugins/select2/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/css/select2-bootstrap-5-theme.min.css");
 
@@ -665,7 +662,7 @@ class ImportController extends Controller
 
         $this->addJs('/assets/js/import/rooms.js');
 
-        $this->view('rooms');
+        $this->view('rooms', '', 'template_journal');
     }
 
     /**
@@ -1363,11 +1360,13 @@ class ImportController extends Controller
      */
     public function insertUpdateRoom($roomId)
     {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');
         $oborudModel = $this->model('Oborud');
 
-        $location = "/import/rooms/{$_POST['form_room']['LAB_ID']}";
         $successMsg = !empty($_POST['form_room']['room_id']) ? 'Помещение успешно изменено' : 'Помещение успешно сохранено';
 
         $_SESSION['room_post'] = $_POST;
@@ -1383,12 +1382,10 @@ class ImportController extends Controller
         }
 
         if (empty($result)) {
-            $this->showErrorMessage('Помещение не удалось сохранить');
-            $this->redirect($location);
+            echo json_encode(['success' => false, 'error' => 'Помещение не удалось сохранить']);
         } else {
-            $this->showSuccessMessage($successMsg);
+            echo json_encode(['success' => true, 'message' => $successMsg]);
             unset($_SESSION['room_post']);
-            $this->redirect($location);
         }
     }
 

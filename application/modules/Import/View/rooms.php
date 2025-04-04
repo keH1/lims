@@ -41,62 +41,63 @@
         </nav>
     </header>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <header class="panel-heading">
-                    Отдел
-                    <span class="tools float-end">
-                            <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
-                            <a href="#" class="fa fa-chevron-up"></a>
-                         </span>
-                </header>
-                <div class="panel-body">
-                    <div class="form-group row mb-0">
-                        <div class="col">
-                            <?php if ( !empty($this->data['labs']) ): ?>
-                                <select class="form-select labs" id="labs">
-                                    <option value="" style="color: #878787">Выберите отдел</option>
-                                    <?php foreach ($this->data['labs'] as $lab): ?>
-                                        <option value="<?= $lab['ID'] ?>" <?= $this->data['lab_id'] == $lab['ID'] ? 'selected' : '' ?>><?= $lab['NAME'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            <?php else: ?>
-                                <div>Отсутствуют отделы, создайте отдел для привязки помещений к отделам</div>
-                            <?php endif; ?>
+    <div class="filters mb-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <header class="panel-heading">
+                        Отдел
+                        <span class="tools float-end">
+                                <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
+                                <a href="#" class="fa fa-chevron-up"></a>
+                            </span>
+                    </header>
+                    <div class="panel-body">
+                        <div class="form-group row mb-0">
+                            <div class="col">
+                                <?php if ( !empty($this->data['labs']) ): ?>
+                                    <select class="form-select filter filter-lab" id="labs">
+                                        <option value="" style="color: #878787">Выберите отдел</option>
+                                        <?php foreach ($this->data['labs'] as $lab): ?>
+                                            <option value="<?= $lab['ID'] ?>" <?= $this->data['lab_id'] == $lab['ID'] ? 'selected' : '' ?>><?= $lab['NAME'] ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php else: ?>
+                                    <div>Отсутствуют отделы, создайте отдел для привязки помещений к отделам</div>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!--./panel-body-->
             </div>
         </div>
     </div>
-    <!--./row-->
 
     <div class="row">
         <div class="col-md-12">
-            <div class="panel panel-default">
+            <div class="panel panel-default rooms-block">
                 <header class="panel-heading">
                     Помещения
                     <span class="tools float-end">
-                            <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
-                            <a href="#" class="fa fa-chevron-up"></a>
-                         </span>
+                        <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
+                        <a href="#" class="fa fa-chevron-up"></a>
+                    </span>
                 </header>
                 <div class="panel-body">
-                    <?php if (!empty($this->data['lab_id'])): ?>
-                        <?php if (!empty($this->data['form_room'])): ?>
-                            <div class="d-flex justify-content-end mb-3">
-                                <a href="/ulab/import/dowloadForm/<?= $this->data['lab_id'] ?>?type=form" 
-                                class="btn btn-gradient rounded" title="Скачать форму №6">
-                                    <i class="fa fa-file-word"></i>
-                                </a>
-                            </div>
-                        <?php endif; ?>
+                    <?php if (!empty($this->data['form_room'])): ?>
+                        <div class="d-flex justify-content-end mb-3">
+                            <a class="btn btn-gradient rounded" href="/ulab/import/dowloadForm/<?= $this->data['lab_id'] ?>?type=form"
+                                title="Скачать форму № 6"
+                                style="text-transform: none;"
+                            >
+                                Скачать форму №6
+                            </a>
+                        </div>
+                    <?php endif; ?>
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-center align-middle">
-                                <thead class="align-middle">
+                    <div class="table-responsive">
+                        <table id="rooms-table" class="table table-striped journal">
+                            <thead class="align-middle">
                                 <tr class="table-light">
                                     <th scope="col">Номер</th>
                                     <th scope="col">Наименование</th>
@@ -106,63 +107,73 @@
                                     <th scope="col">Контролируемые параметры</th>
                                     <th scope="col">Специальное оборудование</th>
                                     <th scope="col">Право собственности</th>
-                                    <th scope="col">Место нахождения</th>
+                                    <th scope="col">Местонахождение</th>
                                     <th scope="col">Примечание</th>
                                     <th scope="col"></th>
                                 </tr>
-                                </thead>
-                                <tbody>
-                                <?php if (empty($this->data['form_room'])): ?>
-                                    <tr>
-                                        <td colspan="11">Помещения не добавлены</td>
-                                    </tr>
-                                <?php endif; ?>
-                                <?php foreach ($this->data['form_room'] as $room): ?>
-                                    <tr class="align-middle">
-                                        <td><?= $room['NUMBER'] ?></td>
-                                        <td><?= $room['NAME'] ?></td>
-                                        <td>
-                                            <?= empty($room['SPEC']) ? 'Специальное' : 'Приспособленное' ?>
-                                        </td>
-                                        <td><?= $room['PURPOSE'] ?></td>
-                                        <td><?= $room['AREA'] ?></td>
-                                        <td><?= $room['PARAMS'] ?></td>
-                                        <td><?= $room['oborudList'] ?></td>
-                                        <td><?= $room['DOCS'] ?></td>
-                                        <td><?= $room['PLACEMENT'] ?></td>
-                                        <td><?= $room['COMMENT'] ?></td>
-                                        <td>
-                                            <button type="button" class="btn btn-fill btn-square room-edit" title="<?= $room['NUMBER'] ?>"
-                                                    data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top"
-                                                    data-room-id="<?= $room['ID'] ?>">
-                                                <i class="fa-solid fa-pencil icon-fix"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                                <tr class="header-search">
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control search">
+                                    </th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+
+                        <div class='arrowLeft'>
+                            <svg class="bi" width="40" height="40">
+                                <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-left"/>
+                            </svg>
                         </div>
-                    <?php else: ?>
-                        <div>Выберите отдел, чтобы добавить помещения</div>
-                    <?php endif; ?>
+                        <div class='arrowRight'>
+                            <svg class="bi" width="40" height="40">
+                                <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-right"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-                <!--./panel-body-->
             </div>
         </div>
     </div>
-    <!--./row-->
 
-    <form id="room-modal-form" class="bg-light mfp-hide col-md-5 m-auto p-3 position-relative"
-          action="<?= URI ?>/import/insertUpdateRoom/" method="post">
+    <form id="room-modal-form" class="bg-light mfp-hide col-md-5 m-auto p-3 position-relative">
         <div class="title mb-3 h-2">
-            Добавление помещения
+            Редактировать помещение
         </div>
 
         <div class="line-dashed-small"></div>
 
         <input type="hidden" id="roomId" name="form_room[room_id]" value="">
-        <input type="hidden" id="labId" name="form_room[LAB_ID]" value="<?= $this->data['lab_id'] ?>">
+        <input type="hidden" id="labId" name="form_room[LAB_ID]" value="">
 
         <div class="mb-3">
             <label class="form-label mb-1">Номер</label>
