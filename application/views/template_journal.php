@@ -70,6 +70,7 @@
 <script src="<?=URI?>/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js" type="text/javascript"></script>
 <script src="<?=URI?>/assets/plugins/DataTables/dataRender/intl.js" type="text/javascript"></script>
 <script src="<?=URI?>/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js" type="text/javascript"></script>
+<script src="<?=URI?>/assets/plugins/DataTables/dataRender/ellipsis.js" type="text/javascript"></script>
 
 <?php foreach ($this->getCDN() as $cdn): ?>
 	<script src="<?=$cdn?>"></script>
