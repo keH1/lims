@@ -35,7 +35,6 @@ $(function () {
         url: "/ulab/gost/getLabAndUserAjax/",
         success: function (data) {
             data = JSON.parse(data);
-            // console.log(data)
             $.each(data, function (i, val) {
                 let countUser = Object.keys(val.users).length
 
@@ -96,12 +95,17 @@ $(function () {
                 fixedHeader: false,
             });
 
-            journalDataTable.columns().every( function () {
-                $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-                    journalDataTable
-                        .column( $(this).parent().index() )
-                        .search( this.value )
-                        .draw();
+            journalDataTable.columns().every(function() {
+                let timeout
+                $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+                    clearTimeout(timeout)
+                    const searchValue = this.value
+                    timeout = setTimeout(function() {
+                        journalDataTable
+                            .column($(this).parent().index())
+                            .search(searchValue)
+                            .draw()
+                    }.bind(this), 1000)
                 })
             })
 
