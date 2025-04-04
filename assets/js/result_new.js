@@ -521,7 +521,9 @@ $(function ($) {
 
                             if ( json.length === 0 ) {
                                 $contentBlock.append(`<p>Нечего стартовать</p>`)
+                                $('#gost_room_form button').hide()
                             } else {
+                                $('#gost_room_form button').show()
                                 $.each(json, function (i, probe) {
 
                                     if ( probe[0].rooms.length === 0 ) { return true }
@@ -867,7 +869,6 @@ $(function ($) {
                  <i class="fa-solid fa-minus icon-fix"></i>
             </button>`
         );
-        console.log(actualValueWrapper, tdActualValue)
 
         tdActualValue.append(cloneActualValueWrapper);
     })
