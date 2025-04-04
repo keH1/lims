@@ -115,6 +115,7 @@
     <div class="line-dashed-small"></div>
 
     <input type="hidden" id="userId" name="user_id" value="<?= $this->data['user_id'] ?>">
+    <input type="hidden" id="newuserId" value="<?= $_SESSION['user_id'] ?>">
 
     <div class="mb-3">
         <label for="name" class="form-label mb-1">Имя</label>
