@@ -1022,12 +1022,10 @@ class User extends Model
 
     /**
      * @param int $id
-     * @return mixed
      */
     public function deleteUser($id)
     {
         $this->DB->Query("UPDATE b_user SET ACTIVE = 'N' WHERE ID = '{$id}'");
-//        return CUser::Delete($id);
     }
 
     public function checkUserHasRepalcement($userId) {

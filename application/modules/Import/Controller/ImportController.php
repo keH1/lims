@@ -2145,15 +2145,13 @@ class ImportController extends Controller
         ];
 
         if (!empty($_POST['user_id']) && $_POST['user_id'] > 0) {
-            $result = $userModel->deleteUser((int)$_POST['user_id']);
+            $userModel->deleteUser((int)$_POST['user_id']);
 
-            if ($result) {
-                $this->showSuccessMessage("Пользователь удален");
+            $this->showSuccessMessage("Пользователь удален");
 
-                $response = [
-                    'success' => true
-                ];
-            }
+            $response = [
+                'success' => true
+            ];
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
