@@ -1778,34 +1778,7 @@ class Request extends Model
                 }
                 // Ответственный
                 if (isset($filter['search']['ASSIGNED'])) {
-                    $searchText = $filter['search']['ASSIGNED'];
-                    
-                    $searchNames = explode(',', $searchText);
-                    $whereNames = [];
-                    
-                    foreach ($searchNames as $searchName) {
-                        $searchName = trim($searchName);
-                        if (empty($searchName)) continue;
-                        
-                        if (mb_strlen($searchName, 'UTF-8') === 1) {
-                            $whereNames[] = "(EXISTS (
-                                SELECT 1 FROM assigned_to_request AS atr 
-                                JOIN b_user AS u ON atr.user_id = u.ID 
-                                WHERE atr.deal_id = b.ID_Z AND
-                                (u.NAME LIKE '{$searchName}%' OR 
-                                 u.LAST_NAME LIKE '{$searchName}%')
-                            ))";
-                        } else {
-                            $whereNames[] = "(EXISTS (
-                                SELECT 1 FROM assigned_to_request AS atr 
-                                JOIN b_user AS u ON atr.user_id = u.ID 
-                                WHERE atr.deal_id = b.ID_Z AND
-                                (u.NAME LIKE '%{$searchName}%' OR 
-                                 u.LAST_NAME LIKE '%{$searchName}%' OR
-                                 CONCAT(SUBSTRING(u.NAME, 1, 1), '. ', u.LAST_NAME) LIKE '%{$searchName}%')
-                            ))";
-                        }
-                    }
+                    $where .= "(usr.NAME LIKE '%{$filter['search']['ASSIGNED']}%' or usr.LAST_NAME LIKE '%{$filter['search']['ASSIGNED']}%') AND ";
                 }
                 // Акт ПП
                 if ( isset($filter['search']['NUM_ACT_TABLE']) ) {
@@ -1873,12 +1846,7 @@ class Request extends Model
                         $order['by'] = 'b.MATERIAL';
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = "(SELECT SUBSTRING(u.NAME, 1, 1) 
-                                        FROM assigned_to_request AS atr 
-                                        JOIN b_user AS u ON atr.user_id = u.ID 
-                                        WHERE atr.deal_id = b.ID_Z 
-                                        ORDER BY atr.is_main DESC
-                                        LIMIT 1)";
+                        $order['by'] = "usr.LAST_NAME";
                         break;
                     case 'REQUEST_TITLE':
                         $order['by'] = 'b.REQUEST_TITLE';
@@ -1913,10 +1881,13 @@ class Request extends Model
             "SELECT DISTINCT 
                         b.ID_Z, b.ID, b.REQUEST_TITLE, b.DOGOVOR_TABLE, b.MATERIAL, b.ASSIGNED, b.COMPANY_TITLE, b.ACCOUNT, b.price_discount, b.OPLATA, b.STAGE_ID, 
                         i.DATE, 
-                        a.DATE AS DATE_ACT_VR, a.SEND_DATE AS SEND_DATE_ACT_VR, a.NUMBER AS ACT_VR 
+                        a.DATE AS DATE_ACT_VR, a.SEND_DATE AS SEND_DATE_ACT_VR, a.NUMBER AS ACT_VR,
+                        group_concat(CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
                     LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
+                    LEFT JOIN `assigned_to_request` as ass ON ass.deal_id=b.ID_Z
+                    LEFT JOIN `b_user` as usr ON usr.ID=ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
                     GROUP BY b.ID ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
@@ -1936,6 +1907,8 @@ class Request extends Model
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
                     LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
+                    LEFT JOIN `assigned_to_request` as ass ON ass.deal_id=b.ID_Z
+                    LEFT JOIN `b_user` as usr ON usr.ID=ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
@@ -1945,18 +1918,6 @@ class Request extends Model
             $row['DATE'] = !empty($row['DATE']) ? date('d.m.Y',  strtotime($row['DATE'])) : '';
             $row['DATE_ACT_VR'] = !empty($row['DATE_ACT_VR']) ? date('d.m.Y',  strtotime($row['DATE_ACT_VR'])) : '';
             $row['SEND_DATE_ACT_VR'] = !empty($row['SEND_DATE_ACT_VR']) ? date('d.m.Y',  strtotime($row['SEND_DATE_ACT_VR'])) : '';
-            
-            // $assigned = $this->getAssignedByDealId($row['ID_Z']);
-            $assigned = $userModel->getAssignedByDealId($row['ID_Z']);
-
-            $arrAss = [];
-            foreach ($assigned as $item) {
-                $arrAss[] = $item['short_name'];
-            }
-
-            if ( !empty($arrAss) ) {
-                $row['ASSIGNED'] = implode(', ', $arrAss);
-            }
 
             if (
                 in_array($row['STAGE_ID'], $stageArray)
