@@ -87,13 +87,10 @@ class UserController extends Controller
         $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
         $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
 
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-
 
         $r = rand();
-        $this->addJs("/assets/js/user/users-list.js");
-        $this->addJs("/assets/js/user/users-form.js");
+        $this->addJs("/assets/js/user/users-list.js?v={$r}");
+        $this->addJs("/assets/js/user/users-form.js?v={$r}");
 
         $this->view('list');
     }
