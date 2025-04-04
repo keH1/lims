@@ -81,14 +81,21 @@ $(function ($) {
         fixedHeader: false,
 
     })
-    precursorJournal.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-            precursorJournal
-                .column($(this).parent().index())
-                .search(this.value)
-                .draw()
+
+    precursorJournal.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                precursorJournal
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
+    
     /*journal buttons*/
     let container = $('div.dataTables_scrollBody'),
         scroll = $('#precursor_journal').width()

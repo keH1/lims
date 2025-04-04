@@ -1,4 +1,7 @@
 $(function ($) {
+
+    let $body = $("body")
+
     /*recipe journal*/
     let recipeJournal = $('#recipe_journal').DataTable({
         processing: true,
@@ -81,23 +84,19 @@ $(function ($) {
         }
     })
 
-    recipeJournal.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-            recipeJournal
-                .column($(this).parent().index())
-                .search(this.value)
-                .draw()
+    recipeJournal.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                recipeJournal
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
-
-    /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $('#recipe_journal').width()
-
-    $
-    let $body = $("body")
-    let $containerScroll = $body.find('.dataTables_scroll')
-    let $thead = $('.journal thead tr:first-child')
 
     /** modal */
     $('.popup-first').magnificPopup({
@@ -129,7 +128,7 @@ $(function ($) {
     })
 
 
-    $("body").on('change', '.reactive-update', function () {
+    $body.on('change', '.reactive-update', function () {
         let number = $('option:selected', this).data('number')
         let numberReceive = $('option:selected', this).data('numberreceive')
         let idLibraryReactive = $(".all-reactive option:selected").data('idlibraryreactive')
@@ -161,7 +160,7 @@ $(function ($) {
         $('#selectStandartTitrUpdate').prop('disabled', true)
     })
 
-    $('body').on('click', '#standartTitrUpdate', function () {
+    $body.on('click', '#standartTitrUpdate', function () {
         let id_standarttitr = $('#selectStandartTitrUpdate').val();
         $('.edit-standarttitr-form-name').html('Редактировать стандарт-титр')
         $('#standart_titr_id').val(id_standarttitr)
@@ -188,7 +187,7 @@ $(function ($) {
         });
     })
 
-    $('body').on('click', '#receiveUpdate', function () {
+    $body.on('click', '#receiveUpdate', function () {
         let idreceive = $('#selectStandartTitrUpdate option:selected').data('idreceive')
         $('.edit-receive-standarttitr-form-name').html('Редактировать проводку')
         $('#receive_id').val(idreceive)
