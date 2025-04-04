@@ -48,8 +48,8 @@ $(function () {
             input = $(this).parent('td').find('.form-control'),
             inputVal = input.val()
 
-        $(this).addClass('visually-hidden')
-        input.removeClass('visually-hidden')
+        $(this).addClass('d-none')
+        input.removeClass('d-none')
         if (inputVal === '0') {
             input.focus().val('')
         } else {
@@ -147,49 +147,28 @@ $(function () {
                     return `<a href="/ulab/gost/method/${item.method_id}">${item.mp_name}</a>`
                 }
             },
-            // {
-            //     data: 'duration_gost',
-            //     orderable: false,
-            //     render: function (data, type, item) {
-            //         return `<input class="form-control duration_gost" value="${item.duration_gost}" type="number" step="0.1">`
-            //     }
-            // },
             {
                 data: 'duration_gost',
                 orderable: false,
                 render: function (data, type, item) {
                     return `<div class="duration_gost_div click_input">${item.duration_gost}</div>
-                            <input class="form-control visually-hidden duration_gost" value="${item.duration_gost}" type="number" step="0.1">`
+                            <input class="form-control d-none duration_gost" value="${item.duration_gost}" type="number" step="0.1">`
                 }
             },
-            // {
-            //     data: 'duration_employee',
-            //     orderable: false,
-            //     render: function (data, type, item) {
-            //         return `<input class="form-control duration_employee duration_input work_input" value="${item.duration_employee}" type="number" step="0.1">`
-            //     }
-            // },
             {
                 data: 'duration_employee',
                 orderable: false,
                 render: function (data, type, item) {
                     return `<div class="duration_employee_div work_input click_input">${item.duration_employee}</div>
-                            <input class="form-control visually-hidden duration_employee duration_input work_input" value="${item.duration_employee}" type="number" step="0.1">`
+                            <input class="form-control d-none duration_employee duration_input work_input" value="${item.duration_employee}" type="number" step="0.1">`
                 }
             },
-            // {
-            //     data: 'duration_equip',
-            //     orderable: false,
-            //     render: function (data, type, item) {
-            //         return `<input class="form-control duration_equip duration_input" value="${item.duration_equip}" type="number" step="0.1">`
-            //     }
-            // },
             {
                 data: 'duration_equip',
                 orderable: false,
                 render: function (data, type, item) {
                     return `<div class="duration_equip_div click_input">${item.duration_equip}</div>
-                            <input class="form-control visually-hidden duration_equip duration_input" value="${item.duration_equip}" type="number" step="0.1">`
+                            <input class="form-control d-none duration_equip duration_input" value="${item.duration_equip}" type="number" step="0.1">`
                 }
             },
             {
@@ -197,7 +176,7 @@ $(function () {
                 orderable: false,
                 render: function (data, type, item) {
                     return `<div class="duration_probe_div click_input">${item.duration_probe}</div>
-                            <input class="form-control visually-hidden duration_probe duration_input work_input" value="${item.duration_probe}" type="number" step="0.1">`
+                            <input class="form-control d-none duration_probe duration_input work_input" value="${item.duration_probe}" type="number" step="0.1">`
                 }
             },
             {
@@ -205,7 +184,7 @@ $(function () {
                 orderable: false,
                 render: function (data, type, item) {
                     return `<div class="duration_total_div click_input">${item.duration_total}</div>
-                            <input class="form-control visually-hidden duration_total" value="${item.duration_total}" type="number" step="0.1">`
+                            <input class="form-control d-none duration_total" value="${item.duration_total}" type="number" step="0.1">`
                 }
             },
             {
@@ -213,7 +192,7 @@ $(function () {
                 orderable: false,
                 render: function (data, type, item) {
                     return `<div class="count_employee_div click_input">${item.count_employee}</div>
-                            <input class="form-control visually-hidden count_employee work_input" value="${item.count_employee}" type="number" step="0.1">`
+                            <input class="form-control d-none count_employee work_input" value="${item.count_employee}" type="number" step="0.1">`
                 }
             },
             {
@@ -221,7 +200,7 @@ $(function () {
                 orderable: false,
                 render: function (data, type, item) {
                     return `<div class="duration_work_div click_input">${item.duration_work}</div>
-                            <input class="form-control visually-hidden duration_work" value="${item.duration_work}" type="number" step="0.1">`
+                            <input class="form-control d-none duration_work" value="${item.duration_work}" type="number" step="0.1">`
                 }
             },
             {
