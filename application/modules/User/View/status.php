@@ -29,10 +29,6 @@
     <nav class="header-menu w-100">
         <ul class="nav w-100">
             <li class="nav-item me-3">
-                <a class="nav-link fa-solid icon-nav fa-arrow-left disabled" id="back-button" style="font-size: 22px;" title="Назад" data-bs-toggle="tooltip">
-                </a>
-            </li>
-            <li class="nav-item me-3">
                 <a class="nav-link fa-solid icon-nav fa-rectangle-list" href="<?= URI ?>/import/list" style="font-size: 22px;" title="Профиль лаборатории" data-bs-toggle="tooltip">
                 </a>
             </li>
@@ -41,18 +37,9 @@
                 </a>
             </li>
             <li class="nav-item me-2">
-                <a class="nav-link fa-solid icon-nav fa-exchange disabled" style="font-size: 22px; margin: 2px 0 0 1px;" href="<?=URI?>/user/status/" title="Статусы (вы здесь)" data-bs-toggle="tooltip">
-                </a>
-            </li>
-            <li class="nav-item me-2">
                 <a class="nav-link fa-solid fa-cog icon-nav" style="font-size: 22px; margin: 2px 0 0 1px;" href="<?=URI?>/permission/list/" title="Роли" data-bs-toggle="tooltip">
                 </a>
             </li>
-<!--            <li class="nav-item me-5">-->
-<!--                <a class="nav-link fa-solid fa-user-tie icon-nav" style="font-size: 22px; margin: 2px 0 0 1px;" href="--><?php //=URI?><!--/import/companyEmployees/" title="Руководители" data-bs-toggle="tooltip">-->
-<!--                </a>-->
-<!--            </li>-->
-
             <li class="nav-item ms-auto">
                 <button class="btn btn-gradient users-update-status-trigger disabled" title="Обновить статусы и/или замены" data-bs-toggle="tooltip">Сохранить изменения</button>
             </li>
