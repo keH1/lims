@@ -8,6 +8,9 @@ $(function ($) {
     let journalDataTable = $journal.DataTable({
         processing: true,
         serverSide: true,
+        colReorder: true,
+        bSortCellsTop: true,
+        scrollX: true,
         ajax: {
             type : 'POST',
             data: function ( d ) {
@@ -72,10 +75,6 @@ $(function ($) {
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
         pageLength: 25,
         dom: 'frt<"bottom"lip>',
-        colReorder: true,
-        bSortCellsTop: true,
-        scrollX: true,
-        autoWidth: false,
         columnDefs: [
             {
                 targets: '_all',
@@ -176,67 +175,6 @@ $(function ($) {
         }
     })
 
-    // /** modal */
-    // $('.popup-with-form').magnificPopup({
-    //     items: {
-    //         src: '#room-modal-form',
-    //         type: 'inline'
-    //     },
-    //     fixedContentPos: false,
-    //     fixedBgPos: true,
-    //     callbacks: {
-    //         open: function() {
-    //             const roomModalForm = $('#room-modal-form');
-    //             roomModalForm.find('.form-button').text('Добавить помещение');
-    //
-    //             if (roomModalForm.find('#roomId').val() != '')
-    //             {
-    //                 roomModalForm.find('#roomId').val('');
-    //                 roomModalForm.find('#number').val('');
-    //                 roomModalForm.find('#name').val('');
-    //                 roomModalForm.find('#spec').val('');
-    //                 roomModalForm.find('#purpose').val('');
-    //                 roomModalForm.find('#area').val('');
-    //                 roomModalForm.find('#params').val('');
-    //                 // roomModalForm.find('#specEquip').val('');
-    //                 roomModalForm.find('#docs').val('');
-    //                 roomModalForm.find('#placement').val('');
-    //                 roomModalForm.find('#comment').val('');
-    //
-    //                 roomModalForm.find('.room-delete').remove();
-    //             }
-    //
-    //              $.ajax({
-    //                 method: 'POST',
-    //                 url: '/ulab/import/getUnboundOborudAjax',
-    //                 dataType: "json",
-    //                 success: function (data) {
-    //                     updateSelects(data['equipment_storaged'], data['equipment_operating']);
-    //                 },
-    //                 error: function (jqXHR, exception) {
-    //                     let msg = '';
-    //                     if (jqXHR.status === 0) {
-    //                         msg = 'Not connect.\n Verify Network.';
-    //                     } else if (jqXHR.status === 404) {
-    //                         msg = 'Requested page not found. [404]';
-    //                     } else if (jqXHR.status === 500) {
-    //                         msg = 'Internal Server Error [500].';
-    //                     } else if (exception === 'parsererror') {
-    //                         msg = '1 Requested JSON parse failed.';
-    //                     } else if (exception === 'timeout') {
-    //                         msg = 'Time out error.';
-    //                     } else if (exception === 'abort') {
-    //                         msg = 'Ajax request aborted.';
-    //                     } else {
-    //                         msg = 'Uncaught Error.\n' + jqXHR.responseText;
-    //                     }
-    //                     console.log(msg)
-    //                 }
-    //             });
-    //         }
-    //     }
-    // })
-
     body.on('click', '.popup-with-form', function () {
         $.magnificPopup.open({
             items: {
@@ -307,7 +245,6 @@ $(function ($) {
         let roomId = $(this).data('roomId');
 
         let editButton = $(this);
-        let oldText = editButton.text();
         editButton.find('i').addClass('fa-spinner');
         editButton.find('i').removeClass('fa-pencil');
         editButton.find('i').removeClass('fa-xmark');
@@ -487,17 +424,12 @@ $(function ($) {
     })
 
     function updateSelects (equipment_storaged, equipment_operating, room_id) {
-        const roomModalForm = $('#room-modal-form');
-        const selectStoraged = roomModalForm.find('#equipment_storaged');
-        // const selectOperating = roomModalForm.find('#equipment_operating');
+        const roomModalForm = $('#room-modal-form'),
+              selectStoraged = roomModalForm.find('#equipment_storaged')
 
         selectStoraged.empty();
-        // selectOperating.empty();
 
-        var storagedOptions = '<option value="" disabled>Не выбрано</option>';
-        // var operatingOptions = '<option value="" disabled>Не выбрано</option>';
-
-
+        let storagedOptions = '<option value="" disabled>Не выбрано</option>';
 
         if(room_id === 0) {
             $.each(equipment_storaged, function (key, value) {
@@ -517,19 +449,8 @@ $(function ($) {
             })
         }
 
-        // $.each(equipment_operating, function (key, value) {
-        //     operatingOptions += `
-        //         <option value="${value['id']}" ${value['id_operating_room'] !== null ? 'selected="selected"' : ''}>
-        //             ${value['name']}
-        //         </option>
-        //     `;
-        // })
-
         selectStoraged.append(storagedOptions);
-        // selectOperating.append(operatingOptions);
-
         selectStoraged.select2({ theme: "bootstrap-5" });
-        // selectOperating.select2({ theme: "bootstrap-5" });
     }
 
     journalDataTable.on('draw.dt', function() {

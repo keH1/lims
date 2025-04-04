@@ -1354,6 +1354,10 @@ class Lab extends Model
         return $deleteDone;
     }
 
+    /**
+     * @param array $filter
+     * @return array
+     */
     public function getRoomsListForLab($filter = [])
     {
         $where = "";

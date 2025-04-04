@@ -573,6 +573,9 @@ class LabController extends Controller
         exit();
     }
 
+    /**
+     * @desc Получает список помещений для лаборатории
+     */
     public function getRoomsListForLabAjax()
     {
         global $APPLICATION;
