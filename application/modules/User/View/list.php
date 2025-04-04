@@ -83,16 +83,16 @@
         </th>
         <th scope="col">
             <select  class="form-control search">
-                <option value="">Выбрать отдел</option>
+                <option value="">Все отделы</option>
                 <option value="Отдел не указан">Отдел не указан</option>
                 <?php foreach ($this->data['department_list'] as $row): ?>
-                    <option value="<?=$row?>"><?=$row?></option>
+                    <option value="<?=$row['NAME']?>"><?=$row['NAME']?></option>
                 <?php endforeach; ?>
             </select>
         </th>
         <th scope="col">
             <select  class="form-control search">
-                <option value="">Выбрать роль</option>
+                <option value="">Все роли</option>
                 <?php foreach ($this->data['role_list'] as $permission): ?>
                     <option value="<?=$permission['name']?>"><?=$permission['name']?></option>
                 <?php endforeach; ?>
