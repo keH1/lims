@@ -578,7 +578,7 @@
                                     <div class="col">
                                         <div class="input-group mb-2">
                                             <span class="input-group-text">Показать: </span>
-                                            <select id="filter-methods" class="form-control select2 filter" multiple>
+                                            <select id="filter-methods" class="form-control select2 filter" multiple data-placeholder="Выбрать испытания (мультивыбор)">
                                                 <?php foreach ($this->data['tz_methods_list'] as $item): ?>
                                                     <option value="<?=$item['id']?>"><?=$item['view_gost']?></option>
                                                 <?php endforeach; ?>
@@ -586,14 +586,14 @@
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <select id="filter-material" class="form-control select2 filter" multiple>
+                                        <select id="filter-material" class="form-control select2 filter" multiple data-placeholder="Выбрать материалы (мультивыбор)">
                                             <?php foreach ($this->data['tz_material_list'] as $item): ?>
                                                 <option value="<?=$item['id']?>"><?=$item['name']?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
                                     <div class="col">
-                                        <select id="filter-probe" class="form-control select2 filter" multiple>
+                                        <select id="filter-probe" class="form-control select2 filter" multiple data-placeholder="Выбрать пробы (мультивыбор)">
                                             <?php $mid = 0; foreach ($this->data['tz_probe_list'] as $item): ?>
                                                 <?php if ( $mid !== $item['material_id'] ): $mid = $item['material_id']; ?>
                                                     <option disabled><b><?=$item['material_name']?></b></option>

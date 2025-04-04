@@ -135,6 +135,7 @@ $(function ($) {
 
     $('.select2').select2({
         theme: 'bootstrap-5',
+        placeholder: $(this).data('placeholder'),
     })
 
     let journalDataTable = $journalMethods.DataTable({
