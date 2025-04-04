@@ -1130,43 +1130,34 @@ class RequestController extends Controller
         $this->data['lab'] = $lab->getList();
         $this->data['date_start'] = $request->getDateStart();
 
-        $this->data['tz_under_consideration'] = [];
-        $this->data['probe_in_lab'] = [];
-        $this->data['confirm_not_account'] = [];
+        $this->data['type_request'] = 'gov';
+        if (
+            (isset($_SESSION['type_request']) && $_SESSION['type_request'] == 'comm') ||
+            (isset($_GET['type_request']) && $_GET['type_request'] == 'comm')
+        ) {
+            $this->data['type_request'] = 'comm';
 
-        if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], [11, 13, 15, 58]) ) {
-            $this->data['tz_under_consideration'] = $request->tzUnderConsideration($_SESSION['SESS_AUTH']['USER_ID']);
-            $this->data['probe_in_lab'] = $request->probeInLab($_SESSION['SESS_AUTH']['USER_ID']);
-            $this->data['probe_in_lab_payed'] = $request->probeInLabPayed($_SESSION['SESS_AUTH']['USER_ID']);
-            $this->data['request_list_not_assigned'] = $request->getRequestListNoSetAssigned($_SESSION['SESS_AUTH']['USER_ID']);
-        }
-        if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], [62, 83, 17]) ) {
-            $this->data['confirm_not_account'] = $request->getConfirmNotAccountTz();
+            unset($_SESSION['type_request']);
         }
 
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
+//        $this->data['tz_under_consideration'] = [];
+//        $this->data['probe_in_lab'] = [];
+//        $this->data['confirm_not_account'] = [];
+//
+//        if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], [11, 13, 15, 58]) ) {
+//            $this->data['tz_under_consideration'] = $request->tzUnderConsideration($_SESSION['SESS_AUTH']['USER_ID']);
+//            $this->data['probe_in_lab'] = $request->probeInLab($_SESSION['SESS_AUTH']['USER_ID']);
+//            $this->data['probe_in_lab_payed'] = $request->probeInLabPayed($_SESSION['SESS_AUTH']['USER_ID']);
+//            $this->data['request_list_not_assigned'] = $request->getRequestListNoSetAssigned($_SESSION['SESS_AUTH']['USER_ID']);
+//        }
+//        if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], [62, 83, 17]) ) {
+//            $this->data['confirm_not_account'] = $request->getConfirmNotAccountTz();
+//        }
 
         $r = rand();
         $this->addJs("/assets/js/journal2.js?v={$r}");
 
-        $this->view('list');
+        $this->view('list', '', 'template_journal');
     }
 
     /**

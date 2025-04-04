@@ -184,6 +184,8 @@ class Sample extends Model
             $result = $row;
         }
 
+        $_SESSION['type_request'] = ($result['TYPE_ID'] == '9') ? 'gov' : 'comm';
+
         return $result;
     }
 
