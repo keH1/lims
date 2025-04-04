@@ -53,7 +53,7 @@
     <tr class="header-search">
         <th scope="col"></th>
         <th scope="col">
-            <input type="text" class="form-control search">
+            <input type="text" class="form-control search" style="width: 80px;">
         </th>
         <th scope="col">
             <input type="text" class="form-control search">

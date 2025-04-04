@@ -81,6 +81,12 @@ $(function ($) {
         order: [[ 1, "desc" ]],
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttonPrint,
+        columnDefs: [
+            { 
+                targets: 1,
+                width: '80px'
+            }
+        ],
     });
 
     journalDataTable.columns().every(function() {
