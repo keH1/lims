@@ -181,14 +181,13 @@ class ResultController extends Controller
 
         $selectedProtocol = !empty($_GET['protocol_id']) && $_GET['protocol_id'] > 0 ? $_GET['protocol_id'] : null;
         $checkedProtocol = isset($_GET['selected']) ? $selectedProtocol : null;
-        $isDealNk = $deal['TYPE_ID'] === TYPE_DEAL_NK;
 
         $this->data['deal_id'] = $dealId;
         $this->data['tz_id'] = $tz['ID'] ?: null;
         $this->data['selected_protocol'] = $selectedProtocol;
         $this->data['deal_title'] = $deal['TITLE'];
         $this->data['selected'] = isset($_GET['selected']) ?? '';
-        $this->data['is_check'] = $deal['TYPE_ID'] !== 'COMPLEX' && $deal['TYPE_ID'] !== TYPE_DEAL_NK;
+        $this->data['is_check'] = true; //$deal['TYPE_ID'] !== 'COMPLEX' && $deal['TYPE_ID'] !== TYPE_DEAL_NK;
 
         $this->data['contract'] = $requirementModel->getContractByDealId($dealId);
 //        $this->data['material_gost'] = $resultModel->materialGostOatiList($dealId, !$isDealNk, $checkedProtocol, $selectedProtocol);
