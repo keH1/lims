@@ -20,7 +20,7 @@ class PermissionController extends Controller
      */
     public function users()
     {
-        $this->data['title'] = 'Пользователи';
+        $this->data['title'] = 'Настройка ролей пользователей';
 
         /** @var  Permission $permissionModel */
         $permissionModel = $this->model('Permission');
