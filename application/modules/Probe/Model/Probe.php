@@ -500,27 +500,38 @@ class Probe extends Model
 			$historyType = "Обновление АКТа приемки проб";
 			$sqlData = $this->prepearTableData('ACT_BASE', $actData);
 			$this->DB->Update('ACT_BASE', $sqlData, "where ID = {$actId}");
+
 		} else { // добавление
 			$historyType = "Формирование АКТа приемки проб";
 
+            $actNumber = $this->DB->Query(
+                "SELECT ACT_NUM 
+                    FROM ACT_BASE
+                    WHERE ACT_NUM = {$data['ACT_NUM']}
+            ")->Fetch();
+
+            if ($actNumber) {
+                $actData['ACT_NUM'] = $this->getNewActNumber();
+            }
+
 			$sqlData = $this->prepearTableData('ACT_BASE', $actData);
+
 			$this->DB->Insert('ACT_BASE', $sqlData);
 
-			$requestData['ACT_NUM'] = $data['ACT_NUM'];
+			$requestData['ACT_NUM'] = $actData['ACT_NUM'];
 			$requestData['DATE_ACT'] = $data['ACT_DATE'];
-			$requestData['NUM_ACT_TABLE'] = $data['ACT_NUM'] . "/$curYear";
+			$requestData['NUM_ACT_TABLE'] = $actData['ACT_NUM'] . "/$curYear";
 			$requestData['PROBE_IN_LAB'] = 1;
 			$requestData['SELECTION_TYPE'] = $data['SELECTION_TYPE'];
 		}
 
-		$requestSqlData = $this->prepearTableData('ba_tz', $requestData);
-		$requestModel->updateTz($dealId, $requestSqlData);
+ 		$requestModel->updateTz($dealId, $requestData);
 
 		$i = 1;
 		foreach ($data['probe'] as $umtr_id => $val) {
             $umtrId = (int)$umtr_id;
 
-			$val['cipher'] = $data['ACT_NUM'] . '.' . $i . "/$curYearCipher";
+			$val['cipher'] = $actData['ACT_NUM'] . '.' . $i . "/$curYearCipher";
 			$val['in_act'] = 1;
 
 			$this->setLabHeaderByUmtrId($umtrId);
