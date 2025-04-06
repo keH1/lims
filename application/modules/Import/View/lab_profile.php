@@ -102,6 +102,8 @@
 
         <a href="/ulab/user/list/" class="ms-2">Управление кадрами</a>
 
+        <a href="/ulab/permission/users/" class="ms-2">Настройка ролей</a>
+
         <table id="journal_users" class="table table-striped journal">
             <thead>
             <tr class="table-light">
