@@ -880,7 +880,7 @@ class DocumentGenerator extends Model
 			'ISP' => (count($verify?? []) > 1 ? 'Исполнители' : 'Исполнитель'),
 			'Point' => '',
 			'OtborProb' => $selectionType,
-			'table_verify' => $verifyArr['WorkPos'] . ' ' . $verifyArr['IC'] . ' ООО "УралНИИстром __________' . $verifyArr['Ispolnitel'],
+			'table_verify' => $verifyArr['WorkPos'] . ' ' . $verifyArr['IC'] . ' __________' . $verifyArr['Ispolnitel'],
 			'verify_arr' => $verifyArr,
             'mestoSboraProbe' => (!empty($protocol['PLACE_PROBE']) ? trim($protocol['PLACE_PROBE']) : '-') . '; ' . (!empty($protocol['DATE_PROBE']) && $protocol['DATE_PROBE'] != '0000-00-00' ? date('d.m.Y', strtotime($protocol['DATE_PROBE'])) : '-'),
             'dealTypeId' => $dealInformation['TYPE_ID'],
@@ -2345,7 +2345,7 @@ class DocumentGenerator extends Model
 //        $section = $phpWord->addSection();
 //        $table_verify = $section->addTable($styleTable);
         foreach ($varify as $var) {
-            $verifyStr .= "{$var['WorkPos']} {$var['IC']} ООО «УралНИИстром»__________{$var['Ispolnitel']}<w:br/>";
+            $verifyStr .= "{$var['WorkPos']} {$var['IC']} __________{$var['Ispolnitel']}<w:br/>";
         }
 
 		$protocolInformation['verify_protocol'] = $verifyStr;

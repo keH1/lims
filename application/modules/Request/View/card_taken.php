@@ -1,8 +1,3 @@
-<div style="display: none">
-    <pre>
-        <?var_dump($this->data['protocol'])?>
-    </pre>
-</div>
 <header class="header-requirement mb-3">
     <nav class="header-menu">
         <ul class="nav">
@@ -21,14 +16,13 @@
                 </a>
             </li>
             <li class="nav-item me-2">
-                <a class="disable nav-link disable-after-click <?=empty($this->data['request']['ID'])? 'disabled' : ''?>" href="<?=URI?>/request/copy/<?=$this->data['deal_id']?>" title="Скопировать">
+                <a class="disabled nav-link disable-after-click <?=empty($this->data['request']['ID'])? 'disabled' : ''?>" href="<?=URI?>/request/copy/<?=$this->data['deal_id']?>" title="Скопировать">
                     <svg class="icon" width="20" height="20">
                         <use xlink:href="<?=URI?>/assets/images/icons.svg#docs"/>
                     </svg>
                 </a>
             </li>
             <li class="nav-item me-2">
-<!--            	<a class="nav-link popup-help" href="#help-form" title="Техническая поддержка">-->
             	<a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Request_card/Request_card.html" title="Техническая поддержка">
                     <i class="fa-solid fa-question"></i>
                 </a>
@@ -67,14 +61,7 @@
                     <?php endif; ?>
                 </div>
                 <div>
-				<?php if ( $this->data['is_managers'] ):?>
-                    <a href="http://172.16.255.2/crm/company/details/<?=$this->data['company_id']?>/" class="text-decoration-none">
-                        <strong><?=$this->data['company_title']?></strong>
-                    </a>
-				<?php else:?>
                     <strong><?=$this->data['company_title']?></strong>
-				<?php endif;?>
-
                 </div>
             </div>
         </div>
@@ -138,14 +125,7 @@
                             </svg>
                         </a>
                     <?php else: ?>
-                    <?php if ( $this->data['deal_id'] == 8899 ): ?>
-                    <a class="no-decoration me-1" href="<?=URI.'/requirement/card_new/'.$this->data['tz_id']?>" title="Сформировать">
-                        <svg class="icon" width="35" height="35">
-                            <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
-                        </svg>
-                    </a>
-                    <?php endif; ?>
-                        <a class="no-decoration me-1" href="<?=URI.'/requirement/card/'.$this->data['tz_id']?>" title="Сформировать">
+                        <a class="no-decoration me-1" href="<?=URI.'/requirement/card_new/'.$this->data['tz_id']?>" title="Сформировать">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
                             </svg>
@@ -238,11 +218,6 @@
                             </svg>
                         </a>
                     <?php else: ?>
-<!--                        <a class="no-decoration me-1 reload" data-href="/protocol_generator/tz_doc.php?ID=--><?//=$this->data['deal_id']?><!--&TZ_ID=--><?//=$this->data['tz_id']?><!--" title="Сформировать">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#form"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
 						<a class="no-decoration me-1 reload" data-href="/ulab/generator/technicalSpecification/<?=$this->data['deal_id']?>" title="Сформировать">
 							<svg class="icon" width="35" height="35">
 								<use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
@@ -315,11 +290,6 @@
                             </svg>
                         </a>
                     <?php else: ?>
-<!--                        <a class="no-decoration me-1 popup-with-form" href="#act-probe-modal-form" title="Заполнить данные акта">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#edit"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
 						<a class="no-decoration me-1" href="/ulab/probe/new/<?=$this->data['deal_id']?>" title="Заполнить данные акта">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#edit"/>
@@ -328,11 +298,6 @@
                     <?php endif; ?>
                 </td>
                 <td>
-<!--                    <a class="no-decoration me-1" href="/protocol_generator/probe_all.php?ID=--><?//=$this->data['deal_id']?><!--" title="Скачать акт приемки проб">-->
-<!--                        <svg class="icon" width="35" height="35">-->
-<!--                            <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#doc-send"/>-->
-<!--                        </svg>-->
-<!--                    </a>-->
 					<a class="no-decoration me-1" href="/ulab/generator/actSampleDocument/<?=$this->data['deal_id']?>" title="Скачать акт приемки проб">
 						<svg class="icon" width="35" height="35">
 							<use xlink:href="<?=URI?>/assets/images/icons.svg#doc-send"/>
@@ -348,12 +313,7 @@
 				<td><strong>Результаты испытаний</strong></td>
 				<td>
 					<?php if ($this->data['results']['check']): ?>
-                        <!--TODO: Для новых лабораторий удалить else или добавить if если производится рефакторинг результатов испытаний и $this->data['deal_id'] > $this->data['result_refactoring_start_id'], так же убрать или добавить из контроллера $this->data['result_refactoring_start_id'] RequestController.php-->
-                        <?php if ( $this->data['material_data'] && $this->data['deal_id'] > $this->data['result_refactoring_start_id'] ): ?>
-                            <a href="<?=$this->data['is_deal_nk']? '/results_isp_nk.php?ID='.$this->data['deal_id'] : URI.'/result/'.($this->data['deal_id'] >= DEAL_START_NEW_AREA ? 'resultCard' : 'card').'/'.$this->data['deal_id']?>"><?=$this->data['deal_id']?></a>
-                        <?php else: ?>
-						<a href="/results_isp<?=$this->data['is_deal_nk']? '_nk' : ''?>.php?ID=<?=$this->data['deal_id']?>"><?=$this->data['deal_id']?></a>
-                        <?php endif; ?>
+                        <a href="<?= URI.'/result/card_oati/'.$this->data['deal_id']?>"><?=$this->data['deal_id']?></a>
                     <?php else: ?>
 						Не внесены
 					<?php endif; ?>
@@ -363,28 +323,19 @@
 				</td>
 				<td>--</td>
 				<td>
-                    <!--TODO: Для новых лабораторий удалить else или добавить if если производится рефакторинг результатов испытаний и $this->data['deal_id'] > $this->data['result_refactoring_start_id'], так же убрать или добавить из контроллера $this->data['result_refactoring_start_id'] RequestController.php-->
-                    <?php if (!$this->data['results']['is_disabled'] || $this->data['is_admin']) :?>
-                    <?php if ( $this->data['deal_id'] > $this->data['result_refactoring_start_id'] ): ?>
-                        <a class="no-decoration me-1" href="<?=URI.'/result/'.($this->data['deal_id'] >= DEAL_START_NEW_AREA ? 'resultCard' : 'card').'/'.$this->data['deal_id']?>" title="Внести результаты">
+                    <?php if (!$this->data['results']['is_disabled']) :?>
+                        <a class="no-decoration me-1" href="<?=URI.'/result/card_oati/'.$this->data['deal_id']?>" title="Внести результаты">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#enter"/>
                             </svg>
                         </a>
-                    <?php else: ?>
-                        <a class="no-decoration me-1" href="/results_isp.php?ID=<?=$this->data['deal_id']?>" title="Внести результаты">
+                    <?php else:?>
+                        <a class="no-decoration me-1 disabled" href="#" title="Внести результаты">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#enter"/>
                             </svg>
                         </a>
-                    <?php endif; ?>
-				<?php else:?>
-						<a class="no-decoration me-1 disabled" href="#" title="Внести результаты">
-							<svg class="icon" width="35" height="35">
-								<use xlink:href="<?=URI?>/assets/images/icons.svg#enter"/>
-							</svg>
-						</a>
-				<?php endif;?>
+                    <?php endif;?>
 				</td>
 				<td></td>
 				<td></td>
@@ -599,7 +550,7 @@
         <div>
             <form id="dropzone-example" class="dropzone dz-clickable" action="/ulab/request/uploadUserFileAjax/<?=$this->data['deal_id']?>">
                 <div class="dropzone-previews"></div>
-                <div class="dz-default dz-message"><span>Drop files here to upload</span></div>
+                <div class="dz-default dz-message"><span>Добавьте файлы для загрузки</span></div>
             </form>
         </div>
     </div>
@@ -631,7 +582,7 @@
                         <span><strong>Данные протокола №<?=$item['number']?></strong></span>
                         <br>
                         <?php foreach ($item['files'] as $file): ?>
-                            <a  href="<?=$item['dir']?><?=$file?>"><?=$file?></a><br>
+                            <a  href="<?=$item['dir']?><?=$file?>?v=<?=rand()?>"><?=$file?></a><br>
                         <?php endforeach; ?>
                         <br>
                     <?php endforeach; ?>
@@ -697,7 +648,7 @@
 
     <div class="mb-3">
         <label class="form-label">Место отбора проб</label>
-        <input type="text" class="form-control" name="act[samplePlace]" value="<?=$this->data['sample']['place_probe']?>">
+        <input type="text" class="form-control" name="act[samplePlace]" value="<?=htmlentities($this->data['sample']['place_probe'])?>">
     </div>
 
     <div class="mb-3">
@@ -739,7 +690,9 @@
 
 <form id="act-work-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/request/card/<?=$this->data['deal_id']?>" method="post">
     <div class="title mb-3 h-2">
-        Данные акта выполненых работ
+        Данные акта выполненных работ
+    </div>
+
     <div class="line-dashed-small"></div>
 
     <div class="mb-3">
@@ -755,9 +708,10 @@
     <div class="mb-3">
         <label class="form-label">Руководитель</label>
         <select name="lead" class="form-control" required>
-            <option value="1">Ахтямов Э.Р.</option>
-<!--            <option value="2">Габдрахманова А.А.</option>-->
-            <option value="3">Молчанова Е.Н.</option>
+            <option value="" <?=$this->data['act_vr']['LEAD'] == '' ? 'selected' : ''?> disabled>Выберите руководителя</option>
+            <?php foreach ($this->data['act_complete']['assigned_users'] as $user): ?>
+                <option <?=$this->data['act_vr']['LEAD'] == $user['id'] ? 'selected' : ''?> value="<?=$user['id']?>"><?=$user['short_name']?></option>
+            <?php endforeach; ?>
         </select>
     </div>
 

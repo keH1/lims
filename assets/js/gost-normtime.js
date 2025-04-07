@@ -14,8 +14,6 @@ $(function () {
         const durationTotal = $row.find('.duration_total').val()
         const durationWork = $row.find('.duration_work').val()
 
-        console.log(durationEmployee)
-
         $.ajax({
             method: 'POST',
             url: '/ulab/gost/setDurationAjax/',
@@ -44,8 +42,7 @@ $(function () {
     })
 
     $body.on('click', '.click_input', function () {
-        let classListDiv = $(this).attr('class'),
-            input = $(this).parent('td').find('.form-control'),
+        let input = $(this).parent('td').find('.form-control'),
             inputVal = input.val()
 
         $(this).addClass('d-none')
@@ -65,8 +62,6 @@ $(function () {
         const $totalDiv = $tr.find('.duration_total_div')
 
         let total = 0
-
-
 
         $.each($input, function (i, item) {
             if ($(item).val() === '') {
@@ -224,12 +219,17 @@ $(function () {
         fixedHeader:   true,
     });
 
-    journalDataTable.columns().every( function () {
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            journalDataTable
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
+    journalDataTable.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                journalDataTable
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 
