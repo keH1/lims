@@ -166,24 +166,13 @@ $(function ($) {
             container.stop()
         })
 
-    let $body = $("body")
-    let $containerScroll = $body.find('.dataTables_scroll')
-    let $thead = $('.journal thead tr:first-child')
-
-    $(document).scroll(function () {
+    $(document).scroll(function() {
         let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height(),
-            positionTop = $containerScroll.offset().top
-
-        if (positionScroll >= positionTop) {
-            $thead.attr('style', 'position:fixed;top:0;z-index:99')
-        } else {
-            $thead.attr('style', '')
-        }
+            tableScrollBody = container.height()
 
         if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform', `translateY(${positionScroll - 260}px)`)
-            $('.arrowLeft').css('transform', `translateY(${positionScroll - 250}px)`)
+            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
+            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
         }
     })
 
