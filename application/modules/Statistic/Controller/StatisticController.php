@@ -161,6 +161,10 @@ class StatisticController extends Controller
         $this->data['protocols'] = $statisticModel->getStatisticProtocolByMonth($monthReport);
         $this->data['users_from_dep'] = $userModel->getUserFromDep();
 
+        $this->data['user_methods'] = $statisticModel->getStatisticUserMethods($monthReport);
+
+        $this->data['fin_report'] = $statisticModel->getFinReport($monthReport);
+
         $this->data['field_report_protocol'] = [
             'Протоколы',
             'count' => 'Общее количество протоколов, шт',
@@ -173,11 +177,48 @@ class StatisticController extends Controller
         ];
 
         $this->data['field_report_user'] = [
-            'Количество завершенных испытаний, шт:',
-            'Количество незавершенных испытаний, шт:',
-            "Процент завершенных испытаний<br> относительно лаборатории, %:",
-            'Стоимость выполненных методик, руб:',
-            "Процент от общей стоимости<br> выполненных методик лаборатории, %",
+            'complete' => 'Количество завершенных испытаний, шт:',
+            'incomplete' => 'Количество незавершенных испытаний, шт:',
+            'percent_complete' => "Процент завершенных испытаний<br> относительно лаборатории, %:",
+            'price' => 'Стоимость выполненных методик, руб:',
+            'percent_price' => "Процент от общей стоимости<br> выполненных методик лаборатории, %",
+        ];
+
+        $this->data['fin_report_rows'] = [
+            'month_price_new' => 'Общая стоимость новых заявок, руб',
+            'year_price_new' => '-- С начала года, руб',
+            'month_full_paid' => 'Всего оплачено, руб',
+            'month_no_paid_count' => 'Всего неоплачено заявок, шт',
+            'month_no_paid_price' => '-- На сумму, руб',
+            'year_no_paid_price' => '-- С начала года, руб',
+            'month_part_paid_count' => 'Оплачено частично, шт',
+            'month_part_paid_price' => '-- На сумму, руб',
+            'year_part_paid_price' => '-- С начала года, руб',
+        ];
+
+        $this->data['mfc_report_rows'] = [
+            'Заявка',
+            'a' => 'Общее количество заявок, шт',
+            'b' => 'Успешные, шт',
+            'c' => 'Неуспешные, шт',
+            'd' => 'Уникальные (одна лаб.), шт',
+            'e' => 'Совместные (несколько лаб.), шт',
+            'Клиент',
+            'f' => 'Новый клиентов, шт:',
+            'Акты приемки',
+            'g' => 'Общее количество актов приемки проб, шт',
+            'k' => 'Завершенные, шт',
+            'l' => 'Незавершенные, шт',
+            'Договоры',
+            'n' => 'Сфоромированно, шт',
+            'm' => 'Подписаны, шт',
+            'o' => 'Не подписаны, шт',
+            'Техническое задание',
+            'p' => 'Отправлены клиенту, шт',
+            'Счета',
+            'r' => 'Сформировано, шт',
+            's' => 'Сформировано на сумму, руб',
+            't' => 'Оплачено на сумму, руб',
         ];
 
         $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
@@ -491,6 +532,7 @@ class StatisticController extends Controller
 		echo json_encode($response, JSON_UNESCAPED_UNICODE);
 	}
 
+
     /**
      * @desc Получает статистику персонала по месяцам для диаграммы
      */
@@ -501,7 +543,7 @@ class StatisticController extends Controller
 		$APPLICATION->RestartBuffer();
 
 		/** @var Statistic $statistic */
-		$statistic = $this->model('Statistic');
+        $statisticModel = $this->model('Statistic');
 
 
 		if (empty($_POST['month'])) {
@@ -510,7 +552,7 @@ class StatisticController extends Controller
 			$monthReport = $_POST['month'];
 		}
 
-		$response = $statistic->getStatisticStaffByMonthForChart($monthReport);
+		$response = $statisticModel->getStatisticUserMethods($monthReport);
 
 		echo json_encode($response, JSON_UNESCAPED_UNICODE);
 	}

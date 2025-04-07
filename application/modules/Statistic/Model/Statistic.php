@@ -1703,6 +1703,160 @@ class Statistic extends Model
     }
 
 
+    public function getFinReport($dataReport)
+    {
+        $month = date('m', strtotime($dataReport));
+        $year = date('Y', strtotime($dataReport));
+
+        $result = [];
+
+        $sql = $this->DB->Query(
+            "select 
+                sum(price_discount) as year_price_new,
+                sum(if(month(DATE_CREATE_TIMESTAMP) = {$month}, price_discount, 0)) as month_price_new,
+                sum(if(month(DATE_CREATE_TIMESTAMP) = {$month} and OPLATA >= price_discount and price_discount > 0, OPLATA, 0)) as month_full_paid,
+                
+                sum(if(month(DATE_CREATE_TIMESTAMP) = {$month} and OPLATA = 0 and price_discount > 0, 1, 0)) as month_no_paid_count,
+                sum(if(month(DATE_CREATE_TIMESTAMP) = {$month} and OPLATA = 0 and price_discount > 0, price_discount, 0)) as month_no_paid_price,
+                sum(if(OPLATA = 0 and price_discount > 0, price_discount, 0)) as year_no_paid_price,
+                
+                sum(if(month(DATE_CREATE_TIMESTAMP) = {$month} and OPLATA > 0 and OPLATA < price_discount and price_discount > 0, 1, 0)) as month_part_paid_count,
+                sum(if(month(DATE_CREATE_TIMESTAMP) = {$month} and OPLATA > 0 and OPLATA < price_discount and price_discount > 0, price_discount, 0)) as month_part_paid_price,
+                sum(if(OPLATA > 0 and OPLATA < price_discount and price_discount > 0, price_discount, 0)) as year_part_paid_price
+            from ba_tz where year(DATE_CREATE_TIMESTAMP) = {$year}"
+        )->Fetch();
+
+        $result['all_year_price_new'] = $sql['year_price_new'];
+        $result['all_month_price_new'] = $sql['month_price_new'];
+        $result['all_month_full_paid'] = $sql['month_full_paid'];
+        $result['all_month_no_paid_count'] = $sql['month_no_paid_count'];
+        $result['all_month_no_paid_price'] = $sql['month_no_paid_price'];
+        $result['all_year_no_paid_price'] = $sql['year_no_paid_price'];
+        $result['all_month_part_paid_count'] = $sql['month_part_paid_count'];
+        $result['all_month_part_paid_price'] = $sql['month_part_paid_price'];
+        $result['all_year_part_paid_price'] = $sql['year_part_paid_price'];
+
+        $sql2 = $this->DB->Query(
+            "select price_discount, OPLATA, LABA_ID, month(DATE_CREATE_TIMESTAMP) as `month` 
+            from ba_tz where year(DATE_CREATE_TIMESTAMP) = {$year}"
+        );
+
+        while ($row = $sql2->Fetch()) {
+            if ( empty($row['LABA_ID']) ) {
+                continue;
+            }
+
+            $depId = explode(',', $row['LABA_ID']);
+            foreach ($depId as $id) {
+                if ( !isset($result['dep'][$id]['year_price_new']) ) {
+                    $result['dep'][$id]['year_price_new'] = 0;
+                }
+                if ( !isset($result['dep'][$id]['month_price_new']) ) {
+                    $result['dep'][$id]['month_price_new'] = 0;
+                }
+                if ( !isset($result['dep'][$id]['month_full_paid']) ) {
+                    $result['dep'][$id]['month_full_paid'] = 0;
+                }
+                if ( !isset($result['dep'][$id]['month_no_paid_count']) ) {
+                    $result['dep'][$id]['month_no_paid_count'] = 0;
+                }
+                if ( !isset($result['dep'][$id]['month_no_paid_price']) ) {
+                    $result['dep'][$id]['month_no_paid_price'] = 0;
+                }
+                if ( !isset($result['dep'][$id]['month_part_paid_count']) ) {
+                    $result['dep'][$id]['month_part_paid_count'] = 0;
+                }
+                if ( !isset($result['dep'][$id]['month_part_paid_price']) ) {
+                    $result['dep'][$id]['month_part_paid_price'] = 0;
+                }
+                if ( !isset($result['dep'][$id]['year_part_paid_price']) ) {
+                    $result['dep'][$id]['year_part_paid_price'] = 0;
+                }
+
+                $result['dep'][$id]['year_price_new'] += $row['price_discount'];
+
+                if ( $row['month'] == "'{$month}'") {
+                    $result['dep'][$id]['month_price_new'] += $row['price_discount'];
+
+                    if ( $row['OPLATA'] >= $row['price_discount'] && $row['price_discount'] > 0 ) {
+                        $result['dep'][$id]['month_full_paid'] += $row['OPLATA'];
+                    }
+
+                    if ( $row['OPLATA'] == 0 && $row['price_discount'] > 0 ) {
+                        $result['dep'][$id]['month_no_paid_count']++;
+                        $result['dep'][$id]['month_no_paid_price'] += $row['price_discount'];
+                    }
+
+                    if ( $row['OPLATA'] > 0 && $row['price_discount'] > 0 && $row['OPLATA'] < $row['price_discount'] ) {
+                        $result['dep'][$id]['month_part_paid_count']++;
+                        $result['dep'][$id]['month_part_paid_price'] += $row['price_discount'];
+                    }
+                }
+
+                if ( $row['OPLATA'] == 0 && $row['price_discount'] > 0 ) {
+                    $result['dep'][$id]['year_no_paid_price'] += $row['price_discount'];
+                }
+
+                if ( $row['OPLATA'] > 0 && $row['price_discount'] > 0 && $row['OPLATA'] < $row['price_discount'] ) {
+                    $result['dep'][$id]['year_part_paid_price'] += $row['price_discount'];
+                }
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * получает кол-во завершенных, не завершенных испытаний и стоимость испытаний по пользователям за определенный месяц
+     * @param $dataReport
+     * @return array
+     */
+    public function getStatisticUserMethods($dataReport)
+    {
+        $month = date('m', strtotime($dataReport));
+        $year = date('Y', strtotime($dataReport));
+
+        $userModel = new User();
+
+        $sql = $this->DB->Query(
+            "select 
+                sum(IF(strt.state = 'complete', 1, 0)) as complete, 
+                sum(IF(strt.state <> 'complete', 1, 0)) as incomplete,
+                ugtp.assigned_id, 
+                sum(IF(strt.state = 'complete', ugtp.price, 0)) as price
+            from ulab_gost_to_probe as ugtp
+            inner join ulab_start_trials as strt on strt.ugtp_id = ugtp.id
+            inner join (select pi.id, MAX(pi.id) as maxpostid from ulab_start_trials as pi group by pi.ugtp_id) as p2 ON (strt.id = p2.maxpostid)
+            where year(strt.date) = {$year} and month(strt.date) = {$month} and strt.is_actual = 1 and ugtp.assigned_id > 0
+            group by ugtp.assigned_id"
+        );
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+
+            $dep = $userModel->getDepartmentByUserId($row['assigned_id']);
+
+            if ( !empty($dep) ) {
+                if ( !isset($row['dep_price'][$dep]) ) {
+                    $row['dep_price'][$dep] = 0;
+                }
+                if ( !isset($row['dep_count'][$dep]) ) {
+                    $row['dep_count'][$dep] = 0;
+                }
+
+                $row['dep_price'][$dep] += $row['price'];
+                $row['dep_count'][$dep] += $row['complete'];
+            }
+
+            $result[$row['assigned_id']] = $row;
+        }
+
+        return $result;
+    }
+
+
     /**
      * @param $monthReport
      * @return array
