@@ -199,6 +199,7 @@ class ProbeController extends Controller
 
         if ( $tzData['TYPE_ID'] != '9' ) {
             $this->data['comm'] = '?type_request=comm';
+            $_SESSION['type_request'] = 'comm';
         }
 
 		$this->data['deal_id']  = $dealId;
@@ -275,6 +276,7 @@ class ProbeController extends Controller
 
         if ( $tzData['TYPE_ID'] != '9' ) {
             $this->data['comm'] = '?type_request=comm';
+            $_SESSION['type_request'] = 'comm';
         }
 
 		$probe = $probeModel->getProbeByDealId($dealId);
