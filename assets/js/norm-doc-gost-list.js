@@ -54,7 +54,7 @@ $(function () {
                 data: 'name',
                 render: function (data, type, item) {
                     if ( item.method_id === null ) {
-                        return `Методик не добавлено`
+                        return ''
                     }
 
                     return `<a href="/ulab/normDocGost/method/${item.method_id}">${item.name}</a>`
