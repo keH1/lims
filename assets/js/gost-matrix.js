@@ -36,6 +36,9 @@ $(function () {
         success: function (data) {
             data = JSON.parse(data);
             $.each(data, function (i, val) {
+
+                if ( val.users == undefined ) { return false }
+
                 let countUser = Object.keys(val.users).length
 
                 $trHeaderTitle.find('th:last-child').after(`<th scope="col" colspan="${countUser}">${val.short_name}</th>`)
@@ -89,7 +92,28 @@ $(function () {
                 order: [[ 0, "desc" ]],
                 colReorder: true,
                 dom: 'frtB<"bottom"lip>',
-                buttons: dataTablesSettings.buttonPrint,
+                buttons: [
+                    {
+                        extend: 'print',
+                        titleAttr: 'Печать',
+                        exportOptions: {
+                            modifier: {
+                                page: 'current'
+                            },
+                            stripHtml: false
+                        },
+                        customize: function(win) {
+                            $(win.document.body).find('input[type="checkbox"]').each(function(){
+                                if ($(this).is(':checked')) {
+                                    // Заменяем отмеченный чекбокс на текстовую галочку (✓)
+                                    $(this).replaceWith('<span style="font-family: Arial; font-size: 14px;">&#10003;</span>');
+                                } else {
+                                    $(this).replaceWith('<span style="font-family: Arial; font-size: 14px;"></span>');
+                                }
+                            });
+                        }
+                    }
+                ],
                 bSortCellsTop: true,
                 scrollX: true,
                 fixedHeader: false,
