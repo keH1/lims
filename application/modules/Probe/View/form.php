@@ -114,15 +114,6 @@
 				<label class="form-label mb-1" for="protocolDeadline">Дата отбора (общее)</label>
 				<input type="date" class="form-control bg-white w-100" id="date_all">
 			</div>
-			<div class="form-group col-sm-4">
-				<label class="form-label mb-1">Карьер</label>
-                <select class="form-control select2" id="quarry_all" name="">
-                    <option value="">Нет карьера</option>
-                    <?php foreach($this->data['quarry_list'] as $quarry): ?>
-                        <option value='<?=$quarry['ID']?>'><?=$quarry['NAME']?></option>
-                    <?php endforeach; ?>
-                </select>
-			</div>
 		</div>
 		<table class="table">
 			<thead>
@@ -131,7 +122,6 @@
 				<th>Маркировка заказчика (при наличии)</th>
 				<th>Место отбора</th>
 				<th>Дата отбора</th>
-				<th>Карьер</th>
 			</thead>
 			<tbody>
 			<?php $i = 1;
@@ -152,14 +142,6 @@
 						</td>
 						<td>
 							<input type="date" class="form-control date bg-white w-100" name="act[probe][<?=$k?>][date_probe]">
-						</td>
-						<td>
-							<select class="form-control select2 quarry w-100" name="act[probe][<?=$k?>][quarry_id]">
-								<option value="">Нет карьера</option>
-								<?php foreach($this->data['quarry_list'] as $quarry): ?>
-									<option value="<?=$quarry['ID']?>" <?=$item['quarry_id'] == $quarry['ID'] ? 'selected' : ''?>><?=$quarry['NAME']?></option>
-								<?php endforeach; ?>
-							</select>
 						</td>
 					</tr>
 				<?php $i++;

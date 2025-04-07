@@ -11,12 +11,10 @@ $(function ($) {
             dataType: "json",
             method: "POST",
             success: function (data) {
-                console.log(data)
                 $form.find('.probe_id').val(id)
                 $form.find('.name_for_protocol').val(data.name_for_protocol)
                 $form.find('.probe_place').val(data.place)
                 $form.find('.probe_date').val(data.date_probe)
-                $form.find('.probe_quarry_id').val(data.quarry_id)
 
                 $.magnificPopup.open({
                     items: {
@@ -35,29 +33,13 @@ $(function ($) {
         const id = $(this).data('id')
         let val = $(this).prop('checked')
 
-        console.log(val)
         $.ajax({
             url: "/ulab/probe/changeSelectionTypeAjax/",
             data: {"id": id,
                    "checked": val},
             dataType: "json",
             method: "POST",
-            success: function (data) {
-                console.log(data)
-                // $form.find('.probe_id').val(id)
-                // $form.find('.name_for_protocol').val(data.name_for_protocol)
-                // $form.find('.probe_place').val(data.place)
-                // $form.find('.probe_date').val(data.date_probe)
-                // $form.find('.probe_quarry_id').val(data.quarry_id)
-                //
-                // $.magnificPopup.open({
-                //     items: {
-                //         src: '#edit-modal-form',
-                //         type: 'inline',
-                //     },
-                //     fixedContentPos: false,
-                // })
-            }
+            success: function (data) { }
         })
 
         return false
@@ -77,8 +59,6 @@ $(function ($) {
             dataType: "json",
             method: "POST",
             success: function (data) {
-                console.log(data)
-
                 $form.find('.cipher').text(data.info.cipher)
 
                 let html = ``

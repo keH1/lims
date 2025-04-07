@@ -13,11 +13,4 @@ $(function ($) {
 		let date = $(this).val()
 		$('.date').val(date)
 	})
-
-	$('#quarry_all').on('change', function (){
-		let quarry = $(this).val()
-		console.log(quarry)
-		$(`.quarry option[value="${quarry}"]`).prop('selected', true).trigger('change');
-	})
-
 })
