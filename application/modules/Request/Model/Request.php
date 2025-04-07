@@ -1946,7 +1946,6 @@ class Request extends Model
             } else if (
                 in_array($row['STAGE_ID'], $stageArray) &&
                 $price > 0.0 &&
-                !empty($oplata) &&
                 $price <= $oplata
             ) {
                 $row['color'] = 'bg-green';
