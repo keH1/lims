@@ -104,6 +104,17 @@ class ElectricController extends Controller
 
         $newAdd = $_POST['toSQL'];
 
+        $validDate = $this->validateDate($newAdd['electric_control']['date'], 'Дата замера', true);
+        if (!$validDate['success']) {
+            $this->showErrorMessage($validDate['error']);
+            $this->redirect($usedModel->getLocation());
+        }
+        $validIdRoom = $this->validateNumber($newAdd['electric_control']['id_room'], 'Помещение', true);
+        if (!$validIdRoom['success']) {
+            $this->showErrorMessage($validIdRoom['error']);
+            $this->redirect($usedModel->getLocation());
+        }
+
         $isAdd = $usedModel->addToSQL($newAdd, 'addMeasurement');
 
         $this->checkAndShowSuccessOrErrorMessage($isAdd, $successMsg, $unsuccessfulMsg);

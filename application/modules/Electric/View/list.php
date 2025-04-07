@@ -116,7 +116,7 @@
         <div class="col">
             <label class="form-label">Дата замера</label>
             <input name="toSQL[electric_control][date]" type="date" class="form-control"
-                   value="<?= $this->data['current_date'] ?>" placeholder="Дата замера">
+                   value="<?= $this->data['current_date'] ?>" placeholder="Дата замера" required>
         </div>
     </div>
     <div class="row mb-3">
