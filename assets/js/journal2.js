@@ -503,8 +503,6 @@ $(function ($) {
         })
     }
 
-    let journalDataTable = getJournalDataTable($journalGov, columnsGovJournal)
-
     journalDataTable.columns().every(function () {
         let timeout
         $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
