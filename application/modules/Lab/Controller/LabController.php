@@ -54,9 +54,9 @@ class LabController extends Controller
 
         $this->data['rooms'] = $labModel->getLabaRoom();
         $this->data['pressure'] = end($pressure)['pressure'] ?? '';
-        $this->data['may_edit_pressure'] = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]) || $_SESSION['SESS_AUTH']['USER_ID'] == '137';
+        $this->data['may_edit_pressure'] = true;//in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]) || $_SESSION['SESS_AUTH']['USER_ID'] == '137';
         // Проверка на доступ редактирования данных условий окружающей среды(помещения)
-        $this->data['is_may_edit'] = in_array($permissionInfo['id'],  [self::ADMIN_PERMISSION_ID, self::HEAD_IC_PERMISSION_ID]);
+        $this->data['is_may_edit'] = true;//in_array($permissionInfo['id'],  [self::ADMIN_PERMISSION_ID, self::HEAD_IC_PERMISSION_ID]);
 
 
         $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
@@ -571,5 +571,36 @@ class LabController extends Controller
        
         echo json_encode($labs, JSON_UNESCAPED_UNICODE);
         exit();
+    }
+
+    /**
+     * @desc Получает список помещений для лаборатории
+     */
+    public function getRoomsListForLabAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var Lab $labModel */
+        $labModel = $this->model('Lab');
+
+        $filter = $labModel->prepareFilter($_POST ?? []);
+
+        $data = $labModel->getRoomsListForLab($filter);
+
+        $recordsTotal = $data['recordsTotal'];
+        $recordsFiltered = $data['recordsFiltered'];
+
+        unset($data['recordsTotal']);
+        unset($data['recordsFiltered']);
+
+        $jsonData = [
+            "draw" => (int)$_POST['draw'],
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+        ];
+
+        echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
     }
 }

@@ -17,15 +17,7 @@
     <nav class="header-menu w-100">
         <ul class="nav w-100">
             <li class="nav-item me-3">
-                <a class="nav-link fa-solid icon-nav fa-arrow-left disabled" id="back-button" style="font-size: 22px;" title="Назад" data-bs-toggle="tooltip">
-                </a>
-            </li>
-            <li class="nav-item me-3">
                 <a class="nav-link fa-solid icon-nav fa-rectangle-list" href="<?= URI ?>/import/list" style="font-size: 22px;" title="Профиль лаборатории" data-bs-toggle="tooltip">
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link icon-nav fa-solid fa-user disabled" style="font-size: 22px; margin: 2px 0 0 1px;" href="<?=URI?>/user/list/" title="Пользователи (вы здесь)" data-bs-toggle="tooltip">
                 </a>
             </li>
             <li class="nav-item me-2">
@@ -36,11 +28,6 @@
                 <a class="nav-link fa-solid fa-cog icon-nav" style="font-size: 22px; margin: 2px 0 0 1px;" href="<?=URI?>/permission/list/" title="Роли" data-bs-toggle="tooltip">
                 </a>
             </li>
-<!--            <li class="nav-item me-5">-->
-<!--                <a class="nav-link fa-solid fa-user-tie icon-nav" style="font-size: 22px; margin: 2px 0 0 1px;" href="--><?php //=URI?><!--/import/companyEmployees/" title="Руководители" data-bs-toggle="tooltip">-->
-<!--                </a>-->
-<!--            </li>-->
-
             <li class="nav-item me-3 ms-auto">
                 <a class="nav-link fa-solid fa-plus icon-nav popup-with-form add-user" style="font-size: 25px;" href="#" title="Добавить пользователя" data-bs-toggle="tooltip">
                 </a>
@@ -83,16 +70,16 @@
         </th>
         <th scope="col">
             <select  class="form-control search">
-                <option value="">Выбрать отдел</option>
+                <option value="">Все отделы</option>
                 <option value="Отдел не указан">Отдел не указан</option>
                 <?php foreach ($this->data['department_list'] as $row): ?>
-                    <option value="<?=$row?>"><?=$row?></option>
+                    <option value="<?=$row['NAME']?>"><?=$row['NAME']?></option>
                 <?php endforeach; ?>
             </select>
         </th>
         <th scope="col">
             <select  class="form-control search">
-                <option value="">Выбрать роль</option>
+                <option value="">Все роли</option>
                 <?php foreach ($this->data['role_list'] as $permission): ?>
                     <option value="<?=$permission['name']?>"><?=$permission['name']?></option>
                 <?php endforeach; ?>
@@ -115,6 +102,7 @@
     <div class="line-dashed-small"></div>
 
     <input type="hidden" id="userId" name="user_id" value="<?= $this->data['user_id'] ?>">
+    <input type="hidden" id="newuserId" value="<?= $_SESSION['user_id'] ?>">
 
     <div class="mb-3">
         <label for="name" class="form-label mb-1">Имя</label>

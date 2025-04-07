@@ -3,8 +3,15 @@ $(function ($) {
 
     /*journal requests*/
     let journalDataTable = $journal.DataTable({
+        bAutoWidth: false,
+        autoWidth: false,
+        fixedColumns: false,
         processing: true,
         serverSide: true,
+        bSortCellsTop: true,
+        scrollX: true,
+        fixedHeader: false,
+        colReorder: true,
         ajax: {
             type : 'POST',
             data: function ( d ) {
@@ -12,11 +19,9 @@ $(function ($) {
                 d.dateEnd = $('#inputDateEnd').val()
                 d.lab = $('#selectLab option:selected').val()
                 d.stage = $('#selectStage option:selected').val()
-                d.everywhere = $('#filter_everywhere').val()
             },
             url : '/ulab/invoice/getListAjax/',
             dataSrc: function (json) {
-                console.log(json)
                 return json.data
             }
         },
@@ -35,7 +40,7 @@ $(function ($) {
                 data: 'DATE'
             },
             {
-                data: 'PRICE'
+                data: 'price_discount'
             },
             {
                 data: 'COMPANY_TITLE'
@@ -67,19 +72,21 @@ $(function ($) {
                 data: 'DATE_ACT_VR'
             },
             {
-                data: 'SEND_DATE_ACT_VR'
+                data: 'SEND_DATE_ACT_VR',
             }
         ],
         language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 1, "desc" ]],
-        colReorder: true,
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttonPrint,
-        bSortCellsTop: true,
-        scrollX:       true,
-        fixedHeader:   true,
+        columnDefs: [
+            { 
+                targets: 1,
+                width: '80px'
+            }
+        ],
     });
 
     journalDataTable.columns().every(function() {

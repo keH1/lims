@@ -2,15 +2,15 @@
     <header class="header-result mb-3">
         <nav class="header-menu">
             <ul class="nav">
-                <li class="nav-item me-2">
-                    <a class="nav-link link-back disabled"
-                       href="<?= URI ?>/request/card/<?= $this->data['deal_id'] ?? '' ?>"
-                       title="Вернуться назад">
-                        <svg class="icon" width="25" height="25">
-                            <use xlink:href="<?= URI ?>/assets/images/icons.svg#back"/>
-                        </svg>
-                    </a>
-                </li>
+<!--                <li class="nav-item me-2">-->
+<!--                    <a class="nav-link link-back disabled"-->
+<!--                       href="--><?//= URI ?><!--/request/card/--><?//= $this->data['deal_id'] ?? '' ?><!--"-->
+<!--                       title="Вернуться назад">-->
+<!--                        <svg class="icon" width="25" height="25">-->
+<!--                            <use xlink:href="--><?//= URI ?><!--/assets/images/icons.svg#back"/>-->
+<!--                        </svg>-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li class="nav-item me-2">
                     <a class="nav-link link-list" href="<?= URI ?>/request/list/" title="Вернуться к списку">
                         <svg class="icon" width="25" height="25">

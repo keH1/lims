@@ -864,4 +864,38 @@ class Organization extends Model
 
         return $result;
     }
+
+
+    /**
+     * получает всех руководителей от организации и дальше по цепочке
+     * @param $orgId
+     * @return array
+     */
+    public function getAllLeaders($orgId)
+    {
+        $userModel = new User();
+
+        $result = [];
+
+        $sql = $this->DB->Query(
+            "select org.head_user_id as org_uid, brnch.head_user_id as brn_uid, dep.head_user_id as dep_uid, lab.HEAD_ID as lab_uid
+            from ulab_organization as org
+            join ulab_branch as brnch on org.id = brnch.organization_id
+            join ulab_department as dep on brnch.id = dep.branch_id
+            join ba_laba as lab on lab.dep_id = dep.id
+            where org.id = {$orgId}"
+        );
+
+        $columns = ['org_uid', 'brn_uid', 'dep_uid', 'lab_uid'];
+
+        while ($row = $sql->Fetch()) {
+            foreach ($columns as $column) {
+                if ( $row[$column] > 0 && !isset($result[$row[$column]])) {
+                    $result[$row[$column]] = $userModel->getUserData($row[$column]);
+                }
+            }
+        }
+
+        return $result;
+    }
 }

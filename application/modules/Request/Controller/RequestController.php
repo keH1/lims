@@ -548,6 +548,8 @@ class RequestController extends Controller
         $resultModel = $this->model('Result');
         /** @var Permission $permissionModel */
         $permissionModel = $this->model('Permission');
+        /** @var Organization $organizationModel */
+        $organizationModel = $this->model('Organization');
 
         $this->data['title'] = "Карточка заявки";
 
@@ -670,8 +672,7 @@ class RequestController extends Controller
         $this->data['comment'] = $request->getComment($dealId);
 
         // ТЗ
-        $this->data['tz']['tz_link'] = $dealId >= DEAL_START_NEW_AREA? URI."/requirement/card/{$requestData['ID']}" : URI."/requirement/card_old/{$requestData['ID']}";
-        // $this->data['tz']['tz_link'] = "/requirement/card_new/{$requestData['ID']}";
+        $this->data['tz']['tz_link'] = URI."/requirement/card_new/{$requestData['ID']}";
         $this->data['tz']['check'] = !empty($requestData['ID']) && (!empty($requestData['TZ']) || $isExistTz);
         $this->data['tz']['number'] = $requestData['ID'] ?? '';
         $this->data['tz']['date'] = !empty($requestData['DATE_SOZD'])? StringHelper::dateRu($requestData['DATE_SOZD']) : '--';
@@ -679,7 +680,7 @@ class RequestController extends Controller
 
 
         // Коммерческое предложение
-        $this->data['proposal']['link'] = $dealId >= DEAL_START_NEW_AREA? "/ulab/generator/CommercialOffer/{$dealId}" : "/protocol_generator/kp.php?ID={$dealId}&TZ_ID={$requestData['ID']}";
+        $this->data['proposal']['link'] = "/ulab/generator/CommercialOffer/{$dealId}";
         $this->data['proposal']['check'] = !empty($proposalData['ID']);
         $this->data['proposal']['number'] = $proposalData['ID'] ?? 'Не сформировано';
         $this->data['proposal']['date'] = !empty($proposalData['DATE'])? StringHelper::dateRu($proposalData['DATE']) : '--';
@@ -711,7 +712,6 @@ class RequestController extends Controller
         }
 
         $this->data['order']['date'] = !empty($dogovorData['DATE'])? StringHelper::dateRu($dogovorData['DATE']) : '--';
-//		$request->pre($dogovorData);
         $this->data['order']['attach'] = $dogovorData['ACTUAL_VER'];
         $this->data['order']['date_send'] = !empty($dogovorData['SEND_DATE'])? StringHelper::dateRu($dogovorData['SEND_DATE']) : 'Не отправлялся из ЛИС';
         $this->data['order']['is_disable_form'] =
@@ -728,7 +728,7 @@ class RequestController extends Controller
 			$this->data['attach']['check'] = 'table-green';
 		}
 
-        $this->data['attach']['link'] = $dealId >= DEAL_START_NEW_AREA? "/ulab/generator/TechnicalSpecification/{$dealId}" : "/protocol_generator/tz_doc.php?ID={$dealId}&TZ_ID={$requestData['ID']}";
+        $this->data['attach']['link'] = "/ulab/generator/TechnicalSpecification/{$dealId}";
 //        $this->data['attach']['check'] = !empty($tzDoc);
         $this->data['attach']['number'] = $tzDoc['TZ_ID'] ?? 'Не сформировано';
         $this->data['attach']['date'] = !empty($tzDoc['DATE'])? StringHelper::dateRu($tzDoc['DATE']) : '--';
@@ -742,7 +742,7 @@ class RequestController extends Controller
 
 
         // Счет
-        $this->data['invoice']['link'] = $dealId >= DEAL_START_NEW_AREA? "/protocol_generator/account_new.php?ID={$dealId}&TZ_ID={$requestData['ID']}" : "/protocol_generator/account.php?ID={$dealId}&TZ_ID={$requestData['ID']}";
+        $this->data['invoice']['link'] = "/protocol_generator/account_new.php?ID={$dealId}&TZ_ID={$requestData['ID']}";
         $this->data['invoice']['check'] = !empty($invoiceData);
         $this->data['invoice']['number'] = !empty($invoiceData['ID']) ? $requestData['ACCOUNT'] : 'Не сформирован';
         $this->data['invoice']['date'] = !empty($invoiceData['DATE'])? StringHelper::dateRu($invoiceData['DATE']) : '--';
@@ -764,13 +764,6 @@ class RequestController extends Controller
 
 
         // Оплата
-        $discount = 0;
-        if ( !empty($requestData['DISCOUNT']) ) {
-            $discount = $requestData['DISCOUNT'];
-        }
-
-        //TODO:Проверить оплату со скидкой
-//        $this->data['payment']['surcharge'] = (float)$requestData['PRICE'] - (float)$requestData['PRICE'] * (float)$discount / 100 - (float)$requestData['OPLATA'];
         $this->data['payment']['surcharge'] = (float)$requestData['price_discount'] - (float)$requestData['OPLATA'];
 
 		$this->data['payment']['check'] = !empty($requestData['price_discount']) && $isExistTz && $this->data['payment']['surcharge'] == 0;
@@ -794,7 +787,7 @@ class RequestController extends Controller
         }
 
         // Акт приемки проб
-		$this->data['sample']['link'] = $dealId >= DEAL_START_NEW_AREA || $dealId == 9735 ? "/ulab/generator/actSampleDocument/{$dealId}" : "/protocol_generator/probe_all.php?ID={$dealId}";
+		$this->data['sample']['link'] = "/ulab/generator/actSampleDocument/{$dealId}";
 		$this->data['sample']['check'] = !empty($requestData['ACT_NUM']);
 		$this->data['sample']['number'] = $requestData['ACT_NUM'] . "/" . date("Y", strtotime($requestData['DATE_ACT']));
 		$this->data['sample']['date'] = !empty($requestData['DATE_ACT']) ? StringHelper::dateRu($requestData['DATE_ACT']) : '';
@@ -823,7 +816,7 @@ class RequestController extends Controller
 
             $yearDir = date("Y", strtotime($protocol['DATE']));
             $dir  = PROTOCOL_PATH . "archive/{$requestData['ID']}{$yearDir}/{$protocol['ID']}/";
-            $link = $dealId >= DEAL_START_NEW_AREA? "/ulab/generator/ProtocolDocument/{$protocol['ID']}" : "/protocol_generator/protocol_multiple_protocols.php?ID={$dealId}&TZ_ID={$requestData['ID']}&PROTOCOL_ID={$protocol['ID']}";
+            $link = "/ulab/generator/ProtocolDocument/{$protocol['ID']}";
             $this->data['protocol'][] = [
                 'id'        => $protocol['ID'],
                 'check'     => !empty($protocol['NUMBER']),
@@ -857,9 +850,7 @@ class RequestController extends Controller
 
 
         // Результаты испытаний
-        //$this->data['results']['check'] = $dealId >= DEAL_START_NEW_AREA ? !empty($countResults['count_utr']) : !empty($requestData['RESULTS']);
-        $this->data['results']['check'] = $dealId >= DEAL_START_NEW_AREA ?
-            ($dealId >= DEAL_NEW_RESULT ? $isResults : !empty($countResults['count_utr'])) : !empty($requestData['RESULTS']);
+        $this->data['results']['check'] = $isResults;
 		$this->data['results']['is_disabled'] = false;/*(!$this->data['is_deal_pr'] && !$requestData['order_type'] == 2 && !$this->data['is_deal_osk'] && !$this->data['is_deal_sc'] && empty($requestData['TAKEN_ID_DEAL'])) &&
 			(empty($requestData) || empty($requestData['ACT_NUM']) || empty($invoiceData)) /*|| !$isConfirm
             || (!$this->data['payment']['check'] && !$this->data['is_good_company'])*/;
@@ -897,8 +888,8 @@ class RequestController extends Controller
 		$this->data['act_complete']['is_disable_form'] = false && !in_array($_SESSION['SESS_AUTH']['USER_ID'], [61, 88, 1, 25]) || 0;
 //		$this->data['act_complete']['is_disable_form'] = !($deal['STAGE_ID'] == 2) || ;
         $this->data['act_complete']['is_disable_mail'] = empty($actVr) || 0;
-        // 4 - Роль руководителя лаборатории
-        $this->data['act_complete']['assigned_users'] = $user->getUsersByRoleId(4);
+        //TODO: пока ид организации задано жестко 1. потом переделать на получение к какой организации принадлежит заявка
+        $this->data['act_complete']['assigned_users'] = $organizationModel->getAllLeaders(1);
 
 
 
@@ -1040,10 +1031,10 @@ class RequestController extends Controller
         $this->addJs("/assets/js/request-card.js?v={$r}");
 		if (!empty($requestData['TAKEN_ID_DEAL'])) {
 			$this->view('card_taken');
-		} elseif ($deal['TYPE_ID'] == 7) {
-			$this->view('card_pr');
-		} elseif ($requestData['order_type'] == 2) {
-			$this->view('card_offerInvoice');
+		//} elseif ($deal['TYPE_ID'] == 7) {
+		//	$this->view('card_pr');
+		//} elseif ($requestData['order_type'] == 2) {
+		//	$this->view('card_offerInvoice');
 		} else {
 			$this->view('card');
 		}

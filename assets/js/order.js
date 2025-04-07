@@ -3,7 +3,16 @@ $(function ($) {
 		if ($(this).prop('checked')) {
 			$('#payment').removeClass('visually-hidden')
 			$('#contract_summ').prop('disabled', false)
+			$('#FLOW_DATE').prop('checked', false)
 		} else {
+			$('#payment').addClass('visually-hidden')
+			$('#contract_summ').prop('disabled', true)
+		}
+	})
+
+	$('#FLOW_DATE').change(function() {
+		if ($(this).prop('checked')) {
+			$('#LONGTERM').prop('checked', false)
 			$('#payment').addClass('visually-hidden')
 			$('#contract_summ').prop('disabled', true)
 		}

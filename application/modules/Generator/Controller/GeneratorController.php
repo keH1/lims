@@ -93,11 +93,7 @@ class GeneratorController extends Controller
 		/** @var DocumentGenerator $generator */
 		$generator = $this->model('DocumentGenerator');
 
-		if ($dealID < DEAL_NEW_TZ && $dealID != 9735) {
-			$generator->actSampleGenerator($dealID);
-		} else {
-			$generator->actSampleGeneratorNew($dealID);
-		}
+        $generator->actSampleGeneratorNew($dealID);
 
 		$this->showSuccessMessage("Акт приема проб сформирован");
 	}

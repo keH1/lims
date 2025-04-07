@@ -357,12 +357,12 @@ $(function ($) {
 
     let journalDataTable = getJournalDataTable($journalGov, columnsGovJournal)
 
-    journalDataTable.columns().every(function () {
+    journalDataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
             clearTimeout(timeout)
             const searchValue = this.value
-            timeout = setTimeout(function () {
+            timeout = setTimeout(function() {
                 journalDataTable
                     .column($(this).parent().index())
                     .search(searchValue)

@@ -1,24 +1,6 @@
 let methodList = null
 let conditionList = null
 
-// $.ajax({
-//     method: 'POST',
-//     url: '/ulab/sample/getMethodsAjax',
-//     dataType: 'json',
-//     success: function (data) {
-//         methodList = data
-//     }
-// })
-//
-// $.ajax({
-//     method: 'POST',
-//     url: '/ulab/sample/getTechCondListAjax',
-//     dataType: 'json',
-//     success: function (data) {
-//         conditionList = data
-//     }
-// })
-
 function formatState(state) {
     const option = $(state.element)
     const color = option.data("color")
@@ -53,11 +35,9 @@ function toggleGroup() {
     if ( checkedCount > 0 ) {
         $('.group-button').removeClass('disabled')
         $('.newAct').removeClass('disabled')
-        // $('#accordionFlushGroup .collapse').collapse('show')
     } else {
         $('.group-button').addClass('disabled')
         $('.newAct').addClass('disabled')
-        // $('#accordionFlushGroup .collapse').collapse('hide')
     }
 }
 
@@ -95,16 +75,11 @@ $(function ($) {
             return all = ($(this).prop("checked") === curState)
         })
 
-        // if (curState) {
-        //     creatAct.removeClass('disabled')
-        // }
-
         if ( all ) {
             parent.find('.material-check').prop({
                 indeterminate: false,
                 checked: curState
             })
-            // creatAct.addClass('disabled')
         } else {
             parent.find('.material-check').prop({
                 indeterminate: true,
@@ -160,18 +135,10 @@ $(function ($) {
 
     // свернуть пробы
     $body.on('click', '.expand-all', function () {
-        // const $block = $(this).parents('div.accordion-body').find('.accordion').find('.collapse.show');
-        // $.each($block, function (i, item) {
-        //     $(item).collapse('hide')
-        // })
         $(this).parents('div.accordion-body').find('.accordion').find('.show').collapse('hide')
     })
     // развернуть пробы
     $body.on('click', '.collapse-all', function () {
-        // const $block = $(this).parents('div.accordion-body').find('.accordion').find('.collapse');
-        // $.each($block, function (i, item) {
-        //     $(item).collapse('show')
-        // })
         $(this).parents('div.accordion-body').find('.accordion').find('.collapse').collapse('show')
     })
 
@@ -221,11 +188,8 @@ $(function ($) {
 
         if (accordionOpen != "false") {
             $("#flush-heading-group .accordion-button").css("color", "#0c63e4")
-            //element.removeAttr("style")
         } else {
             $("#flush-heading-group .accordion-button").css("color", "#fff")
-            //element.css("width", mainWidth)
-            //element.css("height", mainHeight)
         }
     }) 
     
@@ -277,8 +241,6 @@ $(function ($) {
         const $methodSelect = $curBlock.find('.method-select')
         const methodId = $methodSelect.val()
 
-        // $(`.method-select option[value="${methodId}"]`).detach()
-
         const $checkProbe = $body.find('.probe-check:checked')
 
         let validateResult = true
@@ -324,10 +286,7 @@ $(function ($) {
                     countMethod = Math.max.apply(Math, num) + 1;
                 }
 
-                //const htmlMethod = getHtmlMethod(materialId, probeId, countMethod, methodId, tuId, userId, price) // !!!!!!!!!!!!!
                 const htmlMethod = getHtmlMethod(materialId, probeId, 'new_' + countMethod, countMethod, val)
-
-
 
                 $methodContainer.append(htmlMethod)
 
@@ -339,9 +298,6 @@ $(function ($) {
             }
         })
         $methodSelect.val([]).change()
-        // $curBlock.find('ul').empty()
-
-        // alert("Добавлено")
     })
 
     $('body').on('click', '.btn-create-act', function() {
@@ -455,26 +411,6 @@ $(function ($) {
             $inputBlock.find(".date-sample").val(sampleDate)
             $inputBlock.find(".date-delivery").val(deliveryDate)
         }
-
-        // let changeInputVal = $(this).val()
-        // inputFullName = $(this).attr("class").split(' ')
-        // inputFullClassName = inputFullName[1].split("-")
-        // let input = inputFullClassName[1]
-        // let checkProbe = $body.find('.probe-check:checked')
-
-        // for (let i = 0; i < checkProbe.length; i++) {
-
-        //     let probeItem = $(checkProbe.get(i)).parents('.probe-item')
-        //     let inputBlock = $(probeItem).find(".header-inputs")
-        //     let inputs = inputBlock.find("input")
-
-        //     $(inputs).each(function() {
-        //         className = $(this).attr("class")
-        //         if (className.includes(input)) {
-        //             $(this).val(changeInputVal)
-        //         }
-        //     })
-        // }
     })
 
     $body.on('change', '.clear_confirm_change', function () {
@@ -1107,12 +1043,6 @@ function getHtmlProbe(materialId, countMaterial, countProbe, htmlMethod) {
                     <div class="accordion-body method-block-block">
                     
                         <div class="row justify-content-end mb-3">
-<!--                            <div class="col-auto">-->
-<!--                                <button type="button" class="btn btn-success btn-square add-method-to-probe" title="Добавить испытание">-->
-<!--                                    <i class="fa-solid fa-plus icon-fix"></i>-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        -->
                             <div class="col-auto">
                                 <button type="button" class="btn btn-success btn-square copy-probe" title="Скопировать пробу и все методикы">
                                     <i class="fa-regular fa-copy icon-fix"></i>
@@ -1153,83 +1083,38 @@ function getHtmlProbe(materialId, countMaterial, countProbe, htmlMethod) {
 
 
 function getHtmlMethod(materialId = 'new', probeId = 'new', methodId = 'new', gostNumber = 0, defaultMethod = 0, defaultTu = 0, defaultUser = 0, defaultPrice = 0) {
-    let optionMethod = ``
-    let optionCondition = ``
-    let optionAssigned = ``
     let htmlInput = ``
-
-    let disabledMethod = 'disabled'
-    let disabledTu = 'disabled'
-
-    // $.each(methodList, function (i, item) {
-    //     let dataColor = ''
-    //     let selected = ``
-    //     // if ( item.is_confirm == 0 ) {
-    //     //     dataColor = `data-color="#dfdf11"`
-    //     // }
-    //
-    //     // if ( item.is_actual == 0 ) {
-    //     //     dataColor = `data-color="#F00"`
-    //     // }
-    //
-    //     if (item.ID == defaultMethod) {
-    //
-    //         disabledMethod = ''
-    //         selected = 'selected'
-    //
-            $.ajax({
-                method: 'POST',
-                async: false,
-                data: {
-                    id: defaultMethod
-                },
-                url: '/ulab/sample/getMethodDataAjax',
-                dataType: 'json',
-                success: function (data) {
-                    // $.each(data.assigned, function (i, item) {
-                    //     let selectedUser = ''
-
-                    //     if ( item.user_id == defaultUser ) {
-                    //         selectedUser = 'selected'
-                    //     }
-
-                    //     optionAssigned += `<option value="${item.user_id}" ${selectedUser}>${item.short_name}</option>`
-                    // })
-                    htmlInput = `<div class="row justify-content-between method-block mb-2" data-gost_number="${gostNumber}">
-                                    <div class="col-6">
-                                        <div class="input-group mb-1">
-                                            <input type="text" class="form-control" value="${data.GOST + '-' + data.GOST_YEAR + ' | ' + data.SPECIFICATION}" readonly>
-                                            <input type="hidden" name="material[${materialId}][probe][${probeId}][method][${methodId}][new_method_id]" class ="idMethod" value="${defaultMethod}">       
-                                            <a class="btn btn-outline-secondary method-link ${defaultMethod}"  title="Перейти в методику" href="/obl_acc.php?ID=${defaultMethod}">
-                                                <i class="fa-solid fa-right-to-bracket"></i>
-                                            </a>
-                                            <div class="col-auto">
-                                                <button
-                                                        class="btn btn-danger mt-0 del-permanent-material-gost btn-square float-end clear_confirm_change"
-                                                        data-gtp_id="${methodId}"
-                                                        type="button"
-                                                >
-                                                    <i class="fa-solid fa-minus icon-fix"></i>
-                                                </button>
-                                            </div>
+        $.ajax({
+            method: 'POST',
+            async: false,
+            data: {
+                id: defaultMethod
+            },
+            url: '/ulab/sample/getMethodDataAjax',
+            dataType: 'json',
+            success: function (data) {
+                htmlInput = `<div class="row justify-content-between method-block mb-2" data-gost_number="${gostNumber}">
+                                <div class="col-6">
+                                    <div class="input-group mb-1">
+                                        <input type="text" class="form-control" value="${data.GOST + '-' + data.GOST_YEAR + ' | ' + data.SPECIFICATION}" readonly>
+                                        <input type="hidden" name="material[${materialId}][probe][${probeId}][method][${methodId}][new_method_id]" class ="idMethod" value="${defaultMethod}">       
+                                        <a class="btn btn-outline-secondary method-link ${defaultMethod}"  title="Перейти в методику" href="/obl_acc.php?ID=${defaultMethod}">
+                                            <i class="fa-solid fa-right-to-bracket"></i>
+                                        </a>
+                                        <div class="col-auto">
+                                            <button
+                                                    class="btn btn-danger mt-0 del-permanent-material-gost btn-square float-end clear_confirm_change"
+                                                    data-gtp_id="${methodId}"
+                                                    type="button"
+                                            >
+                                                <i class="fa-solid fa-minus icon-fix"></i>
+                                            </button>
                                         </div>
-                                    </div>    
-                                </div>`
-                    // $.each(data.assigned_data, function (i, item) {
-                    //     let selectedUser = ''
-                    //
-                    //     if (item.id == defaultUser) {
-                    //         selectedUser = 'selected'
-                    //     }
-                    //
-                    //     optionAssigned += `<option value="${item.id}" ${selectedUser}>${item.data_name}</option>`
-                    // })
-                }
-            })
-    //     }
-    //
-    //     optionMethod += `<option value="${item.ID}" ${dataColor} ${selected}>${item.GOST + '-' + item.GOST_YEAR + ' | ' + item.SPECIFICATION}</option>`
-    // })
+                                    </div>
+                                </div>    
+                            </div>`
+            }
+        })
 
     if ( isNaN(Number(methodId)) ) { // new
         delBtnClass = 'del-new-method'
@@ -1238,157 +1123,4 @@ function getHtmlMethod(materialId = 'new', probeId = 'new', methodId = 'new', go
     }
 
     return htmlInput
-    // return `<div class="row justify-content-between method-block mb-2" data-gost_number="${gostNumber}">
-    //             <input type="hidden" class="gost-number-input" name="material[${materialId}][probe][${probeId}][method][${methodId}][gost_number]" value="${gostNumber}">
-    //             <div class="col-4">
-    //                 <div class="input-group">
-    //                     <select class="form-control select2 method-select" name="material[${materialId}][probe][${probeId}][method][${methodId}][new_method_id]">
-    //                         <option value=""></option>
-    //                         ${optionMethod}
-    //                     </select>
-    //                     <a class="btn btn-outline-secondary method-link ${disabledMethod}"  title="Перейти в методику" href="/ulab/gost/method/${defaultMethod}">
-    //                         <i class="fa-solid fa-right-to-bracket"></i>
-    //                     </a>
-    //                 </div>
-    //             </div>
-    //             <div class="col-4">
-    //                 <div class="input-group">
-    //                     <select class="form-control select2 tu-select" name="material[${materialId}][probe][${probeId}][method][${methodId}][tech_condition_id]">
-    //                         <option value="">--</option>
-    //                         ${optionCondition}
-    //                     </select>
-    //                     <a class="btn btn-outline-secondary tu-link ${disabledTu}"  title="Перейти в ТУ" href="/ulab/techCondition/edit/${defaultTu}">
-    //                         <i class="fa-solid fa-right-to-bracket"></i>
-    //                     </a>
-    //                 </div>
-    //             </div>
-    //             <div class="col-2">
-    //                 <select class="form-control user-select" name="material[${materialId}][probe][${probeId}][method][${methodId}][assigned_id]">
-    //                     <option value="">Исполнитель</option>
-    //                     ${optionAssigned}
-    //                 </select>
-    //             </div>
-    //             <div class="col">
-    //                 <div class="input-group">
-    //                     <input class="form-control price-input" name="material[${materialId}][probe][${probeId}][method][${methodId}][price]" type="number" min="0" step="0.01" value="${defaultPrice}">
-    //                     <span class="input-group-text">₽</span>
-    //                 </div>
-    //             </div>
-    //             <div class="col-auto">
-    //                 <button
-    //                         class="btn btn-danger mt-0 ${delBtnClass} btn-square float-end"
-    //                         data-gtp_id="${methodId}"
-    //                         type="button"
-    //                 >
-    //                     <i class="fa-solid fa-minus icon-fix"></i>
-    //                 </button>
-    //             </div>
-    //         </div>`
 }
-
-
-
-// function getHtmlMethod(materialId = 'new', probeId = 'new', gostNumber = 0, defaultMethod = 0, defaultTu = 0, defaultUser = 0, defaultPrice = 0) {
-//     let optionMethod = ``
-//     let optionCondition = ``
-//     let optionAssigned = ``
-
-//     let disabledMethod = 'disabled'
-//     let disabledTu = 'disabled'
-//     $.each(methodList, function (i, item) {
-//         let dataColor = ''
-//         let selected = ``
-
-//         if ( item.is_confirm == 0 ) {
-//             dataColor = `data-color="#dfdf11"`
-//         }
-
-//         if ( item.is_actual == 0 ) {
-//             dataColor = `data-color="#F00"`
-//         }
-//         if ( item.id == defaultMethod ) {
-//             disabledMethod = ''
-//             selected = 'selected'
-
-//             $.ajax({
-//                 method: 'POST',
-//                 async: false,
-//                 data: {
-//                     id: defaultMethod
-//                 },
-//                 url: '/ulab/sample/getMethodDataAjax',
-//                 dataType: 'json',
-//                 success: function (data) {
-//                     $.each(data.assigned, function (i, item) {
-//                         let selectedUser = ''
-
-//                         if ( item.user_id == defaultUser ) {
-//                             selectedUser = 'selected'
-//                         }
-
-//                         optionAssigned += `<option value="${item.user_id}" ${selectedUser}>${item.short_name}</option>`
-//                     })
-//                 }
-//             })
-//         }
-
-//         optionMethod += `<option value="${item.id}" ${dataColor} ${selected}>${item.view_gost}</option>`
-//     })
-
-//     $.each(conditionList, function (i, item) {
-//         let selected = ``
-
-//         if ( item.id == defaultTu ) {
-//             disabledTu = ''
-//             selected = 'selected'
-//         }
-
-//         optionCondition += `<option value="${item.id}" ${selected}>${item.view_name}</option>`
-//     })
-
-//     return `<div class="row justify-content-between method-block mb-2" data-gost_number="${gostNumber}">
-//                 <input type="hidden" class="gost-number-input" name="material[${materialId}][probe][${probeId}][method][new_${gostNumber}][gost_number]" value="${gostNumber}">
-//                 <div class="col-4">
-//                     <div class="input-group">
-//                         <select class="form-control select2 method-select clear_confirm_change" name="material[${materialId}][probe][${probeId}][method][new_${gostNumber}][new_method_id]">
-//                             <option value=""></option>
-//                             ${optionMethod}
-//                         </select>
-//                         <a class="btn btn-outline-secondary method-link ${disabledMethod}"  title="Перейти в методику" href="/ulab/gost/method/${defaultMethod}">
-//                             <i class="fa-solid fa-right-to-bracket"></i>
-//                         </a>
-//                     </div>
-//                 </div>
-//                 <div class="col-4">
-//                     <div class="input-group">
-//                         <select class="form-control select2 tu-select clear_confirm_change" name="material[${materialId}][probe][${probeId}][method][new_${gostNumber}][tech_condition_id]">
-//                             <option value="">--</option>
-//                             ${optionCondition}
-//                         </select>
-//                         <a class="btn btn-outline-secondary tu-link ${disabledTu}"  title="Перейти в ТУ" href="/ulab/techCondition/edit/${defaultTu}">
-//                             <i class="fa-solid fa-right-to-bracket"></i>
-//                         </a>
-//                     </div>
-//                 </div>
-//                 <div class="col-2">
-//                     <select class="form-control user-select" name="material[${materialId}][probe][${probeId}][method][new_${gostNumber}][assigned_id]">
-//                         <option value="">Исполнитель</option>
-//                         ${optionAssigned}
-//                     </select>
-//                 </div>
-//                 <div class="col">
-//                     <div class="input-group">
-//                         <input class="form-control price-input clear_confirm_change" name="material[${materialId}][probe][${probeId}][method][new_${gostNumber}][price]" type="number" min="0" step="0.01" value="${defaultPrice}">
-//                         <span class="input-group-text">₽</span>
-//                     </div>
-//                 </div>
-//                 <div class="col-auto">
-//                     <button
-//                             class="btn btn-danger mt-0 del-new-method btn-square float-end"
-//                             type="button"
-//                     >
-//                         <i class="fa-solid fa-minus icon-fix"></i>
-//                     </button>
-//                 </div>
-//             </div>`
-// }

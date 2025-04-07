@@ -39,7 +39,7 @@ class User extends Model
      */
     public function getUsers()
     {
-        $order = ["NAME", "LAST_NAME"];
+        $order = 'ASC';
         $by='ID';
         $filter = ['ACTIVE' => 'Y'];
         $tmp = 'sort';
@@ -313,6 +313,7 @@ class User extends Model
             $user['short_name'] = "{$shortName}. {$user['LAST_NAME']}";
             $user['user_name'] = "{$user['LAST_NAME']} {$user['NAME']}";
             $user['groups'] = $USER->GetUserGroupArray();
+            $user['id'] = $user['ID'];
 
             $response = $user;
         }
@@ -1021,12 +1022,10 @@ class User extends Model
 
     /**
      * @param int $id
-     * @return mixed
      */
     public function deleteUser($id)
     {
         $this->DB->Query("UPDATE b_user SET ACTIVE = 'N' WHERE ID = '{$id}'");
-//        return CUser::Delete($id);
     }
 
     public function checkUserHasRepalcement($userId) {

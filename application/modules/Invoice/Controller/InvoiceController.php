@@ -71,12 +71,10 @@ class InvoiceController extends Controller
 
         $recordsTotal = $data['recordsTotal'];
         $recordsFiltered = $data['recordsFiltered'];
-        $sql = $data['sql'];
         $error = $data['error'];
 
         unset($data['recordsTotal']);
         unset($data['recordsFiltered']);
-        unset($data['sql']);
         unset($data['error']);
 
         $jsonData = [

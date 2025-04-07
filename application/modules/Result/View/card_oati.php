@@ -2,15 +2,15 @@
     <header class="header-result mb-3">
         <nav class="header-menu">
             <ul class="nav">
-                <li class="nav-item me-2">
-                    <a class="nav-link link-back disabled"
-                       href="<?= URI ?>/request/card/<?= $this->data['deal_id'] ?? '' ?>"
-                       title="Вернуться назад">
-                        <svg class="icon" width="25" height="25">
-                            <use xlink:href="<?= URI ?>/assets/images/icons.svg#back"/>
-                        </svg>
-                    </a>
-                </li>
+<!--                <li class="nav-item me-2">-->
+<!--                    <a class="nav-link link-back disabled"-->
+<!--                       href="--><?//= URI ?><!--/request/card/--><?//= $this->data['deal_id'] ?? '' ?><!--"-->
+<!--                       title="Вернуться назад">-->
+<!--                        <svg class="icon" width="25" height="25">-->
+<!--                            <use xlink:href="--><?//= URI ?><!--/assets/images/icons.svg#back"/>-->
+<!--                        </svg>-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li class="nav-item me-2">
                     <a class="nav-link link-list" href="<?= URI ?>/request/list/" title="Вернуться к списку">
                         <svg class="icon" width="25" height="25">
@@ -578,7 +578,7 @@
                                     <div class="col">
                                         <div class="input-group mb-2">
                                             <span class="input-group-text">Показать: </span>
-                                            <select id="filter-methods" class="form-control select2 filter" multiple>
+                                            <select id="filter-methods" class="form-control select2 filter" multiple data-placeholder="Выбрать испытания (мультивыбор)">
                                                 <?php foreach ($this->data['tz_methods_list'] as $item): ?>
                                                     <option value="<?=$item['id']?>"><?=$item['view_gost']?></option>
                                                 <?php endforeach; ?>
@@ -586,14 +586,14 @@
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <select id="filter-material" class="form-control select2 filter" multiple>
+                                        <select id="filter-material" class="form-control select2 filter" multiple data-placeholder="Выбрать материалы (мультивыбор)">
                                             <?php foreach ($this->data['tz_material_list'] as $item): ?>
                                                 <option value="<?=$item['id']?>"><?=$item['name']?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
                                     <div class="col">
-                                        <select id="filter-probe" class="form-control select2 filter" multiple>
+                                        <select id="filter-probe" class="form-control select2 filter" multiple data-placeholder="Выбрать пробы (мультивыбор)">
                                             <?php $mid = 0; foreach ($this->data['tz_probe_list'] as $item): ?>
                                                 <?php if ( $mid !== $item['material_id'] ): $mid = $item['material_id']; ?>
                                                     <option disabled><b><?=$item['material_name']?></b></option>

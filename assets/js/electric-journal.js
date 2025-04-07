@@ -51,12 +51,6 @@ $(function ($) {
             },
             {
                 data: 'voltage_UA',
-                // render: function (data, type, item) {
-                //     data = data.toString()
-                //     if (item.voltage_UA_conclusion == 1) {
-                //         return `<div class="text-danger">${data}</div>`
-                //     } else return data
-                // }
             },
             {
                 data: 'range_UA',
@@ -69,12 +63,6 @@ $(function ($) {
             },
             {
                 data: 'voltage_UB',
-                // render: function (data, type, item) {
-                //     data = parseFloat(data).toFixed(1).replace(".",",")
-                //     if (item.voltage_UB_conclusion == 1) {
-                //         return `<div class="text-danger">` + data + `</div>`
-                //     } else return data
-                // }
             },
             {
                 data: 'range_UB',
@@ -87,12 +75,6 @@ $(function ($) {
             },
             {
                 data: 'voltage_UC',
-                // render: function (data, type, item) {
-                //     data = parseFloat(data).toFixed(1).replace(".",",")
-                //     if (item.voltage_UC_conclusion == 1) {
-                //         return `<div class="text-danger">` + data + `</div>`
-                //     } else return data
-                // }
             },
             {
                 data: 'range_UC',
@@ -105,12 +87,6 @@ $(function ($) {
             },
             {
                 data: 'frequency',
-                // render: function (data, type, item) {
-                //     data = parseFloat(data).toFixed(1).replace(".",",")
-                //     if (item.frequency_conclusion == 1) {
-                //         return `<div class="text-danger">` + data + `</div>`
-                //     } else return data
-                // }
             },
             {
                 data: 'range_frequency',
@@ -144,12 +120,17 @@ $(function ($) {
         fixedHeader: false,
     })
 
-    mainTable.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-            mainTable
-                .column($(this).parent().index())
-                .search(this.value)
-                .draw()
+    mainTable.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                mainTable
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 
