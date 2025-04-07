@@ -52,6 +52,7 @@ class SampleController extends Controller
 
         if ( $tzData['TYPE_ID'] != '9' ) {
             $this->data['comm'] = '?type_request=comm';
+            $_SESSION['type_request'] = 'comm';
         }
 
         $dealId = (int) $tzData['ID_Z'];

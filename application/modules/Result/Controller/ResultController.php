@@ -179,6 +179,7 @@ class ResultController extends Controller
 
         if ( $tz['TYPE_ID'] != '9' ) {
             $this->data['comm'] = '?type_request=comm';
+            $_SESSION['type_request'] = 'comm';
         }
 
         $selectedProtocol = !empty($_GET['protocol_id']) && $_GET['protocol_id'] > 0 ? $_GET['protocol_id'] : null;
@@ -791,6 +792,7 @@ class ResultController extends Controller
 
         if ( $tz['TYPE_ID'] != '9' ) {
             $this->data['comm'] = '?type_request=comm';
+            $_SESSION['type_request'] = 'comm';
         }
 
         $selectedProtocol = !empty($_GET['protocol_id']) && $_GET['protocol_id'] > 0 ? $_GET['protocol_id'] : null;
