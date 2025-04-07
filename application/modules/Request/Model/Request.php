@@ -1852,7 +1852,7 @@ class Request extends Model
                         $order['by'] = 'b.MATERIAL';
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = "usr.LAST_NAME";
+                        $order['by'] = "group_concat(CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ')";
                         break;
                     case 'REQUEST_TITLE':
                         $order['by'] = 'b.REQUEST_TITLE';
