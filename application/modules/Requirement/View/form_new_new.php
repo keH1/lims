@@ -7,7 +7,7 @@
                 </a>
             </li>
             <li class="nav-item me-2">
-                <a class="nav-link" href="<?= URI ?>/request/list/" title="Вернуться в журнал заявок">
+                <a class="nav-link" href="<?= URI ?>/request/list/<?=$this->data['comm']??''?>" title="Вернуться в журнал заявок">
                     <i class="fa-solid fa-list"></i>
                 </a>
             </li>

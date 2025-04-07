@@ -39,11 +39,28 @@ function getJournalDataTable($element, columns) {
         order: [[ 2, "desc" ]],
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttonPrint,
+        drawCallback: function (settings) {
+            let api = this.api()
+            api.columns().every(function () {
+                let timeout
+                $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
+                    clearTimeout(timeout)
+                    const searchValue = this.value
+                    timeout = setTimeout(function () {
+                        api
+                            .column($(this).parent().index())
+                            .search(searchValue)
+                            .draw()
+                    }.bind(this), 1000)
+                })
+            })
+        }
     })
 }
 
 $(function ($) {
 
+    let journalDataTable = null
     // тип журнала gov - Гос, comm - Коммерческий
     let $radioTypeJournal = $('input[name="type_journal"]')
 
@@ -211,6 +228,138 @@ $(function ($) {
             },
         }
     ];
+    let theadCommHtml = `
+    <thead>
+    <tr class="table-light">
+        <th scope="col"></th>
+        <th scope="col" class="text-nowrap">Заявка</th>
+        <th scope="col" class="text-nowrap">Дата</th>
+        <th scope="col" class="text-nowrap">Клиент</th>
+        <th scope="col" class="text-nowrap">Объект испытаний</th>
+        <th scope="col" class="text-nowrap">Ответственный</th>
+        <th scope="col" class="text-nowrap">ТЗ</th>
+        <th scope="col" class="text-nowrap">Договор</th>
+        <th scope="col" class="text-nowrap">Акт ПП</th>
+        <th scope="col" class="text-nowrap">Счет</th>
+        <th scope="col" class="text-nowrap">Стоимость</th>
+        <th scope="col" class="text-nowrap">Дата опл</th>
+        <th scope="col" class="text-nowrap">Рез-ты исп</th>
+        <th scope="col" class="text-nowrap">Протокол</th>
+        <th scope="col" class="text-nowrap">Фото исп</th>
+        <th scope="col" class="text-nowrap">Cрок до</th>
+    </tr>
+    <tr class="header-search">
+        <th scope="col"></th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <select class="form-control search">
+                <option value=""></option>
+                <option value="n">Не подписано</option>
+                <option value="y">Подписано</option>
+            </select>
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search" disabled>
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+    </tr>
+</thead>
+    `
+    let theadGovHtml = `
+    <thead>
+    <tr class="table-light">
+        <th></th>
+        <th scope="col" class="text-nowrap">Заявка</th>
+        <th scope="col" class="text-nowrap">Дата</th>
+        <th scope="col" class="text-nowrap">Тип заявки</th>
+        <th scope="col">Объект испытаний</th>
+        <th scope="col" class="text-nowrap">Ответственный</th>
+        <th scope="col" class="text-nowrap">ТЗ</th>
+        <th scope="col" class="text-nowrap">Акт ПП</th>
+        <th scope="col" class="text-nowrap">Организация</th>
+        <th scope="col">Плановая дата выезда</th>
+        <th scope="col" class="text-nowrap">Протокол</th>
+        <th scope="col" class="text-nowrap">Рез-ты испытаний</th>
+    </tr>
+    <tr class="header-search">
+        <th></th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control" disabled>
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <select class="form-control search">
+                <option value=""></option>
+                <option value="n">Не подписано</option>
+                <option value="y">Подписано</option>
+            </select>
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search">
+        </th>
+        <th scope="col">
+            <input type="text" class="form-control search" disabled>
+        </th>
+    </tr>
+    </thead>
+    `
     let columnsGovJournal = [
         {
             data: 'empty',
@@ -343,8 +492,7 @@ $(function ($) {
         },
     ];
 
-    let $journalComm = $('#journal_requests')
-    let $journalGov = $('#journal_gov')
+    let $journalTable = $('#journal_table')
 
     if ($('#notify_leader').length) {
         $.magnificPopup.open({
@@ -357,12 +505,12 @@ $(function ($) {
 
     let journalDataTable = getJournalDataTable($journalGov, columnsGovJournal)
 
-    journalDataTable.columns().every(function() {
+    journalDataTable.columns().every(function () {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
             clearTimeout(timeout)
             const searchValue = this.value
-            timeout = setTimeout(function() {
+            timeout = setTimeout(function () {
                 journalDataTable
                     .column($(this).parent().index())
                     .search(searchValue)
@@ -393,8 +541,8 @@ $(function ($) {
     })
 
     /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $('#journal_requests').width()
+    let container = $('body').find('div.dataTables_scrollBody'),
+        scroll = $journalTable.width()
 
     $('.btnRightTable, .arrowRight').hover(function() {
         container.animate(
@@ -653,20 +801,29 @@ $(function ($) {
     $radioTypeJournal.change(function () {
         let v = $(this).val()
 
-        journalDataTable.destroy()
-        $journalComm.find('tbody').empty()
-        $journalGov.find('tbody').empty()
+        journalDataTable?.destroy()
+        $journalTable.find('.search').val('')
+        $journalTable.find('thead').remove()
 
         if ( v == 'comm' ) {
             $('.view-comm').show()
             $('.view-gov').hide()
 
-            journalDataTable = getJournalDataTable($journalComm, columnsCommJournal)
+            $journalTable.find('tbody').empty().after(theadCommHtml)
+
+            journalDataTable = getJournalDataTable($journalTable, columnsCommJournal)
         } else {
             $('.view-comm').hide()
             $('.view-gov').show()
 
-            journalDataTable = getJournalDataTable($journalGov, columnsGovJournal)
+            $journalTable.find('tbody').empty().after(theadGovHtml)
+
+            journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
         }
+
+        container = $('body').find('div.dataTables_scrollBody')
+        scroll = $journalTable.width()
     })
+
+    $radioTypeJournal.trigger('change')
 })
