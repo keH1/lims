@@ -104,44 +104,6 @@ class Electric extends Model
                 {$filters['limit']}
             ";
 
-//            $this->pre("
-//            SELECT DATE_FORMAT(electric_control.date, '%d.%m.%Y') AS date_dateformat,
-//                   electric_control.*,
-//                   CONCAT(ROOMS.number, ' - ', ROOMS.name) AS name,
-//                   CONCAT(b_user.last_name)                AS global_assigned_name,
-//                   IF(voltage_ua_conclusion = 0
-//                          AND voltage_ub_conclusion = 0
-//                          AND voltage_uc_conclusion = 0
-//                          AND frequency_conclusion = 0,
-//                       'Соответствует', 'Не cоответствует') AS conclusion
-//            FROM (SELECT electric_control.*,
-//                         electric_norm.frequency_min, electric_norm.frequency_max,
-//                         electric_norm.voltage_UA_min, electric_norm.voltage_UA_max,
-//                         electric_norm.voltage_UB_min, electric_norm.voltage_UB_max,
-//                         electric_norm.voltage_UC_min, electric_norm.voltage_UC_max,
-//                         IF(electric_control.voltage_ua <= electric_norm.voltage_ua_max
-//                                AND electric_control.voltage_ua >= electric_norm.voltage_ua_min,
-//                             0, 1) AS voltage_ua_conclusion,
-//                         IF(electric_control.voltage_ub <= electric_norm.voltage_ub_max
-//                                AND electric_control.voltage_ub >= electric_norm.voltage_ub_min,
-//                             0, 1) AS voltage_ub_conclusion,
-//                         IF(electric_control.voltage_uc <= electric_norm.voltage_uc_max
-//                                AND electric_control.voltage_uc >= electric_norm.voltage_uc_min,
-//                             0, 1) AS voltage_uc_conclusion,
-//                         IF(electric_control.frequency <= electric_norm.frequency_max
-//                                AND electric_control.frequency >= electric_norm.frequency_min,
-//                             0, 1) AS frequency_conclusion
-//                  FROM electric_control
-//                  JOIN electric_norm ON electric_control.id_electric_norm = electric_norm.id) AS electric_control
-//            JOIN ROOMS ON ROOMS.id = electric_control.id_room
-//            JOIN b_user ON b_user.id = electric_control.global_assigned
-//            HAVING id_room {$filters['idWhichFilter']} AND
-//                date BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']}
-//                 AND {$filters['having']}
-//            ORDER BY {$filters['order']}
-//                {$filters['limit']}
-//            ");
-
         } elseif ($typeName == 'lastElectricNorm') {
             $request = "SELECT *, MAX(electric_norm.global_entry_date) AS max
                 FROM electric_norm            
