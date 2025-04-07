@@ -915,6 +915,7 @@ table.table-confirm tbody td {
     border-radius: 0.25rem;
     box-sizing:border-box;
     min-width: 100%;
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
 }
 
 #workarea .table-card * {

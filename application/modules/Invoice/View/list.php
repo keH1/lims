@@ -59,7 +59,7 @@
             <input type="text" class="form-control search">
         </th>
         <th scope="col">
-            <input type="text" class="form-control search">
+            <input type="number" class="form-control search" step="0.01" min="0">
         </th>
         <th scope="col">
             <input type="text" class="form-control search">
