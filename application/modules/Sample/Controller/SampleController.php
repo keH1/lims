@@ -50,6 +50,9 @@ class SampleController extends Controller
         //// получение данных
         $tzData = $sample->getTzByTzId((int)$tzId);
 
+        if ( $tzData['TYPE_ID'] != '9' ) {
+            $this->data['comm'] = '?type_request=comm';
+        }
 
         $dealId = (int) $tzData['ID_Z'];
 
@@ -111,10 +114,6 @@ class SampleController extends Controller
         $this->data['material_probe_list'] = $materialModel->getMaterialProbeToRequest($dealId);
         $this->data['method_list'] = $gostModel->getGostRequest($dealId);
 
-//        $this->data['users'] = $user->getUsers();
-
-		 $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-		 $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
 
         $this->addCSS("/assets/plugins/select2/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/css/select2-bootstrap-5-theme.min.css");

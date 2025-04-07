@@ -106,6 +106,10 @@ class RequestController extends Controller
         $deal = $request->getDealById($dealId);
         $requestData = $request->getTzByDealId($dealId);
 
+        if ( $requestData['TYPE_ID'] != '9' ) {
+            $this->data['comm'] = '?type_request=comm';
+        }
+
         if ( empty($deal) ) {
             $this->showErrorMessage("Заявки с ИД {$dealId} не существует");
             $this->redirect('/request/list/');
@@ -602,6 +606,10 @@ class RequestController extends Controller
 
         $this->data['deal_id']  = $dealId;
         $this->data['tz_id']    = $tzId;
+
+        if ( $requestData['TYPE_ID'] != '9' ) {
+            $this->data['comm'] = '?type_request=comm';
+        }
 
         $this->data['doc_id']  = $dogovorData['ID'] ?? '';
         $this->data['attach1'] = $dogovorData['ACTUAL_VER'] ?? '';
@@ -1131,13 +1139,8 @@ class RequestController extends Controller
         $this->data['date_start'] = $request->getDateStart();
 
         $this->data['type_request'] = 'gov';
-        if (
-            (isset($_SESSION['type_request']) && $_SESSION['type_request'] == 'comm') ||
-            (isset($_GET['type_request']) && $_GET['type_request'] == 'comm')
-        ) {
+        if ((isset($_GET['type_request']) && $_GET['type_request'] == 'comm')) {
             $this->data['type_request'] = 'comm';
-
-            unset($_SESSION['type_request']);
         }
 
 //        $this->data['tz_under_consideration'] = [];

@@ -18,7 +18,7 @@
 <!--                    </a>-->
 <!--                </li>-->
                 <li class="nav-item me-2">
-                    <a class="nav-link link-list" href="<?= URI ?>/request/list/" title="Вернуться к списку">
+                    <a class="nav-link link-list" href="<?= URI ?>/request/list/<?=$this->data['comm']??''?>" title="Вернуться к списку">
                         <svg class="icon" width="25" height="25">
                             <use xlink:href="<?= URI ?>/assets/images/icons.svg#list"/>
                         </svg>

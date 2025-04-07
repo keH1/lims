@@ -162,8 +162,6 @@ class ResultController extends Controller
         $protocolModel = $this->model('Protocol');
         /** @var DocTemplate $docTemplateModel */
         $docTemplateModel = $this->model('DocTemplate');
-        /** @var Material $materialModel */
-        $materialModel = $this->model('Material');
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
@@ -177,6 +175,10 @@ class ResultController extends Controller
         if (empty($tz)) {
             $this->showErrorMessage("Технического задания с ИД сделки {$dealId} не существует");
             $this->redirect('/request/list/');
+        }
+
+        if ( $tz['TYPE_ID'] != '9' ) {
+            $this->data['comm'] = '?type_request=comm';
         }
 
         $selectedProtocol = !empty($_GET['protocol_id']) && $_GET['protocol_id'] > 0 ? $_GET['protocol_id'] : null;
@@ -785,6 +787,10 @@ class ResultController extends Controller
         if (empty($tz)) {
             $this->showErrorMessage("Технического задания с ИД сделки {$dealId} не существует");
             $this->redirect('/request/list/');
+        }
+
+        if ( $tz['TYPE_ID'] != '9' ) {
+            $this->data['comm'] = '?type_request=comm';
         }
 
         $selectedProtocol = !empty($_GET['protocol_id']) && $_GET['protocol_id'] > 0 ? $_GET['protocol_id'] : null;

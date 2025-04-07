@@ -197,6 +197,10 @@ class ProbeController extends Controller
 		$tzData = $requirement->getTzByTzId((int)$tzId);
         $actBase = $requirement->getActBase($dealId);
 
+        if ( $tzData['TYPE_ID'] != '9' ) {
+            $this->data['comm'] = '?type_request=comm';
+        }
+
 		$this->data['deal_id']  = $dealId;
 		$this->data['tz_id']    = $tzId;
 		$this->data['deal_title'] = $tzData['REQUEST_TITLE'];
@@ -269,18 +273,18 @@ class ProbeController extends Controller
 		$this->data['contract_date'] = $contractData['DATE'] ?? '';
 		$this->data['contract_type'] = $contractData['CONTRACT_TYPE'] ?? 'Договор';
 
+        if ( $tzData['TYPE_ID'] != '9' ) {
+            $this->data['comm'] = '?type_request=comm';
+        }
 
 		$probe = $probeModel->getProbeByDealId($dealId);
 
 		$this->data['probe'] = $probe;
 
-		$this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-
 		$this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
 		$this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
 		$this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
-		$this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
 		$this->addJs('/assets/js/probe_form.js');
 
 		$this->view('form');

@@ -503,24 +503,6 @@ $(function ($) {
         })
     }
 
-    $journalTable.find('thead').remove()
-    if ( $('input[name="type_journal"]:checked').val() == 'comm' ) {
-        $('.view-comm').show()
-        $('.view-gov').hide()
-
-        $journalTable.append(theadCommHtml)
-
-        journalDataTable = getJournalDataTable($journalTable, columnsCommJournal)
-    } else {
-        $('.view-comm').hide()
-        $('.view-gov').show()
-
-        $journalTable.append(theadGovHtml)
-
-        journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
-    }
-
-
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
     })
@@ -798,8 +780,8 @@ $(function ($) {
         let v = $(this).val()
 
         journalDataTable?.destroy()
-        $journalTable.find('thead').remove()
         $journalTable.find('.search').val('')
+        $journalTable.find('thead').remove()
 
         if ( v == 'comm' ) {
             $('.view-comm').show()
@@ -820,4 +802,6 @@ $(function ($) {
         container = $('body').find('div.dataTables_scrollBody')
         scroll = $journalTable.width()
     })
+
+    $radioTypeJournal.trigger('change')
 })
