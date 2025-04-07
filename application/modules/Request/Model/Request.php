@@ -863,7 +863,10 @@ class Request extends Model
                 }
                 // Ответственный
                 if ( isset($filter['search']['ASSIGNED']) ) {
-                    $where .= "usr.LAST_NAME LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
+                    $where .=
+                        "(usr.NAME LIKE '%{$filter['search']['ASSIGNED']}%' or 
+                        usr.LAST_NAME LIKE '%{$filter['search']['ASSIGNED']}%' or
+                        CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) LIKE '%{$filter['search']['ASSIGNED']}%') AND ";
                 }
                 // Акт ПП
                 if ( isset($filter['search']['NUM_ACT_TABLE']) ) {
