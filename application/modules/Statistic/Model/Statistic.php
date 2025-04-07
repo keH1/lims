@@ -1731,6 +1731,7 @@ class Statistic extends Model
         $result['all_month_full_paid'] = $sql['month_full_paid'];
         $result['all_month_no_paid_count'] = $sql['month_no_paid_count'];
         $result['all_month_no_paid_price'] = $sql['month_no_paid_price'];
+        $result['all_year_no_paid_price'] = $sql['year_no_paid_price'];
         $result['all_month_part_paid_count'] = $sql['month_part_paid_count'];
         $result['all_month_part_paid_price'] = $sql['month_part_paid_price'];
         $result['all_year_part_paid_price'] = $sql['year_part_paid_price'];
