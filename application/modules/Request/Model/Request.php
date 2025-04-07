@@ -1925,35 +1925,38 @@ class Request extends Model
             $row['DATE_ACT_VR'] = !empty($row['DATE_ACT_VR']) ? date('d.m.Y',  strtotime($row['DATE_ACT_VR'])) : '';
             $row['SEND_DATE_ACT_VR'] = !empty($row['SEND_DATE_ACT_VR']) ? date('d.m.Y',  strtotime($row['SEND_DATE_ACT_VR'])) : '';
 
+            $price = floatval($row['price_discount']);
+            $oplata = floatval($row['OPLATA']);
+
             if (
-                in_array($row['STAGE_ID'], $stageArray)
-                && !empty($row['price_discount'])
-                && empty($row['OPLATA'])
+                in_array($row['STAGE_ID'], $stageArray) &&
+                $price > 0.0 &&
+                empty($oplata)
             ) {
                 $row['color'] = 'bg-red';
                 $row['title'] = 'Счет не оплачен';
             } else if (
-                in_array($row['STAGE_ID'], $stageArray)
-                && !empty($row['price_discount'])
-                && !empty($row['OPLATA'])
-                && $row['price_discount'] > $row['OPLATA']
+                in_array($row['STAGE_ID'], $stageArray) &&
+                $price > 0.0 &&
+                !empty($oplata) &&
+                $price > $oplata
             ) {
                 $row['color'] = 'bg-light-pink';
                 $row['title'] = 'Счет оплачен не полностью';
             } else if (
-                in_array($row['STAGE_ID'], $stageArray)
-                && !empty($row['price_discount'])
-                && !empty($row['OPLATA'])
-                && $row['price_discount'] <= $row['OPLATA']
+                in_array($row['STAGE_ID'], $stageArray) &&
+                $price > 0.0 &&
+                !empty($oplata) &&
+                $price <= $oplata
             ) {
                 $row['color'] = 'bg-green';
                 $row['title'] = 'Счет оплачен полностью';
             } else if (
                 in_array($row['STAGE_ID'], $stageArray)
-                && empty($row['price_discount'])
+                && empty($price)
             ) {
                 $row['color'] = 'bg-grey';
-                $row['title'] = 'Счет не выставлен';
+                $row['title'] = 'Оплата не требуется';
             } else {
                 $row['color'] = 'bg-grey';
                 $row['title'] = 'Заявка неуспешна';
