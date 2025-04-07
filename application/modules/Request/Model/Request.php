@@ -1956,7 +1956,7 @@ class Request extends Model
                 && empty($price)
             ) {
                 $row['color'] = 'bg-grey';
-                $row['title'] = 'Счет не выставлен';
+                $row['title'] = 'Оплата не требуется';
             } else {
                 $row['color'] = 'bg-grey';
                 $row['title'] = 'Заявка неуспешна';
