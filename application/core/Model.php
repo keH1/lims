@@ -453,7 +453,7 @@ class Model
             if (!empty($filter['search'])) {
                 foreach ($filter['search'] as $key => $item) {
                     $transformedFilter['having'] = "1 "; //Затычка, что бы не было пустого HAVING в SQL запросе
-                    $transformedFilter['having'] .= "AND $key LIKE '%$item%'";
+                    $transformedFilter['having'] .= "AND $key COLLATE utf8mb3_unicode_ci LIKE '%$item%'";
 
                 }
             }
