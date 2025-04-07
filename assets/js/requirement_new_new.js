@@ -715,10 +715,16 @@ $(function ($) {
             dataType: "json",
             async: true,
             method: "POST",
-            complete: function () {
+            complete: function(xhr) {
                 $form.find('.method-container').empty()
 
                 journalDataTable.ajax.reload()
+
+                if (xhr.responseJSON && xhr.responseJSON.success && xhr.responseJSON.priceData) {
+                    $('#str_total').text(xhr.responseJSON.priceData.price_ru)
+                    $('#price-total').val(xhr.responseJSON.priceData.price)
+                    $('#price_discount').val(xhr.responseJSON.priceData.price_discount)
+                }
 
                 $button.html(btnHtml)
                 $button.removeClass('disabled')

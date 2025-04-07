@@ -1575,9 +1575,12 @@ class RequirementController extends Controller
         $requirementModel->addMethodsToProbe($probeIdList, $_POST['form']);
 
         // обновляем цены у заявки
-        $requirementModel->updatePrice($_POST['deal_id']);
+        $priceData = $requirementModel->updatePrice($_POST['deal_id']);
 
-        return true;
+        echo json_encode([
+            'success' => true, 
+            'priceData' => $priceData
+        ], JSON_UNESCAPED_UNICODE);
     }
 
 

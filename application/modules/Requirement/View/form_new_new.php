@@ -578,7 +578,7 @@
 </form>
 
 
-<form id="add-methods-modal-form" class="bg-light mfp-hide col-9 m-auto p-3 position-relative" method="post" action="<?=URI?>/requirement/addMethodsToProbe/">
+<form id="add-methods-modal-form" class="bg-light mfp-hide col-9 m-auto p-3 position-relative">
     <div class="title mb-3 h-2">
         Добавление методик
     </div>
