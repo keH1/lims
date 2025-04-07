@@ -1945,7 +1945,6 @@ class Request extends Model
                 $row['title'] = 'Счет оплачен не полностью';
             } else if (
                 in_array($row['STAGE_ID'], $stageArray) &&
-                $price > 0.0 &&
                 $price <= $oplata
             ) {
                 $row['color'] = 'bg-green';
