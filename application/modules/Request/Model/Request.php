@@ -1808,7 +1808,7 @@ class Request extends Model
                             $where .= "b.price_discount > 0 and b.OPLATA > 0 and b.OPLATA < b.price_discount AND ";
                             break;
                         case '3': // Счет оплачен полностью
-                            $where .= "b.price_discount > 0 and b.OPLATA >= b.price_discount AND ";
+                            $where .= "b.OPLATA >= b.price_discount AND ";
                             break;
                         case '4': // Акт ВР сформирован и не отправлен
                             break;
