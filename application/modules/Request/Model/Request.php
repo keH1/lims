@@ -1729,9 +1729,8 @@ class Request extends Model
      */
     public function getDatatoJournalInvoice(array $filter = [])
     {
-        $userModel = new User();
-        
         $where = "";
+        $having = "";
         $limit = "";
         $order = [
             'by' => 'b.ID',
@@ -1781,10 +1780,7 @@ class Request extends Model
                 }
                 // Ответственный
                 if (isset($filter['search']['ASSIGNED'])) {
-                    $where .= "
-                    (usr.NAME LIKE '%{$filter['search']['ASSIGNED']}%' or 
-                    usr.LAST_NAME LIKE '%{$filter['search']['ASSIGNED']}%' or
-                    CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) LIKE '%{$filter['search']['ASSIGNED']}%') AND ";
+                    $having .= "ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
                 }
                 // Акт ПП
                 if ( isset($filter['search']['NUM_ACT_TABLE']) ) {
@@ -1878,6 +1874,7 @@ class Request extends Model
         }
 
         $where .= "1";
+        $having .= "1";
 
         $result = [];
 
@@ -1895,7 +1892,9 @@ class Request extends Model
                     LEFT JOIN `assigned_to_request` as ass ON ass.deal_id=b.ID_Z
                     LEFT JOIN `b_user` as usr ON usr.ID=ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
-                    GROUP BY b.ID ORDER BY {$order['by']} {$order['dir']} {$limit}"
+                    GROUP BY b.ID 
+                    HAVING {$having} 
+                    ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
@@ -1909,14 +1908,15 @@ class Request extends Model
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
             "SELECT 
-                        b.ID val 
+                        b.ID val, group_concat(CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED 
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
                     LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
                     LEFT JOIN `assigned_to_request` as ass ON ass.deal_id=b.ID_Z
                     LEFT JOIN `b_user` as usr ON usr.ID=ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
-                    GROUP BY b.ID"
+                    GROUP BY b.ID
+                    HAVING {$having} "
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
