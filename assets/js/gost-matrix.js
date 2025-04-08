@@ -134,7 +134,6 @@ $(function () {
                     },
                     success: function (data) {
                         journalDataTable.ajax.reload()
-                        journalDataTable.draw()
                     }
                 })
 
