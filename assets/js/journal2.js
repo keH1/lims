@@ -798,7 +798,7 @@ $(function ($) {
                 $('.view-comm').show()
                 $('.view-gov').hide()
 
-                addr.searchParams.append('type_request', 'commercial')
+                addr.searchParams.set('type_request', 'commercial')
 
                 $journalTable.find('tbody').empty().before(theadCommHtml)
 
