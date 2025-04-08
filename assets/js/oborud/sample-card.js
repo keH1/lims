@@ -15,8 +15,13 @@ $(function () {
         fixedContentPos: false
     });
 
-    $('.delete_file').click(function () {
-        $(this).parents('.input-group').find('input').val('');
+    $('.delete_file').click(function (e) {
+        let $btn = $(this),
+            $inputGroup = $btn.closest('.input-group');
+
+        $btn.addClass('disabled');
+        $inputGroup.find('input').val('');
+        $inputGroup.find('.file').addClass('disabled').attr('href', '#');
     });
 
     /**
