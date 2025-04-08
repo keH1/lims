@@ -338,7 +338,6 @@ class Material extends Model
             $result[$row['material_id']]['probe'][$row['id']]['name_for_protocol'] = htmlentities($row['name_for_protocol']);
             $result[$row['material_id']]['probe'][$row['id']]['group'] = $row['group'];
             $result[$row['material_id']]['probe'][$row['id']]['place'] = htmlentities($row['place']);
-            $result[$row['material_id']]['probe'][$row['id']]['quarry_id'] = $row['quarry_id'];
             $result[$row['material_id']]['probe'][$row['id']]['price'] += $row['price'];
 
             if ( empty($row['ugtp_id']) ) { $row['ugtp_id'] = 'new_0'; }

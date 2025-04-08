@@ -188,7 +188,6 @@ class ProbeController extends Controller
 
 		$this->data['material_probe'] = $materialModel->getMaterialProbeToRequest($dealId);
         $this->data['probe_in_act'] = $probeModel->getProbeInAct($dealId);
-        $this->data['quarry'] = $requirement->getQuarry();
 
 		$currUser = $user->getCurrentUser();
 
@@ -260,9 +259,6 @@ class ProbeController extends Controller
 		$this->data['deal_title'] = $tzData['REQUEST_TITLE'];
 		$this->data['new_act_number'] = $probeModel->getNewActNumber();
 		$this->data['company_name'] = $deal['COMPANY_TITLE'];
-
-		// Карьеры
-		$this->data['quarry_list'] = $quarryModel->getList();
 
 		//Пробу принял
 		$this->data['current_user'] = $user->getUserShortById($_SESSION['SESS_AUTH']['USER_ID']);
