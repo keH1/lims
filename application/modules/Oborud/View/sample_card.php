@@ -105,7 +105,7 @@
                         >
                         <?php if (!empty($this->data['sample']['DESCRIPTION_SO'])): ?>
                             <a
-                                    class="btn btn-outline-secondary btn-square btn-icon"
+                                    class="btn btn-outline-secondary btn-square btn-icon file"
                                     title="Скачать/Открыть"
                                     href="<?=UPLOAD_URL?>/oborud/description_so/<?=$this->data['id']?>/<?=$this->data['sample']['DESCRIPTION_SO']?>"
                             >
@@ -142,7 +142,7 @@
                         >
                         <?php if (!empty($this->data['sample']['PHOTO_SO'])): ?>
                             <a
-                                    class="btn btn-outline-secondary btn-square btn-icon"
+                                    class="btn btn-outline-secondary btn-square btn-icon file"
                                     title="Скачать/Открыть"
                                     href="<?=UPLOAD_URL?>/oborud/photo_so/<?=$this->data['id']?>/<?=$this->data['sample']['PHOTO_SO']?>"
                             >
@@ -179,7 +179,7 @@
                         >
                         <?php if (!empty($this->data['sample']['PROOF_OF_OWNERSHIP'])): ?>
                             <a
-                                    class="btn btn-outline-secondary btn-square btn-icon"
+                                    class="btn btn-outline-secondary btn-square btn-icon file"
                                     title="Скачать/Открыть"
                                     href="<?=UPLOAD_URL?>/oborud/proof_of_ownership/<?=$this->data['id']?>/<?=$this->data['sample']['PROOF_OF_OWNERSHIP']?>"
                             >
@@ -229,7 +229,7 @@
                         >
                         <?php if (!empty($this->data['sample']['MANUAL_OR_PASSPORT'])): ?>
                             <a
-                                    class="btn btn-outline-secondary btn-square btn-icon"
+                                    class="btn btn-outline-secondary btn-square btn-icon file"
                                     title="Скачать/Открыть"
                                     href="<?=UPLOAD_URL?>/oborud/manual_or_passport/<?=$this->data['id']?>/<?=$this->data['sample']['MANUAL_OR_PASSPORT']?>"
                             >
@@ -282,7 +282,7 @@
                         >
                         <?php if (!empty($this->data['sample']['OWNERSHIP_DOCUMENT'])): ?>
                             <a
-                                    class="btn btn-outline-secondary btn-square btn-icon"
+                                    class="btn btn-outline-secondary btn-square btn-icon file"
                                     title="Скачать/Открыть"
                                     href="<?=UPLOAD_URL?>/oborud/ownership_document/<?=$this->data['id']?>/<?=$this->data['sample']['OWNERSHIP_DOCUMENT']?>"
                             >
