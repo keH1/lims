@@ -107,8 +107,7 @@ class RequestController extends Controller
         $requestData = $request->getTzByDealId($dealId);
 
         if ( $requestData['TYPE_ID'] != '9' ) {
-            $this->data['comm'] = '?type_request=comm';
-            $_SESSION['type_request'] = 'comm';
+            $this->data['comm'] = '?type_request=commercial';
         }
 
         if ( empty($deal) ) {
@@ -609,8 +608,7 @@ class RequestController extends Controller
         $this->data['tz_id']    = $tzId;
 
         if ( $requestData['TYPE_ID'] != '9' ) {
-            $this->data['comm'] = '?type_request=comm';
-            $_SESSION['type_request'] = 'comm';
+            $this->data['comm'] = '?type_request=commercial';
         }
 
         $this->data['doc_id']  = $dogovorData['ID'] ?? '';
@@ -1138,11 +1136,8 @@ class RequestController extends Controller
         $this->data['date_start'] = $request->getDateStart();
 
         $this->data['type_request'] = 'gov';
-        if ((isset($_SESSION['type_request']) && $_SESSION['type_request'] == 'comm') ||
-            (isset($_GET['type_request']) && $_GET['type_request'] == 'comm')) {
+        if ((isset($_GET['type_request']) && $_GET['type_request'] == 'commercial')) {
             $this->data['type_request'] = 'comm';
-
-            unset($_SESSION['type_request']);
         }
 
 //        $this->data['tz_under_consideration'] = [];

@@ -198,8 +198,7 @@ class ProbeController extends Controller
         $actBase = $requirement->getActBase($dealId);
 
         if ( $tzData['TYPE_ID'] != '9' ) {
-            $this->data['comm'] = '?type_request=comm';
-            $_SESSION['type_request'] = 'comm';
+            $this->data['comm'] = '?type_request=commercial';
         }
 
 		$this->data['deal_id']  = $dealId;
@@ -275,8 +274,7 @@ class ProbeController extends Controller
 		$this->data['contract_type'] = $contractData['CONTRACT_TYPE'] ?? 'Договор';
 
         if ( $tzData['TYPE_ID'] != '9' ) {
-            $this->data['comm'] = '?type_request=comm';
-            $_SESSION['type_request'] = 'comm';
+            $this->data['comm'] = '?type_request=commercial';
         }
 
 		$probe = $probeModel->getProbeByDealId($dealId);

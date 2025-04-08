@@ -783,30 +783,42 @@ $(function ($) {
     })
 
     $radioTypeJournal.change(function () {
-        let v = $(this).val()
+        let $radio = $(this)
 
-        journalDataTable?.destroy()
-        $journalTable.find('.search').val('')
-        $journalTable.find('thead').remove()
+        if ( $radio.is(':checked') ) {
+            let v = $radio.val()
 
-        if ( v == 'comm' ) {
-            $('.view-comm').show()
-            $('.view-gov').hide()
+            journalDataTable?.destroy()
+            $journalTable.find('.search').val('')
+            $journalTable.find('thead').remove()
 
-            $journalTable.find('tbody').empty().after(theadCommHtml)
+            let addr = new URL(window.location.href)
 
-            journalDataTable = getJournalDataTable($journalTable, columnsCommJournal)
-        } else {
-            $('.view-comm').hide()
-            $('.view-gov').show()
+            if (v == 'comm') {
+                $('.view-comm').show()
+                $('.view-gov').hide()
 
-            $journalTable.find('tbody').empty().after(theadGovHtml)
+                addr.searchParams.set('type_request', 'commercial')
 
-            journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
+                $journalTable.find('tbody').empty().before(theadCommHtml)
+
+                journalDataTable = getJournalDataTable($journalTable, columnsCommJournal)
+            } else {
+                $('.view-comm').hide()
+                $('.view-gov').show()
+
+                addr.searchParams.delete('type_request')
+
+                $journalTable.find('tbody').empty().before(theadGovHtml)
+
+                journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
+            }
+
+            window.history.replaceState({}, 'Журнал заявок', addr.href)
+
+            container = $('body').find('div.dataTables_scrollBody')
+            scroll = $journalTable.width()
         }
-
-        container = $('body').find('div.dataTables_scrollBody')
-        scroll = $journalTable.width()
     })
 
     $radioTypeJournal.trigger('change')
