@@ -816,14 +816,20 @@ class DocumentGenerator extends Model
 		$protocolDate = !empty($protocol['DATE']) ? date('d.m.Y', strtotime($protocol['DATE'])) : '';
 
 		//Подпись в протоколе
-		$verify = !empty($protocol['VERIFY']) ? unserialize($protocol['VERIFY']) : '';
+        $verify = [];
+        if ( !empty($protocol['VERIFY']) ) {
+            $tmp = unserialize($protocol['VERIFY']);
+
+            if ( !empty($tmp) && is_array($tmp) ) {
+                $verify = $tmp;
+            }
+        }
 
 		//Пробы отобраны не заказчиком
 		$selectionType = $dealInformation['SELECTION_TYPE'] ? '' : '– пробы отобраны и доставлены в ИЦ заказчиком.';
 
 		//Продпись в протоколе
 		$verifyArr = [];
-		$arrVerify = unserialize($protocol['VERIFY']);
 
 //		foreach ($arrVerify as $userVerify) {
 //			$user = $userModel->getUserShortById($userVerify);
@@ -871,17 +877,14 @@ class DocumentGenerator extends Model
 			'd2Ispit' => strtotime($dateEnd) == strtotime($dateBegin) ? '' : '-' . date('d.m.Y', strtotime($dateEnd)),
             'tIspit' => $protocol['TEMP_O']==$protocol['TEMP_TO_O'] ? number_format($protocol['TEMP_O'], 1, ',', '')." " : number_format($protocol['TEMP_O'], 1, ',', '')." - ".number_format($protocol['TEMP_TO_O'], 1, ',', ''),
             'vIspit' => $protocol['VLAG_O']==$protocol['VLAG_TO_O'] ? number_format($protocol['VLAG_O'], 1, ',', '') : number_format($protocol['VLAG_O'], 1, ',', '')." - ".number_format($protocol['VLAG_TO_O'], 1, ',', ''),
-//			'dopInfo' => trim(html_entity_decode($protocol['DOP_INFO'])),
-//			'dopInfo' => trim(html_entity_decode(str_replace(["\r\n", "\n", "\r"], '<w:br/>', $protocol['DOP_INFO']))),
 			'dopInfo' => trim(str_replace(["\r\n", "\n", "\r"], '<w:br/>', $protocol['DOP_INFO'])),
-//			'dopInfo' => trim(html_entity_decode(str_replace(["\r\n", "\n", "\r"], "'&#182;'", $protocol['DOP_INFO']))),
 			'Description' => trim(html_entity_decode($protocol['DESCRIPTION'])),
 			'metodOtbor' => '',
-			'ISP' => (count($verify?? []) > 1 ? 'Исполнители' : 'Исполнитель'),
+			'ISP' => (count($verify) > 1 ? 'Исполнители' : 'Исполнитель'),
 			'Point' => '',
 			'OtborProb' => $selectionType,
-			'table_verify' => $verifyArr['WorkPos'] . ' ' . $verifyArr['IC'] . ' __________' . $verifyArr['Ispolnitel'],
-			'verify_arr' => $verifyArr,
+			'table_verify' => '',//$verifyArr['WorkPos'] . ' ' . $verifyArr['IC'] . ' __________' . $verifyArr['Ispolnitel'],
+			'verify_arr' => '',
             'mestoSboraProbe' => (!empty($protocol['PLACE_PROBE']) ? trim($protocol['PLACE_PROBE']) : '-') . '; ' . (!empty($protocol['DATE_PROBE']) && $protocol['DATE_PROBE'] != '0000-00-00' ? date('d.m.Y', strtotime($protocol['DATE_PROBE'])) : '-'),
             'dealTypeId' => $dealInformation['TYPE_ID'],
 		];
@@ -895,16 +898,14 @@ class DocumentGenerator extends Model
 			$oborudData[$k]['certificate'] = $certificateOborud;
 		}
 
-		//Результаты испытаний
+		// Результаты испытаний
 		$results = [];
         $frost = [];
         $tableData = [];
 
 		foreach ($probeResults as $k => $val) {
 			$object = $val['material_name'] . ' ' .  $val['name_for_protocol'] .' (' . $val['cipher'] . ')';
-			if ($protocolID == 6179) {
-				$object = $val['name_for_protocol'] .' (' . $val['cipher'] . ')';
-			}
+
 			$count_val = 0;
 			foreach ($val['gosts']['method'] as $key => $method) {
 
@@ -972,8 +973,7 @@ class DocumentGenerator extends Model
                 }
                 $actualValue = is_numeric($actualValue) ? str_replace('.', ',', $actualValue) : $actualValue;
 				$actualValue = htmlentities($actualValue);
-
-//				$this->pre($measuringSheet, false);
+                
 				// если есть лист измерений
 				if (isset($measuringSheet)) {
 
@@ -1065,7 +1065,6 @@ class DocumentGenerator extends Model
                                     'id' => $k,
                                 ];
                             }
-//                            $this->pre($results);
                         } else { // если не отмечен checkbox "Выводить единичные значения в протокол?", данные без единичных значений для вывода в таблицу результатов
 
                             $results[] = [
