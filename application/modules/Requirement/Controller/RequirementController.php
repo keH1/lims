@@ -376,7 +376,7 @@ class RequirementController extends Controller
         if ($tzData['TYPE_ID'] == '9') {
             $this->data['work_list'] = $requirementModel->getWorksMaterialRequest($dealId);
         } else {
-            $this->data['comm'] = '?type_request=comm';
+            $this->data['comm'] = '?type_request=commercial';
         }
 
         //// общая информация

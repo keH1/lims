@@ -789,9 +789,13 @@ $(function ($) {
         $journalTable.find('.search').val('')
         $journalTable.find('thead').remove()
 
+        let addr = new URL(window.location.href)
+
         if ( v == 'comm' ) {
             $('.view-comm').show()
             $('.view-gov').hide()
+
+            addr.searchParams.append('type_request', 'commercial')
 
             $journalTable.find('tbody').empty().after(theadCommHtml)
 
@@ -800,10 +804,14 @@ $(function ($) {
             $('.view-comm').hide()
             $('.view-gov').show()
 
+            addr.searchParams.delete('type_request')
+
             $journalTable.find('tbody').empty().after(theadGovHtml)
 
             journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
         }
+
+        window.history.replaceState({}, 'Журнал заявок', addr.href)
 
         container = $('body').find('div.dataTables_scrollBody')
         scroll = $journalTable.width()
