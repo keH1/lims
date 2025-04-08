@@ -299,7 +299,7 @@ class UserController extends Controller
     /**
      * @desc Получает данные пользователей
      */
-    public function getUsersDataAjax()
+    public function checkUsersDataAjax()
     {
         global $APPLICATION;
         $APPLICATION->RestartBuffer();
@@ -315,7 +315,7 @@ class UserController extends Controller
         $i = 0;
         
         if (!empty($email) || !empty($login)) {
-            $userData = $userModel->getUsersData($email, $login, $userId);
+            $userData = $userModel->getUsersDataForCheck($email, $login, $userId);
             
             if (!empty($userData['email'])) {
                 $result[$i]['email'] = $userData['email'];

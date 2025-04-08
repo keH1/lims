@@ -1074,7 +1074,7 @@ class User extends Model
      * @param int $userId
      * @return array
      */
-    public function getUsersData($email, $login, $userId = 0)
+    public function getUsersDataForCheck($email, $login, $userId = 0)
     {
         $result = [
             'email' => false,

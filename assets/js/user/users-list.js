@@ -569,7 +569,7 @@ $(function ($) {
         
         $.ajax({
             type: 'POST',
-            url: '/ulab/user/getUsersDataAjax/',
+            url: '/ulab/user/checkUsersDataAjax/',
             data: {
                 email: email,
                 login: login,
