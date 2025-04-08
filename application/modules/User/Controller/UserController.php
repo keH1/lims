@@ -295,4 +295,41 @@ class UserController extends Controller
         $data = $userModel->getUserHomePage() ?? "/ulab/request/new";
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    /**
+     * @desc Получает данные пользователей
+     */
+    public function checkUsersDataAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var  User $userModel */
+        $userModel = $this->model('User');
+
+        $email = $_POST['email'] ?? '';
+        $login = $_POST['login'] ?? '';
+        $userId = $_POST['user_id'] ?? 0;
+        
+        $result = [];
+        $i = 0;
+        
+        if (!empty($email) || !empty($login)) {
+            $userData = $userModel->getUsersDataForCheck($email, $login, $userId);
+            
+            if (!empty($userData['email'])) {
+                $result[$i]['email'] = $userData['email'];
+                $result[$i]['error_messages'] = 'Пользователь с таким Email уже существует';
+                $i++;
+            }
+            
+            if (!empty($userData['login'])) {
+                $result[$i]['login'] = $userData['login'];
+                $result[$i]['error_messages'] = 'Пользователь с таким логином уже существует';
+                $i++;
+            }
+        }
+
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    }
 }

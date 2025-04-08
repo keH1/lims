@@ -1934,3 +1934,8 @@ h2 .stage-block {
     background-position: right .75rem center;
     background-size: 16px 12px;
 }
+
+.pop-up-error-message {
+    font-size: 0.875rem;
+    margin-bottom: 5px;
+}

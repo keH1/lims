@@ -395,4 +395,217 @@ $(function ($) {
         },
         theme: 'bootstrap-5'
     });
+
+    let isFormSubmitting = false
+
+    function validateFullName(field) {
+        let value = field.val(),
+            hasDigits = /[0-9]/.test(value)
+        
+        if (hasDigits) {
+            let parent = field.parent(),
+                errorMessage = $('<div class="pop-up-error-message text-danger">В поле не должно быть цифр</div>')
+            
+            parent.find('.pop-up-error-message').remove()
+            
+            field.before(errorMessage)
+            
+            let newValue = value.replace(/[0-9]/g, '')
+            field.val(newValue)
+            
+            setTimeout(function() {
+                errorMessage.fadeOut(300, function() {
+                    $(this).remove()
+                })
+            }, 3000)
+            
+            return true
+        }
+        
+        return false
+    }
+
+    function validatePassword(password) {
+        let value = password.val(),
+            hasErrors = false,
+            hasSpecialChars = /[,.<>/?;:'"[\]{}\\|`~!@#$%^&*()_+=\-]/.test(value),
+            hasUpperCase = /[A-Z]/.test(value),
+            hasDigits = /[0-9]/.test(value),
+            passwordLabel = $('label[for="newPassword"]')
+        
+        // Проверка спецсимволов
+        if (!hasSpecialChars) {
+            let errorMessage = $('<div class="pop-up-error-message text-danger">Пароль должен содержать знаки пунктуации (,.<>/?;:\'"[]{}\|`~!@#$%^&*()_+=-)</div>')
+            passwordLabel.before(errorMessage)
+            hasErrors = true
+        }
+        
+        // Проверка заглавных букв
+        if (!hasUpperCase) {
+            let errorMessage = $('<div class="pop-up-error-message text-danger">Пароль должен содержать латинские символы верхнего регистра (A-Z)</div>')
+            passwordLabel.before(errorMessage)
+            hasErrors = true
+        }
+        
+        // Проверка цифр
+        if (!hasDigits) {
+            let errorMessage = $('<div class="pop-up-error-message text-danger">Пароль должен содержать цифры (0-9)</div>')
+            passwordLabel.before(errorMessage)
+            hasErrors = true
+        }
+
+        return hasErrors
+    }
+
+    function checkPasswordMatch() {
+        let password = $('#newPassword'),
+            confirmPassword = $('#newPasswordConfirm'),
+            parent = confirmPassword.parent().parent()
+        
+        parent.parent().find('.pop-up-error-message').remove()
+        
+        if (confirmPassword.val().length > 0 && password.val() !== confirmPassword.val()) {
+            let errorMessage = $('<div class="pop-up-error-message text-danger">Пароли не совпадают</div>')
+            parent.before(errorMessage)
+            return false
+        }
+        
+        return true
+    }
+
+    function validateEmail(field) {
+        let email = field.val(),
+            emailPattern = /.+@.+\..+/i,
+            isValid = emailPattern.test(email),
+            parent = field.parent()
+            
+        parent.find('.pop-up-error-message').remove()
+        
+        if (!isValid && email.length > 0) {
+            let errorMessage = $('<div class="pop-up-error-message text-danger">Введите корректный email</div>')
+            field.before(errorMessage)
+            return false
+        }
+        
+        return true
+    }
+
+    $('#name, #lastName, #secondName').on('input', function() {
+        validateFullName($(this))
+    })
+    
+    $('#email').on('input', function() {
+        validateEmail($(this))
+    })
+  
+    $('#newPassword').on('input', function() {
+        let field = $(this),
+            value = field.val(),
+            hasSpecialChars = /[,.<>/?;:'"[\]{}\\|`~!@#$%^&*()_+=\-]/.test(value),
+            hasUpperCase = /[A-Z]/.test(value),
+            hasDigits = /[0-9]/.test(value)
+            
+        if (hasSpecialChars && hasUpperCase && hasDigits) {
+            let parent = field.parent().parent()
+            parent.parent().find('.pop-up-error-message').remove()
+        }
+        
+        if ($('#newPasswordConfirm').val().length > 0) {
+            checkPasswordMatch()
+        }
+    })
+    
+    $('#newPasswordConfirm').on('input', function() {
+        checkPasswordMatch()
+    })
+    
+    $('#user-modal-form').on('submit', function(e) {
+        if (isFormSubmitting) {
+            e.preventDefault()
+            return false
+        }
+        
+        e.preventDefault()
+        
+        let password = $('#newPassword'),
+            passwordConfirm = $('#newPasswordConfirm'),
+            hasErrors = false,
+            $form = $(this)
+        
+        $('.pop-up-error-message').remove()
+        
+        $('#name, #lastName, #secondName').each(function() {
+            if (validateFullName($(this))) {
+                hasErrors = true
+            }
+        })
+        
+        if (!validateEmail($('#email'))) {
+            hasErrors = true
+        }
+        
+        if (password.val().length > 0) {
+            hasErrors = validatePassword(password)
+        }
+        
+        // Проверка совпадения паролей
+        if (passwordConfirm.val().length > 0 && password.val() !== passwordConfirm.val()) {
+            let confirmLabel = $('label[for="newPasswordConfirm"]'),
+                errorMessage = $('<div class="pop-up-error-message text-danger">Пароли не совпадают</div>')
+
+            confirmLabel.before(errorMessage)
+            hasErrors = true
+        }
+        
+        if (hasErrors) {
+            return false
+        }
+        
+        let email = $('#email').val(),
+            login = $('#login').val(),
+            userId = $('#userId').val()
+            
+        isFormSubmitting = true
+        
+        $.ajax({
+            type: 'POST',
+            url: '/ulab/user/checkUsersDataAjax/',
+            data: {
+                email: email,
+                login: login,
+                user_id: userId
+            },
+            dataType: 'json',
+            success: function(response) {
+                let hasValidationErrors = response.length > 0
+
+                if (hasValidationErrors) {
+                    response.forEach(function(item) {
+                        let fieldName = Object.keys(item).find(key => key !== 'error_messages'),
+                            field = $('#' + fieldName),
+                            parent = field.parent(),
+                            errorMessage = $('<div class="pop-up-error-message text-danger">' + item.error_messages + '</div>')
+
+                        parent.find('.pop-up-error-message').remove()
+                        field.before(errorMessage)
+                    })
+                    
+                    isFormSubmitting = false
+                } else {
+                    $('#user-modal-form').off('submit')
+                    $form.submit()
+                }
+            },
+            error: function() {
+                $('.pop-up-error-message').remove()
+                
+                let formButton = $('.form-button'),
+                    errorMessage = $('<div class="pop-up-error-message text-danger">Ошибка проверки данных</div>')
+                
+                formButton.before(errorMessage)
+                
+                isFormSubmitting = false
+            }
+        })
+    })
 })
