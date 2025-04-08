@@ -1757,9 +1757,12 @@ class Request extends Model
                 }
                 // Сумма
                 if ( isset($filter['search']['price_discount']) ) {
-                    $price = (float)str_replace([' ', 'руб.', ','], ['', '', '.'], $filter['search']['price_discount']);
-                    
-                    $where .= "b.price_discount like '%{$price}%' AND ";
+                    if ( is_numeric($filter['search']['price_discount']) ) {
+                        $price = floatval($filter['search']['price_discount']);
+                        $where .= "b.price_discount like '%{$price}%' AND ";
+                    } else {
+                        $where .= "1=0 AND ";
+                    }
                 }
                 // Act VR
                 if ( isset($filter['search']['ACT_VR']) ) {
