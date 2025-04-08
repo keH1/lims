@@ -1136,7 +1136,7 @@ class RequestController extends Controller
         $this->data['date_start'] = $request->getDateStart();
 
         $this->data['type_request'] = 'gov';
-        if ((isset($_GET['type_request']) && $_GET['type_request'] == 'comm')) {
+        if ((isset($_GET['type_request']) && $_GET['type_request'] == 'commercial')) {
             $this->data['type_request'] = 'comm';
         }
 

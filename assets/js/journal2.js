@@ -783,38 +783,42 @@ $(function ($) {
     })
 
     $radioTypeJournal.change(function () {
-        let v = $(this).val()
+        let $radio = $(this)
 
-        journalDataTable?.destroy()
-        $journalTable.find('.search').val('')
-        $journalTable.find('thead').remove()
+        if ( $radio.is(':checked') ) {
+            let v = $radio.val()
 
-        let addr = new URL(window.location.href)
+            journalDataTable?.destroy()
+            $journalTable.find('.search').val('')
+            $journalTable.find('thead').remove()
 
-        if ( v == 'comm' ) {
-            $('.view-comm').show()
-            $('.view-gov').hide()
+            let addr = new URL(window.location.href)
 
-            addr.searchParams.append('type_request', 'commercial')
+            if (v == 'comm') {
+                $('.view-comm').show()
+                $('.view-gov').hide()
 
-            $journalTable.find('tbody').empty().after(theadCommHtml)
+                addr.searchParams.append('type_request', 'commercial')
 
-            journalDataTable = getJournalDataTable($journalTable, columnsCommJournal)
-        } else {
-            $('.view-comm').hide()
-            $('.view-gov').show()
+                $journalTable.find('tbody').empty().before(theadCommHtml)
 
-            addr.searchParams.delete('type_request')
+                journalDataTable = getJournalDataTable($journalTable, columnsCommJournal)
+            } else {
+                $('.view-comm').hide()
+                $('.view-gov').show()
 
-            $journalTable.find('tbody').empty().after(theadGovHtml)
+                addr.searchParams.delete('type_request')
 
-            journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
+                $journalTable.find('tbody').empty().before(theadGovHtml)
+
+                journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
+            }
+
+            window.history.replaceState({}, 'Журнал заявок', addr.href)
+
+            container = $('body').find('div.dataTables_scrollBody')
+            scroll = $journalTable.width()
         }
-
-        window.history.replaceState({}, 'Журнал заявок', addr.href)
-
-        container = $('body').find('div.dataTables_scrollBody')
-        scroll = $journalTable.width()
     })
 
     $radioTypeJournal.trigger('change')
