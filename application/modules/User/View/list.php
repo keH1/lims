@@ -134,14 +134,6 @@
                value="<?= $this->data['LOGIN'] ?? '' ?>" minlength="3" required>
     </div>
 
-    <!--
-    <div class="mb-3">
-        <label for="workPosition" class="form-label mb-1">Должность</label>
-        <input type="text" name="WORK_POSITION" class="form-control" id="workPosition"
-               value="<?= $this->data['WORK_POSITION'] ?? '' ?>" minlength="3" required>
-    </div>
-    -->
-
     <div class="mb-3">
         <label for="workPosition" class="form-label mb-1">Должность</label>
         <input id="workPosition" class="form-control" list="workPosition_list"   placeholder="Выберите или введите должность"
@@ -171,7 +163,7 @@
         <div class="w-100 d-flex justify-content-center align-items-center">
             <input type="password" name="NEW_PASSWORD" class="w-100 form-control" id="newPassword"
                    value="<?= $this->data['NEW_PASSWORD'] ?? '' ?>" minlength="6" maxlength="255"  placeholder="Введите новый пароль" style="min-width: auto"
-                   autocomplete="new-password">
+                   autocomplete="new-password" required>
             <div class="ms-2 hidePassword fa-solid fa-eye" style="cursor: pointer; color: #5724ad; width: 21px"></div>
         </div>
     </div>
@@ -181,14 +173,14 @@
         <div class="w-100 d-flex justify-content-center align-items-center">
             <input type="password" name="NEW_PASSWORD_CONFIRM" class="w-100 form-control" id="newPasswordConfirm" placeholder="Введите подтверждение нового пароля" style="min-width: auto"
                    value="<?= $this->data['NEW_PASSWORD_CONFIRM'] ?? '' ?>" minlength="6" maxlength="255"
-                   autocomplete="new-password">
+                   autocomplete="new-password" required>
             <div class="ms-2 hidePasswordConfirm fa-solid fa-eye" style="cursor: pointer; color: #5724ad; width: 21px"></div>
         </div>
     </div>
 
     <div class="line-dashed-small"></div>
 
-    <button type="submit" class="btn btn-primary form-button">Сохранить</button>
+    <button type="submit" class="btn btn-primary form-button"></button>
 </form>
 <!--./user-modal-form-->
 

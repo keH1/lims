@@ -1067,4 +1067,50 @@ class User extends Model
 
         return $data;
     }
+
+    /**
+     * @param string $email
+     * @param string $login
+     * @param int $userId
+     * @return array
+     */
+    public function getUsersData($email, $login, $userId = 0)
+    {
+        $result = [
+            'email' => false,
+            'login' => false
+        ];
+        
+        $fieldsToCheck = [
+            'email' => ['field' => 'EMAIL', 'value' => $email, 'result' => 'email'],
+            'login' => ['field' => 'LOGIN', 'value' => $login, 'result' => 'login']
+        ];
+        
+        foreach ($fieldsToCheck as $checkData) {
+            if (empty($checkData['value'])) {
+                continue;
+            }
+            
+            $filter = [$checkData['field'] => $checkData['value']];
+            $rsUsers = CUser::GetList(($by="ID"), ($order="asc"), $filter);
+            
+            if ($rsUsers->SelectedRowsCount() > 0) {
+                if ($userId > 0) {
+                    $valueExists = true;
+                    while ($user = $rsUsers->Fetch()) {
+                        if ($user['ID'] == $userId) {
+                            $valueExists = false;
+                            break;
+                        }
+                    }
+                    
+                    $result[$checkData['result']] = $valueExists;
+                } else {
+                    $result[$checkData['result']] = true;
+                }
+            }
+        }
+        
+        return $result;
+    }
 }

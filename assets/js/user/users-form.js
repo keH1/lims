@@ -211,16 +211,6 @@ $(function () {
         });
     });
 
-    $('#user-modal-form').on('submit', function () {
-        $(this).find('.form-button').text('Пожалуйста подождите');
-        $(this).find('.form-button').addClass('disabled');
-
-        let userDeleteButton = $(this).find('.user-delete');
-        if (userDeleteButton.length) {
-            userDeleteButton.remove();
-        }
-    });
-
     $('.hidePassword').click(function () {
         let passwordField = $('.hidePassword').parent().find('input');
         if (passwordField.attr('type') === 'password') {
