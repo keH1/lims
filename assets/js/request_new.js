@@ -14,7 +14,7 @@ $(function ($) {
     function toggleRequestType() {
         const reqType = $('#req-type-select').val()
         const hasId = $('input[name="id"]').length > 0
-        
+
         // Сначала скрываем все специфичные для типов блоки
         $('.type-specific-block').addClass('visually-hidden')
         
@@ -61,16 +61,21 @@ $(function ($) {
      * @desc Инициализация при загрузке страницы
      */
     function initForm() {
+        const reqType = $('#req-type-select').val()
+
         if (isNewRequest) {
-            // Скрываем все блоки для новой заявки
-            $('.type-specific-block').addClass('visually-hidden')
-            
-            // Отключаем required и делаем поля недоступными
-            $('.type-specific-block input, .type-specific-block select').prop('disabled', true)
-            $('.type-specific-block [data-conditionally-required="true"]').prop('required', false)
+            if (reqType) {
+                // При ошибке валидации
+                toggleRequestType()
+            } else {
+                // Скрываем все блоки для новой заявки
+                $('.type-specific-block').addClass('visually-hidden')
+
+                // Отключаем required и делаем поля недоступными
+                $('.type-specific-block input, .type-specific-block select').prop('disabled', true)
+                $('.type-specific-block [data-conditionally-required="true"]').prop('required', false)
+            }
         } else {
-            const reqType = $('#req-type-select').val()
-            
             if (reqType) {
                 toggleRequestType()
             } else {
