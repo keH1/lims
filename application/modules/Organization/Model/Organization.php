@@ -469,6 +469,10 @@ class Organization extends Model
      */
     public function setLabInfo($labId, $data)
     {
+        if ( !empty($data['bitrix_dep_id']) ) {
+            $this->editBitrixDepartment($data['bitrix_dep_id'], $data['NAME']);
+        }
+
         $sqlData = $this->prepearTableData('ba_laba', $data);
 
         $this->DB->Update("ba_laba", $sqlData, "where ID = {$labId}");
@@ -481,6 +485,12 @@ class Organization extends Model
      */
     public function addLabInfo($data)
     {
+        $idDep = $this->createBitrixDepartment($data['NAME']);
+
+        if ( $idDep > 0 ) {
+            $data['id_dep'] = $idDep;
+        }
+
         $sqlData = $this->prepearTableData('ba_laba', $data);
 
         $this->DB->Insert("ba_laba", $sqlData);
@@ -897,5 +907,50 @@ class Organization extends Model
         }
 
         return $result;
+    }
+
+
+    /**
+     * создает структуру компании в битриксе (департамент)
+     * @param string $name
+     * @param int $parentId - ид родительского подразделения (не обязательно)
+     * @return mixed
+     */
+    public function createBitrixDepartment(string $name, int $parentId = 0)
+    {
+        $data = [
+            'NAME' => $name,
+            'SEARCHABLE_CONTENT' => $name,
+            'IBLOCK_SECTION_ID' => $parentId > 0?  $parentId : null,
+            'CREATED_BY' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'MODIFIED_BY' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'DATE_CREATE' => date('Y-m-d H:i:s'),
+            'IBLOCK_ID' => 5,
+            'DEPTH_LEVEL' => 2,
+        ];
+
+        $sqlData = $this->prepearTableData('b_iblock_section', $data);
+
+        return $this->DB->Insert('b_iblock_section', $sqlData);
+    }
+
+
+    /**
+     * редактирует название структуры компании в битриксе (департамент)
+     * @param int $id
+     * @param string $name
+     * @return mixed
+     */
+    public function editBitrixDepartment(int $id, string $name)
+    {
+        $data = [
+            'NAME' => $name,
+            'SEARCHABLE_CONTENT' => $name,
+            'MODIFIED_BY' => $_SESSION['SESS_AUTH']['USER_ID'],
+        ];
+
+        $sqlData = $this->prepearTableData('b_iblock_section', $data);
+
+        return $this->DB->Update('b_iblock_section', $sqlData, "where ID = {$id}");
     }
 }

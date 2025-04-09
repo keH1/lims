@@ -18,6 +18,7 @@
     <div class="panel-body">
         <form action="/ulab/import/labUpdate" method="post" class="form-horizontal">
             <input type="hidden" name="lab_id" id="lab_id" value="<?=$this->data['info']['ID']?>">
+            <input type="hidden" name="bitrix_dep_id" id="bitrix_dep_id" value="<?=$this->data['info']['id_dep']?>">
 
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Организация</label>
