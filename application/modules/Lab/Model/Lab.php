@@ -555,7 +555,7 @@ class Lab extends Model
 
         $ustSql = $this->DB->Query(
             "SELECT ust.*  
-            FROM lab_gost_to_probe as ugtp 
+            FROM ulab_gost_to_probe as ugtp 
             inner JOIN ulab_start_trials ust on ust.ugtp_id = ugtp.id 
             WHERE ugtp.protocol_id = {$protocolId} AND ust.is_actual = 1 ORDER BY ust.ugtp_id ASC, ust.created_at ASC"
         );
