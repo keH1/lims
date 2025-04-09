@@ -98,6 +98,7 @@ $(function ($) {
 
     $btnSend.click(function () {
 
+        let $btn = $(this)
         let orderId = $(this).data('order-id'),
             dealId = $(this).data('deal-id'),
             tzId = $(this).data('tz-id'),
@@ -108,15 +109,48 @@ $(function ($) {
             attach3 = $(this).data('attach3'),
             title = $(this).data('title')
 
-        let strMail = '';
         let $checked = $('.check-mail:checked')
+        let data = {
+            "ID": orderId,
+            "ID2": dealId,
+            "TZ_ID": tzId,
+            "TYPE": 7,
+            "EMAIL": email,
+            "NAME": name,
+            "ATTACH1": attach1,
+            "ATTACH2": attach2,
+            "ATTACH3": attach3,
+            "TITLE": title,
+        }
+        let check = []
 
         $checked.each(function () {
             let what = $(this).data('text')
-            strMail += `&CHECK[]=${what}`
+            check.push(what)
         })
-        // console.log(`/mail.php?ID=${orderId}&ID2=${dealId}&TZ_ID=${tzId}&TYPE=7&EMAIL=${email}&NAME=${name}&ATTACH1=${attach1}&ATTACH2=${attach2}&ATTACH3=${attach3}&TITLE=${title}${strMail}`)
-        window.open (`/mail.php?ID=${orderId}&ID2=${dealId}&TZ_ID=${tzId}&TYPE=7&EMAIL=${email}&NAME=${name}&ATTACH1=${attach1}&ATTACH2=${attach2}&ATTACH3=${attach3}&TITLE=${title}${strMail}`, "_blank");
+
+        if ( check.length > 0 ) {
+            data.CHECK = check
+        }
+
+        $btn.addClass('disabled')
+
+        $.ajax({
+            url: `/mail.php`,
+            type: "GET", //метод отправки
+            dataType: 'text', // data type
+            data: data,
+            success: function (result) {
+                showSuccessMessage("Документы отправлены")
+                $('html, body').animate({scrollTop: $('.alert-success').offset().top - 100}, 500)
+            },
+            error: function (xhr, resp, text) {
+                console.log(xhr, resp, text);
+            },
+            complete: function () {
+                $btn.removeClass('disabled')
+            }
+        })
 
         return false
     })
