@@ -101,7 +101,7 @@ class Lab extends Model
     {
         $results = [];
 
-        $laboratories = $this->DB->Query("SELECT * FROM `ba_laba`");
+        $laboratories = $this->DB->Query("SELECT * FROM `ba_laba` where id_dep is not null");
 
         while ($row = $laboratories->Fetch()) {
             $row['DEPARTMENT'] = $row['id_dep'];
