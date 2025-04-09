@@ -1,8 +1,19 @@
+#!/usr/bin/env php
 <?php
 // Скрипт для проверки сообщения коммита
 
+if (!isset($argv[1])) {
+    echo "Ошибка: не указан файл сообщения коммита\n";
+    exit(1);
+}
+
 $commit_msg_file = $argv[1];
 $commit_source = isset($argv[2]) ? $argv[2] : '';
+
+if (!file_exists($commit_msg_file)) {
+    echo "Ошибка: файл сообщения коммита не найден: $commit_msg_file\n";
+    exit(1);
+}
 
 $commit_msg = trim(file_get_contents($commit_msg_file));
 

@@ -2,7 +2,7 @@
 
 <?php
 /**
- * Скрипт установки хука для директории /ulab
+ * Скрипт установки хука для php
  */
 
 $scriptDir = __DIR__;
@@ -19,18 +19,13 @@ try {
     }
     
     $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
-    $sourceFile = $isWindows ? $scriptDir . '/commit-msg.bat' : $scriptDir . '/commit-msg';
-    $targetFile = $hooksDir . '/commit-msg';
     
     $phpSource = $scriptDir . '/commit-msg.php';
-    $phpTarget = $hooksDir . '/commit-msg.php';
-    copy($phpSource, $phpTarget);
-    
-    copy($sourceFile, $targetFile);
+    $targetFile = $hooksDir . '/commit-msg';
+    copy($phpSource, $targetFile);
     
     if (!$isWindows) {
         chmod($targetFile, 0755);
-        chmod($phpTarget, 0755);
     }
     
     echo "Git-хук успешно установлен!\n";

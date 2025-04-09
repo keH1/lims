@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+/**
+ * Скрипт установки хука для Node
+ */
+
 const { execSync } = require('child_process');
 const { resolve, join } = require('path');
 const { existsSync, mkdirSync, copyFileSync } = require('fs');
@@ -19,21 +23,13 @@ try {
     }
     
     const isWindows = os.platform() === 'win32';
-    const sourceFile = isWindows ? join(scriptDir, 'commit-msg.bat') : join(scriptDir, 'commit-msg');
-    const targetFile = join(hooksDir, 'commit-msg');
     
     const phpSource = join(scriptDir, 'commit-msg.php');
-    const phpTarget = join(hooksDir, 'commit-msg.php');
-    copyFileSync(phpSource, phpTarget);
-    console.log(`commit-msg.php скопирован в ${phpTarget}`);
-    
-    copyFileSync(sourceFile, targetFile);
-    console.log(`Хук-обертка скопирована в ${targetFile}`);
+    const targetFile = join(hooksDir, 'commit-msg');
+    copyFileSync(phpSource, targetFile);
     
     if (!isWindows) {
         execSync(`chmod +x "${targetFile}"`);
-        execSync(`chmod +x "${phpTarget}"`);
-        console.log('Делаем файлы исполняемыми');
     }
     
     console.log('Git-хук успешно установлен');
