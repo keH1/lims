@@ -41,7 +41,7 @@ $(function ($) {
                 }
             },
             {
-                data: 'date_check'
+                data: 'check_date_formatted'
             },
             {
                 data: 'ph'

@@ -57,7 +57,7 @@ class Water extends Model
             $fullConclusionImplode = implode(' + ', $fullConclusion);
 
             $request =
-                "SELECT water_full.*,       
+                "SELECT water_full.*, DATE_FORMAT(water_full.date_check, '%d.%m.%Y') AS check_date_formatted,      
                      IF(($fullConclusionImplode) = 0,'Соответствует', 'Не cоответствует') AS conclusion
                 FROM (SELECT water.*,
                             $parametersConclusionImplode,

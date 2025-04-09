@@ -451,11 +451,11 @@ class Model
         $transformedFilter = [];
         if ($typeTransform == "having" || $typeTransform == "havingDateId") {
             if (!empty($filter['search'])) {
+                $having = '1';
                 foreach ($filter['search'] as $key => $item) {
-                    $transformedFilter['having'] = "1 "; //Затычка, что бы не было пустого HAVING в SQL запросе
-                    $transformedFilter['having'] .= "AND $key COLLATE utf8mb3_unicode_ci LIKE '%$item%'";
-
+                    $having .= " AND {$key} COLLATE utf8mb3_unicode_ci LIKE '%{$item}%'";
                 }
+                $transformedFilter['having'] = $having;
             }
             if ($typeTransform == "havingDateId") {
 
