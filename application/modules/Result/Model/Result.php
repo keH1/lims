@@ -358,6 +358,28 @@ class Result extends Model
             // не сохранена дата начала испытаний ИЛИ не сохранена дата окончания испытаний ИЛИ
             // не сформирован протокол(нет актуальной версии) и небыл выдан в не ЛИС ИЛИ не выбраны пробы для протокола,
             // то присвоить номер мы не можем)
+            $protocols[$key]['why_block_protocol_number'] = '';
+            if ( !empty($protocol['NUMBER']) ) {
+                $protocols[$key]['why_block_protocol_number'] .= 'Номер уже присвоен. ';
+            }
+            if ( $selected !== $protocol['ID'] ) {
+                $protocols[$key]['why_block_protocol_number'] .= 'Не выбран данный протокол. ';
+            }
+            if ( !empty($protocol['INVALID']) ) {
+                $protocols[$key]['why_block_protocol_number'] .= 'Протокол не недействителен. ';
+            }
+            if (
+                empty($protocol['DATE_BEGIN']) || $protocol['DATE_BEGIN'] === '0000-00-00' ||
+                empty($protocol['DATE_END']) || $protocol['DATE_END'] === '0000-00-00'
+            ) {
+                $protocols[$key]['why_block_protocol_number'] .= 'Не указаны дата начала и дата окончания испытаний. ';
+            }
+            if ( empty($protocol['ACTUAL_VERSION']) && empty($protocol['PROTOCOL_OUTSIDE_LIS']) ) {
+                $protocols[$key]['why_block_protocol_number'] .= 'Не сформирован протокол. ';
+            }
+            if ( empty($protocol['probe_count']) ) {
+                $protocols[$key]['why_block_protocol_number'] .= 'У протокола отсутствуют прикреплённые пробы. ';
+            }
             $protocols[$key]['add_protocol_number'] = !empty($protocol['NUMBER']) ||
                 $selected !== $protocol['ID'] || !empty($protocol['INVALID']) ||
                 empty($protocol['DATE_BEGIN']) || $protocol['DATE_BEGIN'] === '0000-00-00' ||
@@ -641,7 +663,7 @@ class Result extends Model
         }
 
         if ($protocolId) {
-            $where = "AND (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId}))";
+            $where = "AND ugtp.protocol_id = {$protocolId}";
         }
 
         $result = $this->DB->Query("SELECT *, 
@@ -2244,10 +2266,9 @@ class Result extends Model
         }
 
         $result = $this->DB->Query("SELECT MIN(ust.date) date_begin, MAX(ust.date) date_end 
-                                        FROM ulab_material_to_request umtr 
-                                        LEFT JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id 
-                                        LEFT JOIN ulab_start_trials ust ON ust.ugtp_id = ugtp.id  
-                                        WHERE (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId})) AND ust.is_actual = 1")->Fetch();
+                                        FROM ulab_gost_to_probe as ugtp 
+                                        inner JOIN ulab_start_trials ust ON ust.ugtp_id = ugtp.id  
+                                        WHERE ugtp.protocol_id = {$protocolId} AND ust.is_actual = 1")->Fetch();
 
         if (!empty($result)) {
             $response = $result;
@@ -2269,9 +2290,10 @@ class Result extends Model
             return $response;
         }
 
-        $result = $this->DB->Query("SELECT ugtp.* FROM ulab_material_to_request umtr 
-                                        INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id
-                                        WHERE (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId}))");
+        $result = $this->DB->Query(
+            "SELECT ugtp.* FROM ulab_gost_to_probe as ugtp 
+            WHERE ugtp.protocol_id = {$protocolId}"
+        );
 
         while ($row = $result->Fetch()) {
             $response[] = $row;
@@ -2310,10 +2332,9 @@ class Result extends Model
             return $response;
         }
 
-        $result = $this->DB->Query("SELECT ugtp.* FROM ulab_material_to_request umtr
-                                        INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id
+        $result = $this->DB->Query("SELECT ugtp.* FROM ulab_gost_to_probe as ugtp
                                         INNER JOIN ulab_methods as um ON um.id = ugtp.method_id
-                                        WHERE (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId})) AND um.is_selection <> 1");
+                                        WHERE ugtp.protocol_id = {$protocolId} AND um.is_selection <> 1");
 
         while ($row = $result->Fetch()) {
             $response[] = $row;

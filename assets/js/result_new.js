@@ -2,6 +2,8 @@
  * Результаты испытаний
  */
 $(function ($) {
+    $('[data-bs-toggle="popover"]').popover()
+
     let $body = $('body')
 
     let $btnStart = $('.btn_start')
@@ -1255,22 +1257,22 @@ $(function ($) {
                     changeTrialsDate ? dateEnd.removeClass('bg-light-secondary').addClass('bg-white') :
                         dateEnd.removeClass('bg-white').addClass('bg-light-secondary');
 
-                    temp1.val(data['conditions']['TEMP_O']);
+                    temp1.val(data['protocol']['TEMP_O'] == null? data['conditions']['TEMP_O'] : data['protocol']['TEMP_O']);
                     temp1.prop('readonly', !isChangeTrialsConditions);
                     isChangeTrialsConditions ? temp1.removeClass('bg-light-secondary').addClass('bg-white') :
                         temp1.removeClass('bg-white').addClass('bg-light-secondary');
 
-                    temp2.val(data['conditions']['TEMP_TO_O']);
+                    temp2.val(data['protocol']['TEMP_TO_O'] == null? data['conditions']['TEMP_TO_O'] : data['protocol']['TEMP_TO_O']);
                     temp2.prop('readonly', !isChangeTrialsConditions);
                     isChangeTrialsConditions ? temp2.removeClass('bg-light-secondary').addClass('bg-white') :
                         temp2.removeClass('bg-white').addClass('bg-light-secondary');
 
-                    wet1.val(data['conditions']['VLAG_O']);
+                    wet1.val(data['protocol']['VLAG_O'] == null? data['conditions']['VLAG_O'] : data['protocol']['VLAG_O']);
                     wet1.prop('readonly', !isChangeTrialsConditions);
                     isChangeTrialsConditions ? wet1.removeClass('bg-light-secondary').addClass('bg-white') :
                         wet1.removeClass('bg-white').addClass('bg-light-secondary');
 
-                    wet2.val(data['conditions']['VLAG_TO_O']);
+                    wet2.val(data['protocol']['VLAG_TO_O'] == null? data['conditions']['VLAG_TO_O'] : data['protocol']['VLAG_TO_O']);
                     wet2.prop('readonly', !isChangeTrialsConditions);
                     isChangeTrialsConditions ? wet2.removeClass('bg-light-secondary').addClass('bg-white') :
                         wet2.removeClass('bg-white').addClass('bg-light-secondary');
