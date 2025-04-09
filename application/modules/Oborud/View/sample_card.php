@@ -2,7 +2,7 @@
     <nav class="header-menu">
         <ul class="nav">
             <li class="nav-item me-2">
-                <a class="nav-link" href="<?=URI?>/oborud/sampleList/" title="Список образецов контроля">
+                <a class="nav-link" href="<?=URI?>/oborud/sampleList/" title="Журнал стандартных образцов">
                     <svg class="icon" width="25" height="25">
                         <use xlink:href="<?=URI?>/assets/images/icons.svg#card"/>
                     </svg>
