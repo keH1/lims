@@ -163,7 +163,7 @@ class Recipe extends Model
         }
         if ($name == 'getList') {
             $requestFromSQL = $this->DB->Query(
-                "SELECT recipe_model.*
+                "SELECT recipe_model.id, recipe_model.id_doc, recipe_model.check_in_day
                 ,CONCAT(storage_life_in_day,'<br>',IFNULL(check_property,'')) AS storage_life,recipe_type.name AS type_name,
                 CONCAT (IFNULL(b_user.LAST_NAME,'-'),' ',IFNULL(b_user.NAME,'')) as global_assigned_name,
                 GROUP_CONCAT( CASE  WHEN is_solvent = 0 THEN
@@ -219,7 +219,7 @@ class Recipe extends Model
 
         if ($name == 'allRecord') {
             $requestFromSQL = $this->DB->Query(
-                "SELECT recipe_model.*
+                "SELECT recipe_model.id
                 ,CONCAT(storage_life_in_day,'<br>',IFNULL(check_property,'')) AS storage_life,recipe_type.name AS type_name,
                 CONCAT (IFNULL(b_user.LAST_NAME,'-'),' ',IFNULL(b_user.NAME,'')) as global_assigned_name,
                 GROUP_CONCAT( CASE  WHEN is_solvent = 0 THEN
