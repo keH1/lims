@@ -88,6 +88,7 @@ $(function ($) {
             type: 'inline',
             closeBtnInside: true,
             fixedContentPos: false,
+            closeOnBgClick: false,
             callbacks: {
                 beforeOpen: function() {
                     $form.find('#form_entity_name').val(data.name)

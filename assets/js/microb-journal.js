@@ -263,21 +263,24 @@ $(function ($) {
             src: '#add-entry-modal-form-first',
             type: 'inline'
         },
-        fixedContentPos: false
+        fixedContentPos: false,
+        closeOnBgClick: false,
     })
     $('.popup-second').magnificPopup({
         items: {
             src: '#add-entry-modal-form-second',
             type: 'inline'
         },
-        fixedContentPos: false
+        fixedContentPos: false,
+        closeOnBgClick: false,
     })
     $('.popup-third').magnificPopup({
         items: {
             src: '#add-entry-modal-form-third',
             type: 'inline'
         },
-        fixedContentPos: false
+        fixedContentPos: false,
+        closeOnBgClick: false,
     })
     $('.select-oborud').select2({
         placeholder: 'Выберете оборудование',

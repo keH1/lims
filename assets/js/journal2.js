@@ -499,6 +499,7 @@ $(function ($) {
             items: {
                 src: '#notify_leader'
             },
+            closeOnBgClick: false,
             type: 'inline'
         })
     }

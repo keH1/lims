@@ -164,7 +164,8 @@ $(function ($) {
             src: '#add-entry-modal-form',
             type: 'inline'
         },
-        fixedContentPos: false
+        fixedContentPos: false,
+        closeOnBgClick: false,
     })
 
     $('.select-recipe').select2({

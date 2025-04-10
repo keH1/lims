@@ -155,6 +155,7 @@ $(document).ready(function () {
                 type: 'inline'
             },
             fixedContentPos: false,
+            closeOnBgClick: false,
             modal: true
         })
 
@@ -170,6 +171,7 @@ $(document).ready(function () {
                 type: 'inline'
             },
             fixedContentPos: false,
+            closeOnBgClick: false,
             modal: true
         })
     })
@@ -187,6 +189,7 @@ $(document).ready(function () {
                 type: 'inline'
             },
             fixedContentPos: false,
+            closeOnBgClick: false,
             modal: true
         })
 

@@ -22,6 +22,7 @@ $(function ($) {
                         type: 'inline',
                     },
                     fixedContentPos: false,
+                    closeOnBgClick: false,
                 })
             }
         })
@@ -84,6 +85,7 @@ $(function ($) {
                         type: 'inline',
                     },
                     fixedContentPos: false,
+                    closeOnBgClick: false,
                 })
             }
         })

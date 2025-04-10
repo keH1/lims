@@ -344,7 +344,8 @@ $(function () {
                     src: $('#alert_modal'),
                     type: 'inline',
                     fixedContentPos: false
-                }
+                },
+                closeOnBgClick: false,
             })
 
             totalDays.val(numberOfDays - 1);
@@ -889,7 +890,8 @@ $(function () {
                 src: '#add-entry-modal-form',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
         })
     })
 
@@ -908,7 +910,8 @@ $(function () {
                 src: '#change-stage',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
         })
     })
 // $('#cancel-stage-toggle').magnificPopup({
@@ -936,7 +939,8 @@ $(function () {
                 src: '#add-entry-modal-form',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
         })
     })
 
@@ -1164,7 +1168,8 @@ $(function () {
                 src: '#memo-modal',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
         })
     })
 

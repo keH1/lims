@@ -92,7 +92,8 @@ $(function ($) {
                     src: $('#alert_modal'),
                     type: 'inline',
                     fixedContentPos: false
-                }
+                },
+                closeOnBgClick: false,
             })
 
             return false;
@@ -110,7 +111,8 @@ $(function ($) {
                     src: $('#alert_modal'),
                     type: 'inline',
                     fixedContentPos: false
-                }
+                },
+                closeOnBgClick: false,
             })
 
             return false;
@@ -148,7 +150,8 @@ $(function ($) {
                             src: $('#alert_modal'),
                             type: 'inline',
                             fixedContentPos: false
-                        }
+                        },
+                        closeOnBgClick: false,
                     })
 
                     return false
@@ -629,7 +632,8 @@ $(function ($) {
                             items: {
                                 src: roomsModalForm,
                                 type: 'inline',
-                            }
+                            },
+                            closeOnBgClick: false,
                         })
                     }
 
@@ -884,7 +888,8 @@ $(function ($) {
                                 items: {
                                     src: roomsModalForm,
                                     type: 'inline',
-                                }
+                                },
+                                closeOnBgClick: false,
                             })
                         }
 

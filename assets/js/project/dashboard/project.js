@@ -101,6 +101,7 @@ $("body").on("click", "[open-date-modal]", function (e) {
             type: 'inline'
         },
         fixedContentPos: false,
+        closeOnBgClick: false,
         modal: true,
     })
 })
@@ -117,6 +118,7 @@ $("body").on("click", "[open-project-modal]", function (e) {
             type: 'inline'
         },
         fixedContentPos: false,
+        closeOnBgClick: false,
         modal: true,
     })
 })
@@ -208,6 +210,7 @@ $("body").on("click", "[open-month-project-modal]", function (e) {
             type: 'inline'
         },
         fixedContentPos: false,
+        closeOnBgClick: false,
         modal: true,
     })
 })

@@ -104,7 +104,8 @@ $(document).ready(function () {
                 src: '#create_work_type',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
         });
 
     });
@@ -151,6 +152,7 @@ $(document).ready(function () {
                 type: 'inline'
             },
             fixedContentPos: false,
+            closeOnBgClick: false,
             modal: true
         });
 
@@ -184,6 +186,7 @@ $(document).ready(function () {
                 type: 'inline'
             },
             fixedContentPos: false,
+            closeOnBgClick: false,
             modal: true
         });
 

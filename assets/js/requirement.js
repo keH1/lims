@@ -664,7 +664,8 @@ $(function ($) {
                         </div>`,
                     type: 'inline',
                     fixedContentPos: false
-                }
+                },
+                closeOnBgClick: false,
             })
 
 
@@ -951,7 +952,8 @@ $(function ($) {
                         </div>`,
                         type: 'inline',
                         fixedContentPos: false
-                    }
+                    },
+                    closeOnBgClick: false,
                 })
             },
             error: function (jqXHR, exception) {
@@ -1003,7 +1005,8 @@ $(function ($) {
                 src: modalFormNotMatch,
                 type: 'inline',
                 fixedContentPos: false
-            }
+            },
+            closeOnBgClick: false,
         })
     })
 
@@ -1045,7 +1048,8 @@ $(function ($) {
                                 </div>`,
                             type: 'inline',
                             fixedContentPos: false
-                        }
+                        },
+                        closeOnBgClick: false,
                     })
                 } else {
                     $.magnificPopup.open({
@@ -1063,7 +1067,8 @@ $(function ($) {
                                 </div>`,
                             type: 'inline',
                             fixedContentPos: false
-                        }
+                        },
+                        closeOnBgClick: false,
                     })
                 }
             },
@@ -1153,7 +1158,8 @@ $(function ($) {
                         src: $('#alert_modal'),
                         type: 'inline',
                         fixedContentPos: false
-                    }
+                    },
+                    closeOnBgClick: false,
                 })
 
                 return false
@@ -1189,7 +1195,8 @@ $(function ($) {
                     src: $('#alert_modal'),
                     type: 'inline',
                     fixedContentPos: false
-                }
+                },
+                closeOnBgClick: false,
             })
 
             return false
@@ -1241,7 +1248,8 @@ $(function ($) {
                             formRequirement.submit()
                         })
                     }
-                }
+                },
+                closeOnBgClick: false,
             })
         }
 
@@ -1275,7 +1283,8 @@ $(function ($) {
             }
             return true;
         },
-        fixedContentPos: false
+        fixedContentPos: false,
+        closeOnBgClick: false,
     })
 
     body.on('change', '.taken', function () {
@@ -1379,7 +1388,8 @@ $(function ($) {
                     src: $('#alert_modal'),
                     type: 'inline',
                     fixedContentPos: false
-                }
+                },
+                closeOnBgClick: false,
             })
 
             return false
@@ -1506,7 +1516,8 @@ $(function ($) {
                     src: $('#alert_modal'),
                     type: 'inline',
                     fixedContentPos: false
-                }
+                },
+                closeOnBgClick: false,
             })
 
             return false
@@ -1551,7 +1562,8 @@ $(function ($) {
                     src: $('#alert_modal'),
                     type: 'inline',
                     fixedContentPos: false
-                }
+                },
+                closeOnBgClick: false,
             })
 
             $('.btn-approve').prop('disabled', false)

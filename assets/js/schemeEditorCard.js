@@ -102,7 +102,8 @@ $(document).ready(function () {
                 src: '#add-entry-modal-form',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
 
         });
 
@@ -115,7 +116,8 @@ $(document).ready(function () {
                 src: '#add-entry-modal-form',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
 
         });
 
@@ -128,7 +130,8 @@ $(document).ready(function () {
                 src: '#add-id-modal-form',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
 
         });
 
@@ -162,6 +165,7 @@ $(document).ready(function () {
                 type: 'inline'
             },
             fixedContentPos: false,
+            closeOnBgClick: false,
         });
 
         let schemetypeId = $(this).attr("data-js-schemetype-id");

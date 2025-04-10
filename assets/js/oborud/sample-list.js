@@ -140,6 +140,7 @@ console.log('click');
                         src: '#history-modal-form',
                         type: 'inline',
                     },
+                    closeOnBgClick: false,
                 });
             }
         });
