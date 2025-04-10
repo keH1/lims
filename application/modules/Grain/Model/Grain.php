@@ -136,7 +136,7 @@ class Grain extends Model
             // работа с фильтрами
             if ( !empty($filter['search']) ) {
                 if ( isset($filter['search']['material_name']) ) {
-                    $where .= "NAME LIKE '%{$filter['search']['material_name']}%' AND ";
+                    $where .= "COALESCE(NULLIF(`NAME`, ''), 'Нет имени') LIKE '%{$filter['search']['material_name']}%' AND ";
                 }
             }
 
@@ -166,7 +166,7 @@ class Grain extends Model
         $result = [];
 
         $data = $this->DB->Query("SELECT `ID`,
-                                         `NAME`
+                                         COALESCE(NULLIF(`NAME`, ''), 'Нет имени') AS `NAME` 
                                   FROM ZERN
                                   WHERE {$where}
                                   GROUP BY ID
