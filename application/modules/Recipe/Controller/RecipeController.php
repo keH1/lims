@@ -101,6 +101,22 @@ class RecipeController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
+        // Реактив
+        if (isset($_POST['reactives'])) {
+            foreach ($_POST['reactives'] as $item) {
+                $idLibraryReactive = $this->validateNumber($item['id_library_reactive'], "Реактив", true);
+                if (!$idLibraryReactive['success']) {
+                    $this->showErrorMessage($idLibraryReactive['error']);
+                    $this->redirect($usedModel->location);
+                }
+                $quantity = $this->validateNumber($item['quantity'], "Количество реактива", true);
+                if (!$quantity['success']) {
+                    $this->showErrorMessage($quantity['error']);
+                    $this->redirect($usedModel->location);
+                }
+            }
+        }
+
         $newAdd['recipe_model'] = $_POST['recipe_model'];
         $newAdd['solvent'] = $_POST['solvent'];
         $newAdd['reactives'] = $_POST['reactives'];

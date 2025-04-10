@@ -174,8 +174,8 @@
             <div class="row mb-3">
                 <div class="col">
                     <label class="form-label">Реактив</label>
-                    <select name="reactives1[unit_reactive_id1][id_library_reactive]"
-                            class="form-control select2" data-placeholder="Выберете реактив">
+                    <select name="reactives[unit_reactive_id1][id_library_reactive]"
+                            class="form-control select2 select-reactive" data-placeholder="Выберете реактив" required>
                         <option value="" selected disabled></option>
                         <?php
                         foreach ($this->data['reactive'] as $val): ?>
@@ -192,7 +192,7 @@
                     <div class="input-group">
                         <input type="number" name="reactives[unit_reactive_id1][quantity]" step="0.0001" min="0"
                                max="1000000"
-                               class="form-control bg-white">
+                               class="form-control bg-white" required>
                         <span class="input-group-text quantity-reactive"></span>
                     </div>
                 </div>
