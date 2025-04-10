@@ -26,6 +26,43 @@ function initDataTable(selector, options) {
 
 window.initDataTable = initDataTable
 
+function setupTableResizeHandlers() {
+    /**
+     * @desc Обновляет все таблицы на странице при изменении размера окна
+     */
+    function refreshAllTables() {
+        $('table.dataTable').each(function() {
+            const tableId = $(this).attr('id')
+            
+            try {
+                const dataTable = $(this).DataTable()
+                
+                if (typeof dataTable.draw === 'function') {
+                    $(this).css('width', '100%')
+                    $(this).closest('.dataTables_wrapper').find('.dataTables_scrollHeadInner, .dataTables_scrollBody table').css({
+                        'width': '100%',
+                        'max-width': '100%'
+                    })
+                    
+                    dataTable.columns.adjust()
+                }
+            } catch (e) {
+                console.log("Ошибка c таблицей ", tableId, e)
+            }
+        })
+    }
+    
+    // Первоначальная загрузка таблиц
+    setTimeout(function() {
+        refreshAllTables()
+    }, 1000)
+    
+    $(window).on('resize', function() {
+        clearTimeout(window.resizeTimer)
+        window.resizeTimer = setTimeout(refreshAllTables, 200)
+    })
+}
+
 const dataTablesSettings = {
     buttons:[
         {
@@ -491,6 +528,8 @@ $(function ($) {
         window.open (url, '_blank')
         setTimeout( function() {location.reload()});
     })
+
+    setupTableResizeHandlers()
 })
 
 
