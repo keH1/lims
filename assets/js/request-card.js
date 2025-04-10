@@ -121,6 +121,7 @@ $(function ($) {
             "ATTACH2": attach2,
             "ATTACH3": attach3,
             "TITLE": title,
+            'is_ajax': 1,
         }
         let check = []
 
