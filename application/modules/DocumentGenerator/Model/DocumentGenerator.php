@@ -2602,8 +2602,6 @@ class DocumentGenerator extends Model
      */
 	public function generateDocumentWithTable($table, $info, $templateDoc, $type)
 	{
-
-//		$this->pre($info, false);
 		$phpWord = new \PhpOffice\PhpWord\PhpWord();
 		$template = new \PhpOffice\PhpWord\TemplateProcessor($templateDoc);
 
@@ -2611,9 +2609,6 @@ class DocumentGenerator extends Model
 		$interimPathPDF = "interim_archive_{$type}/".$info['id']."/".$info['curDateEn'].".PDF";
 		$outputFile = $info['curDate'].".pdf";
 		$outputPath = "archive_{$type}/".$info['id']."/";
-
-		$fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
-		$fullPathPDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$outputPath;
 
 		$file = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
 		$filePDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPathPDF;
@@ -2644,14 +2639,12 @@ class DocumentGenerator extends Model
             mkdir($newDirectory, 0777, true);
         }
 
-        $template->saveAs($newDirectory.'/'.$info['curDate'].".docx");
+        file_put_contents($newDirectory.'/'.$info['curDate'].".docx", $file);
 
-        $fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
-        $fullPathPDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$outputPath;
-
-//		$this->pre($fullPathDocx, false);
-//		$this->pre($fullPathPDF);
         try {
+            $fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
+            $fullPathPDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$outputPath;
+
             $converter  =  new OfficeConverter($fullPathDocx, $fullPathPDF);
             $converter->convertTo($outputFile);
         } catch (Exception $e) {
@@ -2661,24 +2654,6 @@ class DocumentGenerator extends Model
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 		header('Content-Disposition: attachment; filename="' . $name_file . ' №' . $info['id'] . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
 		readfile($file);
-
-//		$newDirectory = $_SERVER['DOCUMENT_ROOT'] ."/protocol_generator/archive_{$type}/" . $info['id'];
-//
-//		if( !is_dir( $newDirectory ) ) {
-//			mkdir($newDirectory, 0777, true);
-//		}
-//
-//		$fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
-//		$fullPathPDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$outputPath;
-//
-////		$this->pre($fullPathDocx, false);
-////		$this->pre($fullPathPDF);
-//        try {
-//            $converter  =  new OfficeConverter($fullPathDocx, $fullPathPDF);
-//            $converter->convertTo($outputFile);
-//        } catch (Error $e) {
-//            $this->pre($e);
-//        }
 	}
 
 	/**
