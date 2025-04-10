@@ -1,7 +1,6 @@
 $(function ($) {
     let $journal = $('#journal_invoice')
 
-    /*journal requests*/
     let journalDataTable = $journal.DataTable({
         bAutoWidth: false,
         autoWidth: false,
@@ -112,13 +111,6 @@ $(function ($) {
     $('.filter').on('change', function () {
         journalDataTable.ajax.reload()
     })
-
-    function reportWindowSize() {
-        journalDataTable
-            .columns.adjust()
-    }
-
-    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()

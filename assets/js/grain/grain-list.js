@@ -1,5 +1,7 @@
 $(function ($) {
-    let journalGrain = $('#journal_grain').DataTable({
+    let $journal = $('#journal_grain')
+
+    let journalDataTable = $journal.DataTable({
         processing: true,
         serverSide: true,
         ajax: {
@@ -24,17 +26,16 @@ $(function ($) {
         colReorder: true,
         dom: 'frt<"bottom"lip>',
         bSortCellsTop: true,
-        // scrollX:       true,
-        fixedHeader:   true
-    })
+        fixedHeader: true
+    });
 
-    journalGrain.columns().every( function() {
+    journalDataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
             clearTimeout(timeout)
             const searchValue = this.value
-            timeout = setTimeout(function () {
-                journalGrain
+            timeout = setTimeout(function() {
+                journalDataTable
                     .column( $(this).parent().index())
                     .search(searchValue)
                     .draw()
@@ -42,20 +43,12 @@ $(function ($) {
         })
     })
     
-    /*journal filters*/
     $('.filter-btn-search').on('click', function () {
         $('#journal_requests_filter').addClass('is-open')
         $('.filter-btn-search').hide()
-    })
+    });
 
     $('.filter').on('change', function () {
-        journalGrain.ajax.reload()
-    })
-
-    function reportWindowSize() {
-        journalGrain
-            .columns.adjust()
-    }
-
-    window.onresize = reportWindowSize
+        journalDataTable.ajax.reload()
+    });
 })
