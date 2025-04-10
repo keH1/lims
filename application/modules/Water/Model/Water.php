@@ -145,5 +145,28 @@ class Water extends Model
 
         return $i;
     }
+
+    /**
+     * Проверяет соответствие формату YYYY-mm
+     *
+     * Если неверный формат то текущий месяц и год
+     * @param $date
+     * @return string
+     */
+    public function validateYearMonth(string $date): string
+    {
+        if (!preg_match('/^(\d{4})-(\d{2})$/', $date, $matches)) {
+            return date('Y-m');
+        }
+
+        $year = (int)$matches[1];
+        $month = (int)$matches[2];
+
+        if (!checkdate($month, 1, $year)) {
+            return date('Y-m');
+        }
+
+        return $date;
+    }
 }
 

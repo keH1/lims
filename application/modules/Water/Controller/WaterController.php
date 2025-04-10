@@ -57,6 +57,9 @@ class WaterController extends Controller
 
         $filter = $usedModel->postToFilter($_POST ?? []);
 
+        $filter['dateStart'] = $usedModel->validateYearMonth($filter['dateStart']);
+        $filter['dateEnd'] = $usedModel->validateYearMonth($filter['dateEnd']);
+
         $data = $usedModel->getList($filter);
 
         $recordsTotal = $data['recordsTotal'];
