@@ -535,9 +535,7 @@ $(function ($) {
         $('.pop-up-error-message').remove()
         
         $('#name, #lastName, #secondName').each(function() {
-            if (validateFullName($(this))) {
-                hasErrors = true
-            }
+            hasErrors = validateFullName($(this)) || hasErrors
         })
         
         if (!validateEmail($('#email'))) {
@@ -545,10 +543,9 @@ $(function ($) {
         }
         
         if (password.val().length > 0) {
-            hasErrors = validatePassword(password)
+            hasErrors = validatePassword(password) || hasErrors
         }
         
-        // Проверка совпадения паролей
         if (passwordConfirm.val().length > 0 && password.val() !== passwordConfirm.val()) {
             let confirmLabel = $('label[for="newPasswordConfirm"]'),
                 errorMessage = $('<div class="pop-up-error-message text-danger">Пароли не совпадают</div>')
