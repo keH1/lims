@@ -106,19 +106,25 @@ $(function ($) {
 
     })
 
+    let searchTimeouts = {};
     mainTable.columns().every(function () {
-        let timeout
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-            clearTimeout(timeout)
-            const searchValue = this.value
-            timeout = setTimeout(function () {
+        const columnIndex = this.index();
+
+        $(this.header()).closest('thead').find('.search:eq(' + columnIndex + ')').on('keyup change clear', function() {
+            clearTimeout(searchTimeouts[columnIndex]);
+
+            const searchValue = this.value;
+            const $input = $(this);
+
+            searchTimeouts[columnIndex] = setTimeout(function() {
                 mainTable
-                    .column($(this).parent().index())
+                    .column($input.parent().index())
                     .search(searchValue)
-                    .draw()
-            }.bind(this), 1000)
-        })
-    })
+                    .draw();
+            }, 1000);
+        });
+    });
+
 
     $('.is-full').change(function () {
 
@@ -134,15 +140,24 @@ $(function ($) {
             })
         }
     })
-    $('.is-all').change(function () {
-        const visibleColumns=[ 4, 5, 6, 7, 8, 9, 10, 11, 12,13]
-        if ($(this).is(':checked')) {
-            mainTable.columns(visibleColumns).visible(false);
+    $('.is-all').change(function() {
+        // Очистка всех таймеров
+        Object.keys(searchTimeouts).forEach(function(key) {
+            clearTimeout(searchTimeouts[key]);
+        });
+        searchTimeouts = {};
 
-        } else {
-            mainTable.columns(visibleColumns).visible(true);
-        }
-    })
+        // Сброс фильтров
+        mainTable.columns().search('').draw();
+
+        // Очистка полей писка
+        $('thead .search').val('');
+
+        // Переключение видимости колонок
+        const visibleColumns = [4,5,6,7,8,9,10,11,12,13];
+        mainTable.columns(visibleColumns).visible(!this.checked, false);
+        mainTable.columns.adjust().draw();
+    });
 
     /*journal buttons*/
     let container = $('div.dataTables_scrollBody'),
