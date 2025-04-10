@@ -1479,6 +1479,7 @@ class DocumentGenerator extends Model
         $cellColSpan4 = array('gridSpan' => 4, 'valign' => 'center');
         $cellColSpan6 = array('gridSpan' => 6, 'valign' => 'center');
         $cellColSpan5 = array('gridSpan' => 5, 'valign' => 'center');
+        $cellColSpan10 = array('gridSpan' => 10, 'valign' => 'center');
         $FontStyle = ['size' => 10,
             'name' => 'Times New Roman'
         ];
@@ -2623,19 +2624,11 @@ class DocumentGenerator extends Model
 			mkdir($newDirectory, 0777, true);
 		}
 
-
-
 		$template->setValues($info);
-
-
 
 		$template->setComplexBlock('table', $table);
 
-
-
 		$template->saveAs($file);
-
-
 
 		if ($type === 'kp') {
 		    $name_file = 'КП';
@@ -2650,6 +2643,8 @@ class DocumentGenerator extends Model
         if( !is_dir( $newDirectory ) ) {
             mkdir($newDirectory, 0777, true);
         }
+
+        $template->saveAs($newDirectory.'/'.$info['curDate'].".docx");
 
         $fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
         $fullPathPDF = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$outputPath;
