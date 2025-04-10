@@ -488,10 +488,9 @@ class Lab extends Model
 
         $ustSql = $this->DB->Query(
             "SELECT ust.* 
-            FROM ulab_material_to_request umtr 
-            INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id 
+            FROM ulab_gost_to_probe as ugtp  
             INNER JOIN ulab_start_trials ust on ust.ugtp_id = ugtp.id 
-            WHERE (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId})) AND ust.is_actual = 1 ORDER BY ust.ugtp_id ASC, ust.created_at ASC"
+            WHERE ugtp.protocol_id = {$protocolId} AND ust.is_actual = 1 ORDER BY ust.ugtp_id ASC, ust.created_at ASC"
         );
 
         $arrUst = [];
@@ -556,10 +555,9 @@ class Lab extends Model
 
         $ustSql = $this->DB->Query(
             "SELECT ust.*  
-                FROM ulab_material_to_request umtr 
-                    INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id 
-                    LEFT JOIN ulab_start_trials ust on ust.ugtp_id = ugtp.id 
-                    WHERE (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId})) AND ust.is_actual = 1 ORDER BY ust.ugtp_id ASC, ust.created_at ASC"
+            FROM ulab_gost_to_probe as ugtp 
+            inner JOIN ulab_start_trials ust on ust.ugtp_id = ugtp.id 
+            WHERE ugtp.protocol_id = {$protocolId} AND ust.is_actual = 1 ORDER BY ust.ugtp_id ASC, ust.created_at ASC"
         );
 
         $arrUst = [];

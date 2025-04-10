@@ -726,7 +726,7 @@ class Protocol extends Model
                     from ulab_material_to_request as umtr
                     left join MATERIALS as mater on mater.ID = umtr.material_id
                     left join ulab_gost_to_probe as ugtp on ugtp.material_to_request_id = umtr.id
-                    where /*umtr.protocol_id = {$protocolId} or */ugtp.protocol_id = {$protocolId} order by umtr.material_number
+                    where ugtp.protocol_id = {$protocolId} order by umtr.material_number
                     "
         );
 

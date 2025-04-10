@@ -951,13 +951,12 @@ class Oborud extends Model {
         }
 
         $result = $this->DB->Query("SELECT b_o.ID b_o_id, b_o.TYPE_OBORUD, b_o.OBJECT, b_o.REG_NUM, boc.date_end as POVERKA
-            FROM ulab_material_to_request umtr
-            INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id
+            FROM ulab_gost_to_probe as ugtp
             INNER JOIN ba_connection b_c ON b_c.GOST_ID = ugtp.method_id
             INNER JOIN ba_oborud b_o ON b_o.ID = b_c.OBORUD_ID
             left join ba_oborud_certificate boc on b_o.ID = boc.oborud_id and boc.is_actual = 1 
             INNER JOIN ba_gost b_g ON b_g.ID = b_c.GOST_ID
-            WHERE (umtr.protocol_id = {$protocolId} or ugtp.protocol_id = {$protocolId}) AND b_g.NUM_OA_NEW > 0
+            WHERE ugtp.protocol_id = {$protocolId} AND b_g.NUM_OA_NEW > 0
                 AND (b_o.IDENT IS NULL OR b_o.IDENT NOT IN ('VO', 'TS', 'REACT'))
                 AND b_o.is_decommissioned = 0 AND (b_o.LONG_STORAGE = 0 OR b_o.LONG_STORAGE IS NULL)
             ORDER BY b_o.OBJECT");
@@ -998,13 +997,12 @@ class Oborud extends Model {
         }
 
         $result = $this->DB->Query("SELECT b_o.ID b_o_id, b_o.TYPE_OBORUD, b_o.OBJECT, b_o.REG_NUM, boc.date_end as POVERKA
-            FROM ulab_material_to_request umtr 
-            INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id 
+            FROM ulab_gost_to_probe as ugtp  
             INNER JOIN ulab_methods_oborud mo ON mo.method_id = ugtp.method_id 
             INNER JOIN ba_oborud b_o ON b_o.ID = mo.id_oborud
             left join ba_oborud_certificate boc on b_o.ID = boc.oborud_id and boc.is_actual = 1     
             INNER JOIN ulab_methods m ON m.id = mo.method_id 
-            WHERE (umtr.protocol_id = {$protocolId} or ugtp.protocol_id = {$protocolId})
+            WHERE ugtp.protocol_id = {$protocolId}
                 AND (b_o.IDENT IS NULL OR b_o.IDENT NOT IN ('VO', 'TS', 'REACT')) 
                 AND b_o.is_decommissioned = 0 AND (b_o.LONG_STORAGE = 0 OR b_o.LONG_STORAGE IS NULL) 
             ORDER BY b_o.OBJECT");
@@ -1392,7 +1390,7 @@ class Oborud extends Model {
 
         $sql = $this->DB->Query(
             "SELECT 
-                umtr.deal_id, umtr.protocol_id,  
+                umtr.deal_id, ugtp.protocol_id,  
                 ugtp.id ugtp_id, 
                 p.ID p_id, p.NUMBER p_number, 
                 bo.*, bo.ID bo_id  
@@ -1401,7 +1399,7 @@ class Oborud extends Model {
                     INNER JOIN PROTOCOLS p ON p.ID = IF(umtr.protocol_id = 0, ugtp.protocol_id, umtr.protocol_id)  
                     INNER JOIN TZ_OB_CONNECT toc ON toc.PROTOCOL_ID = IF(umtr.protocol_id = 0, ugtp.protocol_id, umtr.protocol_id)   
                     INNER JOIN ba_oborud bo ON bo.ID = toc.ID_OB
-                    WHERE (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId}))"
+                    WHERE ugtp.protocol_id = {$protocolId}"
         );
 
         while ($row = $sql->Fetch()) {
@@ -1426,14 +1424,14 @@ class Oborud extends Model {
         }
 
         $result = $this->DB->Query("SELECT 
-                                umtr.deal_id, umtr.protocol_id,  
+                                umtr.deal_id, ugtp.protocol_id,  
                                 ugtp.id ugtp_id, 
                                 bo.*, bo.ID bo_id  
                                     FROM ulab_material_to_request umtr 
                                     INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id 
                                     INNER JOIN ulab_methods_oborud umo ON umo.method_id = ugtp.method_id 
                                     INNER JOIN ba_oborud bo ON bo.ID = umo.id_oborud
-                                    WHERE (umtr.protocol_id = {$protocolId} or (umtr.protocol_id = 0 and ugtp.protocol_id = {$protocolId}))");
+                                    WHERE ugtp.protocol_id = {$protocolId}");
 
         while ($row = $result->Fetch()) {
             $response[] = $row;

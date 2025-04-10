@@ -2,15 +2,6 @@
     <header class="header-result mb-3">
         <nav class="header-menu">
             <ul class="nav">
-<!--                <li class="nav-item me-2">-->
-<!--                    <a class="nav-link link-back disabled"-->
-<!--                       href="--><?//= URI ?><!--/request/card/--><?//= $this->data['deal_id'] ?? '' ?><!--"-->
-<!--                       title="Вернуться назад">-->
-<!--                        <svg class="icon" width="25" height="25">-->
-<!--                            <use xlink:href="--><?//= URI ?><!--/assets/images/icons.svg#back"/>-->
-<!--                        </svg>-->
-<!--                    </a>-->
-<!--                </li>-->
                 <li class="nav-item me-2">
                     <a class="nav-link link-list" href="<?= URI ?>/request/list/<?=$this->data['comm']??''?>" title="Вернуться к списку">
                         <svg class="icon" width="25" height="25">
@@ -310,10 +301,12 @@
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <?php if ($val['add_protocol_number']): ?>
+                                                <?php if ($val['why_block_protocol_number'] != ''): ?>
                                                     <button type="button"
                                                             class="btn border-light-gray bg-light-gray text-nowrap mt-0 text-white"
-                                                            title="Для присвоения номера протоколу проверьте не присвоен ли ему уже номер, выбран ли протокол и является ли протокол действительным, сохранена дата начала и окончания испытания, сформирован ли протокол если он не выдавался в не ЛИС, выбраны ли пробы для протокола. <?= $val['probe_count'] ? '' : 'Внимание! У протокола отсутвую прикреплённые пробы' ?>">
+                                                            data-bs-container="body" data-bs-trigger="hover" data-bs-toggle="popover" data-bs-placement="top"
+                                                            data-bs-content="<?=$val['why_block_protocol_number']?>"
+                                                            title="Присвоить номер">
                                                         Присвоить номер
                                                     </button>
                                                 <?php else: ?>
