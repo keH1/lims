@@ -150,6 +150,7 @@ $(function ($) {
     window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
-        location.reload()
-    })
+        const cleanPath = window.location.pathname.replace(/\/\d+$/, '')
+        window.location.href = cleanPath
+    });
 })
