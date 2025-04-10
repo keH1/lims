@@ -93,11 +93,13 @@ $(function ($) {
                 beforeOpen: function() {
                     $form.find('#form_entity_name').val(data.NAME)
                     $form.find('#form_entity_id').val(data.ID)
+                    $form.find('#form_bitrix_dep_id').val(data.id_dep)
                     $form.find('#form_entity_head').val(data.HEAD_ID).trigger('change')
                 },
                 afterClose: function() {
                     $form.find('#form_entity_name').val('')
                     $form.find('#form_entity_id').val('')
+                    $form.find('#form_bitrix_dep_id').val('')
                     $form.find('#form_entity_head').val('')
                 }
             }

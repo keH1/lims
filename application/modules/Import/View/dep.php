@@ -91,6 +91,7 @@
 
     <input type="hidden" id="form_entity_id" name="lab_id" value="">
     <input type="hidden" name="form[dep_id]" value="<?=$this->data['info']['id']?>">
+    <input type="hidden" id="form_bitrix_dep_id" name="form[bitrix_dep_id]" value="">
 
     <div class="mb-3">
         <label class="form-label" for="form_entity_name">Наименование *</label>
