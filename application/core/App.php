@@ -127,18 +127,7 @@ class App
             }
             
             if (strpos($url, 'login=yes') !== false) {
-                global $USER;
-                $isAuthorized = false;
-                
-                if (isset($USER) && method_exists($USER, 'IsAuthorized') && $USER->IsAuthorized()) {
-                    $isAuthorized = true;
-                } 
-
-                elseif (!empty(self::getBitrixUserId())) {
-                    $isAuthorized = true;
-                }
-                
-                if ($isAuthorized) {
+                if (self::isAuthorized()) {
                     $urlParts = parse_url($_SERVER['REQUEST_URI']);
                     if (isset($urlParts['query'])) {
                         parse_str($urlParts['query'], $params);
