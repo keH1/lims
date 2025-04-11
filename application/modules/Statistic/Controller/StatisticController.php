@@ -18,21 +18,6 @@ class StatisticController extends Controller
 
         $this->data['entities'] = $statisticModel->entities;
 
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
 
@@ -47,7 +32,7 @@ class StatisticController extends Controller
 
         $this->addJS("/assets/js/statistic/report-constructor.js?v=" . rand());
 
-        $this->view('report_constructor');
+        $this->view('report_constructor', '', 'template_journal');
     }
 
     /**
@@ -676,7 +661,7 @@ class StatisticController extends Controller
         $filter = $statisticModel->prepareFilter($_POST ?? []);
 
         $filter['entity']['key'] = $statisticModel->sanitize($_POST['entity']);
-        $filter['entity']['column'] = array_map($this->sanitize, $_POST['column']);
+        $filter['entity']['column'] = array_map($this->sanitize, $_POST['column']?? []);
 
         $data = $statisticModel->getStatisticConstructorJournal($filter);
 

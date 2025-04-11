@@ -190,6 +190,7 @@ class Statistic extends Model
                     'group' => false,
                 ],
             ],
+            'date_filter' => "ba_oborud.god_vvoda_expluatation between '{dateStart}' AND '{dateEnd}'",
             'order' => 'ba_oborud.OBJECT',
         ],
         'oborud_total' => [
@@ -508,83 +509,6 @@ class Statistic extends Model
                 ]
             ],
         ],
-//        'oborud_unused' => [
-//            'title' => 'Не используется оборудование за текущий год',
-//            'table' => 'ba_oborud',
-//            'columns' => [
-//                'oborud' => [
-//                    'title' => 'Оборудование',
-//                    'select' => "ba_oborud.ID oborud_id, ba_oborud.OBJECT as oborud",
-//                    'order' => "ba_oborud.OBJECT",
-//                    'filter' => "ba_oborud.OBJECT like '%{dataFilter}%'",
-//                    'where' => "ba_oborud.ID not in (select ba_oborud.ID
-//                                   FROM ba_oborud
-//                                inner join ba_oborud_ident on ba_oborud_ident.ident_id = ba_oborud.IDENT
-//                                inner join ulab_methods_oborud on ulab_methods_oborud.id_oborud = ba_oborud.ID
-//                                inner join ulab_gost_to_probe on ulab_gost_to_probe.new_method_id = ulab_methods_oborud.method_id
-//                                inner join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
-//                                   where YEAR(ulab_start_trials.date) = YEAR(CURDATE())
-//                                   AND ulab_methods_oborud.id_oborud <> 0 AND ulab_methods_oborud.method_id <> 0 AND ba_oborud.IDENT is not null
-//                                group by ba_oborud.ID)",
-//                    'group' => 'ba_oborud.ID',
-//                    'link' => '<span data-id="{oborud_id}">{oborud}</span>',
-//                ],
-//                'reg_num' => [
-//                    'title' => 'Инвентарный номер',
-//                    'select' => "ba_oborud.REG_NUM as reg_num",
-//                    'order' => "ba_oborud.REG_NUM",
-//                    'filter' => "ba_oborud.REG_NUM like '%{dataFilter}%'",
-//                    'where' => false,
-//                    'group' => false,
-//                ],
-//                'oborud_ident' => [
-//                    'title' => 'Идентификация',
-//                    'select' => "ba_oborud_ident.name as oborud_ident",
-//                    'order' => "ba_oborud_ident.name",
-//                    'filter' => "ba_oborud_ident.name like '%{dataFilter}%'",
-//                    'where' => "ba_oborud.IDENT is not null",
-//                    'group' => false,
-//                ],
-//                'in_stock' => [
-//                    'title' => 'В наличии',
-//                    'select' => "IF(ba_oborud.IN_STOCK = 1, 'Да', 'Нет') AS in_stock",
-//                    'order' => "IF(ba_oborud.IN_STOCK = 1, 'Да', 'Нет')",
-//                    'filter' => "IF(ba_oborud.IN_STOCK = 1, 'Да', 'Нет') like '%{dataFilter}%'",
-//                    'where' => false,
-//                    'group' => false,
-//                ],
-//                'decommission' => [
-//                    'title' => 'Списано',
-//                    'select' => "IF((ba_oborud.SPISANIE <> '' AND ba_oborud.SPISANIE IS NOT NULL) OR (ba_oborud.DATE_SP <> '' AND ba_oborud.DATE_SP IS NOT NULL AND CURDATE() >= ba_oborud.DATE_SP), 'Да', 'Нет') AS decommission",
-//                    'order' => "IF((ba_oborud.SPISANIE <> '' AND ba_oborud.SPISANIE IS NOT NULL) OR (ba_oborud.DATE_SP <> '' AND ba_oborud.DATE_SP IS NOT NULL AND CURDATE() >= ba_oborud.DATE_SP), 'Да', 'Нет')",
-//                    'filter' => "IF((ba_oborud.SPISANIE <> '' AND ba_oborud.SPISANIE IS NOT NULL) OR (ba_oborud.DATE_SP <> '' AND ba_oborud.DATE_SP IS NOT NULL AND CURDATE() >= ba_oborud.DATE_SP), 'Да', 'Нет') like '%{dataFilter}%'",
-//                    'where' => false,
-//                    'group' => false,
-//                ],
-//                'long_storage' => [
-//                    'title' => 'На длительном хранении',
-//                    'select' => "IF(ba_oborud.LONG_STORAGE <> 0 AND ba_oborud.LONG_STORAGE IS NOT NULL, 'Да', 'Нет') AS long_storage",
-//                    'order' => "IF(ba_oborud.LONG_STORAGE <> 0 AND ba_oborud.LONG_STORAGE IS NOT NULL, 'Да', 'Нет')",
-//                    'filter' => "IF(ba_oborud.LONG_STORAGE <> 0 AND ba_oborud.LONG_STORAGE IS NOT NULL, 'Да', 'Нет') like '%{dataFilter}%'",
-//                    'where' => false,
-//                    'group' => false,
-//                ],
-//                'in_oa' => [
-//                    'title' => 'В ОА',
-//                    'select' => "IF(ba_oborud.IN_AREA = 1, 'Да', 'Нет') as in_oa",
-//                    'order' => "IF(ba_oborud.IN_AREA = 1, 'Да', 'Нет')",
-//                    'filter' => false,
-//                    'where' => false,
-//                    'group' => false,
-//                ]
-//            ],
-//            'dependency' => [
-//                'ba_oborud_ident' => [
-//                    'join' => "inner join ba_oborud_ident on ba_oborud_ident.ident_id = ba_oborud.IDENT"
-//                ],
-//            ],
-//            'order' => 'ba_oborud.OBJECT',
-//        ],
         // методики/испытания
         'methods' => [
             'title' => 'Методики/Испытания',
@@ -626,9 +550,9 @@ class Statistic extends Model
                 ],
                 'laba_short_name' => [
                     'title' => 'Лаборатория',
-                    'select' => "GROUP_CONCAT(DISTINCT  ba_laba.short_name) as laba_short_name",
-                    'order' => "ba_laba.short_name",
-                    'filter' => "ba_laba.short_name like '%{dataFilter}%'",
+                    'select' => "GROUP_CONCAT(DISTINCT  ba_laba.NAME) as laba_short_name",
+                    'order' => "ba_laba.NAME",
+                    'filter' => "ba_laba.NAME like '%{dataFilter}%'",
                     'where' => false,
                     'group' => false,
                 ],
@@ -720,9 +644,9 @@ class Statistic extends Model
                 ],
                 'lab' => [
                     'title' => 'Лаборатория',
-                    'select' => "ba_laba.short_name as lab",
-                    'order' => "ba_laba.short_name",
-                    'filter' => "ba_laba.short_name like '%{dataFilter}%'",
+                    'select' => "ba_laba.NAME as lab",
+                    'order' => "ba_laba.NAME",
+                    'filter' => "ba_laba.NAME like '%{dataFilter}%'",
                     'where' => false,
                     'group' => 'b_user.ID',
                 ],
@@ -753,12 +677,11 @@ class Statistic extends Model
                 ],
             ],
             'dependency' => [
-                'b_uts_user' => [
-                    'join' => "inner join b_uts_user on b_uts_user.VALUE_ID = b_user.ID"
+                'ulab_user_affiliation' => [
+                    'join' => "inner join ulab_user_affiliation on ulab_user_affiliation.user_id = b_user.ID"
                 ],
                 'ba_laba' => [
-//                    'join' => "inner join ba_laba on ba_laba.id_dep = b_uts_user.UF_DEPARTMENT"
-                    'join' => "inner join ba_laba on ba_laba.short_name = b_user.WORK_DEPARTMENT"
+                    'join' => "inner join ba_laba on ba_laba.ID = ulab_user_affiliation.lab_id"
                 ],
                 'ulab_gost_to_probe' => [
                     'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = b_user.ID" // DEPARTMENT_ID
@@ -783,8 +706,8 @@ class Statistic extends Model
                     ]
                 ],
                 'bar' => [
-                    'formatted' => 'Кол-во выполненых методик',
-                    'formatted_2' => 'Стоимость выполненых методик',
+                    'formatted' => 'Кол-во выполненных методик',
+                    'formatted_2' => 'Стоимость выполненных методик',
                     'sql' => "SELECT CONCAT(b_user.NAME, ' ',  b_user.LAST_NAME) as label, MONTH(ulab_start_trials.date) month,
                         sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as value,
                         sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end) as value_2
@@ -801,7 +724,6 @@ class Statistic extends Model
                         inner join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
                     where b_user.ID = '{id}' AND YEAR(ulab_start_trials.date) = '{year}' AND MONTH(ulab_start_trials.date) = '{month}'
                     group by DAY(ulab_start_trials.date)"
-
                 ]
             ],
         ],
@@ -833,58 +755,59 @@ class Statistic extends Model
                     'where' => false,
                     'group' => false,
                 ],
-                'dsl' => [
-                    'title' => 'ДСЛ',
-                    'select' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:55;%' then b_user.ID end)) as dsl",
-                    'order' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:55;%' then b_user.ID end))",
-                    'filter' => false,
-                    'where' => false,
-                    'group' => false,
-                    'dependency' => [
-                        'b_uts_user' => [
-                            'join' => "left join b_uts_user on b_uts_user.VALUE_ID = b_user.ID"
-                        ],
-                    ]
-                ],
-                'lsm' => [
-                    'title' => 'ЛСМ',
-                    'select' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:57;%' then b_user.ID end)) as lsm",
-                    'order' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:57;%' then b_user.ID end))",
-                    'filter' => false,
-                    'where' => false,
-                    'group' => false,
-                    'dependency' => [
-                        'b_uts_user' => [
-                            'join' => "left join b_uts_user on b_uts_user.VALUE_ID = b_user.ID"
-                        ],
-                    ]
-                ],
-                'lfmi' => [
-                    'title' => 'ЛФМИ',
-                    'select' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:56;%' then b_user.ID end)) as lfmi",
-                    'order' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:56;%' then b_user.ID end))",
-                    'filter' => false,
-                    'where' => false,
-                    'group' => false,
-                    'dependency' => [
-                        'b_uts_user' => [
-                            'join' => "left join b_uts_user on b_uts_user.VALUE_ID = b_user.ID"
-                        ],
-                    ]
-                ],
-                'lfhi' => [
-                    'title' => 'ЛФХИ',
-                    'select' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:54;%' then b_user.ID end)) as lfhi",
-                    'order' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:54;%' then b_user.ID end))",
-                    'filter' => false,
-                    'where' => false,
-                    'group' => false,
-                    'dependency' => [
-                        'b_uts_user' => [
-                            'join' => "left join b_uts_user on b_uts_user.VALUE_ID = b_user.ID"
-                        ],
-                    ]
-                ],
+                // TODO: продумать как быть с лабораториями
+//                'dsl' => [
+//                    'title' => 'ДСЛ',
+//                    'select' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:55;%' then b_user.ID end)) as dsl",
+//                    'order' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:55;%' then b_user.ID end))",
+//                    'filter' => false,
+//                    'where' => false,
+//                    'group' => false,
+//                    'dependency' => [
+//                        'b_uts_user' => [
+//                            'join' => "left join b_uts_user on b_uts_user.VALUE_ID = b_user.ID"
+//                        ],
+//                    ]
+//                ],
+//                'lsm' => [
+//                    'title' => 'ЛСМ',
+//                    'select' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:57;%' then b_user.ID end)) as lsm",
+//                    'order' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:57;%' then b_user.ID end))",
+//                    'filter' => false,
+//                    'where' => false,
+//                    'group' => false,
+//                    'dependency' => [
+//                        'b_uts_user' => [
+//                            'join' => "left join b_uts_user on b_uts_user.VALUE_ID = b_user.ID"
+//                        ],
+//                    ]
+//                ],
+//                'lfmi' => [
+//                    'title' => 'ЛФМИ',
+//                    'select' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:56;%' then b_user.ID end)) as lfmi",
+//                    'order' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:56;%' then b_user.ID end))",
+//                    'filter' => false,
+//                    'where' => false,
+//                    'group' => false,
+//                    'dependency' => [
+//                        'b_uts_user' => [
+//                            'join' => "left join b_uts_user on b_uts_user.VALUE_ID = b_user.ID"
+//                        ],
+//                    ]
+//                ],
+//                'lfhi' => [
+//                    'title' => 'ЛФХИ',
+//                    'select' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:54;%' then b_user.ID end)) as lfhi",
+//                    'order' => "COUNT(DISTINCT(case when b_uts_user.UF_DEPARTMENT like '%:54;%' then b_user.ID end))",
+//                    'filter' => false,
+//                    'where' => false,
+//                    'group' => false,
+//                    'dependency' => [
+//                        'b_uts_user' => [
+//                            'join' => "left join b_uts_user on b_uts_user.VALUE_ID = b_user.ID"
+//                        ],
+//                    ]
+//                ],
             ],
             'order' => 'b_user.ID',
         ],
@@ -895,9 +818,9 @@ class Statistic extends Model
             'columns' => [
                 'lab' => [
                     'title' => 'Лаборатория',
-                    'select' => "ba_laba.id laba_id, ba_laba.short_name as lab",
-                    'order' => "ba_laba.short_name",
-                    'filter' => "ba_laba.short_name like '%{dataFilter}%'",
+                    'select' => "ba_laba.id laba_id, ba_laba.NAME as lab",
+                    'order' => "ba_laba.NAME",
+                    'filter' => "ba_laba.NAME like '%{dataFilter}%'",
                     'where' => false,
                     'group' => 'ba_laba.ID',
                     'link' => '<a class="chart_link" data-id="{laba_id}" data-entity="lab" href="#">{lab}</a>',
@@ -930,16 +853,11 @@ class Statistic extends Model
                 ],
                 'count_protocols' => [
                     'title' => 'Количество протоколов',
-                    'select' => "count(distinct ulab_material_to_request.protocol_id) as count_protocols",
-                    'order' => "count(distinct ulab_material_to_request.protocol_id)",
+                    'select' => "count(distinct ulab_gost_to_probe.protocol_id) as count_protocols",
+                    'order' => "count(distinct ulab_gost_to_probe.protocol_id)",
                     'filter' => false,
                     'where' => "",
                     'group' => 'ba_laba.ID',
-                    'dependency' => [
-                        'ulab_material_to_request' => [
-                            'join' => "inner join ulab_material_to_request on ulab_material_to_request.id = ulab_gost_to_probe.material_to_request_id and ulab_material_to_request.protocol_id > 0"
-                        ],
-                    ]
                 ],
             ],
             'dependency' => [
@@ -970,7 +888,7 @@ class Statistic extends Model
                 ],
                 'bar' => [
                     'formatted' => 'Кол-во выполненых методик',
-                    'sql' => "select ba_laba.short_name label,
+                    'sql' => "select ba_laba.NAME label,
                         MONTH(ulab_start_trials.date) month, sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as value
                             from ba_laba
                                 left join b_uts_user on b_uts_user.UF_DEPARTMENT like CONCAT('%:', ba_laba.id_dep, ';%')
@@ -978,7 +896,7 @@ class Statistic extends Model
                                 left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
                             where ba_laba.id = '{id}' AND YEAR(ulab_start_trials.date) = YEAR(CURDATE()) AND ba_laba.id_dep IS NOT NULL
                             group by MONTH(ulab_start_trials.date)",
-                    'days_sql' => "select ba_laba.short_name label,
+                    'days_sql' => "select ba_laba.NAME label,
                         DAY(ulab_start_trials.date) day, DATE(ulab_start_trials.date) date, sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as value
                             from ba_laba
                                 left join b_uts_user on b_uts_user.UF_DEPARTMENT like CONCAT('%:', ba_laba.id_dep, ';%')
