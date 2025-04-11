@@ -1067,7 +1067,7 @@ class Oborud extends Model {
         $sqlData = $this->prepearTableData('ba_oborud', $data);
 
         $sqlData['is_decommissioned'] = 1;
-        $sqlData['decommissioned_user_id'] = $_SESSION['SESS_AUTH']['USER_ID'];
+        $sqlData['decommissioned_user_id'] = App::getUserId();
 
         $this->DB->Update('ba_oborud', $sqlData, "where id = {$oborudId}");
 
@@ -1768,7 +1768,7 @@ class Oborud extends Model {
     public function addHistorySample($sampleId, $action)
     {
         $data = [
-            'user_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'user_id' => App::getUserId(),
             'st_sample_id' => $sampleId,
             'date' => date('Y-m-d H:i:s'),
             'action' => $action,

@@ -386,7 +386,7 @@ class RequirementController extends Controller
         $this->data['contract_type'] = $contractData['CONTRACT_TYPE'] ?? 'Договор';
         $this->data['deal_id'] = $dealId;
         $this->data['tz_id'] = $tzId;
-        $this->data['curr_user'] = $_SESSION['SESS_AUTH']['USER_ID'];
+        $this->data['curr_user'] = App::getUserId();
         $this->data['deal_title'] = $tzData['REQUEST_TITLE'];
 
         // Основание для формирования протокола (акт приемки проб)
@@ -959,7 +959,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], App::getUserId());
     }
 
     /**
@@ -976,7 +976,7 @@ class RequirementController extends Controller
 
         $requirementModel->confirmTzSent((int)$_POST['deal_id']);
 
-        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], App::getUserId());
     }
 
     /**
@@ -991,7 +991,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID'], $_POST['desc']);
+        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], App::getUserId(), $_POST['desc']);
     }
 
     /**
@@ -1006,7 +1006,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], App::getUserId());
     }
 
     /**

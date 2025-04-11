@@ -14,7 +14,7 @@ class SafetyTraining extends Model
     public function addSafetyTrainingLog(array $data): int
     {
         $sqlData = $this->prepearTableData('safety_training_log', $data);
-        $sqlData['created_by'] = (int)$_SESSION['SESS_AUTH']['USER_ID'];
+        $sqlData['created_by'] = App::getUserId();
 
         $result = $this->DB->Insert('safety_training_log', $sqlData);
 

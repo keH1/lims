@@ -1506,7 +1506,7 @@ class Request extends Model
 
         $labModel = new Lab();
         $permissionModel = new Permission();
-        $perm = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $perm = $permissionModel->getUserPermission(App::getUserId());
 
         if ( $perm['view_name'] == 'lab' ) {
 //            $where .= "ass.user_id = '{$_SESSION['SESS_AUTH']['USER_ID']}' AND ";

@@ -98,7 +98,7 @@ class ResultController extends Controller
         $this->data['template_list'] = $docTemplateModel->getList(3);
 
         $actBase = $requirementModel->getActBase($dealId);
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
         $protocol = $resultModel->getProtocolById($selectedProtocol);
 
         if (!empty($selectedProtocol)) {
@@ -360,7 +360,7 @@ class ResultController extends Controller
 
 
         if (!empty($protocolId) && !empty($protocol['NUMBER']) &&
-            !in_array($_SESSION['SESS_AUTH']['USER_ID'],self::USERS_CAN_UNLOCK)) {
+            !in_array(App::getUserId(),self::USERS_CAN_UNLOCK)) {
             $this->showErrorMessage("Ошибка сохранения данных, нельзя изменить данные у протокола с присвоенным номером");
             $this->redirect($location);
         }
@@ -378,7 +378,7 @@ class ResultController extends Controller
 
         //открепляем пробы от протокола (если протоколу присвоен номер то окрепить нельзя)
         if (!empty($protocolId) && empty($protocol['NUMBER']) || !empty($protocolId) && !empty($protocol['NUMBER']) &&
-            in_array($_SESSION['SESS_AUTH']['USER_ID'],self::USERS_CAN_UNLOCK)) {
+            in_array(App::getUserId(),self::USERS_CAN_UNLOCK)) {
             $umtr = $result->getMaterialToRequestByProtocolId($protocolId);
 
             $mtrData = [
@@ -401,7 +401,7 @@ class ResultController extends Controller
         //прикрепляем пробу к протоколу (если протоколу присвоен номер то прикрепить пробы нельзя)
         if (!empty($_POST['probe_checkbox']) && !empty($protocolId) && empty($protocol['NUMBER']) ||
             !empty($_POST['probe_checkbox']) && !empty($protocolId) && !empty($protocol['NUMBER']) &&
-            in_array($_SESSION['SESS_AUTH']['USER_ID'],self::USERS_CAN_UNLOCK)) {
+            in_array(App::getUserId(),self::USERS_CAN_UNLOCK)) {
             $mtrData = [
                 'protocol_id' => $protocolId
             ];
@@ -457,7 +457,7 @@ class ResultController extends Controller
                 //end
 
                 //Если к пробе прикреплен протокол и присвоен номер протокола и пользователи не входят в состав разрешенных для редактирования, то данные не изменяем
-                if (!empty($ugtp['p_number']) && !in_array($_SESSION['SESS_AUTH']['USER_ID'],self::USERS_CAN_UNLOCK)) {
+                if (!empty($ugtp['p_number']) && !in_array(App::getUserId(),self::USERS_CAN_UNLOCK)) {
                     //continue; //TODO: Временно закоментировал прореку пока не уйдем от сериализованных данных в ba_tz (не дает сохранять полностью структуру "Фактических заначений" и т.д для сериализованных данных)
                 }
 
@@ -908,7 +908,7 @@ class ResultController extends Controller
 
 
         if (!empty($protocolId) && empty($protocol['NUMBER']) || !empty($protocolId) && !empty($protocol['NUMBER']) &&
-            in_array($_SESSION['SESS_AUTH']['USER_ID'],self::USERS_CAN_UNLOCK)) {
+            in_array(App::getUserId(),self::USERS_CAN_UNLOCK)) {
             $protocolData = [
                 'PROTOCOL_TYPE' => $TYPE_TZ,
                 'id_template' => $_POST['id_template'],
@@ -948,7 +948,7 @@ class ResultController extends Controller
         //Морозостойкость
         if (!empty($protocolId) && empty($protocol['NUMBER']) && $_POST['protocol_type'] === 'frost_resistance' ||
             !empty($protocolId) && !empty($protocol['NUMBER']) && $_POST['protocol_type'] === 'frost_resistance' &&
-            in_array($_SESSION['SESS_AUTH']['USER_ID'],self::USERS_CAN_UNLOCK)) {
+            in_array(App::getUserId(),self::USERS_CAN_UNLOCK)) {
             $frostData = [
                 'control_damage' => $_POST['control_damage'] ?? '',
                 'main_damage' => $_POST['main_damage'] ?? '',
@@ -1273,7 +1273,7 @@ class ResultController extends Controller
         $tzId = $tz['ID'] ?: null;
 
 
-        $permissionInfo = $permissionModel->getUserPermission((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
         $protocolData = $result->getProtocolById($protocolId);
         $currentUserId = $user->getCurrentUserId();
         $currentUser = $user->getCurrentUser();
@@ -1737,7 +1737,7 @@ class ResultController extends Controller
 
             $strType = implode('. ', $historyType);
 
-//            $request->getStatusProtocols($dealId, $_SESSION['SESS_AUTH']['USER_ID']);
+//            $request->getStatusProtocols($dealId, App::getUserId());
 
             $historyData = [
                 'DATE' => date('Y-m-d H:i:s'),

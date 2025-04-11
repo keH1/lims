@@ -21,13 +21,13 @@ class ImportController extends Controller
     public function index()
     {
         // если админ, то перенаправляем в журнал организации
-        if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+        if ( App::isAdmin()) {
             $this->redirect('/import/organizationList/');
         }
 
         $orgModel = new Organization();
 
-        $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $data = $orgModel->getAffiliationUserInfo(App::getUserId());
 
         // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
         if ( !empty($data['org_id']) ) {
@@ -43,10 +43,10 @@ class ImportController extends Controller
      */
     public function organizationList()
     {
-        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+        if ( !App::isAdmin()) {
             $orgModel = new Organization();
 
-            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+            $data = $orgModel->getAffiliationUserInfo(App::getUserId());
 
             // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
             if ( !empty($data['org_id']) ) {
@@ -85,8 +85,8 @@ class ImportController extends Controller
         $orgModel = new Organization();
         $userModel = new User();
 
-        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        if ( !App::isAdmin()) {
+            $data = $orgModel->getAffiliationUserInfo(App::getUserId());
 
             if (empty($data['org_id'])) {
                 $this->redirect('/request/list/');
@@ -918,7 +918,7 @@ class ImportController extends Controller
         $this->data['users'] = $userModel->getUsers();
         $this->data['departments'] = Department::getList();
 
-        $this->data['is_may_change'] = in_array(self::WORKING_WITH_DEPARTMENTS, $_SESSION['SESS_AUTH']['GROUPS']);
+        $this->data['is_may_change'] = in_array(self::WORKING_WITH_DEPARTMENTS, App::getUserGroupIds());
 
         $this->addCSS('/assets/plugins/jquery-multi-select/css/multi-select.css');
         $this->addJs('/assets/plugins/jquery-multi-select/js/jquery.multi-select.js');
@@ -1020,7 +1020,7 @@ class ImportController extends Controller
             $this->data['onboarding'] = $importModel->getOnboardingById($onboardingId);
         }
 
-        $this->data['is_may_change'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], self::USERS_EDIT_ONBOARDING);
+        $this->data['is_may_change'] = in_array(App::getUserId(), self::USERS_EDIT_ONBOARDING);
         $this->data['name'] = empty($this->data['onboarding']) ? 'Добавление нового раздела' : 'Обновление раздела';
 
         $this->addJs('/assets/plugins/tinymce/tinymce.min.js');

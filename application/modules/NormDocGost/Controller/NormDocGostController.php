@@ -201,7 +201,7 @@ class NormDocGostController extends Controller
 
         $data['is_confirm'] = 0;
 
-        if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], [1]) ) {
+        if ( in_array(App::getUserId(), [1]) ) {
             $data['is_confirm'] = 1;
         }
 

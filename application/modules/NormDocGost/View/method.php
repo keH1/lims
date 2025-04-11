@@ -215,7 +215,7 @@
 
     <a class="btn btn-danger me-3" href="<?=URI?>/normDocGost/nonActualMethod/<?=$this->data['form']['id']?>">Не актуально</a>
 
-    <?php if ($_SESSION['SESS_AUTH']['USER_ID'] == 1): ?>
+    <?php if (App::getUserId() == 1): ?>
         <a class="btn btn-dark me-3 float-end" href="<?=URI?>/normDocGost/deletePermanentlyMethod/<?=$this->data['form']['id']?>" onclick="return confirm('Удаляем?')">
             <i class="fa-solid fa-skull-crossbones"></i>
             Удалить

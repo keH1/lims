@@ -143,7 +143,7 @@ class Recipe extends Model
             return $this->addToSQL($dataSecondAdd);
         }
 
-        return $this->insertToSQL($dataAdd, $name, $_SESSION['SESS_AUTH']['USER_ID']);
+        return $this->insertToSQL($dataAdd, $name, App::getUserId());
     }
 
     public function getFromSQL(string $name, string $having = null, string $order = null, string $limit = null): array

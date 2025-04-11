@@ -922,8 +922,8 @@ class Organization extends Model
             'NAME' => $name,
             'SEARCHABLE_CONTENT' => $name,
             'IBLOCK_SECTION_ID' => $parentId > 0?  $parentId : null,
-            'CREATED_BY' => $_SESSION['SESS_AUTH']['USER_ID'],
-            'MODIFIED_BY' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'CREATED_BY' => App::getUserId(),
+            'MODIFIED_BY' => App::getUserId(),
             'DATE_CREATE' => date('Y-m-d H:i:s'),
             'IBLOCK_ID' => 5,
             'DEPTH_LEVEL' => 2,
@@ -946,7 +946,7 @@ class Organization extends Model
         $data = [
             'NAME' => $name,
             'SEARCHABLE_CONTENT' => $name,
-            'MODIFIED_BY' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'MODIFIED_BY' => App::getUserId(),
         ];
 
         $sqlData = $this->prepearTableData('b_iblock_section', $data);

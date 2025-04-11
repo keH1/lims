@@ -89,7 +89,7 @@ class SecondmentController extends Controller
         $this->data['date_end'] = $secondment->getDateEnd();
         $this->data['settlements'] = $secondment->getSettlementsData();
         $this->data['companies'] = $company->getList();
-        $this->data['user_id'] = $_SESSION["SESS_AUTH"]["USER_ID"];
+        $this->data['user_id'] = App::getUserId();
 //        $this->data["cityList"] = $secondment->getCityArr();
 
         $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
