@@ -35,8 +35,8 @@ $(function () {
                         userModalForm.find('#email').val('');
                         userModalForm.find('#login').val('');
                         userModalForm.find('#workPosition').val('');
-                        userModalForm.find('#newPassword').val('');
-                        userModalForm.find('#newPasswordConfirm').val('');
+                        userModalForm.find('#newPassword').val('').prop('required', true);
+                        userModalForm.find('#newPasswordConfirm').val('').prop('required', true);
                         userModalForm.find('#departmentId').val('');
 
                         userModalForm.find('.user-delete').remove();
@@ -95,8 +95,8 @@ $(function () {
                     userModalForm.find('#login').val(data['LOGIN']);
                     userModalForm.find('#workPosition').val(data['WORK_POSITION']);
 
-                    userModalForm.find('#newPassword').val('');
-                    userModalForm.find('#newPasswordConfirm').val('');
+                    userModalForm.find('#newPassword').val('').removeAttr('required')
+                    userModalForm.find('#newPasswordConfirm').val('').removeAttr('required')
 
                     if (userModalForm.find('#departmentId').find('option[value="' + data['DEPARTMENT_ID'] + '"]').length > 0) {
                         userModalForm.find('#departmentId').val(data['DEPARTMENT_ID']);
