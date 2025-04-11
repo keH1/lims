@@ -167,7 +167,7 @@ class OborudController extends Controller
      */
     public function movingJournal($oborudId)
     {
-        $this->data['title'] = 'Журнала движения оборудования';
+        $this->data['title'] = 'Журнал движения оборудования';
 
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
