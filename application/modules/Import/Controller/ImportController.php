@@ -88,9 +88,9 @@ class ImportController extends Controller
         if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
             $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
 
-            if (empty($data['org_id'])) {
-                $this->redirect('/request/list/');
-            }
+//            if (empty($data['org_id'])) {
+//                $this->redirect('/request/list/');
+//            }
 
             $this->data['is_show_btn'] = false;
         } else {
