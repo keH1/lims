@@ -602,25 +602,6 @@ class User extends Model
     {
         $result = [];
 
-//        $res = $this->DB->Query("
-//            SELECT
-//                dc.id_bitrix_dept AS ID,
-//                bl.id AS ID_ULAB,
-//                bl.NAME AS NAME,
-//                IFNULL(
-//                    GROUP_CONCAT(CONCAT(SUBSTRING(bu.NAME, 1, 1), '. ', bu.LAST_NAME) ORDER BY bu.NAME ASC SEPARATOR ', '),
-//                    NULL
-//                ) AS FULL_NAME,
-//                IFNULL(bu.ID, NULL) AS ID_HEAD_USER
-//            FROM
-//                department_connection dc
-//            INNER JOIN ba_laba bl ON dc.id_ulab_dept = bl.ID
-//            LEFT JOIN b_user bu ON bl.HEAD_ID = bu.ID
-//            GROUP BY
-//                dc.id_bitrix_dept,
-//                bl.id,
-//                bl.NAME;");
-
         $res = $this->DB->Query("
             SELECT
                 bl.id_dep AS ID,
@@ -634,10 +615,11 @@ class User extends Model
             FROM
                 ba_laba bl
             LEFT JOIN b_user bu ON bl.HEAD_ID = bu.ID
+            where bl.id_dep is not null
             GROUP BY
                 bl.id_dep,
                 bl.ID,
-                bl.NAME;");
+                bl.NAME");
 
         while ($row = $res->Fetch()) {
             $result[] = $row;
