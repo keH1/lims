@@ -289,6 +289,7 @@ $(function ($) {
                 type: 'inline'
             },
             fixedContentPos: false,
+            closeOnBgClick: false,
             modal: true
         });
 
@@ -321,6 +322,7 @@ $(function ($) {
                 type: 'inline'
             },
             fixedContentPos: false,
+            closeOnBgClick: false,
             modal: true
         });
 

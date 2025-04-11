@@ -2,6 +2,7 @@ $(function ($) {
     $('.popup-with-form').magnificPopup({
         type: 'inline',
         closeBtnInside:true,
+        closeOnBgClick: false,
         fixedContentPos: false
     })
 

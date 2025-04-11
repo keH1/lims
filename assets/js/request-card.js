@@ -2,6 +2,7 @@ $(function ($) {
     $('.popup-with-form').magnificPopup({
         type: 'inline',
         closeBtnInside:true,
+        closeOnBgClick: false,
         fixedContentPos: false
     })
 
@@ -29,6 +30,7 @@ $(function ($) {
     $('.popup-mail').magnificPopup({
         type: 'inline',
         closeBtnInside:true,
+        closeOnBgClick: false,
         fixedContentPos: false
     })
 

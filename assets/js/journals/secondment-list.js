@@ -235,7 +235,7 @@ $( document ).ready(function() {
                 type: 'inline'
             },
             fixedContentPos: false,
-
+            closeOnBgClick: false,
         })
     })
     // $('[name="add_entry"]').magnificPopup({
@@ -496,6 +496,7 @@ $( document ).ready(function() {
                 type: 'inline'
             },
             fixedContentPos: false,
+            closeOnBgClick: false,
             modal: true,
         })
     })

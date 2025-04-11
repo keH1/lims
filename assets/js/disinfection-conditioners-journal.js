@@ -87,7 +87,8 @@ $(function ($) {
             src: '#add-entry-modal-form-first',
             type: 'inline'
         },
-        fixedContentPos: false
+        fixedContentPos: false,
+        closeOnBgClick: false,
     })
 
     /** journal filters */

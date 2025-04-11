@@ -173,7 +173,8 @@ escapeHtml = function (text) {
 $(function ($) {
     $('.popup-help').magnificPopup({
         type: 'iframe',
-        mainClass: 'white-popup'
+        mainClass: 'white-popup',
+        closeOnBgClick: false,
     })
 
     $('body').find('.popup-with-form').magnificPopup({

@@ -181,14 +181,16 @@ $(function ($) {
             src: '#add-entry-modal-form-first',
             type: 'inline'
         },
-        fixedContentPos: false
+        fixedContentPos: false,
+        closeOnBgClick: false,
     })
     $('.popup-second').magnificPopup({
         items: {
             src: '#add-entry-modal-form-second',
             type: 'inline'
         },
-        fixedContentPos: false
+        fixedContentPos: false,
+        closeOnBgClick: false,
     })
 
     $('.select2').select2({

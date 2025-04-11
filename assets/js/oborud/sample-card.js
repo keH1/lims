@@ -12,7 +12,8 @@ $(function () {
             src: '#component-modal-form',
             type: 'inline'
         },
-        fixedContentPos: false
+        fixedContentPos: false,
+        closeOnBgClick: false,
     });
 
     $('.delete_file').click(function (e) {
@@ -79,7 +80,7 @@ $(function () {
                             type: 'inline',
                             fixedContentPos: false
                         },
-                        closeOnBgClick: false
+                        closeOnBgClick: false,
                     });
                 }
             },

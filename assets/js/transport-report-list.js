@@ -108,7 +108,8 @@ $(function ($) {
                 src: '#add-entry-modal-form',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
         });
 
         let id = $(this).attr("data-js-update")
@@ -193,7 +194,8 @@ $(function ($) {
                 src: '#delete-entry-modal-form',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
         });
 
         let id = $(this).attr("data-js-delete")

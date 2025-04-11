@@ -112,7 +112,8 @@ $(function ($) {
                 src: '#add-check-modal-form',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
         });
 
         let id = $(this).attr("data-js-update-check")

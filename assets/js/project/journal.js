@@ -106,6 +106,7 @@ $("body").on("click", "[open-row-modal]", function (e) {
             type: 'inline'
         },
         fixedContentPos: false,
+        closeOnBgClick: false,
         modal: true,
     })
 })

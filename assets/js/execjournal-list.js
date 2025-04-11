@@ -397,7 +397,8 @@ $(function ($) {
                 src: '#edit_journal',
                 type: 'inline'
             },
-            fixedContentPos: false
+            fixedContentPos: false,
+            closeOnBgClick: false,
         });
 
         let url = "/ulab/execJournal/getJournalRow/";

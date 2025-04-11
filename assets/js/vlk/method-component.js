@@ -129,6 +129,7 @@ $(function () {
                             src: '#history-modal-form',
                             type: 'inline',
                         },
+                        closeOnBgClick: false,
                     });
                 }
             });

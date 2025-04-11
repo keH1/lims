@@ -20,7 +20,8 @@ $(function () {
                 $.magnificPopup.open({
                     items: {
                         src: '#edit-modal-form',
-                    }
+                    },
+                    closeOnBgClick: false,
                 })
             }
         })
