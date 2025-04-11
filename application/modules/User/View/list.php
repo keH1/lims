@@ -163,7 +163,7 @@
         <div class="w-100 d-flex justify-content-center align-items-center">
             <input type="password" name="NEW_PASSWORD" class="w-100 form-control" id="newPassword"
                    value="<?= $this->data['NEW_PASSWORD'] ?? '' ?>" minlength="6" maxlength="255"  placeholder="Введите новый пароль" style="min-width: auto"
-                   autocomplete="new-password" required>
+                   autocomplete="new-password" <?=!empty($this->data['user_id'])? '' : 'required'?>>
             <div class="ms-2 hidePassword fa-solid fa-eye" style="cursor: pointer; color: #5724ad; width: 21px"></div>
         </div>
     </div>
@@ -173,7 +173,7 @@
         <div class="w-100 d-flex justify-content-center align-items-center">
             <input type="password" name="NEW_PASSWORD_CONFIRM" class="w-100 form-control" id="newPasswordConfirm" placeholder="Введите подтверждение нового пароля" style="min-width: auto"
                    value="<?= $this->data['NEW_PASSWORD_CONFIRM'] ?? '' ?>" minlength="6" maxlength="255"
-                   autocomplete="new-password" required>
+                   autocomplete="new-password" <?=!empty($this->data['user_id'])? '' : 'required'?>>
             <div class="ms-2 hidePasswordConfirm fa-solid fa-eye" style="cursor: pointer; color: #5724ad; width: 21px"></div>
         </div>
     </div>

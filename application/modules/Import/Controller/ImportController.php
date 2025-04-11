@@ -1501,7 +1501,7 @@ class ImportController extends Controller
         }
 
 
-        //Если редактирование пользователя то не обязательно вводить пароль
+        // Если редактирование пользователя, то не обязательно вводить пароль
         $isRequiredPass = !empty($_POST['user_id']) ? false : true;
         // Новый пароль *
         $valid = $this->validateField($_POST['NEW_PASSWORD'], "Новый пароль", $isRequiredPass);
