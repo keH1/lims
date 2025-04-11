@@ -1041,14 +1041,15 @@ class Request extends Model
         $data = $this->DB->Query(
             "SELECT DISTINCT b.ID b_id, b.TZ, b.STAGE_ID, b.ID_Z, b.ACT_NUM, b.REQUEST_TITLE, b.TAKEN_SERT_ISP, b.RESULTS, b.TAKEN_ID_DEAL, b.TYPE_ID,
                         CONVERT(substring_index(substring_index(b.REQUEST_TITLE, '№', -1), '/', 1 ),UNSIGNED INTEGER) request,
-                        b.DATE_CREATE_TIMESTAMP, b.COMPANY_TITLE, b.DEADLINE,  b.DEADLINE_TABLE, b.ACCOUNT, b.MATERIAL, b.COMPANY_ID,
-                        b.ASSIGNED, b.NUM_ACT_TABLE, b.PRICE, b.price_discount, b.OPLATA, b.DATE_OPLATA, b.PDF,
+                        b.DATE_CREATE_TIMESTAMP, b.COMPANY_TITLE, b.DEADLINE,  b.DEADLINE_TABLE, b.ACCOUNT, b.MATERIAL, b.COMPANY_ID, 
+                        b.NUM_ACT_TABLE, b.PRICE, b.price_discount, b.OPLATA, b.DATE_OPLATA, b.PDF,
                         b.discount_type, b.DISCOUNT, 
                         b.MANUFACTURER_TITLE, b.USER_HISTORY, b.LABA_ID, b.ACTUAL_VER b_actual_ver, c.leader, c.confirm,
                         bcc.TITLE as company_title_bcc,
                         count(c.id) c_count, count(c.date_return) с_date_return, k.ID k_id , d.IS_ACTION, CONCAT(d.CONTRACT_TYPE, ' ', d.NUMBER, ' от ', DATE_FORMAT(d.DATE, '%d.%m.%Y')) as DOGOVOR_TABLE,
                         tzdoc.pdf tz_pdf,
-                        gw.departure_date, gw.object as object_gov
+                        gw.departure_date, gw.object as object_gov,
+                        group_concat(distinct CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ c ON b.ID=c.tz_id
@@ -1106,15 +1107,6 @@ class Request extends Model
             $crmDeal = $this->getDealById($row['ID_Z']);
 
             $row['REQUEST_TITLE'] = $crmDeal['TITLE'];
-            $assigned = $this->getAssignedByDealId($row['ID_Z']);
-            $arrAss = [];
-            foreach ($assigned as $item) {
-                $arrAss[] = $item['short_name'];
-            }
-
-            if ( !empty($arrAss) ) {
-                $row['ASSIGNED'] = implode(', ', $arrAss);
-            }
 
             $protocolsData = [];
             $firstProtocol = [];
