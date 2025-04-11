@@ -918,6 +918,10 @@ table.table-confirm tbody td {
     border: var(--bs-border-width) solid var(--bs-border-color) !important;
 }
 
+#workarea select.form-control {
+    padding-right: 1.25rem;
+}
+
 #workarea .table-card * {
     box-sizing: initial;
 }
