@@ -153,6 +153,10 @@ $(function () {
 
                                 $.each(donuts, function (k, donut) {
                                     $.each(json.data, function (key, val) {
+                                        if ( val[donut['label']] === undefined || val[donut['label']] === null ) {
+                                            val[donut['label']] = ''
+                                        }
+
                                         if (donut['formatted'] === undefined ||
                                             val[donut['value']] == 0 ||
                                             val[donut['value']]== null) {
@@ -205,12 +209,17 @@ $(function () {
                     dom: 'frt<"bottom"lip>',
                 });
 
-                journalDataTable.columns().every( function () {
-                    $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-                        journalDataTable
-                            .column( $(this).parent().index() )
-                            .search( this.value )
-                            .draw();
+                journalDataTable.columns().every(function () {
+                    let timeout
+                    $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
+                        clearTimeout(timeout)
+                        const searchValue = this.value
+                        timeout = setTimeout(function () {
+                            journalDataTable
+                                .column($(this).parent().index())
+                                .search(searchValue)
+                                .draw()
+                        }.bind(this), 1000)
                     })
                 })
 
@@ -235,6 +244,10 @@ $(function () {
         location.reload()
     })
 
+    $body.on('change', '.filter-date-start, .filter-date-end', function () {
+        $body.find('#journal_all thead *').css("height", "0px")
+    })
+
     /**
      * Отобразить график bar
      */
@@ -257,7 +270,6 @@ $(function () {
             },
             dataType: 'json',
             success: function (data) {
-                console.log('data', data);
                 $chartBarBlock.removeClass('d-none')
 
                 $([document.documentElement, document.body]).animate({

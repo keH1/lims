@@ -20,19 +20,13 @@ class Request extends Model
      */
     public function getTypeRequest($typeId)
     {
-        $type = [
-            'SALE' => "ИЦ",
-            'COMPLEX' => "ОСК",
-            '1' => "ВЛК",
-            '2' => "МСИ",
-            '4' => "НК",
-            '5' => "АП",
-            '7' => "ПРР",
-            '8' => "Н",
-            '9' => "ГОС",
-        ];
+        $data = ['type_id' => $typeId];
 
-        return $type[$typeId]?? "ИЦ";
+        $sqlData = $this->prepearTableData('ba_tz_type', $data);
+
+        $type = $this->DB->Query("select `name` from ba_tz_type where type_id = {$sqlData['type_id']}")->Fetch();
+
+        return $type['name']?? "ИЦ";
     }
 
 
