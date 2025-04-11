@@ -214,8 +214,8 @@ $(function ($) {
 		lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
 		pageLength: 25,
 		order: [ [ 0, 'asc' ] ],
-		dom: 'frtB<"bottom"lip>',
-		buttons: dataTablesSettings.buttons,
+		dom: 'fBrt<"bottom"lip>',
+		buttons: [],
 	})
 
 
