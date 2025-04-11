@@ -212,9 +212,15 @@ class User extends Model
      * @param $dealId
      * @return array
      */
-    public function getAssignedByDealId($dealId)
+    public function getAssignedByDealId($dealId, $isMain = false )
     {
-        $users = $this->DB->Query("SELECT user_id, is_main FROM `assigned_to_request` WHERE deal_id = {$dealId} AND is_main = 1");
+        if ( $isMain ) {
+            $where = "is_main = 1";
+        } else {
+            $where = '1';
+        }
+
+        $users = $this->DB->Query("SELECT user_id, is_main FROM `assigned_to_request` WHERE deal_id = {$dealId} and {$where} order by is_main desc");
 
         $result = [];
         while ($row = $users->Fetch()) {
@@ -233,57 +239,10 @@ class User extends Model
                 'department'    => $user["UF_DEPARTMENT"],
             ];
 
-            $result[] = $resultData;
+            $result[$row['user_id']] = $resultData;
         }
 
-        // TODO: старое
-        if (empty($result)) {
-            global $USER_FIELD_MANAGER;
-
-            $userFields = $USER_FIELD_MANAGER->GetUserFields('CRM_DEAL', $dealId);
-
-            $deal = CCrmDeal::GetByID($dealId);
-
-            if ( !empty($deal['ASSIGNED_BY_ID']) ) {
-                $user = CUser::GetByID($deal['ASSIGNED_BY_ID'])->Fetch();
-                $name = trim($user['NAME']);
-                $lastName = trim($user['LAST_NAME']);
-                $shortName = StringHelper::shortName($name);
-
-                $resultData = [
-                    'user_id' => $deal['ASSIGNED_BY_ID'],
-                    'name' => $name,
-                    'last_name' => $lastName,
-                    'user_name' => "{$lastName} {$name}",
-                    'short_name' => "{$shortName}. {$lastName}",
-                    'is_main' => 1,
-                    'department' => $user["UF_DEPARTMENT"],
-                ];
-
-                $result[] = $resultData;
-            }
-
-            foreach ($userFields['UF_CRM_1571643970']['VALUE'] as $ass) {
-                $user = CUser::GetByID($ass)->Fetch();
-                $name = trim($user['NAME']);
-                $lastName = trim($user['LAST_NAME']);
-                $shortName = StringHelper::shortName($name);
-
-                $resultData = [
-                    'user_id'       => $ass,
-                    'name'          => $name,
-                    'last_name'     => $lastName,
-                    'user_name'     => "{$lastName} {$name}",
-                    'short_name'    => "{$shortName}. {$lastName}",
-                    'is_main'       => 0,
-                    'department'    => $user["UF_DEPARTMENT"],
-                ];
-
-                $result[] = $resultData;
-            }
-        }
-
-        return $result;
+        return array_values($result);
     }
 
     /**
