@@ -35,6 +35,7 @@
                 <option value='9'>Заявка оплачена полностью</option>
                 <option value='10'>Все кроме новых и неуспешных</option>
                 <option value='11'>Успешно завершенные</option>
+                <option value='in_work'>В работе</option>
                 <option value='wait_won'>Ожидают завершения</option>
                 <option value='wait_lose'>Ожидают закрытия</option>
                 <option value='for_meating'>Для собрания</option>

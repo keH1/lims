@@ -960,6 +960,9 @@ class Request extends Model
 						case 'for_meating': // Ожидает закрытия
 							$where .= "b.STAGE_ID IN ('NEW', 'PREPARATION', 'PREPAYMENT_INVOICE', 'EXECUTING', 'FINAL_INVOICE', 1) AND IF(b.ACT_NUM, TRUE, FALSE) = TRUE AND ";
 							break;
+                        case 'in_work': // Заявка в работе
+                            $where .= "b.STAGE_ID NOT IN ('LOSE', '5', '6', '7', '8', '9', '10', '11', '12', '2', '4', 'WON') AND ";
+                            break;
                     }
                 }
             }
