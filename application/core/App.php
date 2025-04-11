@@ -127,24 +127,24 @@ class App
             }
             
             if (strpos($url, 'login=yes') !== false) {
-                if (self::isAuthorized()) {
-                    $urlParts = parse_url($_SERVER['REQUEST_URI']);
-                    if (isset($urlParts['query'])) {
-                        parse_str($urlParts['query'], $params);
-                        unset($params['login']);
-                        $urlParts['query'] = http_build_query($params);
-                    }
-                    
-                    $newUrl = $urlParts['path'];
-                    if (!empty($urlParts['query'])) {
-                        $newUrl .= '?' . $urlParts['query'];
-                    }
-                    if (isset($urlParts['fragment'])) {
-                        $newUrl .= '#' . $urlParts['fragment'];
-                    }
-                    
-                    header("Location: {$newUrl}", true, 302);
-                    exit;
+                if (self::IsAuthorized()) {
+//                    $urlParts = parse_url($_SERVER['REQUEST_URI']);
+//                    if (isset($urlParts['query'])) {
+//                        parse_str($urlParts['query'], $params);
+//                        unset($params['login']);
+//                        $urlParts['query'] = http_build_query($params);
+//                    }
+//
+//                    $newUrl = $urlParts['path'];
+//                    if (!empty($urlParts['query'])) {
+//                        $newUrl .= '?' . $urlParts['query'];
+//                    }
+//                    if (isset($urlParts['fragment'])) {
+//                        $newUrl .= '#' . $urlParts['fragment'];
+//                    }
+//
+//                    header("Location: {$newUrl}", true, 302);
+//                    exit;
                 }
             }
             
