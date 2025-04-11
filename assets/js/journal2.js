@@ -39,11 +39,11 @@ function getJournalDataTable($element, columns) {
         order: [[ 2, "desc" ]],
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttonPrint,
-        drawCallback: function (settings) {
+        initComplete: function (settings) {
             let api = this.api()
             api.columns().every(function () {
                 let timeout
-                $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
+                $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'input', function () {
                     clearTimeout(timeout)
                     const searchValue = this.value
                     timeout = setTimeout(function () {
