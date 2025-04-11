@@ -86,7 +86,7 @@ $( document ).ready(function() {
                 data: 'project_name',
                 defaultContent: '',
                 render: function (data, type, item) {
-                    return data ?? "";
+                    return data ?? '<span class="text-primary cursor-pointer">Выбрать проект</span>';
                 }
             },
             {
