@@ -31,11 +31,11 @@
 <!--        </div>-->
 
 <!--        <div class="col-auto">-->
-<!--            <input type="month" id="inputDateStart" class="form-control filter filter-date-start" value="--><?//= $this->data['min_date'] ?><!--" title="Введите дату начала">-->
+<!--            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="--><?//= $this->data['min_date'] ?><!--" title="Введите дату начала">-->
 <!--        </div>-->
 <!---->
 <!--        <div class="col-auto">-->
-<!--            <input type="month" id="inputDateEnd" class="form-control filter filter-date-end" value="--><?//= $this->data['max_date'] ?><!--" title="Введите дату окончания">-->
+<!--            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="--><?//= $this->data['max_date'] ?><!--" title="Введите дату окончания">-->
 <!--        </div>-->
 
 <!--        <div class="col-auto">-->
