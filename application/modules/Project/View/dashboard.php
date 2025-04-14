@@ -3,7 +3,7 @@
         <h2 class="mb-2">Введите сумму за январь</h2>
 
         <input hidden type="number" name="project_id" value="<?= $this->data["project"]["id"] ?>">
-        <input hidden type="month" name="date" value="<?= date("Y-m") ?>">
+        <input hidden type="date" name="date" value="<?= date("Y-m-d") ?>">
         <div class="mb-2">
             <input type="number" name="plan_expenses" placeholder="Сумма">
         </div>
@@ -111,7 +111,7 @@
         <div class="col" style="width: 400px">
             <label for="date">Месяц отчета:</label>
 
-            <input type="month" class="form-control" name="date" min="2018-03" value="<?= date("Y-m") ?>" />
+            <input type="date" class="form-control" name="date" min="2018-03-01" value="<?= date("Y-m-d") ?>" />
         </div>
     </div>
 
