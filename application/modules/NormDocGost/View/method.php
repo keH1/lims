@@ -214,12 +214,6 @@
     <a class="btn btn-success me-3" href="<?=URI?>/normDocGost/confirmMethod/<?=$this->data['form']['id']?>">Проверено</a>
 
     <a class="btn btn-danger me-3" href="<?=URI?>/normDocGost/nonActualMethod/<?=$this->data['form']['id']?>">Не актуально</a>
-
-    <?php if ($_SESSION['SESS_AUTH']['USER_ID'] == 1): ?>
-        <a class="btn btn-dark me-3 float-end" href="<?=URI?>/normDocGost/deletePermanentlyMethod/<?=$this->data['form']['id']?>" onclick="return confirm('Удаляем?')">
-            Удалить
-        </a>
-    <?php endif; ?>
 </form>
 
 <form id="add-material-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative"
