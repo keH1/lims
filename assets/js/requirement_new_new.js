@@ -737,22 +737,69 @@ $(function ($) {
     })
 
     // Добавление работы
-    $('#add-work-modal-form').on('submit', function () {
+    $('#add-work-modal-form').on('submit', function (e) {
+        e.preventDefault()
+
+        let dealId = $('#deal_id').val()
         let $form = $(this)
         let $workLastRow = $('#work_table_last_row')
         let $button = $form.find(`button[type="submit"]`)
         let btnHtml = $button.html()
+        let formData = new FormData($form[0])
+
 
         $button.html(`<i class="fa-solid fa-arrows-rotate spinner-animation"></i>`)
         $button.addClass('disabled')
 
         $.ajax({
             url: "/ulab/requirement/addWorkAjax/",
-            data: $form.serialize(),
+            data: formData,
             dataType: "json",
+            contentType: false,
+            cache: false,
+            processData:false,
             async: true,
             method: "POST",
             success: function (json) {
+                let linkFileResult =
+                    `<form class="form form-upload-file" method="post"
+                          action="#"
+                          enctype="multipart/form-data">
+                        <input type="hidden" name="work_id" value="${json.data.work_id}">
+                        <input type="hidden" name="deal_id" value="${dealId}">
+                        <label class="btn btn-sm btn-success" title="Загрузить результаты испытаний">
+                            Добавить
+                            <input class="d-none" type="file" name="file_result">
+                        </label>
+                    </form>`
+                let linkFileProtocol =
+                    `<form class="form form-upload-file" method="post"
+                          action="#"
+                          enctype="multipart/form-data">
+                        <input type="hidden" name="work_id" value="${json.data.work_id}">
+                        <input type="hidden" name="deal_id" value="${dealId}">
+                        <label class="btn btn-sm btn-success" title="Загрузить протокол испытаний">
+                            Добавить
+                            <input class="d-none" type="file" name="file_protocol">
+                        </label>
+                    </form>`
+                let textDateProtocol = ``
+
+                if ( json?.data?.file_name_result !== undefined ) {
+                    linkFileResult =
+                        `<a href="/ulab/upload/request/${dealId}/government_work/${json.data.work_id}/result/${json.data.file_name_result}">
+                            ${json.data.file_name_result}
+                        </a>`
+                }
+                if ( json?.data?.file_name_protocol !== undefined ) {
+                    linkFileProtocol =
+                        `<a href="/ulab/upload/request/${dealId}/government_work/${json.data.work_id}/protocol/${json.data.file_name_protocol}">
+                            ${json.data.file_name_protocol}
+                        </a>`
+
+                    textDateProtocol = json.data.date_protocol
+                }
+
                 $workLastRow.before(`
                 <tr>
                     <td class="text-center">
@@ -773,11 +820,21 @@ $(function ($) {
                     <td>
                         Испытания не начаты
                     </td>
+                    <td class="text-center">
+                        ${linkFileResult}
+                    </td>
+                    <td class="text-center">
+                        ${linkFileProtocol}
+                    </td>
+                    <td class="text-center text_date_protocol">
+                        ${textDateProtocol}
+                    </td>
                 </tr>
                 `)
             },
             complete: function () {
                 $form.find('input[type="text"]').val('')
+                $form.find('input[type="file"]').val('')
                 $form.find('input[type="number"]').val(1)
 
                 journalDataTable.ajax.reload()
@@ -786,6 +843,50 @@ $(function ($) {
                 $button.removeClass('disabled')
 
                 $.magnificPopup.close()
+            }
+        })
+
+        return false
+    })
+
+    $body.on('change', '.form-upload-file', function () {
+        $(this).closest('form').trigger('submit')
+    })
+
+    $body.on('submit', '.form-upload-file', function (e) {
+        e.preventDefault()
+
+        let $form = $(this)
+        let $td = $form.closest('td')
+        let formData = new FormData($form[0])
+
+        $.ajax({
+            url: "/ulab/requirement/addFileWorkAjax/",
+            data: formData,
+            dataType: "json",
+            contentType: false,
+            cache: false,
+            processData:false,
+            async: true,
+            method: "POST",
+            success: function (json) {
+                console.log(json)
+                if ( json?.data?.file_name_result !== undefined ) {
+                    $td.html(
+                        `<a href="/ulab/upload/request/${dealId}/government_work/${json.data.work_id}/result/${json.data.file_name_result}">
+                            ${json.data.file_name_result}
+                        </a>`
+                    )
+                }
+                if ( json?.data?.file_name_protocol !== undefined ) {
+                    $td.html(
+                        `<a href="/ulab/upload/request/${dealId}/government_work/${json.data.work_id}/protocol/${json.data.file_name_protocol}">
+                            ${json.data.file_name_protocol}
+                        </a>`
+                    )
+
+                    $td.closest('tr').find('.text_date_protocol').html(json.data.date_protocol)
+                }
             }
         })
 
