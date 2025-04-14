@@ -133,7 +133,6 @@ $(function () {
                 })
             })
 
-
             $('.filter').on('change', function () {
                 journalDataTable.ajax.reload()
             })
@@ -144,6 +143,8 @@ $(function () {
             }
 
             window.onresize = reportWindowSize
+
+            initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 
             $('#workarea-content').on('change', '.user_in_method', function () {
                 const userId = $(this).data('user_id')
@@ -165,7 +166,6 @@ $(function () {
             })
         }
     })
-
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()

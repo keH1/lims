@@ -108,51 +108,6 @@ $(function ($) {
         location.reload()
     })
 
-    /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $journal.width()
-
-    $('.btnRightTable, .arrowRight').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
-
-    $('.btnLeftTable, .arrowLeft').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: -scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
-
-    $(document).scroll(function() {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height()
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
-            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
-        }
-    })
-
-    $('body').on('click', '.accept_probe', function () {
-        console.log($(this))
-    })
-
+    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 
 })

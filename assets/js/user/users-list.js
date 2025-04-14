@@ -339,6 +339,8 @@ $(function ($) {
         // Обработка ошибок
     });
 
+    initTableScrollNavigation($journal, '#journal_users tbody')
+
     usersUpdateRoleButton.click(function() {
         let oldText = usersUpdateRoleButton.text();
         usersUpdateRoleButton.text('Подождите');

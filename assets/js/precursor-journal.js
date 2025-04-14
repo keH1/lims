@@ -1,6 +1,8 @@
 $(function ($) {
+    $journal = $('#precursor_journal');
+
     /*recipe journal*/
-    let precursorJournal = $('#precursor_journal').DataTable({
+    let precursorJournal = $journal.DataTable({
         processing: true,
         serverSide: true,
         ajax: {
@@ -95,38 +97,8 @@ $(function ($) {
             }.bind(this), 1000)
         })
     })
-    
-    /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $('#precursor_journal').width()
 
-
-    let $body = $("body")
-    let $containerScroll = $body.find('.dataTables_scroll')
-    let $thead = $('.journal thead tr:first-child')
-
-    $(document).scroll(function () {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height(),
-            positionTop = $containerScroll.offset().top
-
-        if (positionScroll >= positionTop) {
-            $thead.attr('style', 'position:fixed;top:0;z-index:99')
-        } else {
-            $thead.attr('style', '')
-        }
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform', `translateY(${positionScroll - 260}px)`)
-            $('.arrowLeft').css('transform', `translateY(${positionScroll - 250}px)`)
-        }
-    })
-    $("body").on('change', '.select-reactive', function () {
-        let unit = $('.select-reactive option:selected').data('unit')
-        let lastdate = $('.select-reactive option:selected').data('lastdate').slice(0, 7)
-        $('.quantity-reactive').html(unit);
-        $('.select-month').val(lastdate);
-    })
+    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 
     /** modal */
     $('.popup-first').magnificPopup({

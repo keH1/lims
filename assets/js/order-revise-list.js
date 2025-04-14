@@ -106,4 +106,6 @@ $(function ($) {
 
         return false
     })
+
+    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 })

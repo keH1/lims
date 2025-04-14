@@ -13,8 +13,10 @@ const conditionerRoom = {
 }
 
 $(function ($) {
+    let $journal = $('#fridge_journal');
+
     /*recipe journal*/
-    let fridgejournal = $('#fridge_journal').DataTable({
+    let fridgejournal = $journal.DataTable({
         processing: true,
         serverSide: true,
         bAutoWidth: false,
@@ -118,4 +120,6 @@ $(function ($) {
 
         $('.conditioner').val(conditionerRoom[val])
     })
+
+    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 })

@@ -1,7 +1,8 @@
 $(function ($) {
-    let body = $('body')
+    let body = $('body'),
+        $journal = $('#scales_journal')
 
-    let precursorJournal = $('#scales_journal').DataTable({
+    let precursorJournal = $journal.DataTable({
         ajax: {
             type: 'POST',
             data: function (d) {
@@ -106,30 +107,7 @@ $(function ($) {
         })
     })
 
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $('#fridgecontrol_journal').width()
-
-
-    let $body = $("body")
-    let $containerScroll = $body.find('.dataTables_scroll')
-    let $thead = $('.journal thead tr:first-child')
-
-    $(document).scroll(function () {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height(),
-            positionTop = $containerScroll.offset().top
-
-        if (positionScroll >= positionTop) {
-            $thead.attr('style', 'position:fixed;top:0;z-index:99')
-        } else {
-            $thead.attr('style', '')
-        }
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform', `translateY(${positionScroll - 260}px)`)
-            $('.arrowLeft').css('transform', `translateY(${positionScroll - 250}px)`)
-        }
-    })
+    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 
     /** modal */
     $('.popup-first').magnificPopup({

@@ -216,7 +216,7 @@ $(function () {
         buttons: dataTablesSettings.buttonPrint,
         bSortCellsTop: true,
         scrollX:       true,
-        fixedHeader:   true,
+        fixedHeader:   false,
     });
 
     journalDataTable.columns().every(function() {
@@ -253,4 +253,6 @@ $(function () {
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })
+
+    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 })

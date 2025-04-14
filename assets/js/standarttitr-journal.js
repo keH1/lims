@@ -1,9 +1,10 @@
 $(function ($) {
 
-    let $body = $("body")
+    let $body = $("body"),
+        $journal = $('#recipe_journal')
 
     /*recipe journal*/
-    let recipeJournal = $('#recipe_journal').DataTable({
+    let recipeJournal = $journal.DataTable({
         processing: true,
         serverSide: true,
         ajax: {
@@ -246,5 +247,7 @@ $(function ($) {
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })
+
+    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 
 })

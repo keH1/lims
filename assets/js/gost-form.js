@@ -150,12 +150,70 @@ $(function () {
         location.reload()
     })
 
-    /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $journal.width()
+    const $wrapper = $('#table-method_wrapper');
+    if ($wrapper.find('.arrowRight').length === 0) {
+        $wrapper.append(`
+        <div class="arrowLeft position-fixed" style="right: 65px;">
+            <svg class="bi" width="40" height="40">
+                <use xlink:href="/ulab/assets/images/icons.svg#arrow-left"/>
+            </svg>
+        </div>
+        <div class="arrowRight position-fixed" style="right: 65px;">
+            <svg class="bi" width="40" height="40">
+                <use xlink:href="/ulab/assets/images/icons.svg#arrow-right"/>
+            </svg>
+        </div>
+    `);
+    }
 
-    $('.btnRightTable, .arrowRight').hover(function() {
-            container.animate(
+    const $container = $('.dataTables_scrollBody');
+
+    $container.css('position', 'relative');
+
+    function repositionArrows() {
+        const container = $container[0];
+        if (!container) return;
+
+        const containerRect = container.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const hideOffset = 100;
+
+        const isVisible = containerRect.bottom > hideOffset && containerRect.top < viewportHeight;
+
+        if (!isVisible) {
+            $('.arrowLeft, .arrowRight').css('opacity', '0');
+            return;
+        }
+
+        const opacity = Math.min(
+            1,
+            (containerRect.bottom - hideOffset) / 100,
+            (viewportHeight - containerRect.top - hideOffset) / 100
+        );
+
+        $('.arrowLeft, .arrowRight').css({
+            'opacity': opacity,
+            'pointer-events': opacity > 0.5 ? 'auto' : 'none'
+        });
+
+        const newY = Math.max(
+            hideOffset,
+            Math.min(containerRect.top + 20, viewportHeight - 90)
+        );
+
+        $('.arrowLeft').css('top', `${newY + 50}px`);
+        $('.arrowRight').css('top', `${newY}px`);
+    }
+
+    $(window).on('scroll resize', () => {
+        requestAnimationFrame(repositionArrows);
+    });
+    repositionArrows();
+
+    let scroll = $journal.width()
+
+    $('.arrowRight').hover(function() {
+            $container.animate(
                 {
                     scrollLeft: scroll
                 },
@@ -165,11 +223,11 @@ $(function () {
             )
         },
         function() {
-            container.stop();
+            $container.stop();
         })
 
-    $('.btnLeftTable, .arrowLeft').hover(function() {
-            container.animate(
+    $('.arrowLeft').hover(function() {
+            $container.animate(
                 {
                     scrollLeft: -scroll
                 },
@@ -179,16 +237,6 @@ $(function () {
             )
         },
         function() {
-            container.stop();
+            $container.stop();
         })
-
-    $(document).scroll(function() {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height()
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
-            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
-        }
-    })
 })

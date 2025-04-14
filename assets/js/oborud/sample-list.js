@@ -102,10 +102,12 @@ $(function () {
         location.reload();
     });
 
+    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
+
     $body.on('click', '.control-samples-history', function () {
         const id = $(this).data('id');
         const $form = $('#history-modal-form');
-console.log('click');
+
         $form.find('.title').empty();
         $form.find('.history-info').empty();
 
@@ -115,7 +117,6 @@ console.log('click');
             dataType: "json",
             method: "POST",
             success: function (data) {
-                console.log('data', data);
                 $form.find('.title').text(`История образца контроля ${data.info.NUMBER}`);
 
                 let html = ``;

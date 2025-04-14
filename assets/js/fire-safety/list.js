@@ -133,4 +133,6 @@ $(function ($) {
     $('.filter-btn-reset').on('click', function () {
         location.assign(location.pathname);
     });
+
+    initTableScrollNavigation(journal, 'div.dataTables_scrollBody')
 });
