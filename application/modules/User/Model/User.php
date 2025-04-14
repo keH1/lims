@@ -788,17 +788,17 @@ class User extends Model
         }
     }
 
-    public function getStatusList()
+    /**
+     * Получает список статусов пользователей
+     * @return array
+     */
+    public function getStatusList(): array
     {
-        // $statuses = require $_SERVER["DOCUMENT_ROOT"] . '/ulab/application/config/statuses.php';
-        // return $statuses;
         $result = [];
         $data = $this->DB->Query("SELECT * FROM ulab_user_status_list");
 
-        $inc = 1;
         while ($row = $data->Fetch()) {
-            $result[$inc] = $row['status'];
-            $inc++;
+            $result[$row['id']] = $row['status'];
         }
 
         return $result;

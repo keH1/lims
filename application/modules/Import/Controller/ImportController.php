@@ -236,7 +236,7 @@ class ImportController extends Controller
         $this->data['branch_info'] = $orgModel->getBranchInfo($this->data['dep_info']['branch_id']);
         $this->data['org_info'] = $orgModel->getOrgInfo($this->data['branch_info']['organization_id']);
         $this->data['not_affiliation_users'] = $orgModel->getNotAffiliationUser();
-        $this->data['status_list'] = $orgModel->getStatusList();
+        $this->data['status_list'] = $userModel->getStatusList();
 
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");

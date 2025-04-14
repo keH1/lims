@@ -991,21 +991,4 @@ class Organization extends Model
 
         return $this->DB->Update('b_iblock_section', $sqlData, "where ID = {$id}");
     }
-
-
-    /**
-     * Получает список статусов пользователей
-     * @return array
-     */
-    public function getStatusList(): array
-    {
-        $result = [];
-        $data = $this->DB->Query("SELECT * FROM ulab_user_status_list");
-
-        while ($row = $data->Fetch()) {
-            $result[$row['id']] = $row['status'];
-        }
-
-        return $result;
-    }
 }
