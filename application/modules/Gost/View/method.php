@@ -902,7 +902,6 @@
 
     <?php if ($_SESSION['SESS_AUTH']['USER_ID'] == 1): ?>
         <a class="btn btn-dark me-3" href="<?=URI?>/gost/deletePermanentlyMethod/<?=$this->data['form']['id']?>" onclick="return confirm('Удаляем?')">
-            <i class="fa-solid fa-skull-crossbones"></i>
             Удалить
         </a>
     <?php endif; ?>
