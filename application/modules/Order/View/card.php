@@ -8,13 +8,7 @@
 					</svg>
 				</a>
 			</li>
-			<li class="nav-item me-2">
-				<a class="nav-link link-card" href="<?= URI ?>/order/list/" title="Вернуться в карточку заявки">
-					<svg class="icon" width="20" height="20">
-						<use xlink:href="/ulab/assets/images/icons.svg#card"></use>
-					</svg>
-				</a>
-			</li>
+
 			<li class="nav-item me-2">
 				<a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Contract_card/Contract_card.html"
 				   title="Техническая поддержка">
