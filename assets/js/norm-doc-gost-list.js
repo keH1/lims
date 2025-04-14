@@ -96,4 +96,6 @@ $(function () {
     }
 
     window.onresize = reportWindowSize
+
+    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 })

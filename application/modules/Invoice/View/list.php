@@ -89,6 +89,13 @@
     </tbody>
 </table>
 
-<div class="line-dashed"></div>
-
-<!--<a href="/probe_test.php">Вернуться на старый дизайн</a>-->
+<div class='arrowLeft'>
+    <svg class="bi" width="40" height="40">
+        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-left"/>
+    </svg>
+</div>
+<div class='arrowRight'>
+    <svg class="bi" width="40" height="40">
+        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-right"/>
+    </svg>
+</div>

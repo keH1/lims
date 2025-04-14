@@ -168,6 +168,49 @@ escapeHtml = function (text) {
     return false;
 }
 
+function initTableScrollNavigation($journal, containerSelector) {
+    let container = $(containerSelector),
+        scroll = $journal.width()
+
+    $('.btnRightTable, .arrowRight').hover(function() {
+            container.animate(
+                {
+                    scrollLeft: scroll
+                },
+                {
+                    duration: 4000, queue: false
+                }
+            )
+        },
+        function() {
+            container.stop();
+        })
+
+    $('.btnLeftTable, .arrowLeft').hover(function() {
+            container.animate(
+                {
+                    scrollLeft: -scroll
+                },
+                {
+                    duration: 4000, queue: false
+                }
+            )
+        },
+        function() {
+            container.stop();
+        })
+
+    $(document).scroll(function() {
+        let positionScroll = $(window).scrollTop(),
+            tableScrollBody = container.height()
+
+        if (positionScroll > 265 && positionScroll < tableScrollBody) {
+            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
+            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
+        }
+    })
+}
+
 
 
 $(function ($) {
