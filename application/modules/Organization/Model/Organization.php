@@ -49,11 +49,11 @@ class Organization extends Model
      */
     public function setAffiliationUserInfo(int $userId, array &$data)
     {
-        if ( empty($userId) ) {
+        if (empty($userId)) {
             return false;
         }
 
-        if ( !empty($data['lab_id']) ) {
+        if (!empty($data['lab_id'])) {
             $data['dep_id'] = $this->getDepIdByLab($data['lab_id']);
             $data['branch_id'] = $this->getBranchIdByDep($data['dep_id']);
             $data['org_id'] = $this->getOrgIdByBranch($data['branch_id']);
@@ -66,13 +66,30 @@ class Organization extends Model
 
         $sqlData = $this->prepearTableData('ulab_user_affiliation', $data);
 
+        $dataStatus = [
+            'user_id' => $userId,
+            'user_status' => $data['status'],
+            'replacement_user_id' => (
+                !isset($data['replacement_user_id']) || 
+                $data['replacement_user_id'] === '' || 
+                $data['replacement_user_id'] === 0
+            ) 
+                ? "NULL" 
+                : (int)$data['replacement_user_id'],
+            'replacement_date' => date('Y-m-d H:i:s')
+        ];
+        
+        $sqlDataStatus = $this->prepearTableData('ulab_user_status', $dataStatus);
+
         $current = $this->DB->Query("select * from ulab_user_affiliation where user_id = {$userId}")->Fetch();
 
-        if ( !empty($current['user_id']) ) {
+        if (!empty($current['user_id'])) {
+            unset($sqlDataStatus['user_id']);
+            $this->DB->Update("ulab_user_status", $sqlDataStatus, "where user_id = {$userId}");
             return $this->DB->Update("ulab_user_affiliation", $sqlData, "where user_id = {$userId}");
         } else {
             $sqlData['user_id'] = $userId;
-
+            $this->DB->Insert("ulab_user_status", $sqlDataStatus);
             return $this->DB->Insert("ulab_user_affiliation", $sqlData);
         }
     }
@@ -88,8 +105,11 @@ class Organization extends Model
         if ( empty($userId) ) {
             return false;
         }
+        
+        $this->DB->Query("DELETE FROM ulab_user_status WHERE user_id = {$userId}")->Fetch();
+        $this->DB->Query("DELETE FROM ulab_user_affiliation WHERE user_id = {$userId}")->Fetch();
 
-        return $this->DB->Query("delete from ulab_user_affiliation where user_id = {$userId}")->Fetch();
+        return (int)$userId;
     }
 
 
@@ -504,9 +524,12 @@ class Organization extends Model
     public function getNotAffiliationUser()
     {
         $sql = $this->DB->Query(
-            "select ID, `NAME`, `LAST_NAME`, `SECOND_NAME`, `WORK_POSITION` 
-                from b_user where ID not in (select user_id from ulab_user_affiliation) and ACTIVE = 'Y' and BLOCKED = 'N'"
-        );
+            "SELECT ID, `NAME`, `LAST_NAME`, `SECOND_NAME`, `WORK_POSITION` 
+             FROM b_user
+             WHERE ID NOT IN
+              (SELECT user_id FROM ulab_user_affiliation) AND ACTIVE = 'Y' AND BLOCKED = 'N'
+             ORDER BY `NAME`, `LAST_NAME`
+        ");
 
         $result = [];
 
@@ -840,27 +863,42 @@ class Organization extends Model
         }
 
         $where .= "1 ";
+        
 
         $data = $this->DB->Query(
-            "SELECT *
-            FROM b_user as u
-            join ulab_user_affiliation as ua on u.ID = ua.user_id
-            WHERE ua.lab_id = {$labId} and {$where}
-            ORDER BY {$order['by']} {$order['dir']} {$limit}"
-        );
+           "SELECT u.*, ua.*, uus.replacement_user_id, 
+            CONCAT(ru.LAST_NAME, ' ', LEFT(ru.NAME, 1), '.') AS replace_user,
+            uusl.status, uusl.id AS status_id
+            FROM b_user AS u
+
+            JOIN ulab_user_affiliation AS ua
+            ON u.ID = ua.user_id
+
+            LEFT JOIN ulab_user_status AS uus
+            ON u.ID = uus.user_id
+
+            LEFT JOIN ulab_user_status_list AS uusl
+            ON uus.user_status = uusl.id
+            
+            LEFT JOIN b_user AS ru
+            ON uus.replacement_user_id = ru.ID
+
+            WHERE ua.lab_id = {$labId} AND {$where}
+            ORDER BY {$order['by']} {$order['dir']} {$limit}
+        ");
 
         $dataTotal = $this->DB->Query(
-            "SELECT u.ID
-            FROM b_user as u
-            join ulab_user_affiliation as ua on u.ID = ua.user_id
-            WHERE ua.lab_id = {$labId} and 1"
+           "SELECT u.ID
+            FROM b_user AS u
+            JOIN ulab_user_affiliation AS ua ON u.ID = ua.user_id
+            WHERE ua.lab_id = {$labId} AND 1"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT u.ID
-            FROM b_user as u
-            join ulab_user_affiliation as ua on u.ID = ua.user_id
-            WHERE ua.lab_id = {$labId} and {$where}"
+           "SELECT u.ID
+            FROM b_user AS u
+            JOIN ulab_user_affiliation AS ua ON u.ID = ua.user_id
+            WHERE ua.lab_id = {$labId} AND {$where}"
         )->SelectedRowsCount();
 
         $result = [];
@@ -952,5 +990,22 @@ class Organization extends Model
         $sqlData = $this->prepearTableData('b_iblock_section', $data);
 
         return $this->DB->Update('b_iblock_section', $sqlData, "where ID = {$id}");
+    }
+
+
+    /**
+     * Получает список статусов пользователей
+     * @return array
+     */
+    public function getStatusList(): array
+    {
+        $result = [];
+        $data = $this->DB->Query("SELECT * FROM ulab_user_status_list");
+
+        while ($row = $data->Fetch()) {
+            $result[$row['id']] = $row['status'];
+        }
+
+        return $result;
     }
 }
