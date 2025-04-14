@@ -894,15 +894,7 @@
 
     <button class="btn btn-primary me-3" type="submit" title="Сохранение методики. Снимает статус 'Подтвержден'">Сохранить</button>
 
-<!--    --><?php //if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], [1, 213])): ?>
-        <a class="btn btn-success me-3" href="<?=URI?>/gost/confirmMethod/<?=$this->data['form']['id']?>">Проверено</a>
+    <a class="btn btn-success me-3" href="<?=URI?>/gost/confirmMethod/<?=$this->data['form']['id']?>">Проверено</a>
 
-        <a class="btn btn-danger me-3" href="<?=URI?>/gost/nonActualMethod/<?=$this->data['form']['id']?>">Не актуально</a>
-<!--    --><?php //endif; ?>
-
-    <?php if ($_SESSION['SESS_AUTH']['USER_ID'] == 1): ?>
-        <a class="btn btn-dark me-3" href="<?=URI?>/gost/deletePermanentlyMethod/<?=$this->data['form']['id']?>" onclick="return confirm('Удаляем?')">
-            Удалить
-        </a>
-    <?php endif; ?>
+    <a class="btn btn-danger me-3" href="<?=URI?>/gost/nonActualMethod/<?=$this->data['form']['id']?>">Не актуально</a>
 </form>
