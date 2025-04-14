@@ -18,26 +18,30 @@
 
 <form id="grain-form" action="<?=URI?>/grain/updateGrainList/<?= $this->data['grain_list_id'] ?>" method="POST">
     <div class="tab b-none mb-3">
-        <input checked id="tab-btn-1" name="tab-btn" type="radio">
+        <!-- Общая информация -->
+        <input type="radio" name="tab-btn" id="tab-btn-1" checked>
         <label for="tab-btn-1">Общая информация</label>
-        <input id="tab-btn-2" name="tab-btn" type="radio">
-        <label for="tab-btn-2">Сита с круглыми отверстиями</label>
-        <input id="tab-btn-3" name="tab-btn" type="radio">
-        <label for="tab-btn-3">Сита с квадратными отверстиями</label>
+        <!-- Информация о ситах -->
+        <input type="radio" name="tab-btn" id="tab-btn-2">
+        <label for="tab-btn-2">Информация о ситах</label>
+        <!-- Сита с круглыми отверстиями -->
+        <input type="radio" name="tab-btn" id="tab-btn-3">
+        <label for="tab-btn-3">Сита с круглыми отверстиями</label>
+        <!-- Сита с квадратными отверстиями -->
+        <input type="radio" name="tab-btn" id="tab-btn-4">
+        <label for="tab-btn-4">Сита с квадратными отверстиями</label>
 
-        <!-- Таб 1 -->
+        <!-- Таб 1: Общая информация -->
         <div class="tab-content" id="content-1">
             <label for="grain_name" class="mt-2">Название листа в результатах испытаний</label>
             <div class="input-container">
-                <input class="form-control mb-10" id="grain_name"
-                       type="text" name="grain_list_name"
-                       value="<?= $this->data['grain']['name'] ?>"
-                >
+                <input class="form-control mb-10" id="grain_name" type="text" name="grain_list_name"
+                       value="<?= $this->data['grain']['name'] ?>">
             </div>
 
             <label for="grain_gost" class="mt-2">ГОСТ зернового состава</label>
             <div class="input-container">
-                <select class="grain__gost_list" id="grain_gost"
+                <select class="grain__gost_list w-100 mw-100" id="grain_gost"
                         name="grain_list_gost">
                     <option value="0" selected>Выберите ГОСТ</option>
                     <?php foreach ($this->data['grain_list_gost'] as $item): ?>
@@ -49,8 +53,38 @@
             </div>
         </div>
 
-        <!-- Таб 2-3 -->
-        <?php $inc = 2; ?>
+        <!-- Таб 2: Информация о ситах -->
+        <div class="tab-content" id="content-2">
+            <h4>Информация о ситах</h4>
+            <table class="table table-bordered">
+                <thead>
+                <tr class="text-center">
+                    <td>Размер</td>
+                    <td>От</td>
+                    <td>До</td>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach($this->data['grain_seave_size'][2]['seave_type'][0]['values'] as $key => $sieveTitle): ?>
+                    <tr class="text-center align-middle">
+                        <td><?= htmlspecialchars($sieveTitle, ENT_QUOTES, 'UTF-8') ?></td>
+                        <td>
+                            <input class="form-control" type="number" step="any" name="NORM1[<?= $key ?>]"
+                                   value="<?= isset($this->data['grain']['norm1'][$key]) ? htmlspecialchars($this->data['grain']['norm1'][$key], ENT_QUOTES, 'UTF-8') : '' ?>">
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" step="any"
+                                   name="NORM2[<?= $key ?>]"
+                                   value="<?= isset($this->data['grain']['norm2'][$key]) ? htmlspecialchars($this->data['grain']['norm2'][$key], ENT_QUOTES, 'UTF-8') : '' ?>">
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Таб 3-4 -->
+        <?php $inc = 3; ?>
         <?php foreach($this->data['grain_seave_size'] as $typeSeave): ?>
             <div class="tab-content" id="content-<?= $inc ?>">
                 <div class="flex-between">
@@ -89,7 +123,7 @@
                     <?php endforeach; ?>
                 </div>
             </div>
-            <?php $inc++; ?>
+            <?php $inc++; if ($inc > 4) { break; } ?>
         <?php endforeach; ?>
     </div>
 

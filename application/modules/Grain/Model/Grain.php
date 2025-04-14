@@ -59,6 +59,35 @@ class Grain extends Model
                 ]
             ]
         ],
+        2 => [
+            "seave_main_type" => "round_info",
+            "seave_type" => [
+                0 => [
+                    "type_to_input" => '',
+                    "type_to_title" => "Сита",
+                    "values" => [
+                        0  => "Сито 200 мм",  44 => "Сито 180 мм",  43 => "Сито 126 мм",  57 => "Сито 150 мм",  50 => "Сито 125 мм",  1  => "Сито 120 мм",
+                        58 => "Сито 105 мм",  2  => "Сито 100 мм",  34 => "Сито 90 мм",   40 => "Сито 87,5 мм", 3  => "Сито 80 мм",   41 => "Сито 70 мм",
+                        33 => "Сито 63 мм",   4  => "Сито 60 мм",   42 => "Сито 55 мм",   38 => "Сито 50 мм",   32 => "Сито 45 мм",  5  => "Сито 40 мм",
+                        59 => "Сито 35 мм",   6  => "Сито 31,5 мм", 39 => "Сито 30 мм",   37 => "Сито 25 мм",   7  => "Сито 22,4 мм", 8  => "Сито 20 мм",
+
+                        74 => "Сито менее 20 мм", 47 => "Сито 17,5 мм", 9  => "Сито 16 мм",   10 => "Сито 15 мм",   35 => "Сито 12,5 мм", 11 => "Сито 11,2 мм",
+                        12 => "Сито 10 мм",   73 => "Сито менее 10 мм", 13 => "Сито 8 мм",    36 => "Сито 7,5 мм",  31 => "Сито 5,6 мм", 14 => "Сито 5 мм",
+                        72 => "Сито менее 5 мм", 15 => "Сито 4 мм",     46 => "Сито 3 мм",    45 => "Сито 2,8 мм",  16 => "Сито 2,5 мм", 71 => "Сито менее 2,5 мм",
+                        17 => "Сито 2 мм",    70 => "Сито 1,6 мм", 18 => "Сито 1,25 мм",  19 => "Сито 1 мм",    66 => "Сито менее 1 мм", 20 => "Сито 0,63 мм",
+
+                        21 => "Сито 0,5 мм",  22 => "Сито 0,315 мм", 23 => "Сито 0,25 мм", 24 => "Сито 0,16 мм", 25 => "Сито 0,125 мм", 26 => "Сито 0,1 мм",
+                        27 => "Сито 0,071 мм",28 => "Сито 0,063 мм", 29 => "Сито 0,05 мм", 30 => "Сито 0,010 мм", 60 => "Сито 0,005 мм", 61 => "Сито 0,001 мм",
+                        62 => "Сито менее 0,001 мм", 63 => "Сито 0,80 мм", 64 => "Сито 0,40 мм", 65 => "Сито 0,20 мм", 67 => "Сито менее 0,16 мм", 68 => "Сито менее 0,125 мм",
+                        69 => "Сито менее 0,05 мм", 75 => "Сито 56 мкм", 76 => "Сито 20 мкм", 77 => "Сито 10 мкм", 78 => "Сито 5 мкм", 79 => "Сито 2 мкм",
+
+                        80 => "Сито менее 2 мкм", 81 => "Сито 1000 мкм", 82 => "Сито 850 мкм", 83 => "Сито 700 мкм", 84 => "Сито 600 мкм", 85 => "Сито 500 мкм",
+                        86 => "Сито менее 500 мкм",
+                    ]
+
+                ]
+            ]
+        ]
     ];
 
     public function getGrainGostList(int $grainListID)
@@ -90,12 +119,12 @@ class Grain extends Model
         return $result;
     }
 
-    public function getGrainSeaveSize()
+    public function getGrainSeaveSize(): array
     {
         return SELF::SEAVE;
     }
 
-    public function getGrainSeaveValues(int $grainListID)
+    public function getGrainSeaveValues(int $grainListID): array
     {
         $result = [];
         $query = $this->DB->Query("SELECT *
@@ -105,17 +134,28 @@ class Grain extends Model
 
         $result = [
             "name" => $query['NAME'],
-            "data" => json_decode($query['DATA'], true)
+            "data" => json_decode($query['DATA'], true),
+            "norm1" => unserialize($query['NORM1']),
+            "norm2" => unserialize($query['NORM2']),
         ];
 
         return $result;
     }
 
-    public function update(int $grainListID, array $post)
+    public function update(int $grainListID, array $post): void
     {
-        $data['NAME'] = $post['grain_list_name'];
-        $data['GOST_ID'] = isset($post['grain_list_gost']) ? $post['grain_list_gost'] : "";
+        $name = StringHelper::removeSpace($post['grain_list_name'] ?? '');
+        $name = $this->DB->ForSql($name);
+        $zern = $this->DB->Query("SELECT ID FROM ZERN WHERE NAME LIKE '{$name}'")->Fetch();
+
+        if (empty($zern['ID'])) {
+            $data['NAME'] = $name;
+        }
+
+        $data['GOST_ID'] = $post['grain_list_gost'] ?? '';
         $data['DATA'] =  json_encode($post['grain'], JSON_UNESCAPED_UNICODE);
+        $data['NORM1'] =  serialize($post['NORM1']);
+        $data['NORM2'] =  serialize($post['NORM2']);
 
         $sqlData = $this->prepearTableData('ZERN', $data);
 
@@ -190,5 +230,22 @@ class Grain extends Model
         $result['recordsFiltered'] = $dataFiltered['val'];
 
         return $result;
+    }
+
+    public function addZern(string $name): int
+    {
+        $name = StringHelper::removeSpace($name);
+        $name = $this->DB->ForSql($name);
+        $zern = $this->DB->Query("SELECT ID FROM ZERN WHERE NAME LIKE '{$name}'")->Fetch();
+
+        $zernId = (int)$zern['ID'];
+        if (!empty($zernId)) {
+            return $zernId;
+        }
+
+        $sqlData = $this->prepearTableData('ZERN', ['NAME' => $name]);
+        $result = $this->DB->Insert('ZERN', $sqlData);
+
+        return intval($result);
     }
 }
