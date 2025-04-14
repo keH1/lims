@@ -12,7 +12,6 @@ $(function ($) {
                 d.dateEnd = $('#inputDateEnd').val()
                 d.stage = $('#selectStage option:selected').val()
                 d.lab = $('#selectLab option:selected').val()
-                d.everywhere = $('#filter_everywhere').val()
             },
             url : '/ulab/protocol/getListProcessingAjax/',
             dataSrc: function (json) {
