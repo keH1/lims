@@ -145,11 +145,20 @@ $(function ($) {
 			},
 			{
 				data: 'tz_pdf',
+				className: 'text-center',
 				orderable: false,
 				render: function (data, type, item) {
 					if ( !item['tz_pdf'] ) {
+						let titleText = 'Загрузить PDF-версию'
+						let disableTest = ''
+
+						if ( item['tz_doc_id'] === null ) {
+							titleText = 'Невозможно загрузить PDF-версию: Не сформировано приложение к договору (ТЗ)'
+							disableTest = 'disabled'
+						}
+
 						return `<label class="upload-pdf cursor-pointer nav-link link-card"
-									title="Загрузить PDF-версию">
+									title="${titleText}">
 								<svg class="icon" width="25" height="25">
 									<use xlink:href="/ulab/assets/images/icons.svg#upload"/>
 								</svg>
@@ -157,6 +166,7 @@ $(function ($) {
 								<input class="d-none upload_pdf" data-tz_id="${item['ID']}"
 									   data-tz_doc_id="${item['tz_doc_id']}" type="file" name="upload_pdf"
 									   accept="application/pdf"
+									   ${disableTest}
 								>
 								</label>`
 					} else {
@@ -185,6 +195,8 @@ $(function ($) {
 			},
 			{
 				data: 'button',
+				width: '130px',
+				className: 'text-center',
 				orderable: false,
 				render: function (data, type, item) {
 					if ( !item['ACCOUNT'] ) {
