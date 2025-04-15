@@ -567,6 +567,11 @@ class Order extends Model {
     }
 
 
+    /**
+     * получение данных для DataTables Журнал договоров
+     * @param array $filter
+     * @return array
+     */
     public function getDataJournalRequest(array $filter = [])
     {
         $where = "";
@@ -614,8 +619,6 @@ class Order extends Model {
                 }
 
                 $stageArr = [
-                    // "b.OPLATA < b.PRICE AND ",
-                    // "b.OPLATA >= b.PRICE AND "
                     "(b.price_discount IS NULL OR b.price_discount = '' OR (b.OPLATA < b.price_discount)) AND ",
                     "b.OPLATA >= b.price_discount AND b.OPLATA > 0 AND "
                 ];

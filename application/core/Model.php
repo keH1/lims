@@ -84,7 +84,7 @@ class Model
         $ignoredParams = ['draw', 'columns', 'order', 'start', 'length', 'search', 'dateStart', 'dateEnd'];
 
         foreach ($postData as $param => $data) {
-            if (empty($data) || in_array($param, $ignoredParams, true)) {
+            if ($data == '' || in_array($param, $ignoredParams, true)) {
                 continue;
             }
 
