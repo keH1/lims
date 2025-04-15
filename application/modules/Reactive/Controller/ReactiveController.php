@@ -9,11 +9,11 @@ class ReactiveController extends Controller
     private string $nameModel = 'Reactive';
 
     /**
-     * @desc Журнал «Реактивы»
+     * @desc Журнал "Журнал учета реактивов"
      */
     public function list()
     {
-        $this->data['title'] = 'Реактивы';
+        $this->data['title'] = 'Журнал учета реактивов';
 
         $usedModel = $this->model($this->nameModel);
 
@@ -49,7 +49,7 @@ class ReactiveController extends Controller
     }
 
     /**
-     * @desc Получает данные для журнала реактивы
+     * @desc Получает данные для журнала учета реактивов
      */
     public function getListProcessingAjax()
     {
