@@ -769,7 +769,7 @@ $(function ($) {
                         <input type="hidden" name="deal_id" value="${dealId}">
                         <label class="btn btn-sm btn-success" title="Загрузить результаты испытаний">
                             Добавить
-                            <input class="d-none" type="file" name="file_result" accept=".doc, .docx, .xls, .pdf">
+                            <input class="d-none" type="file" name="file_result" accept=".doc, .docx, .xls, .xlsx, .pdf">
                         </label>
                     </form>`
                 let linkFileProtocol =
@@ -780,7 +780,7 @@ $(function ($) {
                         <input type="hidden" name="deal_id" value="${dealId}">
                         <label class="btn btn-sm btn-success" title="Загрузить протокол испытаний">
                             Добавить
-                            <input class="d-none" type="file" name="file_protocol" accept=".doc, .docx, .xls, .pdf">
+                            <input class="d-none" type="file" name="file_protocol" accept=".doc, .docx, .xls, .xlsx, .pdf">
                         </label>
                     </form>`
                 let textDateProtocol = ``
