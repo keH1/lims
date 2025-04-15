@@ -69,7 +69,7 @@ class Statistic extends Model
                     'group' => false,
                 ],
             ],
-            'date_filter' => "ba_tz.DATE_CREATE_TIMESTAMP between '{dateStart}' AND '{dateEnd}'",
+            'date_filter' => "DATE_FORMAT(ba_tz.DATE_CREATE_TIMESTAMP, '%Y-%m-%d') >= '{dateStart}' AND DATE_FORMAT(ba_tz.DATE_CREATE_TIMESTAMP, '%Y-%m-%d') <= '{dateEnd}'",
             'order' => 'ba_tz.id',
             'chart' => [
                 'donut' => [
@@ -415,6 +415,7 @@ class Statistic extends Model
                     'group' => false,
                 ],
             ],
+            'date_filter' => "DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') >= '{dateStart}' AND DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') <= '{dateEnd}'",
             'order' => 'ba_oborud.OBJECT',
         ],
         'oborud_use' => [

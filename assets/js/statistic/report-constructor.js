@@ -17,6 +17,13 @@ $(function () {
         const $selectColumnBlock = $('#select_columns_block')
 
         $selectColumnBlock.empty()
+        if ( $.fn.DataTable.isDataTable('#journal_all') ) {
+            $journal.DataTable().clear().destroy();
+        }
+
+        $journal.find('.header-title').empty()
+        $journal.find('.header-search').empty()
+
         $('.chart-donut').empty()
         destroyChartBar()
 
@@ -144,6 +151,8 @@ $(function () {
                         },
                         url : '/ulab/statistic/getStatisticConstructorJournal/',
                         dataSrc: function (json) {
+                            console.log(json)
+                            console.log(column)
                             $('.chart-donut').empty()
                             chartData = []
 
@@ -242,10 +251,6 @@ $(function () {
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()
-    })
-
-    $body.on('change', '.filter-date-start, .filter-date-end', function () {
-        $body.find('#journal_all thead *').css("height", "0px")
     })
 
     /**
