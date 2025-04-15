@@ -26,7 +26,7 @@ class Request extends Model
 
         $type = $this->DB->Query("select `title` from ba_tz_type where type_id = {$sqlData['type_id']}")->Fetch();
 
-        return $type['name']?? "КОМ";
+        return $type['title']?? "КОМ";
     }
 
 
