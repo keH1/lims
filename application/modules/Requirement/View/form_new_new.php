@@ -103,7 +103,7 @@
                                 <input type="hidden" name="deal_id" value="<?= $this->data['deal_id'] ?>">
                                 <label class="btn btn-sm btn-success" title="Загрузить результаты испытаний">
                                     Добавить
-                                    <input class="d-none" type="file" name="file_result">
+                                    <input class="d-none" type="file" name="file_result" accept=".doc, .docx, .xls, .pdf">
                                 </label>
                             </form>
                         <?php else: ?>
@@ -121,7 +121,7 @@
                                 <input type="hidden" name="deal_id" value="<?= $this->data['deal_id'] ?>">
                                 <label class="btn btn-sm btn-success" title="Загрузить протокол испытаний">
                                     Добавить
-                                    <input class="d-none" type="file" name="file_protocol">
+                                    <input class="d-none" type="file" name="file_protocol" accept=".doc, .docx, .xls, .pdf">
                                 </label>
                             </form>
                         <?php else: ?>
