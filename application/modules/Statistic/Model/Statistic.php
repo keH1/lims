@@ -190,7 +190,7 @@ class Statistic extends Model
                     'group' => false,
                 ],
             ],
-            'date_filter' => "DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') >= '{dateStart}' AND DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') <= '{dateEnd}'",
+            'date_filter' => "ba_oborud.god_vvoda_expluatation between '{dateStart}' AND '{dateEnd}'",
             'order' => 'ba_oborud.OBJECT',
         ],
         'oborud_total' => [
@@ -415,6 +415,7 @@ class Statistic extends Model
                     'group' => false,
                 ],
             ],
+            'date_filter' => "DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') >= '{dateStart}' AND DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') <= '{dateEnd}'",
             'order' => 'ba_oborud.OBJECT',
         ],
         'oborud_use' => [
