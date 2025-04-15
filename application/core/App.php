@@ -125,26 +125,37 @@ class App
                     unset($_SESSION['last_auth_post']);
                     unset($_SESSION['last_auth_post_time']);
             }
-            
+
             if (strpos($url, 'login=yes') !== false) {
-                if (self::IsAuthorized()) {
-//                    $urlParts = parse_url($_SERVER['REQUEST_URI']);
-//                    if (isset($urlParts['query'])) {
-//                        parse_str($urlParts['query'], $params);
-//                        unset($params['login']);
-//                        $urlParts['query'] = http_build_query($params);
-//                    }
-//
-//                    $newUrl = $urlParts['path'];
-//                    if (!empty($urlParts['query'])) {
-//                        $newUrl .= '?' . $urlParts['query'];
-//                    }
-//                    if (isset($urlParts['fragment'])) {
-//                        $newUrl .= '#' . $urlParts['fragment'];
-//                    }
-//
-//                    header("Location: {$newUrl}", true, 302);
-//                    exit;
+                global $USER;
+                $isAuthorized = false;
+
+                if (isset($USER) && method_exists($USER, 'IsAuthorized') && $USER->IsAuthorized()) {
+                    $isAuthorized = true;
+                }
+
+                elseif (isset($_SESSION['SESS_AUTH']) && !empty($_SESSION['SESS_AUTH']['USER_ID'])) {
+                    $isAuthorized = true;
+                }
+
+                if ($isAuthorized) {
+                    $urlParts = parse_url($_SERVER['REQUEST_URI']);
+                    if (isset($urlParts['query'])) {
+                        parse_str($urlParts['query'], $params);
+                        unset($params['login']);
+                        $urlParts['query'] = http_build_query($params);
+                    }
+
+                    $newUrl = $urlParts['path'];
+                    if (!empty($urlParts['query'])) {
+                        $newUrl .= '?' . $urlParts['query'];
+                    }
+                    if (isset($urlParts['fragment'])) {
+                        $newUrl .= '#' . $urlParts['fragment'];
+                    }
+
+                    header("Location: {$newUrl}", true, 302);
+                    exit;
                 }
             }
             
@@ -175,7 +186,7 @@ class App
     protected static function bitrixUser(): \CUser|\Exception{
         global $USER;
         if (!$USER instanceof \CUser) {
-            throw new \Exception("Class CUser must be initialized before using this method.");
+            throw new \Exception("Класс CUser должен быть инициализирован");
         }
         return $USER;
     }
@@ -213,9 +224,9 @@ class App
      * Получение ID организации
      */
     public static function getOrganizationId(): int{
-        static $orgId = 0;
-        if ($orgId > 0) {
-            return $orgId;
+        static $organizationId = 0;
+        if ($organizationId > 0) {
+            return $organizationId;
         }
 
         $userId = self::bitrixUser()->GetID();
@@ -225,10 +236,10 @@ class App
         $arParams["SELECT"] = array("UF_ORG_ID");
         $arRes = CUser::GetList($by,$order,$arFilter,$arParams);
         if ($res = $arRes->Fetch()) {
-            $orgId = $res["UF_ORG_ID"];
+            $organizationId = $res["UF_ORG_ID"];
         }
 
-        return $orgId;
+        return $organizationId;
     }
 
     /**
