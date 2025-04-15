@@ -24,9 +24,27 @@ class Request extends Model
 
         $sqlData = $this->prepearTableData('ba_tz_type', $data);
 
-        $type = $this->DB->Query("select `name` from ba_tz_type where type_id = {$sqlData['type_id']}")->Fetch();
+        $type = $this->DB->Query("select `title` from ba_tz_type where type_id = {$sqlData['type_id']}")->Fetch();
 
-        return $type['name']?? "ИЦ";
+        return $type['name']?? "КОМ";
+    }
+
+
+    /**
+     * получает список типов заявок
+     * @return array
+     */
+    public function getTypeRequestList()
+    {
+        $sql = $this->DB->Query("select * from ba_tz_type where 1");
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+            $result[] = $row;
+        }
+
+        return $result;
     }
 
 
