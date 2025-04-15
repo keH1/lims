@@ -592,25 +592,13 @@ class Order extends Model {
                     $where .= "dtc.`ID_CONTRACT` = '{$filter['search']['order_id']}' AND ";
                 }
                 if ( isset($filter['search']['price_discount']) ) {
-                    $where .= "(
-                        (b.price_discount IS NOT NULL AND b.price_discount <> '' AND 
-                        b.price_discount = CAST('{$filter['search']['price_discount']}' AS DECIMAL(13,2)))
-                        OR 
-                        (b.price_discount = 0.00 AND '{$filter['search']['price_discount']}' = '0')
-                    ) AND ";
+                    $where .= "b.price_discount LIKE '%{$filter['search']['price_discount']}%' AND ";
                 }
                 if ( isset($filter['search']['ACCOUNT']) ) {
-                    $where .= "b.ACCOUNT = '{$filter['search']['ACCOUNT']}' AND ";
+                    $where .= "b.ACCOUNT LIKE '%{$filter['search']['ACCOUNT']}%' AND ";
                 }
                 if ( isset($filter['search']['OPLATA']) ) {
-                    if ($filter['search']['OPLATA'] === '0') {
-                        $where .= "(b.OPLATA = 0) AND ";
-                    } else {
-                        $where .= "(
-                            (b.OPLATA IS NOT NULL AND b.OPLATA <> '' AND 
-                            (b.OPLATA = CAST('{$filter['search']['OPLATA']}' AS DOUBLE)))
-                        ) AND ";
-                    }
+                    $where .= "b.OPLATA LIKE '%{$filter['search']['OPLATA']}%' AND ";
                 }
 
                 $stageArr = [
