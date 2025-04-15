@@ -222,11 +222,21 @@ class ImportController extends Controller
         $this->data['title'] = 'Профиль лаборатории';
 
         $this->data['users'] = $userModel->getUsers();
+
+        $positionList = [];
+        foreach ($this->data['users'] as $us) {
+            if ( !empty($us['WORK_POSITION']) && !in_array($us['WORK_POSITION'], $positionList) ) {
+                $positionList[] = $us['WORK_POSITION'];
+            }
+		}
+
+        $this->data['position_list'] = $positionList;
         $this->data['info'] = $orgModel->getLabInfo($labId);
         $this->data['dep_info'] = $orgModel->getDepInfo($this->data['info']['dep_id']);
         $this->data['branch_info'] = $orgModel->getBranchInfo($this->data['dep_info']['branch_id']);
         $this->data['org_info'] = $orgModel->getOrgInfo($this->data['branch_info']['organization_id']);
         $this->data['not_affiliation_users'] = $orgModel->getNotAffiliationUser();
+        $this->data['status_list'] = $userModel->getStatusList();
 
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
@@ -445,8 +455,14 @@ class ImportController extends Controller
 
         $userId = (int)$_POST['user_id'];
         $labId = (int)$_POST['lab_id'];
+        $status = (int)$_POST['status'];
+        $replacementUserId = (isset($_POST['replace']) && $_POST['replace'] !== '') ? (int)$_POST['replace'] : null;
 
-        $data = ['lab_id' => $labId];
+        $data = [
+            'lab_id' => $labId,
+            'status' => $status,
+            'replacement_user_id' => $replacementUserId
+        ];
 
         $orgModel->setAffiliationUserInfo($userId, $data);
 
@@ -2702,7 +2718,7 @@ class ImportController extends Controller
 
         $userId = (int)$_POST['user_id'];
 
-        $orgModel->deleteAffiliationUser($userId);
+        echo $orgModel->deleteAffiliationUser($userId);
     }
 
 
