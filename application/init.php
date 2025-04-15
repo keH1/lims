@@ -13,6 +13,11 @@ spl_autoload_register(function ($class) {
     }
 });
 
+if ( isset($_SESSION['SESS_AUTH']['CONTEXT']) ) {
+    $context = json_decode($_SESSION['SESS_AUTH']['CONTEXT'], true);
+    $_SESSION['SESS_AUTH']['USER_ID'] = $context['userId'];
+}
+
 if (!function_exists('array_key_first')) {
 	function array_key_first(array $arr) {
 		foreach($arr as $key => $unused) {
