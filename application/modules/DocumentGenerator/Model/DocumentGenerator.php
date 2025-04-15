@@ -918,21 +918,18 @@ class DocumentGenerator extends Model
 
                 // В ГОСТе Методике "Факт. значения текстом" И есть ТУ и И ТУ НЕ Ручное управление "соотв/не соотв",
                 // то Параметр М-ки(ф/значение текстом) не соотв. параметру в ТУ (управление не вручную), не должно попадать в протокол
-				if ($protocol['DEAL_ID'] >= DEAL_NEW_RESULT) {
-					if (!empty($method['is_text_fact']) && !empty($condition['id']) && empty($condition['is_manual'])) {
-						continue;
-					}
-				}
+                if (!empty($method['is_text_fact']) && !empty($condition['id']) && empty($condition['is_manual'])) {
+                    continue;
+                }
 
-				$measuringSheet = $protocol['DEAL_ID'] >= DEAL_NEW_RESULT ?
-                    json_decode($val['measuring_sheet'][$key], true) : json_decode($resultValue['measuring_sheet'], true);
+				$measuringSheet = json_decode($val['measuring_sheet'][$key], true);
 
                 // Если в ТУ "Текст нормативного значения по ГОСТу" выводиться в протокол, то берем нормативное значение "Текст нормативного значения по ГОСТу"
-                if (/*$protocol['DEAL_ID'] >= DEAL_NEW_RESULT && */empty($condition['is_manual']) && !empty($condition['is_output'])) {
+                if (empty($condition['is_manual']) && !empty($condition['is_output'])) {
                     $normval = $condition['norm_comment'];
                 } else {
                     $normativeValue = !empty($resultValue['normative_value']) ? trim(htmlspecialchars_decode($resultValue['normative_value'])) : '-';
-                    $normval = $protocol['DEAL_ID'] >= DEAL_NEW_RESULT ? $val['normative_val'][$key] : $normativeValue;
+                    $normval = $val['normative_val'][$key];
                 }
 
                 $match_value = [
@@ -941,11 +938,9 @@ class DocumentGenerator extends Model
                     '2' => '-',
                     '3' => 'Не нормируется',
                 ];
-                $matchValue = $protocol['DEAL_ID'] >= DEAL_NEW_RESULT ?
-                    $match_value[$val['match'][$key]] : $match_value[$resultValue['match']];
+                $matchValue = $match_value[$val['match'][$key]];
                 
-                $actualValue = $protocol['DEAL_ID'] >= DEAL_NEW_RESULT ?
-                    $val['actual_value'][$key] : json_decode($resultValue['actual_value'], true)[0];
+                $actualValue = $val['actual_value'][$key];
 
                 if (
                     empty($method['is_text_fact']) &&
@@ -973,7 +968,7 @@ class DocumentGenerator extends Model
                 }
                 $actualValue = is_numeric($actualValue) ? str_replace('.', ',', $actualValue) : $actualValue;
 				$actualValue = htmlentities($actualValue);
-                
+
 				// если есть лист измерений
 				if (isset($measuringSheet)) {
 
@@ -1329,14 +1324,8 @@ class DocumentGenerator extends Model
 			$results['name_table'] = '${table_result}';
 		}
 
-//		if ($_SESSION['SESS_AUTH']['USER_ID'] == 61) {
-//			echo '<pre>';
-//			print_r($frost);
-//			exit();
-//		}
 
 		//отправляем на формирование
-//		$this->pre($measuringSheet);
 		$this->createProtocolDocument($protocolInformation, $verifyArr, $oborudData, $results, $tableData, $tableZern, $frost);
 
 		//Добавляем историю
@@ -2234,6 +2223,7 @@ class DocumentGenerator extends Model
 		$countTable = count($tableAllResult?? []);
 		$replacement = [];
         $replacementPlot = [];
+        $numTablePre = [];
 		$numTable = 2;
 
 		foreach ($tableAllResult as $tab) {
@@ -2274,13 +2264,6 @@ class DocumentGenerator extends Model
                 $numTable++;
             }
         }
-
-//		if ($_SESSION['SESS_AUTH']['USER_ID'] == 61) {
-//			echo '<pre>';
-//			print_r($tableAllResult);
-//			exit();
-//		}
-
 
 		$protocolInformation['numTabStr'] = implode(', ', $numTablePre);
 
