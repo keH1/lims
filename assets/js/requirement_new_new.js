@@ -870,7 +870,6 @@ $(function ($) {
             async: true,
             method: "POST",
             success: function (json) {
-                console.log(json)
                 if ( json?.data?.file_name_result !== undefined ) {
                     $td.html(
                         `<a href="/ulab/upload/request/${dealId}/government_work/${json.data.work_id}/result/${json.data.file_name_result}">
