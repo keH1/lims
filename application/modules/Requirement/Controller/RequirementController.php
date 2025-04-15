@@ -1598,7 +1598,26 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $result = $requirementModel->addWork($_POST['form']);
+        $result = $requirementModel->addWork($_POST['form'], $_FILES);
+
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    }
+
+
+    /**
+     * загружает аяксом файл, обновляет запись в таблице
+     * @return void
+     */
+    public function addFileWorkAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        /** @var Requirement $requirementModel */
+        $requirementModel = $this->model('Requirement');
+
+        $result = $requirementModel->addFilesWork((int)$_POST['work_id'], (int)$_POST['deal_id'], $_FILES);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }

@@ -140,7 +140,7 @@ class Protocol extends Model
                 }
                 // Объект испытаний
                 if ( isset($filter['search']['MATERIAL']) ) {
-                    $where .= "b.MATERIAL LIKE '%{$filter['search']['MATERIAL']}%' AND ";
+                    $where .= "m.NAME LIKE '%{$filter['search']['MATERIAL']}%' AND ";
                 }
                 // Ответственный
                 if (isset($filter['search']['ASSIGNED'])) {
@@ -208,7 +208,7 @@ class Protocol extends Model
                     $where .= "b.USER_HISTORY LIKE '%{$filter['search']['USER_HISTORY']}%' AND ";
                 }
                 if ( isset($filter['search']['lab']) ) {
-                    $where .= "pl.department_id = '{$filter['search']['lab']}' AND ";
+                    $where .= "lab.id_dep = '{$filter['search']['lab']}' AND ";
                 }
                 // стадии
                 if ( isset($filter['search']['stage']) ) {
@@ -248,20 +248,6 @@ class Protocol extends Model
                             break;
                     }
                 }
-                // везде
-                if ( isset($filter['search']['everywhere']) ) {
-                    $where .=
-                        "(
-                        b.USER_HISTORY LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.DATE_OPLATA LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.PRICE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.DOGOVOR_TABLE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR b.ID LIKE '%{$filter['search']['everywhere']}%'  
-                        OR b.REQUEST_TITLE LIKE '%{$filter['search']['everywhere']}%' 
-                        OR p.NUMBER_AND_YEAR LIKE '%{$filter['search']['everywhere']}%' 
-                        OR p.DATE LIKE '%{$filter['search']['everywhere']}%' 
-                        ) AND ";
-                }
             }
 
             // работа с сортировкой
@@ -290,7 +276,10 @@ class Protocol extends Model
                         $order['by'] = 'b.ACCOUNT';
                         break;
                     case 'MATERIAL':
-                        $order['by'] = 'b.MATERIAL';
+                        $order['by'] = "GROUP_CONCAT(
+                            DISTINCT m.NAME 
+                            SEPARATOR ', '
+                        )";
                         break;
                     case 'ASSIGNED':
                         $order['by'] = "LEFT(
@@ -345,7 +334,7 @@ class Protocol extends Model
 
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.TZ, b.STAGE_ID, b.ID_Z, b.REQUEST_TITLE, b.ACT_NUM, 
-                          b.COMPANY_TITLE, b.ACCOUNT, p.PROBE, b.MATERIAL, b.RESULTS, b.TAKEN_ID_DEAL, 
+                          b.COMPANY_TITLE, b.ACCOUNT, p.PROBE, b.RESULTS, b.TAKEN_ID_DEAL, 
                           b.DOGOVOR_TABLE, b.PRICE, b.OPLATA, b.DATE_OPLATA, b.PDF,
                           b.USER_HISTORY, p.NUMBER_AND_YEAR, p.DATE, p.ID protocol_id, 
                           p.NUMBER, p.PROTOCOL_TYPE, p.PDF protocol_pdf, p.PROTOCOL_OUTSIDE_LIS, p.ACTUAL_VERSION, p.is_non_actual,  
@@ -361,10 +350,19 @@ class Protocol extends Model
                             SEPARATOR ', '
                         ),
                         ''
-                    ) AS ASSIGNED 
+                    ) AS ASSIGNED,
+                    GROUP_CONCAT(
+                            DISTINCT m.NAME 
+                            SEPARATOR ', '
+                        ) as MATERIAL
                     FROM ba_tz b
                     INNER JOIN PROTOCOLS p on p.ID_TZ = b.ID and p.NUMBER_AND_YEAR is not NULL
-                    LEFT JOIN protocol_lab pl on pl.protocol_id = p.ID 
+                    inner join ulab_gost_to_probe as ugtp on p.ID = ugtp.protocol_id
+                    inner join ulab_material_to_request as umtr on umtr.id = ugtp.material_to_request_id
+                    inner join MATERIALS as m on umtr.material_id = m.ID
+                    inner join ulab_methods as met on ugtp.new_method_id = met.id
+                    left join ulab_methods_lab as m_lab on met.id = m_lab.method_id
+                    left join ba_laba as lab on m_lab.lab_id = lab.ID
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
@@ -387,6 +385,12 @@ class Protocol extends Model
             "SELECT p.ID val
                     FROM ba_tz b
                     INNER JOIN PROTOCOLS p on p.ID_TZ = b.ID and p.NUMBER_AND_YEAR is not NULL
+                    inner join ulab_gost_to_probe as ugtp on p.ID = ugtp.protocol_id = p.ID
+                    inner join ulab_material_to_request as umtr on umtr.id = ugtp.material_to_request_id
+                    inner join MATERIALS as m on umtr.material_id = m.ID
+                    inner join ulab_methods as met on ugtp.new_method_id = met.id
+                    left join ulab_methods_lab as m_lab on met.id = m_lab.method_id
+                    left join ba_laba as lab on m_lab.lab_id = lab.ID
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where} 

@@ -1,6 +1,7 @@
 $(function ($) {
-    let $body = $('body')
-
-    $('.grain__gost_list').select2()
-
+    $('.grain__gost_list').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Выберите ГОСТ',
+        width: '100%',
+    })
 })

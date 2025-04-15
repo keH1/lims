@@ -212,9 +212,15 @@ class User extends Model
      * @param $dealId
      * @return array
      */
-    public function getAssignedByDealId($dealId)
+    public function getAssignedByDealId($dealId, $isMain = false )
     {
-        $users = $this->DB->Query("SELECT user_id, is_main FROM `assigned_to_request` WHERE deal_id = {$dealId} AND is_main = 1");
+        if ( $isMain ) {
+            $where = "is_main = 1";
+        } else {
+            $where = '1';
+        }
+
+        $users = $this->DB->Query("SELECT user_id, is_main FROM `assigned_to_request` WHERE deal_id = {$dealId} and {$where} order by is_main desc");
 
         $result = [];
         while ($row = $users->Fetch()) {
@@ -233,57 +239,10 @@ class User extends Model
                 'department'    => $user["UF_DEPARTMENT"],
             ];
 
-            $result[] = $resultData;
+            $result[$row['user_id']] = $resultData;
         }
 
-        // TODO: старое
-        if (empty($result)) {
-            global $USER_FIELD_MANAGER;
-
-            $userFields = $USER_FIELD_MANAGER->GetUserFields('CRM_DEAL', $dealId);
-
-            $deal = CCrmDeal::GetByID($dealId);
-
-            if ( !empty($deal['ASSIGNED_BY_ID']) ) {
-                $user = CUser::GetByID($deal['ASSIGNED_BY_ID'])->Fetch();
-                $name = trim($user['NAME']);
-                $lastName = trim($user['LAST_NAME']);
-                $shortName = StringHelper::shortName($name);
-
-                $resultData = [
-                    'user_id' => $deal['ASSIGNED_BY_ID'],
-                    'name' => $name,
-                    'last_name' => $lastName,
-                    'user_name' => "{$lastName} {$name}",
-                    'short_name' => "{$shortName}. {$lastName}",
-                    'is_main' => 1,
-                    'department' => $user["UF_DEPARTMENT"],
-                ];
-
-                $result[] = $resultData;
-            }
-
-            foreach ($userFields['UF_CRM_1571643970']['VALUE'] as $ass) {
-                $user = CUser::GetByID($ass)->Fetch();
-                $name = trim($user['NAME']);
-                $lastName = trim($user['LAST_NAME']);
-                $shortName = StringHelper::shortName($name);
-
-                $resultData = [
-                    'user_id'       => $ass,
-                    'name'          => $name,
-                    'last_name'     => $lastName,
-                    'user_name'     => "{$lastName} {$name}",
-                    'short_name'    => "{$shortName}. {$lastName}",
-                    'is_main'       => 0,
-                    'department'    => $user["UF_DEPARTMENT"],
-                ];
-
-                $result[] = $resultData;
-            }
-        }
-
-        return $result;
+        return array_values($result);
     }
 
     /**
@@ -643,25 +602,6 @@ class User extends Model
     {
         $result = [];
 
-//        $res = $this->DB->Query("
-//            SELECT
-//                dc.id_bitrix_dept AS ID,
-//                bl.id AS ID_ULAB,
-//                bl.NAME AS NAME,
-//                IFNULL(
-//                    GROUP_CONCAT(CONCAT(SUBSTRING(bu.NAME, 1, 1), '. ', bu.LAST_NAME) ORDER BY bu.NAME ASC SEPARATOR ', '),
-//                    NULL
-//                ) AS FULL_NAME,
-//                IFNULL(bu.ID, NULL) AS ID_HEAD_USER
-//            FROM
-//                department_connection dc
-//            INNER JOIN ba_laba bl ON dc.id_ulab_dept = bl.ID
-//            LEFT JOIN b_user bu ON bl.HEAD_ID = bu.ID
-//            GROUP BY
-//                dc.id_bitrix_dept,
-//                bl.id,
-//                bl.NAME;");
-
         $res = $this->DB->Query("
             SELECT
                 bl.id_dep AS ID,
@@ -675,10 +615,11 @@ class User extends Model
             FROM
                 ba_laba bl
             LEFT JOIN b_user bu ON bl.HEAD_ID = bu.ID
+            where bl.id_dep is not null
             GROUP BY
                 bl.id_dep,
                 bl.ID,
-                bl.NAME;");
+                bl.NAME");
 
         while ($row = $res->Fetch()) {
             $result[] = $row;
@@ -788,10 +729,20 @@ class User extends Model
         }
     }
 
-    public function getStatusList()
+    /**
+     * Получает список статусов пользователей
+     * @return array
+     */
+    public function getStatusList(): array
     {
-        $statuses = require $_SERVER["DOCUMENT_ROOT"] . '/ulab/application/config/statuses.php';
-        return $statuses;
+        $result = [];
+        $data = $this->DB->Query("SELECT * FROM ulab_user_status_list");
+
+        while ($row = $data->Fetch()) {
+            $result[$row['id']] = $row['status'];
+        }
+
+        return $result;
     }
 
     public function getAllUsersList()
@@ -838,7 +789,7 @@ class User extends Model
             // СТАТУС
             if (isset($filter['search']['USER_STATUS'])) {
                 if($filter['search']['USER_STATUS'] != -1)
-                    $where .= "COALESCE(uus.user_status, 'default') LIKE '%{$filter['search']['USER_STATUS']}%' AND ";
+                    $where .= "COALESCE(uus.user_status, 1) = {$filter['search']['USER_STATUS']} AND ";
             }
             // ЗАМЕНА
             if (isset($filter['search']['REPLACEMENT_USER_ID'])) {
@@ -862,7 +813,7 @@ class User extends Model
                     $order['by'] = "CASE WHEN FULL_NAME IS NULL OR FULL_NAME = '' THEN 1 ELSE 0 END, FULL_NAME";
                     break;
                 case 'USER_STATUS':
-                    $order['by'] = "COALESCE(uus.user_status, 'default')";
+                    $order['by'] = "COALESCE(uus.user_status, 1)";
                     break;
                 case 'REPLACEMENT_USER_ID':
                     $order['by'] = "uus.replacement_user_id";
@@ -894,7 +845,7 @@ class User extends Model
             SELECT
                 u.ID as ID,
                 CONCAT(u.LAST_NAME, ' ', u.NAME, ' ', u.SECOND_NAME) AS FULL_NAME,
-                COALESCE(uus.user_status, 'default') as USER_STATUS,
+                COALESCE(uus.user_status, 1) as USER_STATUS,
                 uus.replacement_user_id as REPLACEMENT_USER_ID,
                 uus.replacement_date as REPLACEMENT_DATE,
                 uus.replacement_note as REPLACEMENT_NOTE,
@@ -923,7 +874,7 @@ class User extends Model
                 FROM (
                     SELECT
                         CONCAT(u.LAST_NAME, ' ', u.NAME, ' ', u.SECOND_NAME) AS FULL_NAME,
-                        COALESCE(uus.user_status, 'default') as USER_STATUS,
+                        COALESCE(uus.user_status, 1) as USER_STATUS,
                         uus.replacement_user_id as REPLACEMENT_USER_ID,
                         uus.replacement_date as REPLACEMENT_DATE,
                         uus.replacement_note as REPLACEMENT_NOTE,
@@ -963,12 +914,12 @@ class User extends Model
         $count = $this->DB->Query("SELECT COUNT(*) AS val FROM `ulab_user_status` WHERE `user_id` = {$userId}")->fetch()['val'];
 
         if ($count > 0) {
-            $this->DB->Query("UPDATE `ulab_user_status` SET `user_status` = '{$statusId}' WHERE `user_id` = {$userId}");
+            $this->DB->Query("UPDATE `ulab_user_status` SET `user_status` = {$statusId} WHERE `user_id` = {$userId}");
         } else {
-            $this->DB->Query("INSERT INTO `ulab_user_status` (`user_id`, `user_status`) VALUES ({$userId}, '{$statusId}')");
+            $this->DB->Query("INSERT INTO `ulab_user_status` (`user_id`, `user_status`) VALUES ({$userId}, {$statusId})");
         }
 
-        if ($statusId == 'default') {
+        if ($statusId === 1) {
             $this->updateReplacement($userId, 'NULL');
             $this->updateJob($userId, NULL);
         }

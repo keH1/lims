@@ -16,12 +16,12 @@
             </select>
         </div>
         <div class="col-auto">
-            <input type="month" id="inputDateStart" class="form-control filter filter-date-start"
-                   value="<?= date("Y") . '-01' ?>" title="Введите дату начала">
+            <input type="date" id="inputDateStart" class="form-control filter filter-date-start"
+                   value="<?= date("Y") . '-01-01' ?>" title="Введите дату начала">
         </div>
         <div class="col-auto">
-            <input type="month" id="inputDateEnd" class="form-control filter filter-date-end"
-                   value="<?= date("Y") . '-12' ?>" title="Введите дату окончания">
+            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"
+                   value="<?= date("Y-m-d") ?>" title="Введите дату окончания">
         </div>
         <div class="col-auto">
             <button type="button" class="btn btn-outline-secondary filter-btn-reset" title="Сбросить фильтр">Сбросить

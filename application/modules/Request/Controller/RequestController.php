@@ -171,7 +171,7 @@ class RequestController extends Controller
 
             $this->data['request']['ACTS_BASIS']        = htmlentities($clientCompany['address'][1]['ADDRESS_2']);
 
-            $this->data['request']['assign']            = $user->getAssignedByDealId($dealId);
+            $this->data['request']['assign']            = $user->getAssignedByDealId($dealId, true);
             // $this->data['request']['material']          = $material->getMaterialsToRequest($dealId);
             $this->data['request']['act_information']   = $requestData['act_information'];
             $this->data['request']['object']            = $requestData['OBJECT'];

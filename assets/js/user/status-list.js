@@ -95,13 +95,14 @@ $(function ($) {
                         formLayout += `<form id="updateStatus-${item.ID}" class="card" action="/ulab/user/updateStatus/" method="post">`;
                         formLayout += `<input type="hidden" name="user_id" value="${item.ID}">`;
                         formLayout += `<select name="status_id" class="form-control section status_id">`;
-
+                     
                         let selectedStatusId = null;
                         const existingUser = userForUpdateStatus.find(user => user.user_id == item.ID);
+
                         if (existingUser) {
                             selectedStatusId = existingUser.status_id;
                         } else {
-                            selectedStatusId = item.USER_STATUS || 'default';
+                            selectedStatusId = item.USER_STATUS || 1;
                         }
 
                         Object.entries(statusList).forEach(([key, value]) => {
@@ -440,7 +441,7 @@ $(function ($) {
         usersUpdateStatusButton.text('Подождите');
         usersUpdateStatusButton.addClass('disabled');
 
-         $.ajax({
+        $.ajax({
             type: "POST",
             url: "/ulab/user/updateUsersNote/",
             data: {

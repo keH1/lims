@@ -2497,6 +2497,10 @@ class Requirement extends Model
         $result = [];
 
         while ($row = $sql->Fetch()) {
+            if ( !empty($row['date_protocol']) ) {
+                $row['date_protocol'] = date('d.m.Y H:i:s', strtotime($row['date_protocol']));
+            }
+
             $result[] = $row;
         }
 
@@ -2507,19 +2511,33 @@ class Requirement extends Model
     /**
      * добавляет материал к заявке, добавляет работу
      * @param $data
+     * @param $files
      * @return array
      */
-    public function addWork($data)
+    public function addWork($data, $files)
     {
         $materialModel = new Material();
         $dealId = intval($data['deal_id']);
+
+
 
         $sqlData = $this->prepearTableData('government_work', $data);
 
         $id = $this->DB->Insert('government_work', $sqlData);
 
         if ( !empty($id) ) {
-            $maxMaterial = $this->DB->Query("select max(material_number) as max_number from ulab_material_to_request where deal_id = {$dealId}")->Fetch();
+            $resultFile = $this->addFilesWork($id, $data['deal_id'], $files);
+
+            if ( $resultFile['success'] ) {
+                $data['date_protocol'] = $resultFile['data']['date_protocol'];
+                $data['file_name_protocol'] = $resultFile['data']['file_name_protocol'];
+                $data['file_name_result'] = $resultFile['data']['file_name_result'];
+            }
+
+            $maxMaterial = $this->DB->Query(
+                "select max(material_number) as max_number from ulab_material_to_request where deal_id = {$dealId} and material_id = {$data['material_id']}"
+            )->Fetch();
+
             $material = $materialModel->getById($data['material_id']);
 
             if ( empty($maxMaterial['max_number']) ) {
@@ -2549,6 +2567,61 @@ class Requirement extends Model
         return [
             'success' => true,
             'data' => $data,
+        ];
+    }
+
+
+    /**
+     * загружает файлы на сервер, добавляет информацию в таблицу
+     * @param $workId
+     * @param $dealId
+     * @param $files
+     * @return array|false[]
+     */
+    public function addFilesWork($workId, $dealId, $files)
+    {
+        $dataFiles = [];
+        $data = [];
+
+        // Результаты испытаний
+        if ( !empty($files['file_result']['name']) ) {
+            $uploadResultDir = $_SERVER['DOCUMENT_ROOT'] . "/ulab/upload/request/{$dealId}/government_work/{$workId}/result/";
+
+            $resultUploadResult = $this->saveFile($uploadResultDir, $files['file_result']['name'], $files['file_result']['tmp_name']);
+
+            if ( $resultUploadResult['success'] ) {
+                $data['file_name_result'] = $dataFiles['file_name_result'] = $files['file_result']['name'];
+            }
+        }
+
+        // Протокол испытаний
+        if ( !empty($files['file_protocol']['name']) ) {
+            $uploadResultDir = $_SERVER['DOCUMENT_ROOT'] . "/ulab/upload/request/{$dealId}/government_work/{$workId}/protocol/";
+
+            $resultUploadProtocol = $this->saveFile($uploadResultDir, $files['file_protocol']['name'], $files['file_protocol']['tmp_name']);
+
+            if ( $resultUploadProtocol['success'] ) {
+                $data['file_name_protocol'] = $dataFiles['file_name_protocol'] = $files['file_protocol']['name'];
+                $dataFiles['date_protocol'] = date('Y-m-d');
+                $data['date_protocol'] = date('d.m.Y');
+            }
+        }
+
+        // добавляем файлы в таблицу если создались
+        if ( !empty($dataFiles) ) {
+            $sqlDataFile = $this->prepearTableData('government_work', $dataFiles);
+            $this->DB->Update('government_work', $sqlDataFile, "where id = {$workId}");
+
+            $data['work_id'] = $workId;
+
+            return [
+                'success' => true,
+                'data' => $data,
+            ];
+        }
+
+        return [
+            'success' => false,
         ];
     }
 }
