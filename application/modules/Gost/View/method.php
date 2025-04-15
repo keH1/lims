@@ -51,7 +51,7 @@
             </div>
 
             <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Определяемая характеристика / показатель (ФСА)</label>
+                <label class="col-sm-2 col-form-label">Определяемая характеристика / показатель</label>
                 <div class="col-sm-8">
                     <select class="form-control select2" name="form[measured_properties_id]">
                         <option value="">Выбрать показатель</option>
