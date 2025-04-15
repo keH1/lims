@@ -209,9 +209,8 @@
 					<div class="row mb-3">
 						<label for="contract_summ" class="col-sm-3 col-form-label">Сумма договора:</label>
 						<div class="col-sm-6">
-							<input type="number" name="CONTRACT_SUMM" class="form-control" id="contract_summ"
-								   value="<?= $this->data['order']['summ'] ?>"
-								<?= $this->data['order']['longterm'] == 1 ? '' : 'disabled' ?>>
+							<input type="number" class="form-control" id="contract_summ"
+								   value="<?= $this->data['order']['summ'] ?>" disabled>
 						</div>
 					</div>
 				</div>
