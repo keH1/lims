@@ -245,7 +245,7 @@ $(function () {
     })
 
     $body.on('change', '.filter-date-start, .filter-date-end', function () {
-        $body.find('#journal_all thead *').css("height", "0px")
+        $body.find('#journal_all thead').hide()
     })
 
     /**
