@@ -47,73 +47,113 @@
         Заявка <?= $this->data['deal_title'] ?? '' ?>
     </h2>
 
+    <?php if ($this->data['tz']['TYPE_ID'] == '9'): ?>
+    <div class="panel panel-default">
+        <header class="panel-heading">
+            Работы
+            <span class="tools float-end">
+                <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
+                <a href="#" class="fa fa-chevron-up"></a>
+             </span>
+        </header>
+        <div class="panel-body">
+            <table id="work_table" class="table">
+                <thead>
+                <tr>
+                    <th scope="col" class="text-center">
+                        <input type="radio" class="form-check-input work_radio" name="work_radio" value="" checked>
+                    </th>
+                    <th scope="col">Гос работа (наименование)</th>
+                    <th scope="col">Объект</th>
+                    <th scope="col">Материал</th>
+                    <th scope="col">Кол-во материала</th>
+                    <th scope="col">Испытание в лаборатории (статус)</th>
+                    <th scope="col">Результаты испытаний</th>
+                    <th scope="col">Протокол испытаний</th>
+                    <th scope="col">Дата протоколов</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($this->data['work_list'] as $row): ?>
+                <tr>
+                    <td class="text-center">
+                        <input type="radio" class="form-check-input work_radio" name="work_radio" id="work_radio_<?=$row['id']?>" value="<?=$row['id']?>">
+                    </td>
+                    <td>
+                        <label for="work_radio_<?=$row['id']?>"><?=$row['name']?></label>
+                    </td>
+                    <td>
+                        <?=$row['object']?>
+                    </td>
+                    <td>
+                        <?=$row['material_name']?>
+                    </td>
+                    <td>
+                        <?=$row['probe_count']?>
+                    </td>
+                    <td>
+                        <?=$row['work_status']?? 'Испытания не начаты'?>
+                    </td>
+                    <td class="text-center">
+                        <?php if ( empty($row['file_name_result']) ): ?>
+                            <form class="form form-upload-file" method="post"
+                                  action="#"
+                                  enctype="multipart/form-data">
+                                <input type="hidden" name="work_id" value="<?=$row['id']?>">
+                                <input type="hidden" name="deal_id" value="<?= $this->data['deal_id'] ?>">
+                                <label class="btn btn-sm btn-success" title="Загрузить результаты испытаний">
+                                    Добавить
+                                    <input class="d-none" type="file" name="file_result" accept=".doc, .docx, .xls, .xlsx, .pdf">
+                                </label>
+                            </form>
+                        <?php else: ?>
+                            <a href="/ulab/upload/request/<?=$this->data['deal_id']?>/government_work/<?=$row['id']?>/result/<?=$row['file_name_result']?>">
+                                <?=$row['file_name_result']?>
+                            </a>
+                        <?php endif; ?>
+                    </td>
+                    <td class="text-center">
+                        <?php if ( empty($row['file_name_protocol']) ): ?>
+                            <form class="form form-upload-file" method="post"
+                                  action="#"
+                                  enctype="multipart/form-data">
+                                <input type="hidden" name="work_id" value="<?=$row['id']?>">
+                                <input type="hidden" name="deal_id" value="<?= $this->data['deal_id'] ?>">
+                                <label class="btn btn-sm btn-success" title="Загрузить протокол испытаний">
+                                    Добавить
+                                    <input class="d-none" type="file" name="file_protocol" accept=".doc, .docx, .xls, .xlsx, .pdf">
+                                </label>
+                            </form>
+                        <?php else: ?>
+                            <a href="/ulab/upload/request/<?=$this->data['deal_id']?>/government_work/<?=$row['id']?>/protocol/<?=$row['file_name_protocol']?>">
+                                <?=$row['file_name_protocol']?>
+                            </a>
+                        <?php endif; ?>
+                    </td>
+                    <td class="text-center text_date_protocol">
+                        <?= empty($row['date_protocol'])? '' : date('d.m.Y', strtotime($row['date_protocol'])) ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                <tr id="work_table_last_row">
+                    <td class="text-center">
+                        <a href="#add-work-modal-form" class="popup-with-form btn btn-success btn-square add-work" title="Добавить работу">
+                            <i class="fa-solid fa-plus icon-fix"></i>
+                        </a>
+                    </td>
+                    <td colspan="8"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <form class="form form-requirement" id="form_requirement" method="post" action="<?=URI?>/requirement/updateTz/">
 
         <input type="hidden" id="tz_id" name="tz_id" value="<?= $this->data['tz_id'] ?>">
         <input type="hidden" id="deal_id" name="deal_id" value="<?= $this->data['deal_id'] ?>">
         <input type="hidden" id="clear_confirm" name="clear_confirm" value="0">
-
-        <?php if ($this->data['tz']['TYPE_ID'] == '9'): ?>
-        <div class="panel panel-default">
-            <header class="panel-heading">
-                Работы
-                <span class="tools float-end">
-                    <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
-                    <a href="#" class="fa fa-chevron-up"></a>
-                 </span>
-            </header>
-            <div class="panel-body">
-                <table id="work_table" class="table">
-                    <thead>
-                    <tr>
-                        <th scope="col" class="text-center">
-                            <input type="radio" class="form-check-input work_radio" name="work_radio" value="" checked>
-                        </th>
-                        <th scope="col">Гос работа (наименование)</th>
-                        <th scope="col">Объект</th>
-                        <th scope="col">Материал</th>
-                        <th scope="col">Кол-во материала</th>
-                        <th scope="col">Испытание в лаборатории (статус)</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($this->data['work_list'] as $row): ?>
-                    <tr>
-                        <td class="text-center">
-                            <input type="radio" class="form-check-input work_radio" name="work_radio" id="work_radio_<?=$row['id']?>" value="<?=$row['id']?>">
-                        </td>
-                        <td>
-                            <label for="work_radio_<?=$row['id']?>"><?=$row['name']?></label>
-                        </td>
-                        <td>
-                            <?=$row['object']?>
-                        </td>
-                        <td>
-                            <?=$row['material_name']?>
-                        </td>
-                        <td>
-                            <?=$row['probe_count']?>
-                        </td>
-                        <td>
-                            <?=$row['work_status']?? 'Испытания не начаты'?>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                    <tr id="work_table_last_row">
-                        <td class="text-center">
-                            <a href="#add-work-modal-form" class="popup-with-form btn btn-success btn-square add-work" title="Добавить работу">
-                                <i class="fa-solid fa-plus icon-fix"></i>
-                            </a>
-                        </td>
-                        <td colspan="5"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <?php endif; ?>
-
 
         <div class="panel panel-default">
             <header class="panel-heading">
@@ -755,7 +795,9 @@
     <button type="submit" class="btn btn-primary"><i class="fa-regular fa-paper-plane"></i> Передать</button>
 </form>
 
-<form id="add-work-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/requirement/addWork/" method="post">
+<form id="add-work-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative"
+      action="#"
+      method="post" enctype="multipart/form-data">
     <div class="title mb-3 h-2">
         Добавить работу
     </div>
@@ -789,6 +831,18 @@
         <label class="form-label">Количество материала <span class="redStars">*</span></label>
 
         <input type="number" class="form-control bg-white" name="form[probe_count]" min="1" value="1" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Результаты испытаний</label>
+
+        <input type="file" name="file_result" class="form-control" value="" accept=".doc, .docx, .xls, .pdf">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Протокол испытаний</label>
+
+        <input type="file" name="file_protocol" class="form-control" value="" accept=".doc, .docx, .xls, .pdf">
     </div>
 
     <input name="form[deal_id]" value="<?=$this->data['deal_id']?>" type="hidden">
