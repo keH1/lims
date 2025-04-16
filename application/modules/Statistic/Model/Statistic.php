@@ -679,10 +679,10 @@ class Statistic extends Model
             ],
             'dependency' => [
                 'ulab_user_affiliation' => [
-                    'join' => "inner join ulab_user_affiliation on ulab_user_affiliation.user_id = b_user.ID"
+                    'join' => "left join ulab_user_affiliation on ulab_user_affiliation.user_id = b_user.ID"
                 ],
                 'ba_laba' => [
-                    'join' => "inner join ba_laba on ba_laba.ID = ulab_user_affiliation.lab_id"
+                    'join' => "left join ba_laba on ba_laba.ID = ulab_user_affiliation.lab_id"
                 ],
                 'ulab_gost_to_probe' => [
                     'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = b_user.ID" // DEPARTMENT_ID
