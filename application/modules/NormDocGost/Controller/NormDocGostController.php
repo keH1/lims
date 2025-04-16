@@ -368,15 +368,24 @@ class NormDocGostController extends Controller
         // сохраним пост в сессию, что бы при ошибке не заполнять поля заново
         $_SESSION['request_post'] = $_POST;
 
-        //// блок проверок
+        $data = $_POST['form'] ?? [];
 
-        ///  \блок проверок
+        $validRegDoc = $this->validateField($data['reg_doc'], 'Номер документа', true);
+        if (!$validRegDoc['success']) {
+            $this->showErrorMessage($validRegDoc['error']);
+            $this->redirect($location);
+        }
+        $validMaterials = $this->validateField($data['materials'], 'Наименование объекта', true);
+        if (!$validMaterials['success']) {
+            $this->showErrorMessage($validMaterials['error']);
+            $this->redirect($location);
+        }
 
         if ( !empty($_POST['id']) ) { // редактирование
             $idGost = $_POST['id'];
-            $normDocGost->updateGost((int)$_POST['id'], $_POST['form']);
+            $normDocGost->updateGost((int)$_POST['id'], $data);
         } else { // создание
-            $idGost = $normDocGost->addGost($_POST['form']);
+            $idGost = $normDocGost->addGost($data);
         }
 
         if ( empty($idGost) ) {
