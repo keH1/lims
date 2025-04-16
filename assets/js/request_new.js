@@ -104,6 +104,12 @@ $(function ($) {
                 return false
             }
         }
+
+        // Валидация для коммерческой заявки
+        if (reqType === 'SALE' && !validationSale()) {
+            e.preventDefault()
+            return false
+        }
     })
     
     /**
@@ -223,6 +229,62 @@ $(function ($) {
         
         return true
     }
+
+    /**
+     * @desc Валидация для коммерческих заявок
+     */
+    function validationSale() {
+        let isValidEmail = true
+        $body.find('input[name="EMAIL"], input[name="POST_MAIL"], input[name="addEmail[]"]').each(function () {
+            if (!validateEmailField($(this))) {
+                isValidEmail = false
+            }
+        })
+
+        if (!isValidEmail) {
+            scrollToFirstError()
+            return false
+        }
+
+        return true
+    }
+
+    function validateEmailField($emailField) {
+        clearError($emailField)
+
+        let emailVal = $emailField.val()?.toString().trim() || ''
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
+
+        if (emailVal && !emailPattern.test(emailVal)) {
+            showError($emailField, 'Введите корректный e-mail (например: user@example.com)')
+            return false
+        }
+
+        return true
+    }
+
+    function showError($element, message) {
+        const $errorContainer = $element.next('.invalid-feedback')
+
+        if (!$errorContainer.length) {
+            $element.after('<div class="invalid-feedback"></div>')
+        }
+
+        $element.addClass('is-invalid')
+        $element.next('.invalid-feedback').text(message).show()
+    }
+
+    function clearError($element) {
+        $element.removeClass('is-invalid')
+        const $errorContainer = $element.next('.invalid-feedback')
+        if ($errorContainer.length) {
+            $errorContainer.text('').hide()
+        }
+    }
+
+    $body.on('input change', 'input[name="EMAIL"], input[name="POST_MAIL"], input[name="addEmail[]"]', function() {
+        validateEmailField($(this))
+    })
 
     /**
      * @desc Получает список материалов

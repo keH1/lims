@@ -61,20 +61,6 @@ $(function () {
         }
     })
 
-    // Скролл к первой ошибке
-    function scrollToFirstError() {
-        const $firstError = $('.is-invalid').first()
-        if ($firstError.length) {
-            $('html, body').animate({
-                    scrollTop: $firstError.offset().top - 100
-                },
-                500,
-                function () {
-                    $firstError.focus()
-                })
-        }
-    }
-
     function showError($element, message) {
         $element.addClass('is-invalid')
         $element.tooltip({title: message, placement: 'top'}).tooltip('show')
