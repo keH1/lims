@@ -151,8 +151,6 @@ $(function () {
                         },
                         url : '/ulab/statistic/getStatisticConstructorJournal/',
                         dataSrc: function (json) {
-                            console.log(json)
-                            console.log(column)
                             $('.chart-donut').empty()
                             chartData = []
 
