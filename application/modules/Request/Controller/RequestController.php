@@ -623,7 +623,6 @@ class RequestController extends Controller
         $this->data['attach1'] = $dogovorData['ACTUAL_VER'] ?? '';
         $this->data['attach2'] = $invoiceData['ACTUAL_VER'] ?? '';
         $this->data['attach3'] = $tzDoc['ACTUAL_VER'] ?? '';
-        $this->data['quarry'] = $requirement->getQuarry();
         $this->data['material_data'] = $requirement->getMaterialProbeGostToRequest($dealId);
         $this->data['result_refactoring_start_id'] = $request->getResultRefactoringStartId();
         $this->data['contract'] = $orderData;
