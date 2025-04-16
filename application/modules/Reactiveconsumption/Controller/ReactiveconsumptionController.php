@@ -47,7 +47,7 @@ class ReactiveconsumptionController extends Controller
 
         $this->addJS("/assets/plugins/DataTables/Responsive-2.4.0/dataTables.responsive.js");
 
-        $this->addJs("/assets/js/reactiveconsumption-journal.js");
+        $this->addJs("/assets/js/reactiveconsumption-journal.js?v=2");
 
         $this->view('list');
     }
