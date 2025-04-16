@@ -304,8 +304,8 @@
                             <input type="hidden" name="scheme_id" value="<?= $scheme['id'] ?>">
                             <input type="hidden" name="material_id" value="<?= $this->data['id'] ?>">
                             <div class="mb-3">
-                                <button type="button" class="btn btn-danger float-end mb-1 delete-scheme"><i
-                                            class="fa-solid fa-minus"></i> Удалить схему
+                                <button type="button" class="btn btn-danger float-end mb-1 delete-scheme">
+                                    Удалить схему
                                 </button>
                                 <label for="scheme-name-<?= $scheme['id'] ?>" class="form-label">Название схемы: <span class="redStars">*</span></label>
                                 <input type="text" name="scheme-param" class="form-control"

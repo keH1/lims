@@ -1181,14 +1181,6 @@ textarea.form-control {
     height: initial;
 }
 
-.select2-search ~ .select2-results {
-    margin-left: 10px;
-    margin-right: -10px;
-}
-/*.select2-container--bootstrap-5 .select2-dropdown .select2-results__options:not(.select2-results__options--nested)::-webkit-scrollbar {*/
-/*    width: 5px;*/
-/*}*/
-
 #workarea .form-check-input[type=radio] {
     border-radius: 50% !important;
 }

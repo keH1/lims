@@ -67,6 +67,8 @@ class RequestController extends Controller
 
         $this->data['laboratories'] = $lab->getLabList();
 
+        $this->data['type_list'] = $request->getTypeRequestList();
+
 
         $this->data['contracts'] = [];
 
@@ -188,6 +190,7 @@ class RequestController extends Controller
         $this->data['companies'] = $company->getList();
         $this->data['laboratories'] = $lab->getLabList();
         $this->data['display'] = $this->getDisplayClass();
+        $this->data['type_list'] = $request->getTypeRequestList();
 
         $this->addJs('/assets/js/request_new.js');
 

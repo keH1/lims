@@ -349,8 +349,6 @@ Class OrderController extends Controller
             if (!empty($_POST['head_request'])) {
                 $data['SUMM'] = $request->getTzByDealId((int)$_POST['head_request'])['price_discount'];
                 $data['head_request'] = $_POST['head_request'];
-            } else {
-                $data['SUMM'] = $_POST['CONTRACT_SUMM'];
             }
         }
 

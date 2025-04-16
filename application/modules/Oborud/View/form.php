@@ -607,16 +607,6 @@
 
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">
-                    Ид ФСА
-                </label>
-                <div class="col-sm-8">
-                    <input type="number" name="oborud[id_fsa]" class="form-control" value="<?=$this->data['oborud']['id_fsa']?? ''?>">
-                </div>
-                <div class="col-sm-2"></div>
-            </div>
-
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label">
                     В области аккредитации
                 </label>
                 <div class="col-sm-8 pt-2">

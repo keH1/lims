@@ -35,13 +35,13 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Страница со списком пользователей
+     * @desc Страница сотрудников
      */
     public function list()
     {
         $this->model('Permission')->checkPermission(__FUNCTION__, __FILE__);
 
-        $this->data['title'] = 'Пользователи';
+        $this->data['title'] = 'Сотрудники';
 
         /** @var  User $user */
         $user = $this->model('User');

@@ -46,7 +46,7 @@
 			<select class="form-control bg-white search">
 				<option value="">Все</option>
 				<?php foreach ($this->data['laboratory'] as $val):?>
-					<option value="<?=$val['id_dep']?>"><?=$val['short_name']?></option>
+					<option value="<?=$val['id_dep']?>"><?=$val['NAME']?></option>
 				<?php endforeach;?>
 			</select>
 		</th>

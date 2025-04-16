@@ -69,7 +69,7 @@ class Statistic extends Model
                     'group' => false,
                 ],
             ],
-            'date_filter' => "ba_tz.DATE_CREATE_TIMESTAMP between '{dateStart}' AND '{dateEnd}'",
+            'date_filter' => "DATE_FORMAT(ba_tz.DATE_CREATE_TIMESTAMP, '%Y-%m-%d') >= '{dateStart}' AND DATE_FORMAT(ba_tz.DATE_CREATE_TIMESTAMP, '%Y-%m-%d') <= '{dateEnd}'",
             'order' => 'ba_tz.id',
             'chart' => [
                 'donut' => [
@@ -415,6 +415,7 @@ class Statistic extends Model
                     'group' => false,
                 ],
             ],
+            'date_filter' => "DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') >= '{dateStart}' AND DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') <= '{dateEnd}'",
             'order' => 'ba_oborud.OBJECT',
         ],
         'oborud_use' => [
@@ -678,10 +679,10 @@ class Statistic extends Model
             ],
             'dependency' => [
                 'ulab_user_affiliation' => [
-                    'join' => "inner join ulab_user_affiliation on ulab_user_affiliation.user_id = b_user.ID"
+                    'join' => "left join ulab_user_affiliation on ulab_user_affiliation.user_id = b_user.ID"
                 ],
                 'ba_laba' => [
-                    'join' => "inner join ba_laba on ba_laba.ID = ulab_user_affiliation.lab_id"
+                    'join' => "left join ba_laba on ba_laba.ID = ulab_user_affiliation.lab_id"
                 ],
                 'ulab_gost_to_probe' => [
                     'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = b_user.ID" // DEPARTMENT_ID
