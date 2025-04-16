@@ -360,7 +360,7 @@ $(function ($) {
     $body.on('change', '#company', function() {
         // clear form
         let $selectContract = $('select[name="NUM_DOGOVOR"]')
-        $selectContract.empty().append(`<option value=""></option>`)
+        $selectContract.empty().append(`<option value="">Новый договор</option>`)
         $('input.clearable').val('')
 
         let text = $(this).val()
