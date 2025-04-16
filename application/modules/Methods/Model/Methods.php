@@ -49,14 +49,14 @@ class Methods extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $idMethod = $this->DB->Insert('ulab_methods', $sqlData);
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Создана Методика. ид новой Методики: {$idMethod}. ид ГОСТа: {$data['gost_id']}.",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 
@@ -78,14 +78,14 @@ class Methods extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $methodInfo = $this->get($id);
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Отредактирована Методика. ид: {$id}, ид ГОСТа: {$methodInfo['gost_id']}",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 
@@ -253,12 +253,12 @@ class Methods extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Методика отмечена неактуальной. ид: {$id}",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 
@@ -1426,12 +1426,12 @@ class Methods extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Скопирована Методика. ид источник: {$methodId}, ид новый: {$idNewMethod}",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 

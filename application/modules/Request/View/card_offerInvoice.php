@@ -388,7 +388,7 @@
                 <td><?=$this->data['payment']['datePayment']?></td>
                 <td>--</td>
                 <td>
-                    <a class="no-decoration me-1 popup-with-form <?=$this->data['payment']['check'] && $_SESSION['SESS_AUTH']['USER_ID'] != 88 ? 'disabled' : ''?>" href="#pay-modal-form" title="Заполнить данные по оплате">
+                    <a class="no-decoration me-1 popup-with-form <?=$this->data['payment']['check'] && App::getUserId() != 88 ? 'disabled' : ''?>" href="#pay-modal-form" title="Заполнить данные по оплате">
                         <svg class="icon" width="35" height="35">
                             <use xlink:href="<?=URI?>/assets/images/icons.svg#edit"/>
                         </svg>

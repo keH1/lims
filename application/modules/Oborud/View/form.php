@@ -227,7 +227,7 @@
                     Инвентарный номер
                 </label>
                 <div class="col-sm-8">
-                    <?php if (in_array($_SESSION['SESS_AUTH']['USER_ID'], [61, 137, 10, 32])): ?>
+                    <?php if (in_array(App::getUserId(), [61, 137, 10, 32])): ?>
                         <input type="text" name="oborud[REG_NUM]" class="form-control" value="<?=$this->data['oborud']['REG_NUM'] ?? '(сформируется автоматически)'?>">
                     <?php else: ?>
                         <input type="text" name="" class="form-control" value="<?=$this->data['oborud']['REG_NUM'] ?? '(сформируется автоматически)'?>" readonly>
@@ -235,7 +235,7 @@
                 </div>
                 <div class="col-sm-2"></div>
             </div>
-            <?php if ( !empty($this->data['id']) && in_array($_SESSION['SESS_AUTH']['USER_ID'], [61, 137, 10, 32])): ?>
+            <?php if ( !empty($this->data['id']) && in_array(App::getUserId(), [61, 137, 10, 32])): ?>
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">
                         Порядковый номер
@@ -1761,7 +1761,7 @@
         <select class="form-control select2" name="form[responsible_user_id]" required>
             <option value="">Не выбран</option>
             <?php foreach ($this->data['users'] as $user): ?>
-                <option value="<?=$user['ID']?>" <?=$_SESSION['SESS_AUTH']['USER_ID'] == $user['ID']? 'selected': ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+                <option value="<?=$user['ID']?>" <?=App::getUserId() == $user['ID']? 'selected': ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
             <?php endforeach; ?>
         </select>
     </div>

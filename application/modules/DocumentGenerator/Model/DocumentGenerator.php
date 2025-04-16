@@ -2275,13 +2275,6 @@ class DocumentGenerator extends Model
             }
         }
 
-//		if ($_SESSION['SESS_AUTH']['USER_ID'] == 61) {
-//			echo '<pre>';
-//			print_r($tableAllResult);
-//			exit();
-//		}
-
-
 		$protocolInformation['numTabStr'] = implode(', ', $numTablePre);
 
 		$template->cloneBlock('block_result', $countTable, true, false, $replacement);
@@ -2542,11 +2535,7 @@ class DocumentGenerator extends Model
 				'amount' => $val['amount'],
 			];
 		}
-//		if ($_SESSION['SESS_AUTH']['USER_ID'] == 61) {
-//			echo '<pre>';
-//			print_r($arrGost);
-//			exit();
-//		}
+
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
         $template = new \PhpOffice\PhpWord\TemplateProcessor($template_doc);
 
@@ -3119,7 +3108,7 @@ class DocumentGenerator extends Model
         $protocolModel = new Protocol();
         $userModel = new User();
 
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = App::getUserId();
 
         $protocolInfo = $protocolModel->getProtocolById($protocolId);
         $userInfo = $userModel->getUserShortById($userId);
@@ -3147,7 +3136,7 @@ class DocumentGenerator extends Model
             $template->setValue('date_sign', date("d.m.Y"));
             $template->saveAs($pathDoc);
 
-            $pathFile2 = $_SERVER['DOCUMENT_ROOT'] . "/sign_{$_SESSION['SESS_AUTH']['USER_ID']}.png";
+            $pathFile2 = $_SERVER['DOCUMENT_ROOT'] . "/sign_".App::getUserId().".png";
             $newTemplate = new \PhpOffice\PhpWord\Template($pathDoc);
             $newTemplate->setImageValue('image2.png', $qrPath);
             $newTemplate->setImageValue('image3.jpg', $pathFile2);

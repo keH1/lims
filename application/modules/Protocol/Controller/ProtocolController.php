@@ -33,7 +33,7 @@ Class ProtocolController extends Controller
 
         $this->data['today'] = date('d.m.Y');
         $this->data['file_name'] = $protocolInfo['pdf_name'];
-        $this->data['user_id'] = $_SESSION['SESS_AUTH']['USER_ID'];
+        $this->data['user_id'] = App::getUserId();
         $this->data['outside_lis'] = $protocolInfo['PROTOCOL_OUTSIDE_LIS'];
         $this->data['outside_lis_path_pdf'] = '';
         if ( $protocolInfo['PROTOCOL_OUTSIDE_LIS'] == 1 ) {

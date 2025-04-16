@@ -318,7 +318,7 @@ class Model
         if ($userID) {
             $dataAdd['global_assigned'] = (int)$userID;
         } else {
-            $dataAdd['global_assigned'] = (int)$_SESSION['SESS_AUTH']['USER_ID'];
+            $dataAdd['global_assigned'] = App::getUserId();
         }
 
         $dataAdd['global_entry_date'] = date("Y-m-d H:i:s");
@@ -424,7 +424,7 @@ class Model
 	 * @param bool $exit
 	 */
 	public function pre($text, $exit = true) {
-		if ($_SESSION['SESS_AUTH']['USER_ID'] == 1) {
+		if (App::isAdmin()) {
 			echo '<pre>';
 			print_r($text);
 			if ($exit) {

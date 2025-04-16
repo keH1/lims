@@ -42,7 +42,7 @@ class Controller
         /** @var Permission $permissionModel */
         $permissionModel = $this->model('Permission');
 
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
         $viewName = $permissionInfo['view_name']?? '';
 
         $folder = str_replace('Controller', '', $this::getClassName());

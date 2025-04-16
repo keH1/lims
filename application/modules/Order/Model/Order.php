@@ -417,7 +417,7 @@ class Order extends Model {
             'dogovor_id' => $orderId,
             'action' => 'добавлено',
             'money' => $money,
-            'user_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'user_id' => App::getUserId(),
             'datetime' => date('Y-m-d H:i:s'),
         ];
 
@@ -434,7 +434,7 @@ class Order extends Model {
             'deal_id' => $dealId,
             'action' => 'списано',
             'money' => $money,
-            'user_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'user_id' => App::getUserId(),
             'datetime' => date('Y-m-d H:i:s'),
         ];
 

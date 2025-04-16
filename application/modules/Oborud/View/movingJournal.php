@@ -150,7 +150,7 @@
         <select class="form-control" name="form[responsible_user_id]" required>
             <option value="">Не выбран</option>
             <?php foreach ($this->data['users'] as $user): ?>
-                <option value="<?=$user['ID']?>" <?=$_SESSION['SESS_AUTH']['USER_ID'] == $user['ID']? 'selected': ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+                <option value="<?=$user['ID']?>" <?=App::getUserId() == $user['ID']? 'selected': ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
             <?php endforeach; ?>
         </select>
     </div>

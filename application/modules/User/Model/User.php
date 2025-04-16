@@ -21,7 +21,7 @@ class User extends Model
      */
     public function getCurrentUser()
     {
-        $user = CUser::GetByID($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = CUser::GetByID(App::getUserId());
 
         if ( !empty($user) ) {
             global $USER;
@@ -251,7 +251,7 @@ class User extends Model
      */
     public function getUserGroups(): array
     {
-        return $_SESSION['SESS_AUTH']['GROUPS'] ?? [];
+        return App::getUserGroupIds() ?? [];
     }
 
     /**
@@ -302,7 +302,7 @@ class User extends Model
      */
     public function getCurrentUserId()
     {
-        return (int)$_SESSION['SESS_AUTH']['USER_ID'];
+        return App::getUserId();
     }
 
 	/**

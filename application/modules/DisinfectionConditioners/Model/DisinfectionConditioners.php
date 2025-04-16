@@ -99,7 +99,7 @@ class DisinfectionConditioners extends Model
             $dataAdd = $data[$name];
         }
 
-        return $this->insertToSQL($dataAdd, $name, $_SESSION['SESS_AUTH']['USER_ID']);
+        return $this->insertToSQL($dataAdd, $name, App::getUserId());
     }
 
     public function getFromSQL(string $name, array  $filters = null): array

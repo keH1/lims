@@ -219,7 +219,7 @@ class TransportController extends Controller
         $this->data['title'] = 'Отчет по бензину';
 
         $transport = $this->model("Transport");
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = App::getUserId();
 
 
         $this->data["currentUser"] = $userId;
@@ -385,7 +385,7 @@ class TransportController extends Controller
         $transport = $this->model("Transport");
         $user = $this->model("User");
 
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = App::getUserId();
         $this->data["reportId"] = $id;
         $this->data["files"] = [];
 

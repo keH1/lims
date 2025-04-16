@@ -195,7 +195,7 @@ class Electric extends Model
                         'voltage_UC' => $voltage_UC,
                         'frequency' => $frequency,
                         'date' => "'{$date}'",
-                        'global_assigned' => $user,//$_SESSION['SESS_AUTH']['USER_ID'],
+                        'global_assigned' => $user,
                         'global_entry_date' => "'{$resultDate}'",
                         'id_electric_norm' => 1,
                     ];

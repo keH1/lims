@@ -118,7 +118,7 @@ class Contractor extends Model
 
         $result = [];
 
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = App::getUserId();
 
         $data = $DB->Query(
             "SELECT c.*, DATE_FORMAT(created_at, '%m') AS month_number, u.phone, u.fio, u.company_name, u.id as user_id  

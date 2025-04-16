@@ -159,7 +159,7 @@ class Secondment extends Model
 
         $result = [];
 
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = App::getUserId();
 
         $data = $DB->Query(
             "SELECT s.id s_id, s.project_id, s.user_id, s.settlement_id, s.date_begin, s.date_end, s.stage, s.planned_expenses, 

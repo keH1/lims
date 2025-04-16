@@ -118,7 +118,7 @@ class Water extends Model
                     'uep' => $uep,
                     'id_water_norm' => 1,
                     'date_check' => "'{$date}'",
-                    'global_assigned' => 111,//$_SESSION['SESS_AUTH']['USER_ID'],
+                    'global_assigned' => 111,
                     'global_entry_date' => "'{$resultDate}'",
                 ];
 
