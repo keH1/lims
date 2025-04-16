@@ -307,8 +307,7 @@ class Solution extends Model
             return 1;
         }
 
-        return $this->insertToSQL($dataAdd, $name,
-            $_SESSION['SESS_AUTH']['USER_ID']);
+        return $this->insertToSQL($dataAdd, $name, App::getUserId());
     }
 
     public function getFromSQL(string $typeName, array $filters = null): array

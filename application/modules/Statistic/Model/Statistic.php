@@ -69,7 +69,7 @@ class Statistic extends Model
                     'group' => false,
                 ],
             ],
-            'date_filter' => "ba_tz.DATE_CREATE_TIMESTAMP between '{dateStart}' AND '{dateEnd}'",
+            'date_filter' => "DATE_FORMAT(ba_tz.DATE_CREATE_TIMESTAMP, '%Y-%m-%d') >= '{dateStart}' AND DATE_FORMAT(ba_tz.DATE_CREATE_TIMESTAMP, '%Y-%m-%d') <= '{dateEnd}'",
             'order' => 'ba_tz.id',
             'chart' => [
                 'donut' => [
@@ -415,6 +415,7 @@ class Statistic extends Model
                     'group' => false,
                 ],
             ],
+            'date_filter' => "DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') >= '{dateStart}' AND DATE_FORMAT(ba_oborud.god_vvoda_expluatation, '%Y-%m-%d') <= '{dateEnd}'",
             'order' => 'ba_oborud.OBJECT',
         ],
         'oborud_use' => [
@@ -678,10 +679,10 @@ class Statistic extends Model
             ],
             'dependency' => [
                 'ulab_user_affiliation' => [
-                    'join' => "inner join ulab_user_affiliation on ulab_user_affiliation.user_id = b_user.ID"
+                    'join' => "left join ulab_user_affiliation on ulab_user_affiliation.user_id = b_user.ID"
                 ],
                 'ba_laba' => [
-                    'join' => "inner join ba_laba on ba_laba.ID = ulab_user_affiliation.lab_id"
+                    'join' => "left join ba_laba on ba_laba.ID = ulab_user_affiliation.lab_id"
                 ],
                 'ulab_gost_to_probe' => [
                     'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = b_user.ID" // DEPARTMENT_ID
@@ -733,24 +734,24 @@ class Statistic extends Model
             'columns' => [
                 'count_active' => [
                     'title' => 'Кол-во действующих пользователей',
-                    'select' => "COUNT(DISTINCT(case when b_user.ACTIVE = 'Y' then b_user.ID end)) as count_active",
-                    'order' => "COUNT(DISTINCT(case when b_user.ACTIVE = 'Y' then b_user.ID end))",
+                    'select' => "COUNT(DISTINCT(case when b_user.ACTIVE = 'Y' then b_user.ID and (b_user.DATE_REGISTER between '{dateStart}' AND '{dateEnd}') end)) as count_active",
+                    'order' => "COUNT(DISTINCT(case when b_user.ACTIVE = 'Y' then b_user.ID and (b_user.DATE_REGISTER between '{dateStart}' AND '{dateEnd}') end))",
                     'filter' => false,
                     'where' => false,
                     'group' => false,
                 ],
                 'count_not_active' => [
                     'title' => 'Кол-во уволенных сотрудников',
-                    'select' => "COUNT(DISTINCT(case when b_user.ACTIVE = 'N' then b_user.ID end)) as count_not_active",
-                    'order' => "COUNT(DISTINCT(case when b_user.ACTIVE = 'N' then b_user.ID end))",
+                    'select' => "COUNT(DISTINCT(case when b_user.ACTIVE = 'N' then b_user.ID and (b_user.DATE_REGISTER between '{dateStart}' AND '{dateEnd}') end)) as count_not_active",
+                    'order' => "COUNT(DISTINCT(case when b_user.ACTIVE = 'N' then b_user.ID and (b_user.DATE_REGISTER between '{dateStart}' AND '{dateEnd}') end))",
                     'filter' => false,
                     'where' => false,
                     'group' => false,
                 ],
                 'register' => [
                     'title' => 'Зарегистрированных сотрудников за этот год',
-                    'select' => "COUNT(DISTINCT(case when YEAR(b_user.DATE_REGISTER) = YEAR(CURRENT_DATE()) AND b_user.NAME IS NOT NULL AND b_user.LAST_NAME IS NOT NULL AND b_user.NAME <> '' AND b_user.LAST_NAME <> '' AND b_user.NAME <> 'test' AND b_user.LAST_NAME <> 'test' then b_user.ID end)) as register",
-                    'order' => "COUNT(DISTINCT(case when YEAR(b_user.DATE_REGISTER) = YEAR(CURRENT_DATE()) AND b_user.NAME IS NOT NULL AND b_user.LAST_NAME IS NOT NULL AND b_user.NAME <> '' AND b_user.LAST_NAME <> '' AND b_user.NAME <> 'test' AND b_user.LAST_NAME <> 'test' then b_user.ID end))",
+                    'select' => "COUNT(DISTINCT(case when YEAR(b_user.DATE_REGISTER) = YEAR(CURRENT_DATE()) then b_user.ID end)) as register",
+                    'order' => "COUNT(DISTINCT(case when YEAR(b_user.DATE_REGISTER) = YEAR(CURRENT_DATE()) then b_user.ID end))",
                     'filter' => false,
                     'where' => false,
                     'group' => false,
@@ -861,11 +862,11 @@ class Statistic extends Model
                 ],
             ],
             'dependency' => [
-                'b_uts_user' => [
-                    'join' => "left join b_uts_user on b_uts_user.UF_DEPARTMENT like CONCAT('%:', ba_laba.id_dep, ';%')"
+                'ulab_user_affiliation' => [
+                    'join' => "left join ulab_user_affiliation on ulab_user_affiliation.lab_id = ba_laba.ID"
                 ],
                 'ulab_gost_to_probe' => [
-                    'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = b_uts_user.VALUE_ID"
+                    'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = ulab_user_affiliation.user_id"
                 ],
                 'ulab_start_trials' => [
                     'join' => "left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id"
@@ -887,20 +888,20 @@ class Statistic extends Model
                     ]
                 ],
                 'bar' => [
-                    'formatted' => 'Кол-во выполненых методик',
+                    'formatted' => 'Кол-во выполненных методик',
                     'sql' => "select ba_laba.NAME label,
                         MONTH(ulab_start_trials.date) month, sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as value
                             from ba_laba
-                                left join b_uts_user on b_uts_user.UF_DEPARTMENT like CONCAT('%:', ba_laba.id_dep, ';%')
-                                left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = b_uts_user.VALUE_ID
+                                left join ulab_user_affiliation on ulab_user_affiliation.lab_id = ba_laba.ID
+                                left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = ulab_user_affiliation.user_id
                                 left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
                             where ba_laba.id = '{id}' AND YEAR(ulab_start_trials.date) = YEAR(CURDATE()) AND ba_laba.id_dep IS NOT NULL
                             group by MONTH(ulab_start_trials.date)",
                     'days_sql' => "select ba_laba.NAME label,
                         DAY(ulab_start_trials.date) day, DATE(ulab_start_trials.date) date, sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as value
                             from ba_laba
-                                left join b_uts_user on b_uts_user.UF_DEPARTMENT like CONCAT('%:', ba_laba.id_dep, ';%')
-                                left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = b_uts_user.VALUE_ID
+                                left join ulab_user_affiliation on ulab_user_affiliation.lab_id = ba_laba.ID
+                                left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = ulab_user_affiliation.user_id
                                 left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
                             where ba_laba.id = '{id}' AND YEAR(ulab_start_trials.date) = '{year}' AND MONTH(ulab_start_trials.date) = '{month}' AND ba_laba.id_dep IS NOT NULL
                             group by DAY(ulab_start_trials.date)"

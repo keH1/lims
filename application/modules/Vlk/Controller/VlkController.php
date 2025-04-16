@@ -243,7 +243,7 @@ class VlkController extends Controller
 
         $component = $oborudModel->getComponent($umc['component_id']);
         $methodComponent = $vlkModel->getMethodComponent($umcId);
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
         $uncertainty = $methodsModel->getUncertainty((int)$umc['method_id']);
 
         $methodId = (int)$umc['method_id'];

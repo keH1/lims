@@ -77,6 +77,78 @@ class App
         return [];
     }
 
+    /**
+     * @return CUser|Exception
+     * @throws Exception
+     * Инициализия объекта пользователя Bitrix
+     */
+    protected static function bitrixUser(): \CUser|\Exception{
+        global $USER;
+        if (!$USER instanceof \CUser) {
+            throw new \Exception("Класс CUser должен быть инициализирован");
+        }
+        return $USER;
+    }
+
+    /**
+     * @return int
+     * @throws Exception
+     * ID пользователя Bitrix
+     */
+    public static function getUserId():int {
+        return self::bitrixUser()->GetID();
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     * Проверка авторизации пользователя
+     */
+    public static function isAuthorized(): bool{
+        return self::bitrixUser()->isAuthorized();
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     * Проверка на наличие в группе администраторов Bitrix
+     */
+    public static function isAdmin(): bool{
+        return self::bitrixUser()->isAdmin();
+    }
+
+    /**
+     * @return int
+     * @throws Exception
+     * Получение ID организации
+     */
+    public static function getOrganizationId(): int{
+        static $organizationId = 0;
+        if ($organizationId > 0) {
+            return $organizationId;
+        }
+
+        $userId = self::bitrixUser()->GetID();
+        $by = "ID";
+        $order = "DESC";
+        $arFilter = array("=ID" => $userId,"!UF_ORG_ID"=>false);
+        $arParams["SELECT"] = array("UF_ORG_ID");
+        $arRes = CUser::GetList($by,$order,$arFilter,$arParams);
+        if ($res = $arRes->Fetch()) {
+            $organizationId = $res["UF_ORG_ID"];
+        }
+
+        return $organizationId;
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     * Массив ID груп пользователей
+     */
+    public static function getUserGroupIds(): array {
+        return self::bitrixUser()->GetUserGroupArray();
+    }
 
     /**
      * @param $userId - ид текущего пользователя
@@ -99,7 +171,7 @@ class App
         $homePage = $row['home_page'];
 
 
-        if ( $_SESSION['SESS_AUTH']['USER_ID'] == 1 || $row['permission'] == 'all' ) {
+        if ( self::isAdmin() || $row['permission'] == 'all' ) {
             return true;
         }
 

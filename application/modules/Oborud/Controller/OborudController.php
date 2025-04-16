@@ -640,7 +640,7 @@ class OborudController extends Controller
         $this->data['title'] = $id ? 'Редактирование стандартного образца' : 'Создание стандартного образца';
 
         $sample = $oborudModel->getSample($id);
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
 
         $this->data['lab_list'] = $labModel->getList();
         $this->data['room_list'] = $labModel->getRoomByLabId($sample['LAB_ID']);
@@ -1036,7 +1036,7 @@ class OborudController extends Controller
         $permissionModel = $this->model('Permission');
 
         $result = $oborudModel->getComponent((int)$_POST['id']);
-        $permissionInfo = $permissionModel->getUserPermission((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
 
         // Проверка на доступ к изменению данных
         $result['is_may_change'] = in_array($permissionInfo['id'],  [SMK_PERMISSION, ADMIN_PERMISSION]); // HEAD_IC_PERMISSION

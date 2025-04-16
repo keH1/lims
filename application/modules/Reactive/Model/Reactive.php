@@ -241,7 +241,7 @@ class Reactive extends Model
             return 0;
         }
 
-        $newRecord[$nameTable]['global_assigned'] = (int)$_SESSION['SESS_AUTH']['USER_ID'];
+        $newRecord[$nameTable]['global_assigned'] = App::getUserId();
         $newRecord[$nameTable]['global_entry_date'] = date('Y-m-d H:i:s');
 
         $sqlData = $this->prepearTableData($nameTable, $newRecord[$nameTable]);
@@ -258,7 +258,7 @@ class Reactive extends Model
         // Таблицы истории
         $historyTable = $tableName . '_history';
 
-        $globalAssigned = (int)$_SESSION['SESS_AUTH']['USER_ID'];
+        $globalAssigned = App::getUserId();
         $globalEntryDate = date('Y-m-d H:i:s');
 
         $columnsMetadata = $this->getColumnsMetadata($historyTable);

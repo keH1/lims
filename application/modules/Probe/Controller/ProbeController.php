@@ -79,7 +79,7 @@ class ProbeController extends Controller
         /** @var Probe $probeModel */
         $probeModel = $this->model('Probe');
 
-        $probeModel->takeProbe((int)$umtrId, (int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $probeModel->takeProbe((int)$umtrId, App::getUserId());
 
         $dealId = $probeModel->getDealIdByProbe((int)$umtrId);
 
@@ -261,7 +261,7 @@ class ProbeController extends Controller
 		$this->data['company_name'] = $deal['COMPANY_TITLE'];
 
 		//Пробу принял
-		$this->data['current_user'] = $user->getUserShortById($_SESSION['SESS_AUTH']['USER_ID']);
+		$this->data['current_user'] = $user->getUserShortById(App::getUserId());
 
 		//Договор
 		$contractData = $requirement->getContractByDealId($dealId);

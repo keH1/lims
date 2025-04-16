@@ -24,9 +24,27 @@ class Request extends Model
 
         $sqlData = $this->prepearTableData('ba_tz_type', $data);
 
-        $type = $this->DB->Query("select `name` from ba_tz_type where type_id = {$sqlData['type_id']}")->Fetch();
+        $type = $this->DB->Query("select `title` from ba_tz_type where type_id = {$sqlData['type_id']}")->Fetch();
 
-        return $type['name']?? "ИЦ";
+        return $type['title']?? "КОМ";
+    }
+
+
+    /**
+     * получает список типов заявок
+     * @return array
+     */
+    public function getTypeRequestList()
+    {
+        $sql = $this->DB->Query("select * from ba_tz_type where 1");
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+            $result[] = $row;
+        }
+
+        return $result;
     }
 
 
@@ -791,6 +809,7 @@ class Request extends Model
     {
         $requirementModel = new Requirement();
 
+        $having = "";
         $where = "";
         $limit = "";
         $order = [
@@ -853,7 +872,7 @@ class Request extends Model
                 if ( isset($filter['search']['MATERIAL']) ) {
                     $text = htmlentities($filter['search']['MATERIAL']);
 
-                    $where .= "b.MATERIAL LIKE '%{$text}%' AND ";
+                    $having .= "MATERIAL LIKE '%{$text}%' AND ";
                 }
                 // Ответственный
                 if ( isset($filter['search']['ASSIGNED']) ) {
@@ -868,7 +887,6 @@ class Request extends Model
                 }
                 // ТЗ
                 if ( isset($filter['search']['tz']) ) {
-//                    $where .= "b.ID LIKE '%{$filter['search']['tz']}%' AND ";
                     if ( $filter['search']['tz'] == 'n' ) {
                         $where .= "tzdoc.pdf is null AND ";
                     } else if ( $filter['search']['tz'] == 'y' ) {
@@ -984,14 +1002,11 @@ class Request extends Model
                         $order['by'] = 'b.ACCOUNT';
                         break;
                     case 'MATERIAL':
-                        $order['by'] = 'b.MATERIAL';
+                        $order['by'] = "group_concat(distinct mater.NAME SEPARATOR ', ')";
                         break;
                     case 'NUM_ACT_TABLE':
                         $order['by'] = 'YEAR(ACT_DATE) DESC, a.ACT_NUM';
                         break;
-//                    case 'NUM_ACT_TABLE':
-//                        $order['by'] = 'b.NUM_ACT_TABLE';
-//                        break;
                     case 'DOGOVOR_TABLE':
                         $order['by'] = 'd.NUMBER';
                         break;
@@ -1031,14 +1046,14 @@ class Request extends Model
             }
         }
         $where .= "1 ";
+        $having .= "1";
 
         $result = [];
-        $baTzIds = [];
 
         $data = $this->DB->Query(
             "SELECT DISTINCT b.ID b_id, b.TZ, b.STAGE_ID, b.ID_Z, b.ACT_NUM, b.REQUEST_TITLE, b.TAKEN_SERT_ISP, b.RESULTS, b.TAKEN_ID_DEAL, b.TYPE_ID,
                         CONVERT(substring_index(substring_index(b.REQUEST_TITLE, '№', -1), '/', 1 ),UNSIGNED INTEGER) request,
-                        b.DATE_CREATE_TIMESTAMP, b.COMPANY_TITLE, b.DEADLINE,  b.DEADLINE_TABLE, b.ACCOUNT, b.MATERIAL, b.COMPANY_ID, 
+                        b.DATE_CREATE_TIMESTAMP, b.COMPANY_TITLE, b.DEADLINE,  b.DEADLINE_TABLE, b.ACCOUNT, b.COMPANY_ID, 
                         b.NUM_ACT_TABLE, b.PRICE, b.price_discount, b.OPLATA, b.DATE_OPLATA, b.PDF,
                         b.discount_type, b.DISCOUNT, 
                         b.MANUFACTURER_TITLE, b.USER_HISTORY, b.LABA_ID, b.ACTUAL_VER b_actual_ver, c.leader, c.confirm,
@@ -1046,7 +1061,8 @@ class Request extends Model
                         count(c.id) c_count, count(c.date_return) с_date_return, k.ID k_id , d.IS_ACTION, CONCAT(d.CONTRACT_TYPE, ' ', d.NUMBER, ' от ', DATE_FORMAT(d.DATE, '%d.%m.%Y')) as DOGOVOR_TABLE,
                         tzdoc.pdf tz_pdf,
                         gw.departure_date, gw.object as object_gov,
-                        group_concat(distinct CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED
+                        group_concat(distinct CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED,
+                        group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ c ON b.ID=c.tz_id
@@ -1060,8 +1076,12 @@ class Request extends Model
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID 
                     LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
+                    left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
+                    left join MATERIALS as mater on umtr.material_id = mater.ID 
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
-                    GROUP BY b.ID ORDER BY {$order['by']} {$order['dir']} {$limit}"
+                    GROUP BY b.ID
+                    HAVING {$having} 
+                    ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
@@ -1079,7 +1099,7 @@ class Request extends Model
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
-            "SELECT b.ID val
+            "SELECT b.ID val, group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ AS c ON b.ID=c.tz_id
@@ -1091,8 +1111,11 @@ class Request extends Model
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID    
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
+                    left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
+                    left join MATERIALS as mater on umtr.material_id = mater.ID
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
-                    GROUP BY b.ID"
+                    GROUP BY b.ID
+                    HAVING {$having} "
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
@@ -1498,7 +1521,7 @@ class Request extends Model
 
         $labModel = new Lab();
         $permissionModel = new Permission();
-        $perm = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $perm = $permissionModel->getUserPermission(App::getUserId());
 
         if ( $perm['view_name'] == 'lab' ) {
 //            $where .= "ass.user_id = '{$_SESSION['SESS_AUTH']['USER_ID']}' AND ";

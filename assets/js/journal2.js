@@ -112,6 +112,7 @@ $(function ($) {
         },
         {
             data: 'tz',
+            width: '100px',
             render: function (data, type, item) {
                 return `<a class="number-tz" href="/ulab/requirement/card/${item['b_tz_id']}" >
                                 ${item['b_tz_id']}
@@ -237,7 +238,7 @@ $(function ($) {
         <th scope="col" class="text-nowrap">Клиент</th>
         <th scope="col" class="text-nowrap">Объект испытаний</th>
         <th scope="col" class="text-nowrap">Ответственный</th>
-        <th scope="col" class="text-nowrap">ТЗ</th>
+        <th scope="col" class="text-nowrap" style="min-width: 100px;">ТЗ</th>
         <th scope="col" class="text-nowrap">Договор</th>
         <th scope="col" class="text-nowrap">Акт ПП</th>
         <th scope="col" class="text-nowrap">Счет</th>
@@ -311,7 +312,7 @@ $(function ($) {
         <th scope="col" class="text-nowrap">Тип заявки</th>
         <th scope="col">Объект испытаний</th>
         <th scope="col" class="text-nowrap">Ответственный</th>
-        <th scope="col" class="text-nowrap">ТЗ</th>
+        <th scope="col" class="text-nowrap" style="min-width: 100px;">ТЗ</th>
         <th scope="col" class="text-nowrap">Акт ПП</th>
         <th scope="col" class="text-nowrap">Организация</th>
         <th scope="col">Плановая дата выезда</th>
@@ -407,6 +408,7 @@ $(function ($) {
         },
         {
             data: 'tz',
+            width: '100px',
             render: function (data, type, item) {
                 return `<a class="number-tz" href="/ulab/requirement/card_new/${item['b_tz_id']}" >
                                 ${item['b_tz_id']}

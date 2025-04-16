@@ -146,7 +146,7 @@ class MaterialController extends Controller
         $this->addJs('/assets/js/bootstrap.min.js');
         $this->addJs('/assets/js/bootstrap.bundle.min.js');
         $this->addJs('/assets/plugins/select2/js/select2.min.js');
-        $this->addJs('/assets/js/material.js');
+        $this->addJs('/assets/js/material.js?v=2');
 
         $this->view('card');
     }

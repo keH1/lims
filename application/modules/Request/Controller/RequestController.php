@@ -67,6 +67,8 @@ class RequestController extends Controller
 
         $this->data['laboratories'] = $lab->getLabList();
 
+        $this->data['type_list'] = $request->getTypeRequestList();
+
 
         $this->data['contracts'] = [];
 
@@ -188,6 +190,7 @@ class RequestController extends Controller
         $this->data['companies'] = $company->getList();
         $this->data['laboratories'] = $lab->getLabList();
         $this->data['display'] = $this->getDisplayClass();
+        $this->data['type_list'] = $request->getTypeRequestList();
 
         $this->addJs('/assets/js/request_new.js');
 
@@ -577,7 +580,7 @@ class RequestController extends Controller
         $actBase                = $requirement->getActBase($dealId);
         $countResults           = $resultModel->getCountTrialResults($dealId);
         $isResults              = $resultModel->isResultNotEmpty($dealId);
-        $permissionInfo         = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo         = $permissionModel->getUserPermission(App::getUserId());
 
 
         $userFiles = $request->getFilesFromDir(UPLOAD_DIR . "/request/{$dealId}");
@@ -634,14 +637,14 @@ class RequestController extends Controller
         $this->data['deal_title'] = $deal['TITLE'];
 
         $this->data['is_complete'] = !($deal['STAGE_ID'] != '2' && $deal['STAGE_ID'] != '3' && $deal['STAGE_ID'] != '4' && $deal['STAGE_ID'] != 'WON');
-        $this->data['is_may_change'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], [1, 10, 35, 62, 9, 11, 58, 34, 43, 61, 13, 7, 15]);
+        $this->data['is_may_change'] = in_array(App::getUserId(), [1, 10, 35, 62, 9, 11, 58, 34, 43, 61, 13, 7, 15]);
         $this->data['is_end_test'] = $deal['STAGE_ID'] == 2 || $deal['STAGE_ID'] == 4 || $deal['STAGE_ID'] == 'WON';
 
         $this->data['user']['name'] = $_SESSION['SESS_AUTH']['NAME'];
 
         $this->data['company_title'] = $deal['COMPANY_TITLE'];
         $this->data['company_id'] = $deal['COMPANY_ID'];
-        $this->data['is_managers'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], [62, 83, 61, 17]);
+        $this->data['is_managers'] = in_array(App::getUserId(), [62, 83, 61, 17]);
         
         $this->data['is_good_company'] = $companyData[COMPANY_GOOD] == 1; // является ли компания добросовестным плательщиком
 
@@ -775,7 +778,7 @@ class RequestController extends Controller
         $this->data['payment']['surcharge'] = (float)$requestData['price_discount'] - (float)$requestData['OPLATA'];
 
 		$this->data['payment']['check'] = !empty($requestData['price_discount']) && $isExistTz && $this->data['payment']['surcharge'] == 0;
-		$this->data['payment']['is_disable_form'] = ((float)$requestData['OPLATA'] == (float)$requestData['price_discount']) && ($_SESSION['SESS_AUTH']['USER_ID'] != 25);
+		$this->data['payment']['is_disable_form'] = ((float)$requestData['OPLATA'] == (float)$requestData['price_discount']) && (App::getUserId() != 25);
         $this->data['payment']['price'] = $requestData['price_discount'];
         $this->data['payment']['pay']   = $requestData['OPLATA'];
         $this->data['payment']['datePayment'] =
@@ -844,7 +847,7 @@ class RequestController extends Controller
                     || (
                         empty($requestData['OPLATA'])
                         && empty($requestData['TAKEN_ID_DEAL'])
-                        && $_SESSION['SESS_AUTH']['USER_ID'] != 9
+                        && App::getUserId() != 9
                     ),
                 'is_enable_ecp'  =>
                     !empty($protocol['ID'])
@@ -893,7 +896,7 @@ class RequestController extends Controller
         $this->data['act_complete']['date'] = !empty($actVr['DATE'])? StringHelper::dateRu($actVr['DATE']) : '--';
         $this->data['act_complete']['date_send'] = !empty($actVr['SEND_DATE'])? StringHelper::dateRu($actVr['SEND_DATE']) : 'Не отправлен';
         // Заполнить данные акта возможно только на стадии - Испытания завершины(Работы в лаборатории завершены), т.к могут завершить заявку и не завершить испытание
-		$this->data['act_complete']['is_disable_form'] = false && !in_array($_SESSION['SESS_AUTH']['USER_ID'], [61, 88, 1, 25]) || 0;
+		$this->data['act_complete']['is_disable_form'] = false && !in_array(App::getUserId(), [61, 88, 1, 25]) || 0;
 //		$this->data['act_complete']['is_disable_form'] = !($deal['STAGE_ID'] == 2) || ;
         $this->data['act_complete']['is_disable_mail'] = empty($actVr) || 0;
         //TODO: пока ид организации задано жестко 1. потом переделать на получение к какой организации принадлежит заявка
@@ -1224,7 +1227,7 @@ class RequestController extends Controller
             $this->redirect("/request/list/");
         }
 
-		if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], [25, 88, 61]) && ($pay <= 0) ) {
+		if ( !in_array(App::getUserId(), [25, 88, 61]) && ($pay <= 0) ) {
             $this->showErrorMessage('Оплата не может быть меньше или равна нулю');
             $this->redirect("/request/card/{$idDeal}");
         }
