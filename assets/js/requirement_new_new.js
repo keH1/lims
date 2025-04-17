@@ -761,6 +761,46 @@ $(function ($) {
         return false
     })
 
+    $('#edit-probe-modal-form button[type="submit"]').on('click', function () {
+        $('#button_action').val($(this).val())
+    })
+
+    // Редактирование пробы
+    $('#edit-probe-modal-form').on('submit', function () {
+        let $form = $(this)
+        let $button = $form.find(`button[type="submit"]`)
+
+        $button.addClass('disabled')
+
+        $.ajax({
+            url: "/ulab/requirement/editProbeAjax/",
+            data: $form.serialize(),
+            dataType: "json",
+            async: true,
+            method: "POST",
+            success: function (json) {
+                if ( !json.success ) {
+                    showErrorMessage(json.error)
+                }
+
+                if ( json.type === 'delete' ) {
+                    $strTotal.text(json.data.price_ru)
+                    $inputTotal.val(json.data.price)
+                    $inputDiscount.val(json.data.price_discount)
+                }
+
+                journalDataTable.ajax.reload()
+            },
+            complete: function () {
+                $button.removeClass('disabled')
+
+                $.magnificPopup.close()
+            }
+        })
+
+        return false
+    })
+
     // Добавление работы
     $('#add-work-modal-form').on('submit', function (e) {
         e.preventDefault()
