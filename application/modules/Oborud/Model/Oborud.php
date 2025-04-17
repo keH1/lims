@@ -40,6 +40,8 @@ class Oborud extends Model {
      */
     public function getDataToJournal($filter)
     {
+        $organizationId = App::getOrganizationId();
+
         $currentDate = date('Y-m-d');
 
         $labModel = new Lab();
@@ -201,6 +203,7 @@ class Oborud extends Model {
                 }
             }
         }
+        $where .= "b.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $data = $this->DB->Query(
@@ -225,7 +228,7 @@ class Oborud extends Model {
                     FROM ba_oborud b
                     LEFT JOIN ba_laba l ON l.ID = b.place_of_installation_or_storage
                     left join ba_oborud_certificate as c on c.oborud_id = b.ID
-                    WHERE 1
+                    WHERE b.organization_id = {$organizationId}
                     group by b.ID"
         )->SelectedRowsCount();
 
@@ -368,6 +371,7 @@ class Oborud extends Model {
      */
     public function getDataToOborudMovingJournal($filter)
     {
+        $organizationId = App::getOrganizationId();
         $userModel = new User();
 
         $where = "";
@@ -430,6 +434,7 @@ class Oborud extends Model {
                 }
             }
         }
+        $where .= "b.organization_id = '{$organizationId}' AND ";
         $where .= "1 ";
 
         $data = $this->DB->Query(
@@ -444,7 +449,7 @@ class Oborud extends Model {
             "SELECT b.id
                     FROM ba_oborud b
                     LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID
-                    WHERE 1"
+                    WHERE organization_id = '{$organizationId}' AND 1"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
@@ -583,6 +588,7 @@ class Oborud extends Model {
      */
     public function insertOborud($data)
     {
+        $organizationId = App::getOrganizationId();
         $yearShort = date('y', strtotime($data['god_vvoda_expluatation']));
         $number = 1;
 
@@ -613,7 +619,7 @@ class Oborud extends Model {
         $row = $this->DB->Query(
             "select max(`number`) as last_number 
                     from ba_oborud 
-                    where year(`god_vvoda_expluatation`) = {$year} and place_of_installation_or_storage {$labFind} and `is_vagon` = {$isVagon}"
+                    where year(`god_vvoda_expluatation`) = {$year} and place_of_installation_or_storage {$labFind} and `is_vagon` = {$isVagon} and organization_id = {$organizationId}"
         )->Fetch();
 
         if ( !empty($row) && !empty($row['last_number']) ) {
@@ -628,6 +634,7 @@ class Oborud extends Model {
 
         $data['number'] = $number;
         $data['REG_NUM'] = $regNum;
+        $data['organization_id'] = $organizationId;
 
         $sqlData = $this->prepearData($data);
 
@@ -644,7 +651,7 @@ class Oborud extends Model {
     {
         $sqlData = $this->prepearData($data);
 
-        return $this->DB->Update('ba_oborud', $sqlData, "WHERE ID = {$oborudId}");
+        return $this->DB->Update('ba_oborud', $sqlData, "WHERE ID = {$oborudId} AND organization_id = " . App::getOrganizationId());
     }
 
 
@@ -655,7 +662,7 @@ class Oborud extends Model {
      */
     public function updateFieldOborud($oborudId, $field, $value)
     {
-        $this->DB->Update('ba_oborud', [$field => $this->quoteStr($this->DB->ForSql($value))], "WHERE ID = {$oborudId}");
+        $this->DB->Update('ba_oborud', [$field => $this->quoteStr($this->DB->ForSql($value))], "WHERE ID = {$oborudId} AND organization_id = " . App::getOrganizationId());
     }
 
 
@@ -917,15 +924,15 @@ class Oborud extends Model {
      */
     public function getOborudsForResults(): array
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
-
         $result = $this->DB->Query("SELECT b_o.ID b_o_id, b_o.TYPE_OBORUD, b_o.OBJECT, b_o.REG_NUM, 
             b_c.GOST_ID, b_c.OBORUD_ID, 
             b_g.ID b_g_id, b_g.GOST, b_g.GOST_PUNKT, b_g.NUM_OA_NEW, b_o.IDENT  
             FROM ba_oborud b_o 
             LEFT JOIN ba_connection b_c ON b_c.OBORUD_ID = b_o.ID 
             LEFT JOIN ba_gost b_g ON b_g.ID = b_c.GOST_ID 
-            WHERE b_g.NUM_OA_NEW > 0 AND b_o.IDENT NOT IN ('VO', 'TS', 'REACT') ORDER BY b_o.OBJECT");
+            WHERE b_g.NUM_OA_NEW > 0 AND b_o.IDENT NOT IN ('VO', 'TS', 'REACT') AND b_o.organization_id = {$organizationId} ORDER BY b_o.OBJECT");
 
         while ($row = $result->Fetch()) {
 
@@ -943,6 +950,7 @@ class Oborud extends Model {
      */
     public function getOborudsByProtocolId(?int $protocolId): array
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
         $currentDate = date('Y-m-d');
 
@@ -959,6 +967,7 @@ class Oborud extends Model {
             WHERE ugtp.protocol_id = {$protocolId} AND b_g.NUM_OA_NEW > 0
                 AND (b_o.IDENT IS NULL OR b_o.IDENT NOT IN ('VO', 'TS', 'REACT'))
                 AND b_o.is_decommissioned = 0 AND (b_o.LONG_STORAGE = 0 OR b_o.LONG_STORAGE IS NULL)
+                AND b_o.organization_id = {$organizationId}
             ORDER BY b_o.OBJECT");
 
         while ($row = $result->Fetch()) {
@@ -989,6 +998,7 @@ class Oborud extends Model {
      */
     public function oborudsByProtocolId(?int $protocolId): array
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
         $currentDate = date('Y-m-d');
 
@@ -1004,7 +1014,8 @@ class Oborud extends Model {
             INNER JOIN ulab_methods m ON m.id = mo.method_id 
             WHERE ugtp.protocol_id = {$protocolId}
                 AND (b_o.IDENT IS NULL OR b_o.IDENT NOT IN ('VO', 'TS', 'REACT')) 
-                AND b_o.is_decommissioned = 0 AND (b_o.LONG_STORAGE = 0 OR b_o.LONG_STORAGE IS NULL) 
+                AND b_o.is_decommissioned = 0 AND (b_o.LONG_STORAGE = 0 OR b_o.LONG_STORAGE IS NULL)
+                AND b_o.organization_id = {$organizationId}
             ORDER BY b_o.OBJECT");
 
         while ($row = $result->Fetch()) {
@@ -1033,6 +1044,7 @@ class Oborud extends Model {
      */
     public function getOborudsByDealId(int $dealId): array
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
 
         if (empty($dealId) || $dealId < 0) {
@@ -1045,7 +1057,8 @@ class Oborud extends Model {
             INNER JOIN ba_connection b_c ON b_c.GOST_ID = ugtp.method_id 
             INNER JOIN ba_oborud b_o ON b_o.ID = b_c.OBORUD_ID 
             INNER JOIN ba_gost b_g ON b_g.ID = b_c.GOST_ID 
-            WHERE umtr.deal_id = {$dealId} AND b_g.NUM_OA_NEW > 0 AND b_o.IDENT NOT IN ('VO', 'TS', 'REACT') 
+            WHERE umtr.deal_id = {$dealId} AND b_g.NUM_OA_NEW > 0 AND b_o.IDENT NOT IN ('VO', 'TS', 'REACT')
+            AND b_o.organization_id = {$organizationId}
             AND b_o.is_decommissioned = 0 AND b_o.LONG_STORAGE = 0 ORDER BY b_o.OBJECT");
 
         while ($row = $result->Fetch()) {
@@ -1112,6 +1125,7 @@ class Oborud extends Model {
      */
     public function getTzObConnectByProtocolId($protocolId)
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
         $currentDate = date('Y-m-d');
 
@@ -1126,7 +1140,9 @@ class Oborud extends Model {
                     FROM TZ_OB_CONNECT toc 
                     INNER JOIN ba_oborud b_o ON b_o.ID = toc.ID_OB
 					left join ba_oborud_certificate boc on b_o.ID = boc.oborud_id and boc.is_actual = 1 
-                    WHERE PROTOCOL_ID = {$protocolId}");
+                    WHERE PROTOCOL_ID = {$protocolId}
+                    AND b_o.organization_id = {$organizationId}
+                    ");
 
         while ($row = $result->Fetch()) {
 
@@ -1228,6 +1244,7 @@ class Oborud extends Model {
 
     public function getListBySecondmentId($id)
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         $stmt = $this->DB->Query("
@@ -1235,6 +1252,7 @@ class Oborud extends Model {
             FROM ba_oborud as b
             LEFT JOIN secondment_oborud s_ob ON s_ob.oborud_id = b.id
             WHERE s_ob.secondment_id = {$id}
+            AND b.organization_id = {$organizationId}
         ");
 
         while ($row = $stmt->Fetch()) {
@@ -1250,11 +1268,12 @@ class Oborud extends Model {
      */
     public function getOboruds()
     {
+        $organizationId = App::getOrganizationId();
         $sql = $this->DB->Query(
             "SELECT mo.method_id, o.id o_id, o.IDENT, o.REG_NUM, o.OBJECT, o.TYPE_OBORUD, m.clause, g.id g_id, g.reg_doc   
                 FROM ba_oborud o, ulab_methods_oborud mo, ulab_methods m, ulab_gost g 
                 WHERE o.IDENT NOT IN ('VO', 'TS', 'REACT') AND o.ID = mo.id_oborud AND mo.method_id = m.id 
-                AND m.gost_id = g.id ORDER BY o.OBJECT"
+                AND m.gost_id = g.id AND o.organization_id = {$organizationId} ORDER BY o.OBJECT"
         );
 
         $result = [];
@@ -1324,7 +1343,7 @@ class Oborud extends Model {
     {
         $labModel = new Lab();
         $methodsModel = new Methods();
-
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         if (empty($ugtpIds)) {
@@ -1938,7 +1957,7 @@ class Oborud extends Model {
                 ]
             ];
         }
-
+        $organizationId = App::getOrganizationId();
         $this->DB->Query("
             UPDATE ba_oborud
             SET roomnumber = NULL
@@ -1947,7 +1966,7 @@ class Oborud extends Model {
 
         foreach ($oborudIds as $oborudId) {
             $oborudId = (int)$oborudId;
-            $this->DB->Update('ba_oborud', ['roomnumber' => $roomId], "WHERE id = {$oborudId}");
+            $this->DB->Update('ba_oborud', ['roomnumber' => $roomId], "WHERE id = {$oborudId} AND organization_id = {$organizationId}");
         }
 
         return ['success' => true];
@@ -1964,6 +1983,7 @@ class Oborud extends Model {
             ];
         }
 
+        $organizationId = App::getOrganizationId();
         $this->DB->Query("
             UPDATE ba_oborud
             SET roomnumber = NULL
@@ -1972,7 +1992,7 @@ class Oborud extends Model {
 
         foreach ($oborudIds as $oborudId) {
             $oborudId = (int)$oborudId;
-            $this->DB->Update('ba_oborud', ['roomnumber' => $roomId], "WHERE id = {$oborudId}");
+            $this->DB->Update('ba_oborud', ['roomnumber' => $roomId], "WHERE id = {$oborudId} AND organization_id = {$organizationId}");
         }
 
         return ['success' => true];
@@ -1985,6 +2005,7 @@ class Oborud extends Model {
 
     public function getOborudByStorageRoom(string $roomId = ''): array
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
 //        $sql = $this->DB->Query("
@@ -1997,7 +2018,7 @@ class Oborud extends Model {
         $sql = $this->DB->Query("
             SELECT ID as id, OBJECT as name, roomnumber as id_storage_room
             FROM ba_oborud
-            WHERE roomnumber = '{$roomId}' OR roomnumber IS NULL OR roomnumber = 0
+            WHERE roomnumber = '{$roomId}' OR roomnumber IS NULL OR roomnumber = 0 AND organization_id = {$organizationId}
         ");
 
         while ($row = $sql->Fetch()) {
@@ -2009,6 +2030,7 @@ class Oborud extends Model {
 
     public function getOborudByOperatingRoom(string $roomId = ''): array
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
 //        $sql = $this->DB->Query("
@@ -2021,7 +2043,7 @@ class Oborud extends Model {
         $sql = $this->DB->Query("
             SELECT ID as id, OBJECT as name, roomnumber as id_storage_room
             FROM ba_oborud
-            WHERE roomnumber = '{$roomId}' OR roomnumber IS NULL
+            WHERE roomnumber = '{$roomId}' OR roomnumber IS NULL AND organization_id = {$organizationId}
         ");
 
         while ($row = $sql->Fetch()) {
@@ -2038,7 +2060,8 @@ class Oborud extends Model {
      */
     public function isExistEquipment(int $oborudId): bool
     {
-        $result = $this->DB->Query("SELECT COUNT(*) FROM ba_oborud WHERE ID = {$oborudId}");
+        $organizationId = App::getOrganizationId();
+        $result = $this->DB->Query("SELECT COUNT(*) FROM ba_oborud WHERE ID = {$oborudId} AND organization_id = {$organizationId}");
         return $result->Fetch()['COUNT(*)'] > 0;
     }
 }
