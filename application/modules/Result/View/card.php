@@ -440,8 +440,8 @@
             <input class="deal-id" type="hidden" name="deal_id" value="<?= $this->data['deal_id'] ?>">
         <?php endif; ?>
 
-        <?php if (!empty($_SESSION['SESS_AUTH']['USER_ID'])): ?>
-            <input class="user-id" type="hidden" name="user_id" value="<?= $_SESSION['SESS_AUTH']['USER_ID'] ?>">
+        <?php if (!empty(App::getUserId())): ?>
+            <input class="user-id" type="hidden" name="user_id" value="<?= App::getUserId() ?>">
         <?php endif; ?>
 
         <?php if (!empty($this->data['selected_protocol_id'])): ?>

@@ -357,7 +357,7 @@ class Material extends Model
             $result[$row['material_id']]['probe'][$row['id']]['is_in_act'] = $row['in_act'];
             $result[$row['material_id']]['probe'][$row['id']]['lab_info'] = $labInfo[$row['id']];
             $result[$row['material_id']]['probe'][$row['id']]['state'] = $row['state'];
-            $result[$row['material_id']]['probe'][$row['id']]['user_status'] = $probeModel->getAcceptStatusUser($row['id'], $_SESSION['SESS_AUTH']['USER_ID']);
+            $result[$row['material_id']]['probe'][$row['id']]['user_status'] = $probeModel->getAcceptStatusUser($row['id'], App::getUserId());
 
             $acceptStatus = $probeModel->getAcceptStatus($row['id']);
             $acceptUser = [];
@@ -429,7 +429,7 @@ class Material extends Model
                     ];
 
                     // TODO: новая область
-                    if ($_SESSION['SESS_AUTH']['USER_ID'] == 61) {
+                    if (App::getUserId() == 61) {
                         $gostData['new_method_id'] = $rowGost['gost_method'];
                     }
 

@@ -59,8 +59,8 @@
             <input class="deal-id" type="hidden" name="deal_id" value="<?= $this->data['requirement']['deal_id'] ?>">
         <?php endif; ?>
 
-        <?php if (!empty($_SESSION['SESS_AUTH']['USER_ID'])): ?>
-            <input class="user-id" type="hidden" name="user_id" value="<?= $_SESSION['SESS_AUTH']['USER_ID'] ?>">
+        <?php if (!empty(App::getUserId())): ?>
+            <input class="user-id" type="hidden" name="user_id" value="<?= App::getUserId() ?>">
         <?php endif; ?>
 
         <div class="row">
@@ -604,18 +604,18 @@
                                             <strong>Техническое задание утверждено!</strong>
                                         <?php else: ?>
                                             <?php if (empty($this->data['lab_leaders_tz'])): ?>
-                                                <button type="button" class="btn btn-primary btn-transfer" <?= empty($this->data['requirement']['methods']) && !empty($this->data['check_tz']) || !in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->data['assigned_id']) ? 'disabled' : '' ?>>Передать</button>
+                                                <button type="button" class="btn btn-primary btn-transfer" <?= empty($this->data['requirement']['methods']) && !empty($this->data['check_tz']) || !in_array(App::getUserId(), $this->data['assigned_id']) ? 'disabled' : '' ?>>Передать</button>
                                             <?php else: ?>
-                                                <?php if (!in_array($_SESSION['SESS_AUTH']['USER_ID'], $this->data['lab_leaders_tz'])): ?>
+                                                <?php if (!in_array(App::getUserId(), $this->data['lab_leaders_tz'])): ?>
                                                     <strong>Заявка передана на рассмотрение!</strong>
                                                 <?php else: ?>
-                                                    <?php if (!empty($this->data['check_tz'][$_SESSION['SESS_AUTH']['USER_ID']]['confirm'])): ?>
+                                                    <?php if (!empty($this->data['check_tz'][App::getUserId()]['confirm'])): ?>
                                                         <strong>Утверждено Вами!</strong>
                                                     <?php else: ?>
                                                         <button type="button" class="btn btn-primary btn-approve me-2">Утвердить</button>
                                                         <button type="button" class="btn btn-danger btn-no-transfer"
-                                                            <?= !empty($this->data['check_tz'][$_SESSION['SESS_AUTH']['USER_ID']]['date_return']) ||
-                                                            !empty($this->data['check_tz'][$_SESSION['SESS_AUTH']['USER_ID']]['confirm']) ? 'disabled' : '' ?>>
+                                                            <?= !empty($this->data['check_tz'][App::getUserId()]['date_return']) ||
+                                                            !empty($this->data['check_tz'][App::getUserId()]['confirm']) ? 'disabled' : '' ?>>
                                                             Вернуть
                                                         </button>
                                                     <?php endif; ?>
@@ -658,7 +658,7 @@
         <?php endif; ?>
 
         <div class="line-dashed"></div>
-        <?php if (in_array($_SESSION['SESS_AUTH']['USER_ID'], [7, 61])):?>
+        <?php if (in_array(App::getUserId(), [7, 61])):?>
             <a href="/tz.php?<?= !empty($this->data['requirement']['methods']) ? 'EDIT' : 'ID' ?>=<?= !empty($this->data['requirement']['methods']) ? $this->data['requirement']['tz_id'] : $this->data['requirement']['deal_id'] ?>">Вернуться на старый дизайн</a>
         <?php endif;?>
     </form>

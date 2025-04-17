@@ -386,7 +386,7 @@ class RequirementController extends Controller
         $this->data['contract_type'] = $contractData['CONTRACT_TYPE'] ?? 'Договор';
         $this->data['deal_id'] = $dealId;
         $this->data['tz_id'] = $tzId;
-        $this->data['curr_user'] = $_SESSION['SESS_AUTH']['USER_ID'];
+        $this->data['curr_user'] = App::getUserId();
         $this->data['deal_title'] = $tzData['REQUEST_TITLE'];
 
         // Основание для формирования протокола (акт приемки проб)
@@ -959,7 +959,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], App::getUserId());
     }
 
     /**
@@ -976,7 +976,7 @@ class RequirementController extends Controller
 
         $requirementModel->confirmTzSent((int)$_POST['deal_id']);
 
-        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $requirementModel->confirmTzApprove((int)$_POST['tz_id'], App::getUserId());
     }
 
     /**
@@ -991,7 +991,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID'], $_POST['desc']);
+        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], App::getUserId(), $_POST['desc']);
     }
 
     /**
@@ -1006,7 +1006,7 @@ class RequirementController extends Controller
         /** @var Requirement $requirementModel */
         $requirementModel = $this->model('Requirement');
 
-        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], (int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $requirementModel->confirmTzNotApprove((int)$_POST['tz_id'], App::getUserId());
     }
 
     /**
@@ -1618,6 +1618,37 @@ class RequirementController extends Controller
         $requirementModel = $this->model('Requirement');
 
         $result = $requirementModel->addFilesWork((int)$_POST['work_id'], (int)$_POST['deal_id'], $_FILES);
+
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    }
+
+
+    /**
+     * @desc редактирует или удаляет пробу через аякс
+     */
+    public function editProbeAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        /** @var Requirement $requirementModel */
+        $requirementModel = $this->model('Requirement');
+
+        if ( $_POST['button'] === 'save' ) {
+            $requirementModel->updateProbeInfo((int)$_POST['probe_id'], $_POST['form']);
+            $result = [
+                'success' => true,
+            ];
+        } else if ( $_POST['button'] === 'delete' ) {
+            $result = $requirementModel->deleteProbe((int)$_POST['deal_id'], (int)$_POST['probe_id']);
+            $result['type'] = 'delete';
+        } else {
+            $result = [
+                'success' => false,
+                'error' => 'Неизвестная команда'
+            ];
+        }
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }

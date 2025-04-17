@@ -16,14 +16,13 @@
                 </a>
             </li>
             <li class="nav-item me-2">
-                <a class="disable nav-link disable-after-click <?=empty($this->data['request']['ID'])? 'disabled' : ''?>" href="<?=URI?>/request/copy/<?=$this->data['deal_id']?>" title="Скопировать">
+                <a class="disabled nav-link disable-after-click <?=empty($this->data['request']['ID'])? 'disabled' : ''?>" href="<?=URI?>/request/copy/<?=$this->data['deal_id']?>" title="Скопировать">
                     <svg class="icon" width="20" height="20">
                         <use xlink:href="<?=URI?>/assets/images/icons.svg#docs"/>
                     </svg>
                 </a>
             </li>
             <li class="nav-item me-2">
-<!--            	<a class="nav-link popup-help" href="#help-form" title="Техническая поддержка">-->
             	<a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Request_card/Request_card.html" title="Техническая поддержка">
                     <i class="fa-solid fa-question"></i>
                 </a>
@@ -62,14 +61,7 @@
                     <?php endif; ?>
                 </div>
                 <div>
-				<?php if ( $this->data['is_managers'] ):?>
-                    <a href="http://172.16.255.2/crm/company/details/<?=$this->data['company_id']?>/" class="text-decoration-none">
-                        <strong><?=$this->data['company_title']?></strong>
-                    </a>
-				<?php else:?>
                     <strong><?=$this->data['company_title']?></strong>
-				<?php endif;?>
-
                 </div>
             </div>
         </div>
@@ -133,14 +125,7 @@
                             </svg>
                         </a>
                     <?php else: ?>
-                    <?php if ( $this->data['deal_id'] == 8899 ): ?>
-                    <a class="no-decoration me-1" href="<?=URI.'/requirement/card_new/'.$this->data['tz_id']?>" title="Сформировать">
-                        <svg class="icon" width="35" height="35">
-                            <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
-                        </svg>
-                    </a>
-                    <?php endif; ?>
-                        <a class="no-decoration me-1" href="<?=URI.'/requirement/card/'.$this->data['tz_id']?>" title="Сформировать">
+                        <a class="no-decoration me-1" href="<?=URI.'/requirement/card_new/'.$this->data['tz_id']?>" title="Сформировать">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
                             </svg>
@@ -159,252 +144,31 @@
                 <td class="w30"></td>
                 <td class="w30"></td>
             </tr>
-
-            <tr class="<?=$this->data['proposal']['check']? 'table-green' : ''?>">
-                <td><strong>Коммерческое предложение</strong></td>
-                <td>
-                    <?=$this->data['proposal']['number']?>
-                </td>
-                <td>
-                    <?=$this->data['proposal']['date']?>
-                </td>
-                <td>
-                    <?=$this->data['proposal']['date_send']?>
-                </td>
-                <td>
-                    <?php if ($this->data['proposal']['is_disable_form']): ?>
-                        <a class="no-decoration me-1 disabled" href="#" title="Сформировать">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
-                            </svg>
-                        </a>
-                    <?php else: ?>
-<!--                        <a class="no-decoration me-1 reload" data-href="/protocol_generator/kp.php?ID=--><?//=$this->data['deal_id']?><!--&TZ_ID=--><?//=$this->data['request']['ID']?><!--" title="Сформировать">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#form"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-                        <a class="no-decoration me-1 reload" data-href="/ulab/generator/commercialOffer/<?=$this->data['deal_id']?>" title="Сформировать">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
-                            </svg>
-                        </a>
-                    <?php endif; ?>
-                </td>
-                <td>
-                    <?php if ($this->data['proposal']['is_disable_mail']): ?>
-                        <a class="no-decoration me-1 disabled" href="#" title="Отправить клиенту">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#mail"/>
-                            </svg>
-                        </a>
-                    <?php else: ?>
-                        <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$this->data['deal_id']?>" data-type="2" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$this->data['proposal']['attach']?>"
-                           href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['request']['ID']}&TYPE=2&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}&ATTACH={$this->data['proposal']['attach']}" : "#email-check"?>"
-                           title="Отправить клиенту"
-                        >
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#mail"/>
-                            </svg>
-                        </a>
-                    <?php endif; ?>
-                </td>
-                <td></td>
-                <td></td>
-            </tr>
-
-            <tr class="<?=$this->data['order']['check']?>">
-                <td><strong>Cчет-оферта</strong></td>
-                <td>
-                    <?php if ($this->data['order']['is_generated']): ?>
-                        <a href="/ulab/order/card/<?=$this->data['order']['id']?>"><?=$this->data['order']['number']?></a>
-                    <?php else: ?>
-                        Не сформирован
-                    <?php endif; ?>
-                </td>
-                <td>
-                    <?=$this->data['order']['date']?>
-                </td>
-                <td>
-                    <?=$this->data['order']['date_send']?>
-                </td>
-                <td>
-<!--                    --><?php //if ($this->data['order']['is_disable_form']): ?>
-<!--                        <a class="no-decoration me-1 disabled" href="#" title="Сформировать">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#form"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--                    --><?php //else: ?>
-                        <a class="no-decoration me-1 reloadS" data-href="/ulab/generator/invoiceOfferDocument/<?=$this->data['deal_id']?>" title="Сформировать">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
-                            </svg>
-                        </a>
-<!--                    --><?php //endif; ?>
-                </td>
-                <td>
-                    <?php if ( !$this->data['order']['is_disable_mail'] ): ?>
-                        <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$this->data['order']['id']?>" data-type="11" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$this->data['order']['attach']?>"
-                           href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['order']['id']}&TZ_ID={$this->data['tz_id']}&TYPE=11&EMAIL={$this->data['email']}&NAME={$this->data['user']['name']}&ATTACH={$this->data['order']['attach']}&TITLE={$this->data['deal_title']}" : "#email-check"?>"
-                           title="Отправить клиенту"
-                        >
-                            <svg class="icon me-1" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#mail"/>
-                            </svg>
-                        </a>
-                    <?php else: ?>
-                        <a class="no-decoration disabled me-1" href="" title="Отправить клиенту">
-                            <svg class="icon me-1" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#mail"/>
-                            </svg>
-                        </a>
-                    <?php endif; ?>
-                </td>
-                <td class="text-center">
-                    <input type="checkbox" data-text="Договор" class="form-check-input check-mail" <?=$this->data['order']['check']? 'checked' : 'disabled'?>>
-                </td>
-                <td></td>
-            </tr>
-
-<!--            <tr class="--><?//=$this->data['attach']['check']?><!--">-->
-<!--                <td><strong>Прил. к договору (ТЗ)</strong></td>-->
-<!--                <td>-->
-<!--                    --><?//=$this->data['attach']['number']?>
-<!--                </td>-->
-<!--                <td>-->
-<!--                    --><?//=$this->data['attach']['date']?>
-<!--                </td>-->
-<!--                <td>-->
-<!--                    --><?//=$this->data['attach']['date_send']?>
-<!--                </td>-->
-<!--                <td>-->
-<!--                    --><?php //if ($this->data['attach']['is_disable_form'] && !$this->data['is_admin']): ?>
-<!--                        <a class="no-decoration me-1 disabled" href="#" title="Сформировать">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#form"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--                    --><?php //else: ?>
-<!--                        <a class="no-decoration me-1 reload" data-href="/protocol_generator/tz_doc.php?ID=--><?////=$this->data['deal_id']?><!--&TZ_ID=--><?////=$this->data['tz_id']?><!--" title="Сформировать">-->
-<!---                                <use xlink:href="--><?////=URI?><!--/assets/images/icons.svg#form"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--						<a class="no-decoration me-1 reload" data-href="/ulab/generator/technicalSpecification/--><?//=$this->data['deal_id']?><!--" title="Сформировать">-->
-<!--							<svg class="icon" width="35" height="35">-->
-<!--								<use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#form"/>-->
-<!--							</svg>-->
-<!--						</a>-->
-<!--                    --><?php //endif; ?>
-<!--                </td>-->
-<!--                <td>-->
-<!--                    --><?php //if ($this->data['attach']['is_disable_mail']): ?>
-<!--                        <a class="no-decoration disabled me-1" href="#" title="Отправить клиенту">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#mail"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--                    --><?php //else: ?>
-<!--                        <a class="no-decoration me-1 --><?//=!empty($this->data['mail_list']) ? 'popup-mail' : ''?><!--" data-id="--><?//=$this->data['deal_id']?><!--" data-type="6" data-title="--><?//=$this->data['deal_title']?><!--" data-attach="--><?//=$this->data['attach']['actual_ver']?><!--"-->
-<!--                           href="--><?//= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['tz_id']}&TYPE=6&EMAIL={$this->data['email']}&ATTACH={$this->data['attach']['actual_ver']}&TITLE={$this->data['deal_title']}" : "#email-check"?><!--"-->
-<!--                           title="Отправить клиенту"-->
-<!--                        >-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#mail"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--                    --><?php //endif; ?>
-<!--                </td>-->
-<!--                <td class="text-center">-->
-<!--                    <input type="checkbox" data-text="ТЗ" class="form-check-input check-mail" <?//=$this->data['attach']['check']? 'checked' : 'disabled'?>>-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                    <a class="no-decoration --><?//=($this->data['attach']['check'] || $this->data['order']['check'] || $this->data['invoice']['check'])? '' : 'disabled'?><!-- me-1 btnOverall"-->
-<!--                       href="#"-->
-<!--                       title="Отправить клиенту"-->
-<!--                       data-order-id="--><?//=$this->data['doc_id']?><!--"-->
-<!--                       data-deal-id="--><?//=$this->data['deal_id']?><!--"-->
-<!--                       data-tz-id="--><?//=$this->data['tz_id']?><!--"-->
-<!--                       data-email="--><?//=$this->data['email']?><!--"-->
-<!--                       data-name="--><?//=$this->data['main_assigned']?><!--"-->
-<!--                       data-attach1="--><?//=$this->data['attach1']?><!--"-->
-<!--                       data-attach2="--><?//=$this->data['attach2']?><!--"-->
-<!--                       data-attach3="--><?//=$this->data['attach3']?><!--"-->
-<!--                       data-title="--><?//=$this->data['deal_title']?><!--"-->
-<!--                    >-->
-<!--                        <svg class="icon" width="35" height="35">-->
-<!--                            <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#mail"/>-->
-<!--                        </svg>-->
-<!--                    </a>-->
-<!--                </td>-->
-<!--            </tr>-->
-<!---->
-<!--            <tr class="--><?//=$this->data['invoice']['check']? 'table-green' : ''?><!--">-->
-<!--                <td><strong>Счет</strong></td>-->
-<!--                <td>--><?//=$this->data['invoice']['number']?><!--</td>-->
-<!--                <td>--><?//=$this->data['invoice']['date']?><!--</td>-->
-<!--                <td>--><?//=$this->data['invoice']['date_send']?><!--</td>-->
-<!--                <td>-->
-<!--                    --><?php //if ($this->data['invoice']['is_disable_form']): ?>
-<!--                        <a class="no-decoration disabled me-1" href="" title="Сформировать">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#form"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--                    --><?php //else: ?>
-<!--                        <a class="no-decoration me-1 reloadS" data-href="/protocol_generator/account.php?ID=--><?//=$this->data['deal_id']?><!--&TZ_ID=--><?//=$this->data['tz_id']?><!--" title="Сформировать">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#form"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--                    --><?php //endif; ?>
-<!--                </td>-->
-<!--                <td>-->
-<!--                    --><?php //if ($this->data['invoice']['is_disable_mail'] && !$this->data['is_admin']): ?>
-<!--                        <a class="no-decoration disabled me-1" href="" title="Отправить клиенту">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#mail"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--                    --><?php //else: ?>
-<!--                        <a class="no-decoration me-1 --><?//=!empty($this->data['mail_list']) ? 'popup-mail' : ''?><!--" data-id="--><?//=$this->data['deal_id']?><!--" data-type="4" data-title="--><?//=$this->data['deal_title']?><!--" data-attach="--><?//=$this->data['invoice']['attach']?><!--"-->
-<!--						   href="--><?//= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['tz_id']}&TYPE=4&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}&ATTACH={$this->data['invoice']['attach']}" : "#email-check"?><!--"-->
-<!--						   title="Отправить клиенту">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#mail"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--                    --><?php //endif; ?>
-<!--                </td>-->
-<!--                <td class="text-center">-->
-<!--                    <input type="checkbox" data-text="Счет" class="form-check-input check-mail" <?//=$this->data['invoice']['check']? 'checked' : 'disabled'?>>-->
-<!--                </td>-->
-<!--                <td></td>-->
-<!--            </tr>-->
-
-            <tr class="<?=$this->data['payment']['check']? 'table-green' : ''?>">
-                <td><strong>Оплата</strong></td>
-                <td><?=$this->data['payment']['status']?></td>
-                <td><?=$this->data['payment']['datePayment']?></td>
-                <td>--</td>
-                <td>
-                    <a class="no-decoration me-1 popup-with-form <?=$this->data['payment']['check'] && App::getUserId() != 88 ? 'disabled' : ''?>" href="#pay-modal-form" title="Заполнить данные по оплате">
-                        <svg class="icon" width="35" height="35">
-                            <use xlink:href="<?=URI?>/assets/images/icons.svg#edit"/>
-                        </svg>
-                    </a>
-                </td>
-                <td colspan="3">Остаток:<br><?=$this->data['payment']['surcharge']?> ₽</td>
-            </tr>
-
-            <tr class="<?=$this->data['sample']['check']? 'table-green' : ''?>">
+            <tr>
                 <td><strong>Акт приемки проб</strong></td>
                 <td>
-                    <?php if ($this->data['sample']['check']): ?>
-                        <a href="/ulab/probe/card/<?=$this->data['deal_id']?>"><?=$this->data['sample']['number']?></a>
-                    <?php else: ?>
-                        Не сформировано
-                    <?php endif; ?>
+                    <div>
+                        <?php if (!empty($this->data['sample']['has_file']) && $this->data['sample']['has_file']): ?>
+                            <div class="file-name-container mb-2">
+                                <a href="<?= $this->data['sample']['file_url'] ?>"
+                                   target="_blank"
+                                >
+                                    <?= htmlspecialchars($this->data['sample']['file_name']) ?>
+                                </a>
+                                <a href="#" class="ms-2 text-danger delete-pdf-file"
+                                   data-deal-id="<?= $this->data['deal_id'] ?>"
+                                   data-file-type="sample"
+                                >
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                            <?php else: ?>
+                                <div class="file-name-container mb-2">
+                                    Файл не загружен
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </td>
                 <td>
                     <?=$this->data['sample']['date']?>
@@ -413,52 +177,29 @@
                     <?=$this->data['sample']['date_send']?>
                 </td>
                 <td>
-                    <?php if ($this->data['sample']['is_disable_form']): ?>
-                        <a class="no-decoration disabled me-1 popup-with-form" href="#" title="Заполнить данные акта">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#edit"/>
-                            </svg>
-                        </a>
-                    <?php else: ?>
-<!--                        <a class="no-decoration me-1 popup-with-form" href="#act-probe-modal-form" title="Заполнить данные акта">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#edit"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-						<a class="no-decoration me-1" href="/ulab/probe/new/<?=$this->data['deal_id']?>" title="Заполнить данные акта">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#edit"/>
-                            </svg>
-                        </a>
-                    <?php endif; ?>
-                </td>
-                <td>
-<!--                    <a class="no-decoration me-1" href="/protocol_generator/probe_all.php?ID=--><?//=$this->data['deal_id']?><!--" title="Скачать акт приемки проб">-->
-<!--                        <svg class="icon" width="35" height="35">-->
-<!--                            <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#doc-send"/>-->
-<!--                        </svg>-->
-<!--                    </a>-->
-					<a class="no-decoration me-1" href="/ulab/generator/actSampleDocument/<?=$this->data['deal_id']?>" title="Скачать акт приемки проб">
-						<svg class="icon" width="35" height="35">
-							<use xlink:href="<?=URI?>/assets/images/icons.svg#doc-send"/>
-						</svg>
-					</a>
-                </td>
-                <td>
+                    <form class="pdf-upload-form" action="/ulab/request/uploadFileAjax/<?=$this->data['deal_id']?>"
+                                method="post" enctype="multipart/form-data"
+                        >
+                        <div class="input-group">
+                            <input type="file" id="pdf-file-upload-<?=$this->data['deal_id']?>" class="form-control form-control-sm" name="file" accept="application/pdf" style="display: none;">
+                            <input type="hidden" name="fileType" value="sample">
+                            <label for="pdf-file-upload-<?=$this->data['deal_id']?>" class="form-label upload-trigger" style="cursor: pointer;">
+                                <svg class="icon" width="30" height="30">
+                                    <use xlink:href="/ulab/assets/images/icons.svg#upload"></use>
+                                </svg>
+                            </label>
+                        </div>
+                    </form>
                 </td>
                 <td></td>
+                <td></td>
+                <td></td>
             </tr>
-
 			<tr class="<?=$this->data['results']['check']? 'table-green' : ''?>">
 				<td><strong>Результаты испытаний</strong></td>
 				<td>
 					<?php if ($this->data['results']['check']): ?>
-                        <!--TODO: Для новых лабораторий удалить else или добавить if если производится рефакторинг результатов испытаний и $this->data['deal_id'] > $this->data['result_refactoring_start_id'], так же убрать или добавить из контроллера $this->data['result_refactoring_start_id'] RequestController.php-->
-                        <?php if ( $this->data['material_data'] && $this->data['deal_id'] > $this->data['result_refactoring_start_id'] ): ?>
-                            <a href="<?=$this->data['is_deal_nk']? '/results_isp_nk.php?ID='.$this->data['deal_id'] : URI.'/result/'.($this->data['deal_id'] >= DEAL_START_NEW_AREA ? 'resultCard' : 'card').'/'.$this->data['deal_id']?>"><?=$this->data['deal_id']?></a>
-                        <?php else: ?>
-						<a href="/results_isp<?=$this->data['is_deal_nk']? '_nk' : ''?>.php?ID=<?=$this->data['deal_id']?>"><?=$this->data['deal_id']?></a>
-                        <?php endif; ?>
+                        <a href="<?= URI.'/result/card_oati/'.$this->data['deal_id']?>"><?=$this->data['deal_id']?></a>
                     <?php else: ?>
 						Не внесены
 					<?php endif; ?>
@@ -468,73 +209,63 @@
 				</td>
 				<td>--</td>
 				<td>
-                    <!--TODO: Для новых лабораторий удалить else или добавить if если производится рефакторинг результатов испытаний и $this->data['deal_id'] > $this->data['result_refactoring_start_id'], так же убрать или добавить из контроллера $this->data['result_refactoring_start_id'] RequestController.php-->
-                    <?php if (!$this->data['results']['is_disabled'] || $this->data['is_admin']) :?>
-                    <?php if ( $this->data['deal_id'] > $this->data['result_refactoring_start_id'] ): ?>
-                        <a class="no-decoration me-1" href="<?=URI.'/result/'.($this->data['deal_id'] >= DEAL_START_NEW_AREA ? 'resultCard' : 'card').'/'.$this->data['deal_id']?>" title="Внести результаты">
+                    <?php if (!$this->data['results']['is_disabled']) :?>
+                        <a class="no-decoration me-1" href="<?=URI.'/result/card_oati/'.$this->data['deal_id']?>" title="Внести результаты">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#enter"/>
                             </svg>
                         </a>
-                    <?php else: ?>
-                        <a class="no-decoration me-1" href="/results_isp.php?ID=<?=$this->data['deal_id']?>" title="Внести результаты">
+                    <?php else:?>
+                        <a class="no-decoration me-1 disabled" href="#" title="Внести результаты">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#enter"/>
                             </svg>
                         </a>
-                    <?php endif; ?>
-				<?php else:?>
-						<a class="no-decoration me-1 disabled" href="#" title="Внести результаты">
-							<svg class="icon" width="35" height="35">
-								<use xlink:href="<?=URI?>/assets/images/icons.svg#enter"/>
-							</svg>
-						</a>
-				<?php endif;?>
+                    <?php endif;?>
 				</td>
 				<td></td>
 				<td></td>
 				<td></td>
 			</tr>
+            <tr>
+                <td><strong>Протокол</strong></td>
+                <td>
+                    Не сформирован
+                </td>
+                <td>--</td>
+                <td>
+                    Не отправлен
+                </td>
+                <td>
+                    <a class="no-decoration me-1 popup-with-form" href="#protocol-modal-form" title="Сформировать">
+                        <svg class="icon" width="35" height="35">
+                            <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
+                        </svg>
+                    </a>
 
-            <?php if ( empty($this->data['protocol']) ): ?>
-                <tr>
-                    <td><strong>Протокол</strong></td>
-                    <td>
-                        Не сформирован
-                    </td>
-                    <td>--</td>
-                    <td>
-                        Не отправлен
-                    </td>
-                    <td>
-                        <a class="no-decoration disabled me-1" href="" title="Сформировать">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
-                            </svg>
-                        </a>
-                    </td>
-                    <td>
-                        <a class="no-decoration disabled me-1" href="" title="Отправить клиенту">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#mail"/>
-                            </svg>
-                        </a>
-                    </td>
-                    <td>
-                        <a class="no-decoration disabled me-1" href="" title="ЭЦП">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="<?=URI?>/assets/images/icons.svg#ecp"/>
-                            </svg>
-                        </a>
-                    </td>
-                    <td>
-                        <a class="no-decoration disabled me-1" href="" title="xml">
-                            <img src="<?=URI?>/assets/images/xml_icon_2.png" alt="xml" width="35">
-                        </a>
-                    </td>
-                </tr>
-            <?php else: ?>
-                <?php foreach ($this->data['protocol'] as $protocol): ?>
+                </td>
+                <td>
+                    <a class="no-decoration disabled me-1" href="" title="Отправить клиенту">
+                        <svg class="icon" width="35" height="35">
+                            <use xlink:href="<?=URI?>/assets/images/icons.svg#mail"/>
+                        </svg>
+                    </a>
+                </td>
+                <td>
+                    <a class="no-decoration disabled me-1" href="" title="ЭЦП">
+                        <svg class="icon" width="35" height="35">
+                            <use xlink:href="<?=URI?>/assets/images/icons.svg#ecp"/>
+                        </svg>
+                    </a>
+                </td>
+                <td>
+                    <a class="no-decoration disabled me-1" href="" title="xml">
+                        <img src="<?=URI?>/assets/images/xml_icon_2.png" alt="xml" width="35">
+                    </a>
+                </td>
+            </tr>
+
+                <!-- <?php foreach ($this->data['protocol'] as $protocol): ?>
                     <tr class="<?=$protocol['check']? 'table-green' : ''?>">
                         <td><strong>Протокол</strong></td>
                         <td>
@@ -608,8 +339,8 @@
                             </a>
                         </td>
                     </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                <?php endforeach; ?> -->
+
 
             <tr class="<?=!empty($this->data['is_end_test'])? 'table-green' : ''?>">
                 <td><strong>Завершение испытаний</strong></td>
@@ -629,13 +360,13 @@
                                 </a>
                             </span>
                         <?php endif; ?>
-                    <?php elseif($this->data['complete']['is_disabled']): ?>
-                        <span title="Отсутсвует протокол, невозможно завершить испытание">
+                    <?php elseif ($this->data['complete']['is_disabled']): ?>
+                        <span title="Отсутствует протокол, невозможно завершить испытание">
                             <a class="no-decoration me-1 disabled" href="#">
                                 <img src="<?=URI?>/assets/images/openlock.png" alt="unlock" width="35">
                             </a>
                         </span>
-                    <?php elseif($this->data['complete']['may_complete']): ?>
+                    <?php elseif ($this->data['complete']['may_complete']): ?>
                         <a class="no-decoration me-1" href="<?=URI?>/request/complete/<?=$this->data['deal_id']?>" title="Завершить испытание">
                             <img src="<?=URI?>/assets/images/openlock.png" alt="unlock" width="35">
                         </a>
@@ -733,7 +464,7 @@
 
 <div class="panel panel-default">
     <header class="panel-heading">
-        Документы клиента
+        Документы
         <span class="tools float-end">
             <a href="#" class="fa fa-chevron-down"></a>
          </span>
@@ -767,7 +498,7 @@
         <div>
             <form id="dropzone-example" class="dropzone dz-clickable" action="/ulab/request/uploadUserFileAjax/<?=$this->data['deal_id']?>">
                 <div class="dropzone-previews"></div>
-                <div class="dz-default dz-message"><span>Drop files here to upload</span></div>
+                <div class="dz-default dz-message"><span>Добавьте файлы для загрузки</span></div>
             </form>
         </div>
     </div>
@@ -785,10 +516,6 @@
             <thead>
             <tr class="table-light">
                 <th scope="col">Протокол</th>
-                <th scope="col">КП</th>
-                <th scope="col">Счет-оферта</th>
-<!--                <th scope="col">Прил. к договору (тз)</th>-->
-<!--                <th scope="col">Счет</th>-->
                 <th scope="col">Акт ВР</th>
             </tr>
             </thead>
@@ -799,34 +526,9 @@
                         <span><strong>Данные протокола №<?=$item['number']?></strong></span>
                         <br>
                         <?php foreach ($item['files'] as $file): ?>
-                            <a  href="<?=$item['dir']?><?=$file?>"><?=$file?></a><br>
+                            <a  href="<?=$item['dir']?><?=$file?>?v=<?=rand()?>"><?=$file?></a><br>
                         <?php endforeach; ?>
                         <br>
-                    <?php endforeach; ?>
-                </td>
-                <td class="align-top">
-                    <?php foreach ($this->data['file']['kp']['files'] as $item): ?>
-                        <a  href="<?=$this->data['file']['kp']['dir']?><?=$item?>"><?=$item?></a><br>
-                    <?php endforeach; ?>
-                </td>
-                <td class="align-top">
-                    <?php foreach ($this->data['file']['offer']['files'] as $item): ?>
-                        <a  href="<?=$this->data['file']['offer']['dir']?><?=$item?>"><?=$item?></a><br>
-                    <?php endforeach; ?>
-                </td>
-<!--                <td class="align-top">-->
-<!--                    --><?php //foreach ($this->data['file']['tz']['files'] as $item): ?>
-<!--                        <a  href="--><?//=$this->data['file']['tz']['dir']?><!----><?//=$item?><!--">--><?//=$item?><!--</a><br>-->
-<!--                    --><?php //endforeach; ?>
-<!--                </td>-->
-<!--                <td class="align-top">-->
-<!--                    --><?php //foreach ($this->data['file']['invoice']['files'] as $item): ?>
-<!--                        <a  href="--><?//=$this->data['file']['invoice']['dir']?><!----><?//=$item?><!--">--><?//=$item?><!--</a><br>-->
-<!--                    --><?php //endforeach; ?>
-<!--                </td>-->
-                <td class="align-top">
-                    <?php foreach ($this->data['file']['act']['files'] as $item): ?>
-                        <a  href="<?=$this->data['file']['act']['dir']?><?=$item?>"><?=$item?></a><br>
                     <?php endforeach; ?>
                 </td>
             </tr>
@@ -836,7 +538,6 @@
 </div>
 
 <div class="line-dashed"></div>
-
 
 <form id="act-probe-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative"
       action="<?=URI?>/probe/insertUpdateActProbe/<?=$this->data['deal_id']?>" method="post">
@@ -865,7 +566,7 @@
 
     <div class="mb-3">
         <label class="form-label">Место отбора проб</label>
-        <input type="text" class="form-control" name="act[samplePlace]" value="<?=$this->data['sample']['place_probe']?>">
+        <input type="text" class="form-control" name="act[samplePlace]" value="<?=htmlentities($this->data['sample']['place_probe'])?>">
     </div>
 
     <div class="mb-3">
@@ -875,15 +576,6 @@
     <div class="mb-3">
         <label class="form-label">Описание объекта</label>
         <input type="text" class="form-control" name="act[description]" value="<?=$this->data['sample']['description']?>">
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Привязка к карьеру</label>
-        <select type="text" class="form-control" name="act[quarry]">
-            <option value=''>Выберите карьер</option>
-            <?php foreach($this->data['quarry'] as $key => $value): ?>
-                <option value='<?=$value['ID']?>' <?=$this->data['sample']['quarry_id'] == $value['ID']? 'selected' : ''?>><?=$value['NAME']?></option>
-            <?php endforeach;?>
-        </select>
     </div>
     <div class="mb-3 form-check">
         <input type="checkbox" class="form-check-input act-manual-edit" name='act[exampleCheck1]' id="exampleCheck1" <?=$this->data['sample']['selection_type'] == 1 ? 'checked' : ''?>>
@@ -905,9 +597,82 @@
     <button type="submit" class="btn btn-primary submit-act-probe">Сохранить</button>
 </form>
 
+<div id="protocol-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative">
+    <div class="title mb-3 h-2">
+        Протоколы испытаний
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <?php if ($this->data['empty_protocol_files']): ?>
+        <div class="mb-2">
+            <input type="checkbox" class="form-check-input check-all" id="select-all-protocols">
+            <label for="select-all-protocols">Выбрать все</label>
+        </div>
+    <?php endif; ?>
+
+    <?php foreach ($this->data['protocol_modal'] as $index => $protocol): ?>
+        <div class="mb-2">
+            <?php if (!empty($protocol['protocol_file_path'])): ?>
+                <input type="checkbox" class="form-check-input protocol-checkbox" id="protocol-<?= $index ?>" 
+                       data-file-path="<?= $protocol['protocol_file_path'] ?>"
+                       data-file-type="<?= $protocol['type_file'] ?>">
+            <?php endif; ?>
+            <label for="protocol-<?= $index ?>"><?= $protocol['work_name'] ?></label>
+            <span class="ms-3" title="<?= !empty($protocol['protocol_file']) ? $protocol['protocol_file'] : 'Нет файла протокола' ?>">
+                <?php
+                    if (!empty($protocol['protocol_file'])) {
+                        $fileName = $protocol['protocol_file'];
+                        $lastDotIndex = strrpos($fileName, '.');
+                        $extensionWithDot = ($lastDotIndex !== false) ? substr($fileName, $lastDotIndex) : '';
+                        
+                        $extensionClass = '';
+                        $fileType = !empty($protocol['type_file']) ? $protocol['type_file'] : '';
+                        
+                        if ($fileType === 'pdf') {
+                            $extensionClass = 'text-danger';
+                        } elseif ($fileType === 'docx' || $fileType === 'doc') {
+                            $extensionClass = 'text-primary';
+                        } elseif ($fileType === 'xls' || $fileType === 'xlsx') {
+                            $extensionClass = 'text-success';
+                        }
+                        
+                        if (mb_strlen($fileName) > 35) {
+                            echo mb_substr($fileName, 0, 32) . '...';
+                            if (!empty($extensionWithDot)) {
+                                echo '<span class="' . $extensionClass . '">' . $extensionWithDot . '</span>';
+                            }
+                        } else {
+                            $nameWithoutExt = $lastDotIndex !== false ? substr($fileName, 0, $lastDotIndex) : $fileName;
+                            echo $nameWithoutExt;
+                            if (!empty($extensionWithDot)) {
+                                echo '<span class="' . $extensionClass . '">' . $extensionWithDot . '</span>';
+                            }
+                        }
+                    } else {
+                        echo 'Нет файла протокола';
+                    }
+                ?>
+            </span>
+        </div>
+    <?php endforeach; ?>
+
+    <form id="create-protocols-archive-form" action="/ulab/request/createProtocolsArchive" method="POST">
+        <input type="hidden" name="title" value="<?= $this->data['deal_title'] ?>">
+    </form>
+
+    <div class="line-dashed-small"></div>
+
+    <div class="mt-3">
+        <button type="button" class="btn btn-primary download-selected-protocols" disabled>Сформировать</button>
+    </div>
+</div>
+
 <form id="act-work-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/request/card/<?=$this->data['deal_id']?>" method="post">
     <div class="title mb-3 h-2">
-        Данные акта выполненых работ
+        Данные акта выполненных работ
+    </div>
+    
     <div class="line-dashed-small"></div>
 
     <div class="mb-3">
@@ -923,9 +688,10 @@
     <div class="mb-3">
         <label class="form-label">Руководитель</label>
         <select name="lead" class="form-control" required>
-            <option value="1">Ахтямов Э.Р.</option>
-<!--            <option value="2">Габдрахманова А.А.</option>-->
-            <option value="3">Молчанова Е.Н.</option>
+            <option value="" <?=$this->data['act_vr']['LEAD'] == '' ? 'selected' : ''?> disabled>Выберите руководителя</option>
+            <?php foreach ($this->data['act_complete']['assigned_users'] as $user): ?>
+                <option <?=$this->data['act_vr']['LEAD'] == $user['id'] ? 'selected' : ''?> value="<?=$user['id']?>"><?=$user['short_name']?></option>
+            <?php endforeach; ?>
         </select>
     </div>
 
@@ -945,31 +711,6 @@
     <div class="line-dashed-small"></div>
 
     <button type="submit" class="btn btn-primary">Сохранить</button>
-</form>
-
-<form id="pay-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/request/setOplata/" method="post">
-    <div class="title mb-3 h-2">
-        Данные оплаты
-    </div>
-
-    <div class="line-dashed-small"></div>
-
-    <div class="mb-3">
-        <label class="form-label">Оплата</label>
-        <input type="number" name="pay" step="0.01" min="0.01" max="<?=$this->data['payment']['surcharge']?>" class="form-control" value="<?=$this->data['payment']['surcharge']?>" required>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Дата оплаты</label>
-        <input type="date" name="payDate" class="form-control" value="<?=date('Y-m-d')?>">
-    </div>
-
-    <input name="deal_id" value="<?=$this->data['deal_id']?>" type="hidden">
-    <input name="tz_id" value="<?=$this->data['tz_id']?>" type="hidden">
-
-    <div class="line-dashed-small"></div>
-
-    <button type="submit" class="btn btn-primary">Отправить</button>
 </form>
 
 <form id="email-check" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/mail.php" method="get">
@@ -1060,4 +801,3 @@
         <button data-stage="13" style="min-width: 100%" class="akt-finish btn btn-primary">Участие в тендере</button>
     </div>
 </div>
-

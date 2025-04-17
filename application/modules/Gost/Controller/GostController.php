@@ -270,7 +270,7 @@ class GostController extends Controller
 
         $data['is_confirm'] = 0;
 
-        if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], [214]) ) {
+        if ( in_array(App::getUserId(), [214]) ) {
             $data['is_confirm'] = 1;
         }
 

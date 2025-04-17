@@ -150,6 +150,7 @@
     <div class="mb-3">
         <label for="departmentId" class="form-label mb-1">Отдел</label>
         <select name="DEPARTMENT_ID" id="departmentId" class="form-control" required>
+            <option value="">Отдел не указан</option>
             <?php if (isset($this->data['department_all'])): ?>
                 <?php foreach ($this->data['department_all'] as $department): ?>
                     <option value="<?=$department['ID']?>" <?= $this->data['DEPARTMENT_ID'] == $department['ID'] ? 'selected' : '' ?> ><?=$department['NAME']?></option>

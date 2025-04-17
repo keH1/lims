@@ -181,7 +181,7 @@ class Nk extends Model {
         )->SelectedRowsCount();
 
         // Проверка на доступ редактирования данных градуационной зависимости
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
         $isCanEdit = in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION, LAB_PERMISSION]);
 
         while ($row = $data->Fetch()) {

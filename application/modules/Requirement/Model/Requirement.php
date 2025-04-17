@@ -1294,7 +1294,7 @@ class Requirement extends Model
                 $user['is_confirm'] = $this->getHasConfirmUser($dealId, $user['user_id']);
                 $state[] = $user['is_confirm'];
 
-                if ( $_SESSION['SESS_AUTH']['USER_ID'] == $user['user_id'] ) {
+                if ( App::getUserId() == $user['user_id'] ) {
                     $labsId['is_curr_user'] = 1;
                     $labsId['curr_user_status'] = $user['is_confirm'];
                 }
@@ -1423,7 +1423,7 @@ class Requirement extends Model
         foreach ($labHead['user'] as $user) {
             $data = [
                 'tz_id' => $tzId,
-                'user_sent_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+                'user_sent_id' => App::getUserId(),
                 'date_submission' => date('Y-m-d H:i:s'),
                 'leader' => $user['user_id'],
             ];
@@ -1451,7 +1451,7 @@ class Requirement extends Model
         foreach ($userList as $userId) {
             $data = [
                 'tz_id' => $tzId,
-                'user_sent_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+                'user_sent_id' => App::getUserId(),
                 'date_submission' => date('Y-m-d H:i:s'),
                 'leader' => $userId,
             ];
@@ -2582,28 +2582,47 @@ class Requirement extends Model
     {
         $dataFiles = [];
         $data = [];
+        $allowType = ['doc', 'docx', 'pdf', 'xls', 'xlsx'];
+        $allowMimeType = [
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/pdf',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
+        $errorMsg = '';
 
         // Результаты испытаний
         if ( !empty($files['file_result']['name']) ) {
-            $uploadResultDir = $_SERVER['DOCUMENT_ROOT'] . "/ulab/upload/request/{$dealId}/government_work/{$workId}/result/";
+            $type = mime_content_type($files['file_result']['tmp_name']);
+            if ( in_array($type, $allowMimeType) && in_array(pathinfo($files['file_result']['name'], PATHINFO_EXTENSION), $allowType)) {
+                $uploadResultDir = $_SERVER['DOCUMENT_ROOT'] . "/ulab/upload/request/{$dealId}/government_work/{$workId}/result/";
 
-            $resultUploadResult = $this->saveFile($uploadResultDir, $files['file_result']['name'], $files['file_result']['tmp_name']);
+                $resultUploadResult = $this->saveFile($uploadResultDir, $files['file_result']['name'], $files['file_result']['tmp_name']);
 
-            if ( $resultUploadResult['success'] ) {
-                $data['file_name_result'] = $dataFiles['file_name_result'] = $files['file_result']['name'];
+                if ( $resultUploadResult['success'] ) {
+                    $data['file_name_result'] = $dataFiles['file_name_result'] = $files['file_result']['name'];
+                }
+            } else {
+                $errorMsg = "Ошибка формата: файл должен быть: 'doc', 'docx', 'pdf', 'xls', 'xlsx'";
             }
         }
 
         // Протокол испытаний
         if ( !empty($files['file_protocol']['name']) ) {
-            $uploadResultDir = $_SERVER['DOCUMENT_ROOT'] . "/ulab/upload/request/{$dealId}/government_work/{$workId}/protocol/";
+            $type = mime_content_type($files['file_protocol']['tmp_name']);
+            if ( in_array($type, $allowMimeType) && in_array(pathinfo($files['file_protocol']['name'], PATHINFO_EXTENSION), $allowType)) {
+                $uploadResultDir = $_SERVER['DOCUMENT_ROOT'] . "/ulab/upload/request/{$dealId}/government_work/{$workId}/protocol/";
 
-            $resultUploadProtocol = $this->saveFile($uploadResultDir, $files['file_protocol']['name'], $files['file_protocol']['tmp_name']);
+                $resultUploadProtocol = $this->saveFile($uploadResultDir, $files['file_protocol']['name'], $files['file_protocol']['tmp_name']);
 
-            if ( $resultUploadProtocol['success'] ) {
-                $data['file_name_protocol'] = $dataFiles['file_name_protocol'] = $files['file_protocol']['name'];
-                $dataFiles['date_protocol'] = date('Y-m-d');
-                $data['date_protocol'] = date('d.m.Y');
+                if ( $resultUploadProtocol['success'] ) {
+                    $data['file_name_protocol'] = $dataFiles['file_name_protocol'] = $files['file_protocol']['name'];
+                    $dataFiles['date_protocol'] = date('Y-m-d');
+                    $data['date_protocol'] = date('d.m.Y');
+                }
+            } else {
+                $errorMsg = "Ошибка формата: файл должен быть: 'doc', 'docx', 'pdf', 'xls', 'xlsx'";
             }
         }
 
@@ -2622,6 +2641,45 @@ class Requirement extends Model
 
         return [
             'success' => false,
+            'error' => $errorMsg,
         ];
+    }
+
+    /**
+     * @param int $dealId
+     * @return array
+     */
+    public function getWorkProtocolFiles(int $dealId): array
+    {
+        $result = [];
+
+        $sql = $this->DB->Query(
+            "SELECT gw.id, gw.name
+             FROM government_work AS gw
+             WHERE gw.deal_id = {$dealId}
+        ");
+
+        $inc = 0;
+        while ($row = $sql->Fetch()) {
+            $result[$inc]['id'] = $row['id'];
+            $result[$inc]['work_name'] = $row['name'];
+
+            $filesPath = "/ulab/upload/request/{$dealId}/government_work/{$row['id']}/protocol/";
+            
+            if (is_dir($_SERVER['DOCUMENT_ROOT'] . $filesPath)) {
+                $files = scandir($_SERVER['DOCUMENT_ROOT'] . $filesPath);
+                $files = array_diff($files, array('.', '..'));
+                if (!empty($files)) {
+                    $filename = reset($files);
+                    $result[$inc]['type_file'] = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                    $result[$inc]['protocol_file'] = $filename;
+                    $result[$inc]['protocol_file_path'] = $filesPath . $filename;
+                }
+            }
+
+            $inc++;
+        }
+
+        return $result;
     }
 }

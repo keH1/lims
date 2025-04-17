@@ -168,6 +168,20 @@ escapeHtml = function (text) {
     return false;
 }
 
+// Скролл к первой ошибке
+function scrollToFirstError() {
+    const $firstError = $('.is-invalid').first()
+    if ($firstError.length) {
+        $('html, body').animate({
+                scrollTop: $firstError.offset().top - 100
+            },
+            500,
+            function () {
+                $firstError.focus()
+            })
+    }
+}
+
 
 
 $(function ($) {
@@ -346,7 +360,7 @@ $(function ($) {
     $body.on('change', '#company', function() {
         // clear form
         let $selectContract = $('select[name="NUM_DOGOVOR"]')
-        $selectContract.empty().append(`<option value=""></option>`)
+        $selectContract.empty().append(`<option value="">Новый договор</option>`)
         $('input.clearable').val('')
 
         let text = $(this).val()

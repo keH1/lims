@@ -63,7 +63,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Наименование объекта <span class="redStars">*</span></label>
                 <div class="col-sm-8">
-                    <textarea name="form[materials]" class="form-control" style="height: 80px;"><?=$this->data['form']['materials'] ?? ''?></textarea>
+                    <textarea name="form[materials]" class="form-control" style="height: 80px;" required><?=$this->data['form']['materials'] ?? ''?></textarea>
                 </div>
                 <div class="col-sm-2"></div>
             </div>
