@@ -1246,14 +1246,6 @@ class Statistic extends Model
                     ORDER BY  {$order['by']} {$order['dir']} {$limit}"
         );
 
-        $this->pre("SELECT 
-                        {$select}
-                    FROM {$from}
-                    {$join}
-                    WHERE {$where}
-                    {$groupBy}
-                    ORDER BY  {$order['by']} {$order['dir']} {$limit}");
-
         $dataTotal = $this->DB->Query(
             "SELECT 
                         {$select}
