@@ -2644,4 +2644,42 @@ class Requirement extends Model
             'error' => $errorMsg,
         ];
     }
+
+    /**
+     * @param int $dealId
+     * @return array
+     */
+    public function getWorkProtocolFiles(int $dealId): array
+    {
+        $result = [];
+
+        $sql = $this->DB->Query(
+            "SELECT gw.id, gw.name
+             FROM government_work AS gw
+             WHERE gw.deal_id = {$dealId}
+        ");
+
+        $inc = 0;
+        while ($row = $sql->Fetch()) {
+            $result[$inc]['id'] = $row['id'];
+            $result[$inc]['work_name'] = $row['name'];
+
+            $filesPath = "/ulab/upload/request/{$dealId}/government_work/{$row['id']}/protocol/";
+            
+            if (is_dir($_SERVER['DOCUMENT_ROOT'] . $filesPath)) {
+                $files = scandir($_SERVER['DOCUMENT_ROOT'] . $filesPath);
+                $files = array_diff($files, array('.', '..'));
+                if (!empty($files)) {
+                    $filename = reset($files);
+                    $result[$inc]['type_file'] = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                    $result[$inc]['protocol_file'] = $filename;
+                    $result[$inc]['protocol_file_path'] = $filesPath . $filename;
+                }
+            }
+
+            $inc++;
+        }
+
+        return $result;
+    }
 }

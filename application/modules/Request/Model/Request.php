@@ -2100,4 +2100,58 @@ class Request extends Model
 
         return $result;
     }
+
+    public function createProtocolsArchive(array $data)
+    {
+        $title = str_replace('/', '-', $data['title']);
+        $zipFileName = 'Архив протоколов ' . $title . '.zip';
+        
+        $zipPath = $_SERVER['DOCUMENT_ROOT'] . '/ulab/upload/temp/' . $zipFileName;
+        
+        $tempDir = $_SERVER['DOCUMENT_ROOT'] . '/ulab/upload/temp/';
+        if (!is_dir($tempDir)) {
+            mkdir($tempDir, 0777, true);
+        }
+        
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            return;
+        }
+        
+        $addedFiles = 0;
+        foreach ($data['filePaths'] as $filePath) {
+            $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filePath;
+            $fileName = basename($filePath);
+            
+            if (file_exists($fullPath)) {
+                $zip->addFile($fullPath, $fileName);
+                $addedFiles++;
+            }
+        }
+        
+        $zip->close();
+        
+        if ($addedFiles === 0) {
+            if (file_exists($zipPath)) {
+                unlink($zipPath);
+            }
+            return;
+        }
+        
+        if (file_exists($zipPath)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename=' . $zipFileName);
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($zipPath));
+            
+            readfile($zipPath);
+
+            unlink($zipPath);
+            exit;
+        }
+    }
 }
