@@ -1,0 +1,21 @@
+services:  
+  webserver:  
+    container_name: web_server  
+    image: '${IMAGE_TAG}'  
+    volumes:  
+      - web_data:/var/www/bitrix  
+      - web_server_bitrix_logs:/var/log/nginx  
+    ports:  
+      - '${EXPOSE_NGINX_PORT}:80'  
+    environment:  
+      TZ: ${TZ}  
+    networks:  
+      - lims-ulab  
+    restart: unless-stopped  
+
+networks:  
+  lims-ulab:  
+
+volumes:  
+  web_data:  
+  web_server_bitrix_logs:  

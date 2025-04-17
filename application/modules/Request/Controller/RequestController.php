@@ -9,6 +9,41 @@ class RequestController extends Controller
     //ID ТЗ с которого начинается рефакторинг ТЗ (TODO: Для новых лабораторий удалить, так же убрать из карточки card.php)
     //const TZ_REFACTORING_START_ID = 7433;
 
+    private $requestTypeConfig = [
+        '9' => [
+            'blocks' => [
+                'tz' => true,
+                'proposal' => false,
+                'order' => false,
+                'invoice' => false,
+                'payment' => false,
+                'sample' => true,
+                'protocol' => true,
+                'results' => true,
+                'complete' => true,
+                'act_complete' => true,
+                'files' => true
+            ],
+            'template' => 'card_government'
+        ],
+        'default' => [
+            'blocks' => [
+                'tz' => true,
+                'proposal' => true,
+                'order' => true,
+                'invoice' => true,
+                'payment' => true,
+                'sample' => true,
+                'protocol' => true,
+                'results' => true,
+                'complete' => true,
+                'act_complete' => true,
+                'files' => true
+            ],
+            'template' => 'card'
+        ]
+    ];
+
 
     private function secretCode( $id )
     {
@@ -535,7 +570,7 @@ class RequestController extends Controller
      * @desc Карточка заявки
      * @param $dealId - ид сделки (из битрикса)
      */
-    public function card( $dealId )
+    public function card($dealId)
     {
         if (empty($dealId)) {
             $this->redirect('/request/list/');
@@ -559,498 +594,103 @@ class RequestController extends Controller
         $permissionModel = $this->model('Permission');
         /** @var Organization $organizationModel */
         $organizationModel = $this->model('Organization');
-
-        $this->data['title'] = "Карточка заявки";
-
+        
         $tzId = $requirement->getTzIdByDealId($dealId);
-
-        $deal                   = $request->getDealById($dealId);
-        $companyDataRequisite   = $company->getRequisiteByCompanyId($deal['COMPANY_ID']);
-        $companyData            = $company->getById($deal['COMPANY_ID']);
-        $requestData            = $request->getTzByDealId($dealId);
-        $orderData              = $requirement->getContracts($dealId);
-        $dogovorData            = $requirement->getDogovor($dealId);
-        $tzDoc                  = $requirement->getTzDoc($tzId);
-        $protocolData           = $requirement->getProtocols($tzId);
-        $invoiceData            = $request->getInvoice($tzId);
-        $act                    = $requirement->getAct($tzId);
-        $actVr                  = $requirement->getActVr($tzId);
-        $userFields             = $request->getCrmUserFields($dealId);
-        $proposalData           = $requirement->getKP($tzId);
-        $materialData           = $requirement->getMaterialProbeGostToRequest($dealId);
-        $quarry                 = $requirement->getQuarry();
-        $actBase                = $requirement->getActBase($dealId);
-        $countResults           = $resultModel->getCountTrialResults($dealId);
-        $isResults              = $resultModel->isResultNotEmpty($dealId);
-        $permissionInfo         = $permissionModel->getUserPermission(App::getUserId());
-
-
-        $userFiles = $request->getFilesFromDir(UPLOAD_DIR . "/request/{$dealId}");
-
+        $deal = $request->getDealById($dealId);
+        $companyData = $company->getById($deal['COMPANY_ID']);
+        $requestData = $request->getTzByDealId($dealId);
         $isExistTz = $requirement->isExistTz($dealId);
-
-        $this->data['user_files'] = [];
-        foreach ($userFiles as $file) {
-            $imgLinc = URI.'/assets/images/unknown.png';
-            $patternImg = "/\.(png|jpg|jpeg)$/i";
-            if ( preg_match($patternImg, $file) ) {
-                $imgLinc = URI."/upload/request/{$dealId}/{$file}";
-            }
-            $patternPdf = "/\.(pdf)$/i";
-            if ( preg_match($patternPdf, $file) ) {
-                $imgLinc = URI."/assets/images/pdf.png";
-            }
-
-            $this->data['user_files'][] = [
-                'name' => $file,
-                'img' => $imgLinc
-            ];
-        }
-
+        
+        $typeId = $requestData['TYPE_ID'];
+        $config = isset($this->requestTypeConfig[$typeId]) ? $this->requestTypeConfig[$typeId] : $this->requestTypeConfig['default'];
+        
+        $this->prepareBaseData($request, $company, $user, $requirement, $dealId, $deal, $companyData, $requestData, $tzId);
+        
+        $actVr = $requirement->getActVr($tzId);
+        $userFields = $request->getCrmUserFields($dealId);
         $isConfirm = $request->isConfirmTz($tzId);
-
-        $this->data['deal_id']  = $dealId;
-        $this->data['tz_id']    = $tzId;
-
-        if ( $requestData['TYPE_ID'] != '9' ) {
-            $this->data['comm'] = '?type_request=commercial';
-        }
-
-        $this->data['doc_id']  = $dogovorData['ID'] ?? '';
+        $protocolData = $requirement->getProtocols($tzId);
+        $isResults = $resultModel->isResultNotEmpty($dealId);
+        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $actBase = $requirement->getActBase($dealId);
+        
+        $orderData = $config['blocks']['order'] ? $requirement->getContracts($dealId) : [];
+        $dogovorData = $config['blocks']['order'] ? $requirement->getDogovor($dealId) : [];
+        $invoiceData = $config['blocks']['invoice'] ? $request->getInvoice($tzId) : [];
+        $proposalData = $config['blocks']['proposal'] ? $requirement->getKP($tzId) : [];
+        $tzDoc = $config['blocks']['order'] ? $requirement->getTzDoc($tzId) : [];
+        
+        $this->data['request'] = $requestData;
+        $this->data['doc_id'] = $dogovorData['ID'] ?? '';
         $this->data['attach1'] = $dogovorData['ACTUAL_VER'] ?? '';
         $this->data['attach2'] = $invoiceData['ACTUAL_VER'] ?? '';
         $this->data['attach3'] = $tzDoc['ACTUAL_VER'] ?? '';
-
-        $this->data['material_data'] = $materialData;
-        //$this->data['tz_refactoring_start_id'] = self::TZ_REFACTORING_START_ID;
-        //ID Сделки с которого начинается рефакторинг Результатов испытания (TODO: Для новых лабораторий удалить или добавить если производится рефакторинг результатов испытаний, так же убрать из карточки card.php)
+        $this->data['material_data'] = $requirement->getMaterialProbeGostToRequest($dealId);
         $this->data['result_refactoring_start_id'] = $request->getResultRefactoringStartId();
-
-        $this->data['request'] = $requestData;
-        $this->data['quarry']  = $quarry;
-
-        $this->data['is_deal_nk'] = $deal['TYPE_ID'] == 4;
-        $this->data['is_deal_pr'] = $deal['TYPE_ID'] == 7;
-        $this->data['is_deal_sc'] = $deal['TYPE_ID'] == 8;
-        $this->data['is_deal_osk'] = $deal['TYPE_ID'] == 'COMPLEX';
-
-        $this->data['stage'] = $request->getStage($requestData);
-
-        $this->data['deal_title'] = $deal['TITLE'];
-
-        $this->data['is_complete'] = !($deal['STAGE_ID'] != '2' && $deal['STAGE_ID'] != '3' && $deal['STAGE_ID'] != '4' && $deal['STAGE_ID'] != 'WON');
-        $this->data['is_may_change'] = in_array(App::getUserId(), [1, 10, 35, 62, 9, 11, 58, 34, 43, 61, 13, 7, 15]);
-        $this->data['is_end_test'] = $deal['STAGE_ID'] == 2 || $deal['STAGE_ID'] == 4 || $deal['STAGE_ID'] == 'WON';
-
-        $this->data['user']['name'] = $_SESSION['SESS_AUTH']['NAME'];
-
-        $this->data['company_title'] = $deal['COMPANY_TITLE'];
-        $this->data['company_id'] = $deal['COMPANY_ID'];
-        $this->data['is_managers'] = in_array(App::getUserId(), [62, 83, 61, 17]);
-        
-        $this->data['is_good_company'] = $companyData[COMPANY_GOOD] == 1; // является ли компания добросовестным плательщиком
-
-        $assignedsList = $user->getAssignedByDealId($dealId);
-
-        $assignedNames = [];
-        foreach ($assignedsList as $assigned) {
-            $assignedNames[] = $assigned['short_name'];
-        }
-        $this->data['assigned'] = implode(', ', $assignedNames);
-        $this->data['main_assigned'] = $assignedsList[0]['short_name'];
-
         $this->data['contract'] = $orderData;
         $this->data['dogovor'] = $dogovorData;
-
-        $this->data['act_vr'] = $requirement->getActVr($tzId);
-
+        $this->data['act_vr'] = $actVr;
         $this->data['tz_doc'] = $tzDoc;
-        $this->data['first_protocol'] = $protocolData[0]?? [];
-
+        $this->data['first_protocol'] = $protocolData[0] ?? [];
         $this->data['date_tz_create'] = date('d.m.Y', strtotime($deal['DATE_CREATE']));
-
-        $mailList = $requestData['addMail'] ?? [];
-		$this->data['mail_list'] = $mailList;
-		$this->data['acc_email'] = $requestData['acc_email'];
-        array_unshift($mailList, $companyDataRequisite['RQ_EMAIL']);
-
-        $strAddedMail = implode(', ', $mailList);
-
-        $this->data['email'] = $companyDataRequisite['RQ_EMAIL'];
-        $this->data['head_email'] = $strAddedMail;
-        $this->data['list_email'] = $mailList;
-        $this->data['phone'] = $companyDataRequisite['RQ_PHONE'];
-        $this->data['contact'] = $companyDataRequisite['RQ_NAME'];
-
-        $this->data['comment'] = $request->getComment($dealId);
-
-        // ТЗ
-        $this->data['tz']['tz_link'] = URI."/requirement/card_new/{$requestData['ID']}";
-        $this->data['tz']['check'] = !empty($requestData['ID']) && (!empty($requestData['TZ']) || $isExistTz);
-        $this->data['tz']['number'] = $requestData['ID'] ?? '';
-        $this->data['tz']['date'] = !empty($requestData['DATE_SOZD'])? StringHelper::dateRu($requestData['DATE_SOZD']) : '--';
-        $this->data['tz']['date_send'] = $userFields['UF_CRM_1579541506559']['VALUE'] ? StringHelper::dateRu($userFields['UF_CRM_1579541506559']['VALUE']) : "Не отправлено";
-
-
-        // Коммерческое предложение
-        $this->data['proposal']['link'] = "/ulab/generator/CommercialOffer/{$dealId}";
-        $this->data['proposal']['check'] = !empty($proposalData['ID']);
-        $this->data['proposal']['number'] = $proposalData['ID'] ?? 'Не сформировано';
-        $this->data['proposal']['date'] = !empty($proposalData['DATE'])? StringHelper::dateRu($proposalData['DATE']) : '--';
-        $this->data['proposal']['date_send'] = !empty($proposalData['SEND_DATE'])? StringHelper::dateRu($proposalData['SEND_DATE']) : 'Не отправлено';
-        $this->data['proposal']['is_disable_form'] = !$isExistTz;
-		$this->data['proposal']['is_disable_mail'] = empty($proposalData) || !empty($act);
-		$this->data['test'] = [$requestData['TZ'], $actVr, $requestData['dateEnd'], $requestData['TAKEN_ID_DEAL'], $isConfirm];
-        $this->data['proposal']['attach'] = $proposalData['ACTUAL_VER'];
-        $this->data['proposal']['test'][] = empty($requestData['TAKEN_ID_DEAL']) || 0;
-        $this->data['proposal']['test'][] = empty($requestData['TZ']) || 0;
-        $this->data['proposal']['test'][] = !empty($requestData['dateEnd']);
-
-
-		// Договор
-		if (!empty($orderData) && $dogovorData['IS_ACTION'] == 0) {
-			$this->data['order']['check'] = 'table-red';
-		}	elseif (!empty($orderData) && empty($dogovorData['PDF'])) {
-			$this->data['order']['check'] = 'table-yellow';
-		}	elseif (!empty($orderData) && !empty($dogovorData['PDF'])) {
-			$this->data['order']['check'] = 'table-green';
-		}
-
-        if ( !empty($dogovorData) ) {
-            $this->data['order']['is_generated'] = true;
-            $this->data['order']['number'] = $dogovorData['NUMBER'];
-            $this->data['order']['id'] = $dogovorData['ID'];
-        } else {
-            $this->data['order']['is_generated'] = false;
+        
+        if ($config['blocks']['tz']) {
+            $this->prepareTzData($request, $requestData, $tzId, $userFields, $isExistTz);
         }
-
-        $this->data['order']['date'] = !empty($dogovorData['DATE'])? StringHelper::dateRu($dogovorData['DATE']) : '--';
-        $this->data['order']['attach'] = $dogovorData['ACTUAL_VER'];
-        $this->data['order']['date_send'] = !empty($dogovorData['SEND_DATE'])? StringHelper::dateRu($dogovorData['SEND_DATE']) : 'Не отправлялся из ЛИС';
-        $this->data['order']['is_disable_form'] =
-			!empty($actVr) || !empty($requestData['dateEnd']) || !empty($requestData['DOGOVOR_NUM']);
-        $this->data['order']['is_disable_mail'] = empty($dogovorData) || 0;
-
-
-        // Приложение к договору
-		if (!empty($tzDoc) && $dogovorData['IS_ACTION'] == 0) {
-			$this->data['attach']['check'] = 'table-red';
-		} 	elseif (!empty($tzDoc) && empty($tzDoc['pdf'])) {
-			$this->data['attach']['check'] = 'table-yellow';
-		}	elseif (!empty($tzDoc['pdf'])) {
-			$this->data['attach']['check'] = 'table-green';
-		}
-
-        $this->data['attach']['link'] = "/ulab/generator/TechnicalSpecification/{$dealId}";
-//        $this->data['attach']['check'] = !empty($tzDoc);
-        $this->data['attach']['number'] = $tzDoc['TZ_ID'] ?? 'Не сформировано';
-        $this->data['attach']['date'] = !empty($tzDoc['DATE'])? StringHelper::dateRu($tzDoc['DATE']) : '--';
-        $this->data['attach']['date_send'] = !empty($tzDoc['SEND_DATE'])? StringHelper::dateRu($tzDoc['SEND_DATE']) : 'Не отправлен';
-        $this->data['attach']['actual_ver'] = $tzDoc['ACTUAL_VER'];
-        $this->data['attach']['is_disable_form'] = !$this->data['is_deal_osk'] && (
-			!$isExistTz || !empty($requestData['dateEnd']) || !$isConfirm || !empty($actVr));
-		$this->data['attach']['is_disable_form_test'] = !$this->data['is_deal_osk'];
-//            empty($requestData['TZ']) || !empty($requestData['dateEnd']) /*|| !$isConfirm*/ || !empty($actVr);
-        $this->data['attach']['is_disable_mail'] = empty($tzDoc) || 0;
-
-
-        // Счет
-        $this->data['invoice']['link'] = "/protocol_generator/account_new.php?ID={$dealId}&TZ_ID={$requestData['ID']}";
-        $this->data['invoice']['check'] = !empty($invoiceData);
-        $this->data['invoice']['number'] = !empty($invoiceData['ID']) ? $requestData['ACCOUNT'] : 'Не сформирован';
-        $this->data['invoice']['date'] = !empty($invoiceData['DATE'])? StringHelper::dateRu($invoiceData['DATE']) : '--';
-        $this->data['invoice']['date_send'] = !empty($invoiceData['SEND_DATE'])? StringHelper::dateRu($invoiceData['SEND_DATE']) : 'Не отправлен';
-        $this->data['invoice']['is_disable_form'] = false && !$this->data['is_deal_osk'] && (
-			!$isExistTz || empty($requestData['DOGOVOR_NUM']) || !empty($requestData['dateEnd']) || !empty($requestData['TAKEN_ID_DEAL']) || !$isConfirm);
-//            empty($requestData) || empty($requestData['DOGOVOR_NUM']) || !empty($requestData['dateEnd']) || !empty($requestData['TAKEN_ID_DEAL']) /*|| !$isConfirm*/;
-        $this->data['invoice']['is_disable_mail'] = empty($invoiceData) || 0;
-        $this->data['invoice']['attach'] = $invoiceData['ACTUAL_VER'];
-
-        $this->data['invoice']['test'] = [
-            'is_disable_form' => $this->data['invoice']['is_disable_form'],
-            'empty(requestData)' => !$isExistTz,
-            'DOGOVOR_NUM' => empty($requestData['DOGOVOR_NUM']),
-            'dateEnd' => $requestData['dateEnd'],
-            'TAKEN_ID_DEAL' => $requestData['TAKEN_ID_DEAL'],
-            'conf' => !$isConfirm,
-        ];
-
-
-        // Оплата
-        $this->data['payment']['surcharge'] = (float)$requestData['price_discount'] - (float)$requestData['OPLATA'];
-
-		$this->data['payment']['check'] = !empty($requestData['price_discount']) && $isExistTz && $this->data['payment']['surcharge'] == 0;
-		$this->data['payment']['is_disable_form'] = ((float)$requestData['OPLATA'] == (float)$requestData['price_discount']) && (App::getUserId() != 25);
-        $this->data['payment']['price'] = $requestData['price_discount'];
-        $this->data['payment']['pay']   = $requestData['OPLATA'];
-        $this->data['payment']['datePayment'] =
-            !empty($requestData['DATE_OPLATA']) && $requestData['DATE_OPLATA'] !== '01.01.1970' ?
-                StringHelper::dateRu($requestData['DATE_OPLATA']) : '--';
-
-
-
-        if ( (float) $requestData['OPLATA'] > (float) $requestData['PRICE'] ) {
-            $this->data['payment']['status'] = 'Переплата';
-        } elseif ( !empty($requestData['PRICE']) && $this->data['payment']['surcharge'] == 0 ) {
-            $this->data['payment']['status'] = 'Оплачено полностью';
-        } elseif ( !empty($requestData['OPLATA']) && !empty($requestData['PRICE']) ) {
-            $this->data['payment']['status'] = 'Оплачено частично';
-        } else {
-            $this->data['payment']['status'] = 'Не оплачено';
+        
+        if ($config['blocks']['proposal']) {
+            $this->prepareProposalData($requirement, $proposalData, $requestData, $tzId, $dealId, $isExistTz, $actVr);
         }
-
-        // Акт приемки проб
-		$this->data['sample']['link'] = "/ulab/generator/actSampleDocument/{$dealId}";
-		$this->data['sample']['check'] = !empty($requestData['ACT_NUM']);
-		$this->data['sample']['number'] = $requestData['ACT_NUM'] . "/" . date("Y", strtotime($requestData['DATE_ACT']));
-		$this->data['sample']['date'] = !empty($requestData['DATE_ACT']) ? StringHelper::dateRu($requestData['DATE_ACT']) : '';
-		$this->data['sample']['date_act'] = !empty($requestData['DATE_ACT']) ? $requestData['DATE_ACT'] : '';
-		$this->data['sample']['date_send'] = '--';
-		$this->data['sample']['is_disable_form'] = !empty($requestData['ACT_NUM']) || !empty($requestData['dateEnd']) || !empty($actVr);
-		$this->data['sample']['place_probe'] = $actBase['PLACE_PROBE'] ?? '';
-		$this->data['sample']['date_probe'] = !empty($actBase['DATE_PROBE']) ? date('Y-m-d', strtotime($actBase['DATE_PROBE'])) : '';
-		$this->data['sample']['selection_type'] = $requestData['SELECTION_TYPE'] ?? '';
-		$this->data['sample']['PROBE_PROIZV'] = $actBase['PROBE_PROIZV'] ?? '';
-		$this->data['sample']['deliveryman'] = $actBase['deliveryman'] ?? '';
-		$this->data['sample']['act_id'] = $actBase['ID'] ?? '';
-		$this->data['sample']['act_type'] = $actBase['act_type'] ?? '';
-		$this->data['sample']['description'] = $requestData['DESCRIPTION'] ?? '';
-        $this->data['sample']['quarry_id'] = $requestData['QUARRY_ID'] ?? '';
-
-        // Протокол
-        $this->data['protocol'] = [];
-        foreach ($protocolData as $protocol) {
-            $title = 'Не сформирован';
-            if ( !empty($protocol['NUMBER']) ) {
-                $date = strtotime($protocol['DATE']);
-                $year = (int)date("Y", $date)%10 ? substr(date("Y", $date), -2) : date("Y", $date);
-                $title = "{$protocol['NUMBER']}/{$year}";
-            }
-
-            $yearDir = date("Y", strtotime($protocol['DATE']));
-            $dir  = PROTOCOL_PATH . "archive/{$requestData['ID']}{$yearDir}/{$protocol['ID']}/";
-            $link = "/ulab/generator/ProtocolDocument/{$protocol['ID']}";
-            $this->data['protocol'][] = [
-                'id'        => $protocol['ID'],
-                'check'     => !empty($protocol['NUMBER']),
-                'number'    => $protocol['NUMBER'],
-                'year'      => $yearDir,
-                'title'     => $title,
-                'sig'       => $protocolModel->getSigFile($dir),
-                'pdf'       => $protocolModel->getPdfFile($dir),
-                'date'      => !empty($protocol['DATE'])? StringHelper::dateRu($protocol['DATE']) : '--',
-                'date_send' => !empty($protocol['PROTOCOL_SEND_DATETIME'])? StringHelper::dateRu($protocol['PROTOCOL_SEND_DATETIME']) : 'Не отправлен',
-                'link'      => $link,
-                'actual_version'  => $protocol['ACTUAL_VERSION']? unserialize($protocol['ACTUAL_VERSION']) : '',
-                'is_disable_form' => /*$requestData['STAGE_ID'] == '4' ||*/ $requestData['STAGE_ID'] == 'WON' || empty($protocol['NUMBER']) /*|| !empty($actVr)*/,
-                'is_disable_mail' =>
-                    empty($protocol['NUMBER'])
-                    || empty($protocol['ACTUAL_VERSION'])
-                    || (
-                        empty($requestData['OPLATA'])
-                        && empty($requestData['TAKEN_ID_DEAL'])
-                        && App::getUserId() != 9
-                    ),
-                'is_enable_ecp'  =>
-                    !empty($protocol['ID'])
-                    && !empty($protocol['NUMBER'])
-                    && !empty($protocol['PROTOCOL_TYPE'])  || $protocol['PROTOCOL_TYPE'] == '0'
-                    && in_array($protocol['PROTOCOL_TYPE'], [1, 33, 34, 35, 36, 37, 38, 39])
-                    && empty($protocol['PROTOCOL_OUTSIDE_LIS']),
-//                'is_enable_ecp'  => false,
-            ];
+        
+        if ($config['blocks']['order']) {
+            $this->prepareOrderData($orderData, $dogovorData, $requestData, $actVr, $tzId, $tzDoc);
         }
-
-
-        // Результаты испытаний
-        $this->data['results']['check'] = $isResults;
-		$this->data['results']['is_disabled'] = false;/*(!$this->data['is_deal_pr'] && !$requestData['order_type'] == 2 && !$this->data['is_deal_osk'] && !$this->data['is_deal_sc'] && empty($requestData['TAKEN_ID_DEAL'])) &&
-			(empty($requestData) || empty($requestData['ACT_NUM']) || empty($invoiceData)) /*|| !$isConfirm
-            || (!$this->data['payment']['check'] && !$this->data['is_good_company'])*/;
-
-        if ( !empty($requestData['DATE_RESULTS']) ) {
-            $this->data['results']['date'] = StringHelper::dateRu($requestData['DATE_RESULTS']);
-        } elseif (!empty($requestData['DATE_P'])) {
-            $this->data['results']['date'] = StringHelper::dateRu($requestData['DATE_P']);
-        } else {
-            $this->data['results']['date'] = '--';
+        
+        if ($config['blocks']['invoice']) {
+            $this->prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm);
         }
-		$this->data['results']['test'] = (!$this->data['is_deal_pr'] && !$this->data['is_deal_osk'] && !$this->data['is_deal_sc'] && empty($requestData['TAKEN_ID_DEAL'])) &&
-			(empty($requestData) || empty($requestData['ACT_NUM']) || empty($invoiceData));
-
-
-        // Завершение испытаний
-        $this->data['complete']['check'] = false;
-        $this->data['complete']['date'] = $requestData['dateEnd'] ? StringHelper::dateRu($requestData['dateEnd']) : '--';
-        $this->data['complete']['is_disabled'] = false && empty($this->data['protocol']) || 0;
-        // Проверка на доступ к ручному завершению испытаний (может завершить Руководитель ИЦ и Админ)
-        $this->data['complete']['may_return'] = true || in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
-        $this->data['complete']['may_complete'] = true || in_array($permissionInfo['id'],  [ADMIN_PERMISSION, HEAD_IC_PERMISSION]) &&
-            ($deal['STAGE_ID'] == 'PREPARATION' || $deal['STAGE_ID'] == 'PREPAYMENT_INVOICE' ||
-                $deal['STAGE_ID'] == 'EXECUTING'|| $deal['STAGE_ID'] == 'FINAL_INVOICE' || $deal['STAGE_ID'] == 1);
-
-
-        // Акт выполненых работ
-        $this->data['act_complete']['check'] = !empty($actVr);
-        $this->data['act_complete']['email'] = !empty($requestData['acc_email']) ? $requestData['acc_email'] : $companyDataRequisite['RQ_EMAIL'];
-        $this->data['act_complete']['number'] = $actVr['NUMBER'];
-        $this->data['act_complete']['attach'] = $actVr['ACTUAL_VER']?? '';
-        $this->data['act_complete']['date'] = !empty($actVr['DATE'])? StringHelper::dateRu($actVr['DATE']) : '--';
-        $this->data['act_complete']['date_send'] = !empty($actVr['SEND_DATE'])? StringHelper::dateRu($actVr['SEND_DATE']) : 'Не отправлен';
-        // Заполнить данные акта возможно только на стадии - Испытания завершины(Работы в лаборатории завершены), т.к могут завершить заявку и не завершить испытание
-		$this->data['act_complete']['is_disable_form'] = false && !in_array(App::getUserId(), [61, 88, 1, 25]) || 0;
-//		$this->data['act_complete']['is_disable_form'] = !($deal['STAGE_ID'] == 2) || ;
-        $this->data['act_complete']['is_disable_mail'] = empty($actVr) || 0;
-        //TODO: пока ид организации задано жестко 1. потом переделать на получение к какой организации принадлежит заявка
-        $this->data['act_complete']['assigned_users'] = $organizationModel->getAllLeaders(1);
-
-
-
-        //// Список версий
-        // Протокол
-        $this->data['file']['protocol'] = [];
-        if ( !empty($protocolData) ) {
-            foreach ($protocolData as $key => $protocol) {
-//                if ( empty($protocol['NUMBER']) ) { continue; }
-
-                if ( empty($protocol['PROTOCOL_OUTSIDE_LIS']) ) {
-                    $year = date("Y", strtotime($protocol['DATE']));
-                    $dir  = PROTOCOL_PATH . "archive/{$requestData['ID']}{$year}/{$protocol['ID']}/";
-                    $path = "/protocol_generator/archive/{$requestData['ID']}{$year}/{$protocol['ID']}/";
-                    $files = $request->getFilesFromDir($dir, ['signed.docx', 'forsign.docx', 'qrNEW.png']);
-                } else {
-                    $dir  = "/home/bitrix/www/pdf/{$protocol['ID']}/";
-                    $path = "/pdf/{$protocol['ID']}/";
-                    $files = $request->getFilesFromDir($dir);
-                }
-
-                $this->data['file']['protocol'][$key]['number'] = $protocol['NUMBER'];
-                $this->data['file']['protocol'][$key]['dir'] = $path;
-
-                foreach ($files as $file) {
-                    $this->data['file']['protocol'][$key]['files'][] = $file;
-                }
-            }
-        } else {
-            $year = date("Y", strtotime($requestData['DATE_ACT']));
-            $dir  = PROTOCOL_PATH . "archive/{$requestData['ID']}{$year}/";
-            $path = "/protocol_generator/archive/{$requestData['ID']}{$year}/";
-            $files = $request->getFilesFromDir($dir, ['signed.docx', 'forsign.docx', 'qrNEW.png']);
-            $this->data['file']['protocol'][0]['number'] = $requestData['NUM_P'];
-            $this->data['file']['protocol'][0]['dir'] = $path;
-            foreach ($files as $file) {
-                $this->data['file']['protocol'][0]['files'][] = $file;
-            }
+        
+        if ($config['blocks']['payment']) {
+            $this->preparePaymentData($requestData, $isExistTz);
         }
-
-        // КП
-        $this->data['file']['kp']['files'] = [];
-        if ( !empty($proposalData) ) {
-            $dir  = PROTOCOL_PATH . "archive_kp/{$dealId}/";
-            $path = "/protocol_generator/archive_kp/{$dealId}/";
-            $files = $request->getFilesFromDir($dir);
-
-            $this->data['file']['kp']['dir'] = $path;
-            foreach ($files as $file) {
-                $this->data['file']['kp']['files'][] = $file;
-            }
+        
+        if ($config['blocks']['sample']) {
+            $this->prepareSampleData($requestData, $actBase, $actVr);
         }
-
-        // Договор
-        $this->data['file']['order']['files'] = [];
-        if ( !empty($dogovorData) ) {
-            $dir  = PROTOCOL_PATH . "archive_dog/{$dogovorData['ID']}/";
-            $path = "/protocol_generator/archive_dog/{$dogovorData['ID']}/";
-            $files = $request->getFilesFromDir($dir);
-
-            $this->data['file']['order']['dir'] = $path;
-            foreach ($files as $file) {
-                $this->data['file']['order']['files'][] = $file;
-            }
+        
+        if ($config['blocks']['protocol']) {
+            $this->prepareProtocolData($protocolData, $protocolModel, $requirement, $requestData);
         }
-
-        // Счет-оферта
-        $this->data['file']['offer']['files'] = [];
-        if ( !empty($dogovorData) ) {
-            $dir  = PROTOCOL_PATH . "archive_dog/{$tzId}/";
-            $path = "/protocol_generator/archive_dog/{$tzId}/";
-            $files = $request->getFilesFromDir($dir);
-
-            $this->data['file']['offer']['dir'] = $path;
-            foreach ($files as $file) {
-                $this->data['file']['offer']['files'][] = $file;
-            }
+        
+        if ($config['blocks']['results']) {
+            $this->prepareResultsData($resultModel, $requestData, $dealId, $isResults);
         }
-
-        // Прил. к договору (тз)
-        $this->data['file']['tz']['files'] = [];
-//        if ( !empty($proposalData) ) {
-            $dir  = PROTOCOL_PATH . "archive_tz/{$requestData['ID']}/";
-            $path = "/protocol_generator/archive_tz/{$requestData['ID']}/";
-            $files = $request->getFilesFromDir($dir);
-
-            $this->data['file']['tz']['dir'] = $path;
-            foreach ($files as $file) {
-                $this->data['file']['tz']['files'][] = $file;
-            }
-//        }
-
-        // Счет
-        $this->data['file']['invoice']['files'] = [];
-        if ( !empty($invoiceData) ) {
-            $dir  = PROTOCOL_PATH . "archive_acc/{$dealId}/";
-            $path = "/protocol_generator/archive_acc/{$dealId}/";
-            $files = $request->getFilesFromDir($dir);
-
-            $this->data['file']['invoice']['dir'] = $path;
-            foreach ($files as $file) {
-                $this->data['file']['invoice']['files'][] = $file;
-            }
+        
+        if ($config['blocks']['complete']) {
+            $this->prepareCompleteData($permissionInfo, $deal, $requestData);
         }
-
-        // Акт ВР
-        $this->data['file']['act']['files'] = [];
-        if ( !empty($actVr) ) {
-            $dir  = PROTOCOL_PATH . "archive_aktvr/{$dealId}/";
-            $path = "/protocol_generator/archive_aktvr/{$dealId}/";
-            $files = $request->getFilesFromDir($dir);
-
-            $this->data['file']['act']['dir'] = $path;
-            foreach ($files as $file) {
-                $this->data['file']['act']['files'][] = $file;
-            }
+        
+        if ($config['blocks']['act_complete']) {
+            $this->prepareActCompleteData($actVr, $requestData, $company->getRequisiteByCompanyId($deal['COMPANY_ID']), $organizationModel, $deal);
         }
-
-        // Фото
-		$this->data['file']['photo']['files'] = [];
-		$dir  = "/home/bitrix/www/photo/{$dealId}/";
-		$path = "/photo/{$dealId}/";
-		$files = $request->getFilesFromDir($dir);
-
-		$this->data['file']['photo']['dir'] = $path;
-		foreach ($files as $file) {
-			$this->data['file']['photo']['files'][] = $file;
-		}
+        
+        if ($config['blocks']['files']) {
+            $this->prepareFilesData($request, $protocolData, $requestData, $dealId, $tzId, $dogovorData, $actVr, $proposalData);
+        }
 
         $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-
         $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-
         $this->addCSS("/assets/plugins/dropzone/css/basic.css");
         $this->addCSS("/assets/plugins/dropzone/dropzone3.css");
         $this->addJS("/assets/plugins/dropzone/dropzone3.js");
-
         $r = rand();
         $this->addJs("/assets/js/request-card.js?v={$r}");
-		if (!empty($requestData['TAKEN_ID_DEAL'])) {
-			$this->view('card_taken');
-		//} elseif ($deal['TYPE_ID'] == 7) {
-		//	$this->view('card_pr');
-		//} elseif ($requestData['order_type'] == 2) {
-		//	$this->view('card_offerInvoice');
-		} else {
-			$this->view('card');
-		}
+        
+        if (!empty($requestData['TAKEN_ID_DEAL'])) {
+            $this->view('card_taken');
+        } else {
+            $this->view($config['template']);
+        }
     }
 
 
@@ -1873,5 +1513,591 @@ class RequestController extends Controller
         }
 
         return $displayClass;
+    }
+
+    /**
+     * Подготовка базовых данных заявки
+     */
+    private function prepareBaseData($request, $company, $user, $requirement, $dealId, $deal, $companyData, $requestData, $tzId)
+    {
+        $this->data['title'] = "Карточка заявки";
+        $this->data['deal_id'] = $dealId;
+        $this->data['tz_id'] = $tzId;
+        
+        $companyDataRequisite = $company->getRequisiteByCompanyId($deal['COMPANY_ID']);
+        $userFields = $request->getCrmUserFields($dealId);
+        
+        if ($requestData['TYPE_ID'] != '9') {
+            $this->data['comm'] = '?type_request=commercial';
+        }
+        
+        $this->data['is_deal_nk'] = $deal['TYPE_ID'] == 4;
+        $this->data['is_deal_pr'] = $deal['TYPE_ID'] == 7;
+        $this->data['is_deal_sc'] = $deal['TYPE_ID'] == 8;
+        $this->data['is_deal_osk'] = $deal['TYPE_ID'] == 'COMPLEX';
+        $this->data['is_government'] = $deal['TYPE_ID'] == '9';
+        
+        $this->data['stage'] = $request->getStage($requestData);
+        $this->data['deal_title'] = $deal['TITLE'];
+        
+        $this->data['is_complete'] = !($deal['STAGE_ID'] != '2' && $deal['STAGE_ID'] != '3' && $deal['STAGE_ID'] != '4' && $deal['STAGE_ID'] != 'WON');
+        $this->data['is_may_change'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], [1, 10, 35, 62, 9, 11, 58, 34, 43, 61, 13, 7, 15]);
+        $this->data['is_end_test'] = $deal['STAGE_ID'] == 2 || $deal['STAGE_ID'] == 4 || $deal['STAGE_ID'] == 'WON';
+        
+        $this->data['user']['name'] = $_SESSION['SESS_AUTH']['NAME'];
+        
+        $this->data['company_title'] = $deal['COMPANY_TITLE'];
+        $this->data['company_id'] = $deal['COMPANY_ID'];
+        $this->data['is_managers'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], [62, 83, 61, 17]);
+        
+        $this->data['is_good_company'] = $companyData[COMPANY_GOOD] == 1;
+        
+        $assignedsList = $user->getAssignedByDealId($dealId);
+        
+        $assignedNames = [];
+        foreach ($assignedsList as $assigned) {
+            $assignedNames[] = $assigned['short_name'];
+        }
+        $this->data['assigned'] = implode(', ', $assignedNames);
+        $this->data['main_assigned'] = $assignedsList[0]['short_name'];
+        
+        $mailList = $requestData['addMail'] ?? [];
+        $this->data['mail_list'] = $mailList;
+        $this->data['acc_email'] = $requestData['acc_email'];
+        array_unshift($mailList, $companyDataRequisite['RQ_EMAIL']);
+        
+        $strAddedMail = implode(', ', $mailList);
+        
+        $this->data['email'] = $companyDataRequisite['RQ_EMAIL'];
+        $this->data['head_email'] = $strAddedMail;
+        $this->data['list_email'] = $mailList;
+        $this->data['phone'] = $companyDataRequisite['RQ_PHONE'];
+        $this->data['contact'] = $companyDataRequisite['RQ_NAME'];
+        
+        $this->data['comment'] = $request->getComment($dealId);
+        
+        $userFiles = $request->getFilesFromDir(UPLOAD_DIR . "/request/{$dealId}");
+        $this->data['user_files'] = [];
+        foreach ($userFiles as $file) {
+            $imgLinc = URI.'/assets/images/unknown.png';
+            $patternImg = "/\.(png|jpg|jpeg)$/i";
+            if (preg_match($patternImg, $file)) {
+                $imgLinc = URI."/upload/request/{$dealId}/{$file}";
+            }
+            $patternPdf = "/\.(pdf)$/i";
+            if (preg_match($patternPdf, $file)) {
+                $imgLinc = URI."/assets/images/pdf.png";
+            }
+            
+            $this->data['user_files'][] = [
+                'name' => $file,
+                'img' => $imgLinc
+            ];
+        }
+    }
+    
+    /**
+     * Подготовка данных ТЗ
+     */
+    private function prepareTzData($request, $requestData, $tzId, $userFields, $isExistTz)
+    {
+        // ТЗ
+        $this->data['tz']['tz_link'] = URI."/requirement/card_new/{$requestData['ID']}";
+        $this->data['tz']['check'] = !empty($requestData['ID']) && (!empty($requestData['TZ']) || $isExistTz);
+        $this->data['tz']['number'] = $requestData['ID'] ?? '';
+        $this->data['tz']['date'] = !empty($requestData['DATE_SOZD'])? StringHelper::dateRu($requestData['DATE_SOZD']) : '--';
+        $this->data['tz']['date_send'] = $userFields['UF_CRM_1579541506559']['VALUE'] ? StringHelper::dateRu($userFields['UF_CRM_1579541506559']['VALUE']) : "Не отправлено";
+    }
+    
+    /**
+     * Подготовка данных коммерческого предложения
+     */
+    private function prepareProposalData($requirement, $proposalData, $requestData, $tzId, $dealId, $isExistTz, $actVr)
+    {
+        // Коммерческое предложение
+        $this->data['proposal']['link'] = "/ulab/generator/CommercialOffer/{$dealId}";
+        $this->data['proposal']['check'] = !empty($proposalData['ID']);
+        $this->data['proposal']['number'] = $proposalData['ID'] ?? 'Не сформировано';
+        $this->data['proposal']['date'] = !empty($proposalData['DATE'])? StringHelper::dateRu($proposalData['DATE']) : '--';
+        $this->data['proposal']['date_send'] = !empty($proposalData['SEND_DATE'])? StringHelper::dateRu($proposalData['SEND_DATE']) : 'Не отправлено';
+        $this->data['proposal']['is_disable_form'] = !$isExistTz;
+        $this->data['proposal']['is_disable_mail'] = empty($proposalData) || !empty($actVr);
+        $this->data['proposal']['attach'] = $proposalData['ACTUAL_VER'];
+        $this->data['proposal']['test'][] = empty($requestData['TAKEN_ID_DEAL']) || 0;
+        $this->data['proposal']['test'][] = empty($requestData['TZ']) || 0;
+        $this->data['proposal']['test'][] = !empty($requestData['dateEnd']);
+    }
+    
+    /**
+     * Подготовка данных договора и приложения к договору
+     */
+    private function prepareOrderData($orderData, $dogovorData, $requestData, $actVr, $tzId, $tzDoc)
+    {
+        // Договор
+        if (!empty($orderData) && $dogovorData['IS_ACTION'] == 0) {
+            $this->data['order']['check'] = 'table-red';
+        } elseif (!empty($orderData) && empty($dogovorData['PDF'])) {
+            $this->data['order']['check'] = 'table-yellow';
+        } elseif (!empty($orderData) && !empty($dogovorData['PDF'])) {
+            $this->data['order']['check'] = 'table-green';
+        }
+        
+        if (!empty($dogovorData)) {
+            $this->data['order']['is_generated'] = true;
+            $this->data['order']['number'] = $dogovorData['NUMBER'];
+            $this->data['order']['id'] = $dogovorData['ID'];
+        } else {
+            $this->data['order']['is_generated'] = false;
+        }
+        
+        $this->data['order']['date'] = !empty($dogovorData['DATE'])? StringHelper::dateRu($dogovorData['DATE']) : '--';
+        $this->data['order']['attach'] = $dogovorData['ACTUAL_VER'];
+        $this->data['order']['date_send'] = !empty($dogovorData['SEND_DATE'])? StringHelper::dateRu($dogovorData['SEND_DATE']) : 'Не отправлялся из ЛИС';
+        $this->data['order']['is_disable_form'] =
+            !empty($actVr) || !empty($requestData['dateEnd']) || !empty($requestData['DOGOVOR_NUM']);
+        $this->data['order']['is_disable_mail'] = empty($dogovorData) || 0;
+        
+        // Приложение к договору
+        if (!empty($tzDoc) && $dogovorData['IS_ACTION'] == 0) {
+            $this->data['attach']['check'] = 'table-red';
+        } elseif (!empty($tzDoc) && empty($tzDoc['pdf'])) {
+            $this->data['attach']['check'] = 'table-yellow';
+        } elseif (!empty($tzDoc['pdf'])) {
+            $this->data['attach']['check'] = 'table-green';
+        }
+    }
+    
+    /**
+     * Подготовка данных счета
+     */
+    private function prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm)
+    {
+        $this->data['invoice']['link'] = "/protocol_generator/account_new.php?ID={$dealId}&TZ_ID={$requestData['ID']}";
+        $this->data['invoice']['check'] = !empty($invoiceData);
+        $this->data['invoice']['number'] = !empty($invoiceData['ID']) ? $requestData['ACCOUNT'] : 'Не сформирован';
+        $this->data['invoice']['date'] = !empty($invoiceData['DATE'])? StringHelper::dateRu($invoiceData['DATE']) : '--';
+        $this->data['invoice']['date_send'] = !empty($invoiceData['SEND_DATE'])? StringHelper::dateRu($invoiceData['SEND_DATE']) : 'Не отправлен';
+        $this->data['invoice']['is_disable_form'] = false && !$this->data['is_deal_osk'] && (
+            !$isExistTz || empty($requestData['DOGOVOR_NUM']) || !empty($requestData['dateEnd']) || !empty($requestData['TAKEN_ID_DEAL']) || !$isConfirm);
+        $this->data['invoice']['is_disable_mail'] = empty($invoiceData) || 0;
+        $this->data['invoice']['attach'] = $invoiceData['ACTUAL_VER'];
+    }
+    
+    /**
+     * Подготовка данных оплаты
+     */
+    private function preparePaymentData($requestData, $isExistTz)
+    {
+        $this->data['payment']['surcharge'] = (float)$requestData['price_discount'] - (float)$requestData['OPLATA'];
+        
+        $this->data['payment']['check'] = !empty($requestData['price_discount']) && $isExistTz && $this->data['payment']['surcharge'] == 0;
+        $this->data['payment']['is_disable_form'] = ((float)$requestData['OPLATA'] == (float)$requestData['price_discount']) && ($_SESSION['SESS_AUTH']['USER_ID'] != 25);
+        $this->data['payment']['price'] = $requestData['price_discount'];
+        $this->data['payment']['pay']   = $requestData['OPLATA'];
+        $this->data['payment']['datePayment'] =
+            !empty($requestData['DATE_OPLATA']) && $requestData['DATE_OPLATA'] !== '01.01.1970' ?
+                StringHelper::dateRu($requestData['DATE_OPLATA']) : '--';
+        
+        if ((float) $requestData['OPLATA'] > (float) $requestData['PRICE']) {
+            $this->data['payment']['status'] = 'Переплата';
+        } elseif (!empty($requestData['PRICE']) && $this->data['payment']['surcharge'] == 0) {
+            $this->data['payment']['status'] = 'Оплачено полностью';
+        } elseif (!empty($requestData['OPLATA']) && !empty($requestData['PRICE'])) {
+            $this->data['payment']['status'] = 'Оплачено частично';
+        } else {
+            $this->data['payment']['status'] = 'Не оплачено';
+        }
+    }
+    
+    /**
+     * Подготовка данных акта приемки проб
+     */
+    private function prepareSampleData($requestData, $actBase, $actVr)
+    {
+        $this->data['sample']['link'] = "/ulab/generator/actSampleDocument/{$this->data['deal_id']}";
+        $this->data['sample']['check'] = !empty($requestData['ACT_NUM']);
+        $this->data['sample']['number'] = $requestData['ACT_NUM'] . "/" . date("Y", strtotime($requestData['DATE_ACT']));
+        $this->data['sample']['date'] = !empty($requestData['DATE_ACT']) ? StringHelper::dateRu($requestData['DATE_ACT']) : '';
+        $this->data['sample']['date_act'] = !empty($requestData['DATE_ACT']) ? $requestData['DATE_ACT'] : '';
+        $this->data['sample']['date_send'] = '--';
+        $this->data['sample']['is_disable_form'] = !empty($requestData['ACT_NUM']) || !empty($requestData['dateEnd']) || !empty($actVr);
+        $this->data['sample']['place_probe'] = $actBase['PLACE_PROBE'] ?? '';
+        $this->data['sample']['date_probe'] = !empty($actBase['DATE_PROBE']) ? date('Y-m-d', strtotime($actBase['DATE_PROBE'])) : '';
+        $this->data['sample']['selection_type'] = $requestData['SELECTION_TYPE'] ?? '';
+        $this->data['sample']['PROBE_PROIZV'] = $actBase['PROBE_PROIZV'] ?? '';
+        $this->data['sample']['deliveryman'] = $actBase['deliveryman'] ?? '';
+        $this->data['sample']['act_id'] = $actBase['ID'] ?? '';
+        $this->data['sample']['act_type'] = $actBase['act_type'] ?? '';
+        $this->data['sample']['description'] = $requestData['DESCRIPTION'] ?? '';
+        $this->data['sample']['file_dir'] = "/protocol_generator/archive_sample/{$this->data['deal_id']}/";
+        
+        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/protocol_generator/archive_sample/{$this->data['deal_id']}/";
+        if (is_dir($uploadDir)) {
+            $files = glob($uploadDir . "*.pdf");
+            if (!empty($files)) {
+                $fileName = basename($files[0]);
+                $this->data['sample']['file_name'] = $this->truncateFileName($fileName, 25);
+                $this->data['sample']['file_url'] = $this->data['sample']['file_dir'] . $fileName;
+                $this->data['sample']['has_file'] = true;
+            } else {
+                $this->data['sample']['has_file'] = false;
+            }
+        } else {
+            $this->data['sample']['has_file'] = false;
+        }
+    }
+    
+    /**
+     * Подготовка данных протоколов
+     */
+    private function prepareProtocolData($protocolData, $protocolModel, $requirement, $requestData)
+    {
+        $this->data['protocol'] = [];
+        foreach ($protocolData as $protocol) {
+            $title = 'Не сформирован';
+            if (!empty($protocol['NUMBER'])) {
+                $date = strtotime($protocol['DATE']);
+                $year = (int)date("Y", $date)%10 ? substr(date("Y", $date), -2) : date("Y", $date);
+                $title = "{$protocol['NUMBER']}/{$year}";
+            }
+            
+            $yearDir = date("Y", strtotime($protocol['DATE']));
+            $dir  = PROTOCOL_PATH . "archive/{$requestData['ID']}{$yearDir}/{$protocol['ID']}/";
+            $link = "/ulab/generator/ProtocolDocument/{$protocol['ID']}";
+            $this->data['protocol'][] = [
+                'id'        => $protocol['ID'],
+                'check'     => !empty($protocol['NUMBER']),
+                'number'    => $protocol['NUMBER'],
+                'year'      => $yearDir,
+                'title'     => $title,
+                'sig'       => $protocolModel->getSigFile($dir),
+                'pdf'       => $protocolModel->getPdfFile($dir),
+                'date'      => !empty($protocol['DATE'])? StringHelper::dateRu($protocol['DATE']) : '--',
+                'date_send' => !empty($protocol['PROTOCOL_SEND_DATETIME'])? StringHelper::dateRu($protocol['PROTOCOL_SEND_DATETIME']) : 'Не отправлен',
+                'link'      => $link,
+                'actual_version'  => $protocol['ACTUAL_VERSION']? unserialize($protocol['ACTUAL_VERSION']) : '',
+                'is_disable_form' => /*$requestData['STAGE_ID'] == '4' ||*/ $requestData['STAGE_ID'] == 'WON' || empty($protocol['NUMBER']) /*|| !empty($actVr)*/,
+                'is_disable_mail' =>
+                    empty($protocol['NUMBER'])
+                    || empty($protocol['ACTUAL_VERSION'])
+                    || (
+                        empty($requestData['OPLATA'])
+                        && empty($requestData['TAKEN_ID_DEAL'])
+                        && $_SESSION['SESS_AUTH']['USER_ID'] != 9
+                    ),
+                'is_enable_ecp'  =>
+                    !empty($protocol['ID'])
+                    && !empty($protocol['NUMBER'])
+                    && !empty($protocol['PROTOCOL_TYPE'])  || $protocol['PROTOCOL_TYPE'] == '0'
+                    && in_array($protocol['PROTOCOL_TYPE'], [1, 33, 34, 35, 36, 37, 38, 39])
+                    && empty($protocol['PROTOCOL_OUTSIDE_LIS']),
+            ];
+        }
+
+        $this->data['protocol_modal'] = $requirement->getWorkProtocolFiles($requestData['ID_Z']);
+
+        $this->data['empty_protocol_files'] = false;
+        foreach ($this->data['protocol_modal'] as $protocol) {
+            if (!empty($protocol['protocol_file_path'])) {
+                $this->data['empty_protocol_files'] = true;
+                break;
+            }
+        }
+    }
+    
+    /**
+     * Подготовка данных результатов испытаний
+     */
+    private function prepareResultsData($resultModel, $requestData, $dealId, $isResults)
+    {
+        $this->data['results']['check'] = $isResults;
+        $this->data['results']['is_disabled'] = false;
+        
+        if (!empty($requestData['DATE_RESULTS'])) {
+            $this->data['results']['date'] = StringHelper::dateRu($requestData['DATE_RESULTS']);
+        } elseif (!empty($requestData['DATE_P'])) {
+            $this->data['results']['date'] = StringHelper::dateRu($requestData['DATE_P']);
+        } else {
+            $this->data['results']['date'] = '--';
+        }
+        $this->data['results']['test'] = (!$this->data['is_deal_pr'] && !$this->data['is_deal_osk'] && !$this->data['is_deal_sc'] && empty($requestData['TAKEN_ID_DEAL'])) &&
+            (empty($requestData) || empty($requestData['ACT_NUM']) || empty($invoiceData));
+    }
+    
+    /**
+     * Подготовка данных завершения испытаний
+     */
+    private function prepareCompleteData($permissionInfo, $deal, $requestData)
+    {
+        $this->data['complete']['check'] = false;
+        $this->data['complete']['date'] = $requestData['dateEnd'] ? StringHelper::dateRu($requestData['dateEnd']) : '--';
+        $this->data['complete']['is_disabled'] = false && empty($this->data['protocol']) || 0;
+        // Проверка на доступ к ручному завершению испытаний (может завершить Руководитель ИЦ и Админ)
+        $this->data['complete']['may_return'] = true || in_array($permissionInfo['id'], [ADMIN_PERMISSION, HEAD_IC_PERMISSION]);
+        $this->data['complete']['may_complete'] = true || in_array($permissionInfo['id'], [ADMIN_PERMISSION, HEAD_IC_PERMISSION]) &&
+            ($deal['STAGE_ID'] == 'PREPARATION' || $deal['STAGE_ID'] == 'PREPAYMENT_INVOICE' ||
+                $deal['STAGE_ID'] == 'EXECUTING'|| $deal['STAGE_ID'] == 'FINAL_INVOICE' || $deal['STAGE_ID'] == 1);
+    }
+    
+    /**
+     * Подготовка данных акта выполненных работ
+     */
+    private function prepareActCompleteData($actVr, $requestData, $companyDataRequisite, $organizationModel, $deal)
+    {
+        $this->data['act_complete']['check'] = !empty($actVr);
+        $this->data['act_complete']['email'] = !empty($requestData['acc_email']) ? $requestData['acc_email'] : $companyDataRequisite['RQ_EMAIL'];
+        $this->data['act_complete']['number'] = $actVr['NUMBER'];
+        $this->data['act_complete']['attach'] = $actVr['ACTUAL_VER']?? '';
+        $this->data['act_complete']['date'] = !empty($actVr['DATE'])? StringHelper::dateRu($actVr['DATE']) : '--';
+        $this->data['act_complete']['date_send'] = !empty($actVr['SEND_DATE'])? StringHelper::dateRu($actVr['SEND_DATE']) : 'Не отправлен';
+        $this->data['act_complete']['is_disable_form'] = false && !in_array($_SESSION['SESS_AUTH']['USER_ID'], [61, 88, 1, 25]) || 0;
+        $this->data['act_complete']['is_disable_mail'] = empty($actVr) || 0;
+        //TODO: пока ид организации задано жестко 1. потом переделать на получение к какой организации принадлежит заявка
+        $this->data['act_complete']['assigned_users'] = $organizationModel->getAllLeaders(1);
+    }
+    
+    /**
+     * Подготовка данных списка версий файлов
+     */
+    private function prepareFilesData($request, $protocolData, $requestData, $dealId, $tzId, $dogovorData, $actVr, $proposalData)
+    {
+        //// Список версий
+        // Протокол
+        $this->data['file']['protocol'] = [];
+        if (!empty($protocolData)) {
+            foreach ($protocolData as $key => $protocol) {
+                if (empty($protocol['PROTOCOL_OUTSIDE_LIS'])) {
+                    $year = date("Y", strtotime($protocol['DATE']));
+                    $dir  = PROTOCOL_PATH . "archive/{$requestData['ID']}{$year}/{$protocol['ID']}/";
+                    $path = "/protocol_generator/archive/{$requestData['ID']}{$year}/{$protocol['ID']}/";
+                    $files = $request->getFilesFromDir($dir, ['signed.docx', 'forsign.docx', 'qrNEW.png']);
+                } else {
+                    $dir  = "/home/bitrix/www/pdf/{$protocol['ID']}/";
+                    $path = "/pdf/{$protocol['ID']}/";
+                    $files = $request->getFilesFromDir($dir);
+                }
+                
+                $this->data['file']['protocol'][$key]['number'] = $protocol['NUMBER'];
+                $this->data['file']['protocol'][$key]['dir'] = $path;
+                
+                foreach ($files as $file) {
+                    $this->data['file']['protocol'][$key]['files'][] = $file;
+                }
+            }
+        } else {
+            $year = date("Y", strtotime($requestData['DATE_ACT']));
+            $dir  = PROTOCOL_PATH . "archive/{$requestData['ID']}{$year}/";
+            $path = "/protocol_generator/archive/{$requestData['ID']}{$year}/";
+            $files = $request->getFilesFromDir($dir, ['signed.docx', 'forsign.docx', 'qrNEW.png']);
+            $this->data['file']['protocol'][0]['number'] = $requestData['NUM_P'];
+            $this->data['file']['protocol'][0]['dir'] = $path;
+            foreach ($files as $file) {
+                $this->data['file']['protocol'][0]['files'][] = $file;
+            }
+        }
+        
+        // КП
+        $this->data['file']['kp']['files'] = [];
+        if (!empty($proposalData)) {
+            $dir  = PROTOCOL_PATH . "archive_kp/{$dealId}/";
+            $path = "/protocol_generator/archive_kp/{$dealId}/";
+            $files = $request->getFilesFromDir($dir);
+            
+            $this->data['file']['kp']['dir'] = $path;
+            foreach ($files as $file) {
+                $this->data['file']['kp']['files'][] = $file;
+            }
+        }
+        
+        // Договор
+        $this->data['file']['order']['files'] = [];
+        if (!empty($dogovorData)) {
+            $dir  = PROTOCOL_PATH . "archive_dog/{$dogovorData['ID']}/";
+            $path = "/protocol_generator/archive_dog/{$dogovorData['ID']}/";
+            $files = $request->getFilesFromDir($dir);
+            
+            $this->data['file']['order']['dir'] = $path;
+            foreach ($files as $file) {
+                $this->data['file']['order']['files'][] = $file;
+            }
+        }
+        
+        // Счет-оферта
+        $this->data['file']['offer']['files'] = [];
+        if (!empty($dogovorData)) {
+            $dir  = PROTOCOL_PATH . "archive_dog/{$tzId}/";
+            $path = "/protocol_generator/archive_dog/{$tzId}/";
+            $files = $request->getFilesFromDir($dir);
+            
+            $this->data['file']['offer']['dir'] = $path;
+            foreach ($files as $file) {
+                $this->data['file']['offer']['files'][] = $file;
+            }
+        }
+        
+        // Прил. к договору (тз)
+        $this->data['file']['tz']['files'] = [];
+        $dir  = PROTOCOL_PATH . "archive_tz/{$requestData['ID']}/";
+        $path = "/protocol_generator/archive_tz/{$requestData['ID']}/";
+        $files = $request->getFilesFromDir($dir);
+        
+        $this->data['file']['tz']['dir'] = $path;
+        foreach ($files as $file) {
+            $this->data['file']['tz']['files'][] = $file;
+        }
+        
+        // Счет
+        $this->data['file']['invoice']['files'] = [];
+        if (!empty($invoiceData)) {
+            $dir  = PROTOCOL_PATH . "archive_acc/{$dealId}/";
+            $path = "/protocol_generator/archive_acc/{$dealId}/";
+            $files = $request->getFilesFromDir($dir);
+            
+            $this->data['file']['invoice']['dir'] = $path;
+            foreach ($files as $file) {
+                $this->data['file']['invoice']['files'][] = $file;
+            }
+        }
+        
+        // Акт ВР
+        $this->data['file']['act']['files'] = [];
+        if (!empty($actVr)) {
+            $dir  = PROTOCOL_PATH . "archive_aktvr/{$dealId}/";
+            $path = "/protocol_generator/archive_aktvr/{$dealId}/";
+            $files = $request->getFilesFromDir($dir);
+            
+            $this->data['file']['act']['dir'] = $path;
+            foreach ($files as $file) {
+                $this->data['file']['act']['files'][] = $file;
+            }
+        }
+        
+        // Фото
+        $this->data['file']['photo']['files'] = [];
+        $dir  = "/home/bitrix/www/photo/{$dealId}/";
+        $path = "/photo/{$dealId}/";
+        $files = $request->getFilesFromDir($dir);
+        
+        $this->data['file']['photo']['dir'] = $path;
+        foreach ($files as $file) {
+            $this->data['file']['photo']['files'][] = $file;
+        }
+    }
+
+    public function uploadFileAjax(int $dealId)
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var Request $requestModel */
+        $requestModel = $this->model('Request');
+
+        $fileType = $_POST['fileType'];
+        $file = $_FILES['file'];
+
+        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/protocol_generator/archive_" . $fileType . "/" . $dealId . "/";
+        $webPath = "/protocol_generator/archive_" . $fileType . "/" . $dealId . "/";
+        
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        $existingFiles = glob($uploadDir . '*');
+        foreach ($existingFiles as $existingFile) {
+            if (is_file($existingFile)) {
+                unlink($existingFile);
+            }
+        }
+
+        $result = $requestModel->saveFile($uploadDir, $file['name'], $file['tmp_name']);
+
+        if ($result['success']) {
+            $response = [
+                'success' => true,
+                'fileName' => $file['name'],
+                'fileUrl' => $webPath . $file['name'],
+            ];
+        } else {
+            $response = [
+                'success' => false,
+            ];
+        }
+
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @param int $dealId ID сделки
+     */
+    public function deleteFileAjax(int $dealId)
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var Request $requestModel */
+        $requestModel = $this->model('Request');
+
+        $fileType = $_POST['fileType'] ?? '';
+        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/protocol_generator/archive_{$fileType}/{$dealId}/";
+        $files = glob($uploadDir . "*.pdf");
+        
+        if (!empty($files) && isset($files[0]) && is_file($files[0])) {
+            if (unlink($files[0])) {
+                echo json_encode([
+                    'success' => true,
+                ], JSON_UNESCAPED_UNICODE);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                ], JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            echo json_encode([
+                'success' => false,
+            ], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    /**
+     * Обрезает имя файла до заданной длины, сохраняя расширение
+     * @param string $fileName Имя файла
+     * @param int $maxLength Максимальная длина
+     * @return string Обрезанное имя файла
+     */
+    private function truncateFileName($fileName, $maxLength = 25) 
+    {
+        if (mb_strlen($fileName) <= $maxLength) {
+            return $fileName;
+        }
+        
+        $lastDotIndex = mb_strrpos($fileName, '.');
+        $extension = $lastDotIndex !== false ? mb_substr($fileName, $lastDotIndex) : '';
+        
+        $nameLength = $maxLength - 3 - mb_strlen($extension);
+        if ($nameLength <= 0) {
+            return mb_substr($fileName, 0, $maxLength - 3) . '...';
+        }
+        
+        $name = mb_substr($fileName, 0, $lastDotIndex !== false ? $lastDotIndex : mb_strlen($fileName));
+        return mb_substr($name, 0, $nameLength) . '...' . $extension;
+    }
+
+    /**
+     * Создает архив протоколов
+     */
+    public function createProtocolsArchive()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var Request $requestModel */
+        $requestModel = $this->model('Request');
+
+        $data = [
+            'filePaths' => $_POST['files'],
+            'title' => $_POST['title']
+        ];
+
+        $requestModel->createProtocolsArchive($data);
     }
 }

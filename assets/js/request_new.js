@@ -462,18 +462,70 @@ $(function ($) {
             $('#material-block').after(newMaterial)
         }
     })
-            
+
+    /**
+     * Обновляет список ответственных в дополнительных селектах.
+     * Исключает из них главного ответственного.
+     * Сохраняет текущий выбор, если он всё ещё доступен.
+     */
+    function updateAssignedSelects() {
+        const $main = $('#assigned0')
+        const optionsHTML = $main.html()
+        const mainVal = $main.val()
+
+        $('.added_assigned select.assigned-select').each(function() {
+            const $select = $(this)
+            const oldVal = $select.val()
+
+            let $temp = $('<select>' + optionsHTML + '</select>')
+
+            let $option = $temp.find('option[value=""][disabled]').filter(function() {
+                return $(this).text().trim() === 'Выберите главного ответственного'
+            });
+            if ($option.length) {
+                $option.text('Выберите ответственного')
+            } else {
+                $temp.find('option').each(function() {
+                    if ($(this).text().trim() === 'Выберите главного ответственного') {
+                        $(this).text('Выберите ответственного')
+                    }
+                });
+            }
+
+            if (mainVal) {
+                $temp.find('option[value="' + mainVal + '"]').remove()
+            }
+
+            $select.html($temp.html())
+
+            // Если ранее выбранное значение все еще присутствует в обновлённом списке, восстанавливаем его
+            if ($select.find('option[value="' + oldVal + '"]').length > 0) {
+                $select.val(oldVal)
+            }
+        });
+    }
+
+    $body.on('change', '#assigned0', function() {
+        updateAssignedSelects();
+        $('.add_assigned').prop('disabled', !$(this).val())
+    })
+
     $body.on('click', '.add_assigned', function() {
         const lastAssigned = $('.added_assigned').last()
         let index = 1
-        
+
         if (lastAssigned.length > 0) {
             const lastAssignedId = lastAssigned.find('select[id^="assigned"]').attr('id')
             index = parseInt(lastAssignedId.replace('assigned', '')) + 1
         }
-        
-        const options = $('#assigned0').html()
-        
+
+        const mainVal = $('#assigned0').val()
+        let optionsHTML = $('#assigned0').html()
+
+        let $temp = $('<select>' + optionsHTML + '</select>');
+        $temp.find('option[value="' + mainVal + '"]').remove();
+        optionsHTML = $temp.html();
+
         const newAssigned = `
             <div class="form-group row added_assigned">
                 <label class="col-sm-2 col-form-label">Ответственный</label>
@@ -483,7 +535,7 @@ $(function ($) {
                             required
                             name="ASSIGNED[]"
                     >
-                        ${options}
+                        ${optionsHTML}
                     </select>
                     <input name="id_assign[]" id="assigned${index}-hidden" class="assigned_id" type="hidden" value="">
                 </div>
@@ -493,7 +545,7 @@ $(function ($) {
                     </button>
                 </div>
             </div>`
-        
+
         if (lastAssigned.length > 0) {
             lastAssigned.after(newAssigned)
         } else {

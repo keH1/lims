@@ -1,49 +1,96 @@
 ---
 services:
+  cadvisor:
+    image: dockerhub.mos.ru/cadvisor:v0.33.0
+    container_name: cadvisor
+    ports:
+      - '${EXPOSE_CADVISOR_PORT}:8080'
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    environment:
+      TZ: ${TZ}  
+    depends_on:
+      - php
+      - webserver
+      - promtail
+    networks:
+      - lims-ulab  
+
   php:
     container_name: php
-    build: ./docker/php
-    volumes_from:
-      - source
-    links:
-      - db
-      - memcached
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - web_data:/var/www/bitrix
     environment:
       TZ: ${TZ}
-    stdin_open: true
-    tty: true
-    restart: unless-stopped
     networks:
       - lims-ulab
+    restart: unless-stopped
+    depends_on:
+      db: 
+        condition: service_started
+      init:
+        condition: service_completed_successfully
 
   webserver:
     container_name: web_server
-    build: ./docker/nginx
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
     depends_on:
-      - source
-    volumes_from:
-      - source
+      php:
+        condition: service_started
+      init:
+        condition: service_completed_successfully
+    volumes:
+      - web_data:/var/www/bitrix
+      - web_server_bitrix_logs:/var/log/nginx
     ports:
-      - '${INTERFACE}:${EXPOSE_NGINX_PORT}:80'
-      - '${INTERFACE}:${EXPOSE_NGINX_SSL_PORT}:443'
-    links:
-      - php
+      - '${EXPOSE_NGINX_PORT}:80'
     environment:
       TZ: ${TZ}
-    stdin_open: true
-    tty: true
+    networks:
+      - lims-ulab
     restart: unless-stopped
+
+  memcached:
+    container_name: memcached
+    image: dockerhub.mos.ru/memcached:1.6-alpine     
+    ports:
+      - '${INTERFACE}:${EXPOSE_MEMCACHED_PORT}:11211'
+    environment:
+      TZ: ${TZ}
+    networks:
+      - lims-ulab
+    restart: unless-stopped
+
+  promtail:
+    image: dockerhub.mos.ru/grafana/promtail:main-d5c04e3
+    container_name: promtail
+    user: "nobody"
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./docker/promtail/promtail-config.yaml:/etc/promtail/config.yml
+      - web_server_bitrix_logs:/var/log/bitrix:ro
+    command: -config.file=/etc/promtail/config.yml
+    environment:
+      TZ: ${TZ}
     networks:
       - lims-ulab
 
-
   db:
     container_name: db
-    build: ./docker/mysql
-#    volumes:
-#      - ./docker/mysql/init:/docker-entrypoint-initdb.d
-    volumes_from:
-      - source
+    build: 
+      context: .
+      dockerfile: docker/mysql/Dockerfile
+    volumes:
+      - mysql:/var/lib/mysql
     ports:
       - '${INTERFACE}:${EXPOSE_MYSQL_PORT}:3306'
     environment:
@@ -53,40 +100,26 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       TZ: ${TZ}
     command: mysqld --user=root --sql-mode=""
-    stdin_open: true
-    tty: true
     restart: unless-stopped
     networks:
       - lims-ulab
 
-  memcached:
-    image: memcached:latest
-    container_name: memcached
-    volumes_from:
-      - source
-    ports:
-      - '${INTERFACE}:${EXPOSE_MEMCACHED_PORT}:11211'
-    environment:
-      TZ: ${TZ}
-    stdin_open: true
-    tty: true
-    restart: unless-stopped
-    networks:
-      - lims-ulab
-
-  source:
-    image: alpine:latest
-    container_name: source
+  init:
+    image: dockerhub.mos.ru/alpine
     volumes:
-      - ./app:/var/www/bitrix
-      - ./db:/var/lib/mysql
-      - ./cache:/var/lib/memcached
-      - ./logs/nginx:/var/log/nginx
-      - ./logs/php:/var/log/php
-      - ./logs/db:/var/log/mysql
-      - ./logs/memcached:/var/log/memcached
-    networks:
-      - lims-ulab
+      - ./app:/source
+      - web_data:/target
+    command: sh -c "cp -a /source/. /target/ && chown -R 1000:33 /target"
 
 networks:
   lims-ulab:
+
+volumes:
+  mysql:
+  web_server_bitrix_logs:
+  web_data:
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: ${PWD}/app
