@@ -399,6 +399,7 @@ $(function ($) {
         $('.probe-id-list').val(probeIdList)
 
         let $selectScheme = $('#add-methods-modal-form').find('#select-scheme')
+        let $btnApply = $('#apply-scheme')
 
         let htmlOptionsScheme = `<option value="">Нет схемы / ручной ввод</option>`
         $.ajax({
@@ -411,6 +412,14 @@ $(function ($) {
                 material_id: materialId,
             },
             success: function (json) {
+                if ( json.length === 0 ) {
+                    $selectScheme.prop('disabled', true)
+                    $btnApply.prop('disabled', true)
+                } else {
+                    $selectScheme.prop('disabled', false)
+                    $btnApply.prop('disabled', false)
+                }
+
                 htmlOptionsScheme += getHtmlOptions(json)
 
                 $selectScheme.html(htmlOptionsScheme)
@@ -507,37 +516,46 @@ $(function ($) {
         const id = $(this).val()
         const $parent = $(this).parents('.method-block')
 
-        $.ajax({
-            method: 'POST',
-            async: false,
-            data: {
-                id: id
-            },
-            url: '/ulab/requirement/getMethodDataAjax',
-            dataType: 'json',
-            success: function (data) {
-                $parent.find('.price-input').val(parseFloat(data.price))
+        let data = []
 
-                let options = `<option value="">Исполнитель</option>`
-                $.each(data.assigned, function (i, item) {
-                    options += `<option value="${item.user_id}">${item.short_name}</option>`
-                })
+        if ( id > 0 ) {
+            data = methodList[id]
 
-                $parent.find('.user-select').html(options)
-            }
+            $parent.find('.method-link')
+                .removeClass('disabled')
+                .attr('href', `/ulab/gost/method/${id}`)
+        } else {
+            data.price = 0
+            data.assigned = []
+
+            $parent.find('.method-link')
+                .addClass('disabled')
+                .attr('href', ``)
+        }
+
+        $parent.find('.price-input').val(parseFloat(data.price))
+
+        let options = `<option value="">Исполнитель</option>`
+        $.each(data.assigned, function (i, item) {
+            options += `<option value="${item.user_id}">${item.short_name}</option>`
         })
 
-        $parent.find('.method-link')
-            .removeClass('disabled')
-            .attr('href', `/ulab/gost/method/${id}`)
-
+        $parent.find('.user-select').html(options)
     })
+
     // выбираем ТУ в модальном окне добавление методик
     $body.on('change', '.tu-select', function () {
         const id = $(this).val()
-        $(this).parents('.method-block').find('.tu-link')
-            .removeClass('disabled')
-            .attr('href', `/ulab/normDocGost/edit/${id}`)
+
+        if ( id > 0 ) {
+            $(this).parents('.method-block').find('.tu-link')
+                .removeClass('disabled')
+                .attr('href', `/ulab/normDocGost/edit/${id}`)
+        } else {
+            $(this).parents('.method-block').find('.tu-link')
+                .addClass('disabled')
+                .attr('href', ``)
+        }
     })
 
 
@@ -924,7 +942,7 @@ function getHtmlMethod(methodList, normDocList, gostNumber = 0, defaultMethod = 
                         <select class="form-control select2 tu-select" name="form[${gostNumber}][norm_doc_method_id]">
                             ${optionCondition}
                         </select>
-                        <a class="btn btn-outline-secondary tu-link disabled"  title="Перейти в ТУ" href="">
+                        <a class="btn btn-outline-secondary tu-link disabled"  title="Перейти в Нормативную документацию" href="">
                             <i class="fa-solid fa-right-to-bracket"></i>
                         </a>
                     </div>

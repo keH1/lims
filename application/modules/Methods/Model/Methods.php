@@ -127,11 +127,8 @@ class Methods extends Model
         $result = $methodSql->Fetch();
 
         if ($result && isset($result['id'])) {
-            if ($result['id'] == 2669) {
-                $assignedList = $userMethod->getAllActiveUserId();
-            } else {
-                $assignedList = $this->getAssigned($result['id']);
-            }
+
+            $assignedList = $this->getAssigned($result['id']);
 
             foreach ($assignedList as $user) {
                 $result['assigned'][] = $userMethod->getUserShortById($user);
@@ -154,6 +151,8 @@ class Methods extends Model
 
     public function getList()
     {
+        $userMethod = new User();
+
         $methodSql = $this->DB->Query(
             "select 
                     m.*, 
@@ -177,6 +176,12 @@ class Methods extends Model
             $strClause = !empty($row['clause']) ? " {$row['clause']}" : '';
             $row['view_gost'] = "{$row['reg_doc']}{$strYear}{$strClause} | {$row['name']}";
 
+            $assignedList = $this->getAssigned($row['id']);
+
+            foreach ($assignedList as $user) {
+                $row['assigned'][] = $userMethod->getUserShortById($user);
+            }
+
             if ( !$row['is_confirm'] ) {
                 $row['date_color'] = '#dfdf11';
             }
@@ -185,7 +190,7 @@ class Methods extends Model
                 $row['date_color'] = '#f00';
             }
 
-            $result[] = $row;
+            $result[$row['id']] = $row;
         }
 
         return $result;
