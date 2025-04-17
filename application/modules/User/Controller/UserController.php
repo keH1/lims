@@ -49,6 +49,11 @@ class UserController extends Controller
         $permissionModel = $this->model('Permission');
         /** @var  Lab $labModel */
         $labModel = $this->model('Lab');
+        /** @var  Organization $organizationModel */
+        $organizationModel = $this->model('Organization');
+
+        $affiliationInfo = $organizationModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $this->data['lab_profile_id'] = $affiliationInfo['lab_id'];
 
         $this->data['role_list'] = $permissionModel->getPermission();
         $positionList = [];
