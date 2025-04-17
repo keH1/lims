@@ -118,6 +118,7 @@ $(function ($) {
         theme: 'bootstrap-5',
         templateResult: formatState,
         templateSelection: formatState,
+        placeholder: $(this).data('placeholder'),
         width: '100%',
     })
 
@@ -683,6 +684,9 @@ $(function ($) {
                 $button.html(btnHtml)
                 $button.removeClass('disabled')
 
+                $form.find('input[type="number"]').val(1)
+                $form.find('select').val(null).trigger('change')
+
                 $.magnificPopup.close()
             }
         })
@@ -710,6 +714,9 @@ $(function ($) {
 
                 $button.html(btnHtml)
                 $button.removeClass('disabled')
+
+                $form.find('input[type="number"]').val(1)
+                $form.find('select').val(null).trigger('change')
 
                 $.magnificPopup.close()
             }
