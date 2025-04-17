@@ -709,7 +709,8 @@ class User extends Model
             "ACTIVE" => "Y",
             "GROUP_ID" => $groupId,
             "PASSWORD" => $data['NEW_PASSWORD'],
-            "CONFIRM_PASSWORD" => $data['NEW_PASSWORD_CONFIRM']
+            "CONFIRM_PASSWORD" => $data['NEW_PASSWORD_CONFIRM'],
+            "UF_ORG_ID" => App::getOrganizationId()
         ];
 
         $userId = $user->Add($fields);
