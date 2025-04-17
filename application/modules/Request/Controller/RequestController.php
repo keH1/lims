@@ -616,7 +616,7 @@ class RequestController extends Controller
         $dogovorData = $config['blocks']['order'] ? $requirement->getDogovor($dealId) : [];
         $invoiceData = $config['blocks']['invoice'] ? $request->getInvoice($tzId) : [];
         $proposalData = $config['blocks']['proposal'] ? $requirement->getKP($tzId) : [];
-        $tzDoc = $requirement->getTzDoc($tzId);
+        $tzDoc = $config['blocks']['order'] ? $requirement->getTzDoc($tzId) : [];
         
         $this->data['request'] = $requestData;
         $this->data['doc_id'] = $dogovorData['ID'] ?? '';
@@ -641,7 +641,7 @@ class RequestController extends Controller
         }
         
         if ($config['blocks']['order']) {
-            $this->prepareOrderData($orderData, $dogovorData, $requestData, $actVr, $tzId);
+            $this->prepareOrderData($orderData, $dogovorData, $requestData, $actVr, $tzId, $tzDoc);
         }
         
         if ($config['blocks']['invoice']) {
@@ -1627,9 +1627,9 @@ class RequestController extends Controller
     }
     
     /**
-     * Подготовка данных договора
+     * Подготовка данных договора и приложения к договору
      */
-    private function prepareOrderData($orderData, $dogovorData, $requestData, $actVr, $tzId)
+    private function prepareOrderData($orderData, $dogovorData, $requestData, $actVr, $tzId, $tzDoc)
     {
         // Договор
         if (!empty($orderData) && $dogovorData['IS_ACTION'] == 0) {
