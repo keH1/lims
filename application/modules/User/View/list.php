@@ -16,10 +16,12 @@
 <header class="header-requirement mb-3 pt-0">
     <nav class="header-menu w-100">
         <ul class="nav w-100">
-            <li class="nav-item me-3">
-                <a class="nav-link fa-solid icon-nav fa-rectangle-list" href="<?= URI ?>/import/list" style="font-size: 22px;" title="Профиль лаборатории" data-bs-toggle="tooltip">
-                </a>
-            </li>
+            <?php if ( !empty($this->data['lab_profile_id']) ): ?>
+                <li class="nav-item me-3">
+                    <a class="nav-link fa-solid icon-nav fa-rectangle-list" href="<?= URI ?>/import/labProfile/<?=$this->data['lab_profile_id']?>" style="font-size: 22px;" title="Профиль лаборатории" data-bs-toggle="tooltip">
+                    </a>
+                </li>
+            <?php endif; ?>
             <li class="nav-item me-2">
                 <a class="nav-link icon-nav fa-solid fa-exchange" style="font-size: 22px; margin: 2px 0 0 1px;" href="<?=URI?>/user/status/" title="Статусы" data-bs-toggle="tooltip">
                 </a>
