@@ -20,7 +20,8 @@ class Statistic extends Model
                     'filter' => "ba_tz_type.name like '%{dataFilter}%'",
                     'where' => false,
                     'group' => 'ba_tz.TYPE_ID',
-                    'link' => '<a class="chart_link" data-id="{ba_tz_type_id}" data-entity="request" href="#">{type_tz}</a>',
+//                    'link' => '<a class="chart_link" data-id="{ba_tz_type_id}" data-entity="request" href="#">{type_tz}</a>',
+                    'link' => '{type_tz}',
                     'dependency' => [
                         'ba_tz_type' => [
                             'join' => "inner join ba_tz_type on ba_tz_type.type_id = ba_tz.TYPE_ID"
@@ -1235,16 +1236,6 @@ class Statistic extends Model
             $groupBy = "group by {$strGroup}";
         }
 
-//        if ($_SESSION['SESS_AUTH']['USER_ID'] == 61) {
-//            $_SESSION['message_warning'] = "SELECT
-//                            {$select}
-//                        FROM {$from}
-//                        {$join}
-//                        WHERE {$where}
-//                        {$groupBy}
-//                        ORDER BY  {$order['by']} {$order['dir']} {$limit}";
-//        }
-
         $data = $this->DB->Query(
             "SELECT 
                         {$select}
@@ -1255,6 +1246,13 @@ class Statistic extends Model
                     ORDER BY  {$order['by']} {$order['dir']} {$limit}"
         );
 
+        $this->pre("SELECT 
+                        {$select}
+                    FROM {$from}
+                    {$join}
+                    WHERE {$where}
+                    {$groupBy}
+                    ORDER BY  {$order['by']} {$order['dir']} {$limit}");
 
         $dataTotal = $this->DB->Query(
             "SELECT 

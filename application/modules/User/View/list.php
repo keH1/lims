@@ -16,25 +16,25 @@
 <header class="header-requirement mb-3 pt-0">
     <nav class="header-menu w-100">
         <ul class="nav w-100">
-            <li class="nav-item me-3">
-                <a class="nav-link fa-solid icon-nav fa-rectangle-list" href="<?= URI ?>/import/list" style="font-size: 22px;" title="Профиль лаборатории" data-bs-toggle="tooltip">
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link icon-nav fa-solid fa-exchange" style="font-size: 22px; margin: 2px 0 0 1px;" href="<?=URI?>/user/status/" title="Статусы" data-bs-toggle="tooltip">
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link fa-solid fa-cog icon-nav" style="font-size: 22px; margin: 2px 0 0 1px;" href="<?=URI?>/permission/list/" title="Роли" data-bs-toggle="tooltip">
-                </a>
-            </li>
+<!--            <li class="nav-item me-3">-->
+<!--                <a class="nav-link fa-solid icon-nav fa-rectangle-list" href="--><?//= URI ?><!--/import/list" style="font-size: 22px;" title="Профиль лаборатории" data-bs-toggle="tooltip">-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link icon-nav fa-solid fa-exchange" style="font-size: 22px; margin: 2px 0 0 1px;" href="--><?//=URI?><!--/user/status/" title="Статусы" data-bs-toggle="tooltip">-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link fa-solid fa-cog icon-nav" style="font-size: 22px; margin: 2px 0 0 1px;" href="--><?//=URI?><!--/permission/list/" title="Роли" data-bs-toggle="tooltip">-->
+<!--                </a>-->
+<!--            </li>-->
             <li class="nav-item me-3 ms-auto">
-                <a class="nav-link fa-solid fa-plus icon-nav popup-with-form add-user" style="font-size: 25px;" href="#" title="Добавить пользователя" data-bs-toggle="tooltip">
+                <a class="nav-link fa-solid fa-plus icon-nav popup-with-form add-user" style="font-size: 25px;" href="#" title="Добавить сотрудника" data-bs-toggle="tooltip">
                 </a>
             </li>
-            <li class="nav-item">
-                <button class="btn btn-gradient users-update-role-trigger disabled" title="Обновить роли и/или отделы" data-bs-toggle="tooltip">Сохранить изменения</button>
-            </li>
+<!--            <li class="nav-item">-->
+<!--                <button class="btn btn-gradient users-update-role-trigger disabled" title="Обновить роли и/или отделы" data-bs-toggle="tooltip">Сохранить изменения</button>-->
+<!--            </li>-->
         </ul>
     </nav>
 </header>
@@ -96,7 +96,7 @@
 <form id="user-modal-form" class="bg-light mfp-hide col-md-5 m-auto p-3 position-relative"
       action="<?= URI ?>/import/insertUpdateUser/" method="post">
     <div class="title mb-3 h-2">
-        Пользователь
+<!--        Пользователь-->Сотрудники
     </div>
 
     <div class="line-dashed-small"></div>

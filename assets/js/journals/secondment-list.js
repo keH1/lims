@@ -54,11 +54,14 @@ $( document ).ready(function() {
                 class: 'text-nowrap',
                 render: function (data, type, item) {
                     if (type === 'display' || type === 'filter') {
-                        return `<a class="request-link"
-                               href="${item['uri']}/secondment/card/${item['s_id']}">
+//                         return `<a class="request-link"
+//                                href="${item['uri']}/secondment/card/${item['s_id']}">
+// <!--                               ${item['title']}-->
+//                                ${item['s_id']}
+//                             </a>`
+                        return
 <!--                               ${item['title']}-->
                                ${item['s_id']}
-                            </a>`
                     }
 
                     return item.s_id
@@ -86,7 +89,8 @@ $( document ).ready(function() {
                 data: 'project_name',
                 defaultContent: '',
                 render: function (data, type, item) {
-                    return data ?? '<span class="text-primary cursor-pointer">Выбрать проект</span>';
+                    // return data ?? '<span class="text-primary cursor-pointer">Выбрать проект</span>';
+                    return data ;
                 }
             },
             {
