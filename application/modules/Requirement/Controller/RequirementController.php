@@ -1621,4 +1621,35 @@ class RequirementController extends Controller
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
+
+
+    /**
+     * @desc редактирует или удаляет пробу через аякс
+     */
+    public function editProbeAjax()
+    {
+        global $APPLICATION;
+
+        $APPLICATION->RestartBuffer();
+
+        /** @var Requirement $requirementModel */
+        $requirementModel = $this->model('Requirement');
+
+        if ( $_POST['button'] === 'save' ) {
+            $requirementModel->updateProbeInfo((int)$_POST['probe_id'], $_POST['form']);
+            $result = [
+                'success' => true,
+            ];
+        } else if ( $_POST['button'] === 'delete' ) {
+            $result = $requirementModel->deleteProbe((int)$_POST['deal_id'], (int)$_POST['probe_id']);
+            $result['type'] = 'delete';
+        } else {
+            $result = [
+                'success' => false,
+                'error' => 'Неизвестная команда'
+            ];
+        }
+
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    }
 }

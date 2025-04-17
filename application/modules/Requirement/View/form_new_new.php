@@ -593,6 +593,7 @@
     <input name="deal_id" value="<?=$this->data['deal_id']?>" type="hidden">
     <input name="tz_id" value="<?=$this->data['tz_id']?>" type="hidden">
     <input name="probe_id" class="probe_id" value="" type="hidden">
+    <input name="button" id="button_action" value="" type="hidden">
 
     <div class="mb-3">
         <label class="form-label">Маркировка заказчика (информация об объекте испытания)</label>
