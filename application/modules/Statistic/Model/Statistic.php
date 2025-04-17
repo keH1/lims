@@ -20,7 +20,7 @@ class Statistic extends Model
                     'filter' => "ba_tz_type.name like '%{dataFilter}%'",
                     'where' => false,
                     'group' => 'ba_tz.TYPE_ID',
-//                    'link' => '<a class="chart_link" data-id="{ba_tz_type_id}" data-entity="request" href="#">{type_tz}</a>',
+//                   'link' => '<a class="chart_link" data-id="{ba_tz_type_id}" data-entity="request" href="#">{type_tz}</a>',
                     'link' => '{type_tz}',
                     'dependency' => [
                         'ba_tz_type' => [
