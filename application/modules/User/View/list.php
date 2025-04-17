@@ -96,7 +96,7 @@
 <form id="user-modal-form" class="bg-light mfp-hide col-md-5 m-auto p-3 position-relative"
       action="<?= URI ?>/import/insertUpdateUser/" method="post">
     <div class="title mb-3 h-2">
-<!--        Пользователь--> Сотрудники
+<!--        Пользователь-->Сотрудники
     </div>
 
     <div class="line-dashed-small"></div>
