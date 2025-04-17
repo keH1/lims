@@ -690,7 +690,7 @@
     <div class="mb-3">
         <label class="form-label">Объект испытаний <span class="redStars">*</span></label>
 
-        <select class="form-control select2" name="material_id" required>
+        <select class="form-control select2" name="material_id" data-placeholder="Выбрать объект испытаний" required>
             <option value="">Выбрать объект испытаний</option>
             <?php foreach ($this->data['material_list'] as $material): ?>
                 <option value="<?=$material['ID']?>"><?=$material['NAME']?></option>
@@ -724,8 +724,7 @@
         <label class="form-label">Объект испытаний (мультивыбор) <span class="redStars">*</span></label>
 
         <?php $selected = count($this->data['tz_material_list']) == 1? 'selected': '' ?>
-        <select class="form-control select2" name="material_id[]" multiple required>
-            <option value="" disabled>Выбрать объект испытаний</option>
+        <select class="form-control select2" name="material_id[]" data-placeholder="Выбрать объект испытаний" multiple required>
             <?php foreach ($this->data['tz_material_list'] as $id => $materialName): ?>
                 <option value="<?=$id?>" <?=$selected?>><?=$materialName?></option>
             <?php endforeach; ?>
