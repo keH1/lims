@@ -59,9 +59,7 @@ $( document ).ready(function() {
 // <!--                               ${item['title']}-->
 //                                ${item['s_id']}
 //                             </a>`
-                        return
-<!--                               ${item['title']}-->
-                               ${item['s_id']}
+                        return item.title
                     }
 
                     return item.s_id
@@ -482,28 +480,28 @@ $( document ).ready(function() {
         secondmentJournal.draw()
     })
 
-    $("body").on("click", "[open-project-modal]", function (e) {
-        e.stopImmediatePropagation();
+    // $("body").on("click", "[open-project-modal]", function (e) {
+    //     e.stopImmediatePropagation();
 
-        $("[name='id']").val($(this).attr("open-project-modal"))
+    //     $("[name='id']").val($(this).attr("open-project-modal"))
 
-        let projectId = $(this).attr("data-js-project-id");
+    //     let projectId = $(this).attr("data-js-project-id");
 
-        if (projectId) {
-            $("[name='project_id']").val($(this).attr("data-js-project-id"))
-        }
+    //     if (projectId) {
+    //         $("[name='project_id']").val($(this).attr("data-js-project-id"))
+    //     }
 
 
-        $.magnificPopup.open({
-            items: {
-                src: '#project-modal',
-                type: 'inline'
-            },
-            fixedContentPos: false,
-            closeOnBgClick: false,
-            modal: true,
-        })
-    })
+    //     $.magnificPopup.open({
+    //         items: {
+    //             src: '#project-modal',
+    //             type: 'inline'
+    //         },
+    //         fixedContentPos: false,
+    //         closeOnBgClick: false,
+    //         modal: true,
+    //     })
+    // })
 
     $("#update-project").click(function (e) {
         $.ajax({
