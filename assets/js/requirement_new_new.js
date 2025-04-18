@@ -302,6 +302,15 @@ $(function ($) {
 
         let discountPrice = 0
 
+        if ( isNaN(totalPrice) ) {
+            totalPrice = 0
+        }
+
+        if ( isNaN(discountVal) ) {
+            discountVal = 0
+            $('.discount-input').val(0)
+        }
+
         if ( discountType == 'percent' ) {
             if ( discountVal < 0 ) {
                 discountVal = 0

@@ -66,8 +66,12 @@ class DisinfectionConditioners extends Model
         ];
 
         if (!empty($filter['order'])) {
+            if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
+                $orderFilter['by'] = "LEFT(TRIM(CONCAT_WS(' ', bu.NAME, bu.LAST_NAME)), 1)";
+            } else {
+                $orderFilter['by'] = $filter['order']['by'];
+            }
             $orderFilter['dir'] = $filter['order']['dir'];
-            $orderFilter['by'] = $filter['order']['by'];
         }
 
         $filters['order'] = "{$orderFilter['by']} {$orderFilter['dir']} ";
@@ -122,8 +126,8 @@ class DisinfectionConditioners extends Model
                        DATE_FORMAT(dc.date_sol,'%d.%m.%Y') AS date_sol_dateformat, 
                        dc.date_sol,
                        dc.user_id, 
-                       r.NUMBER,
-                       CONCAT (IFNULL(bu.LAST_NAME,'-'),' ',IFNULL(bu.NAME,'')) AS global_assigned_name
+                       r.NUMBER, 
+                       TRIM(CONCAT_WS(' ', bu.NAME, bu.LAST_NAME)) as global_assigned_name 
                 FROM disinfection_conditioners AS dc
 
                 LEFT JOIN ROOMS r

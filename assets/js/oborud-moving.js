@@ -69,7 +69,7 @@ $(function ($) {
             },
             {
                 data: 'receiver_user',
-                orderable: false,
+                orderable: true,
             },
             {
                 data: 'completeness',
@@ -101,7 +101,7 @@ $(function ($) {
             },
             {
                 data: 'responsible_user',
-                orderable: false,
+                orderable: true,
             },
             {
                 data: 'is_confirm',

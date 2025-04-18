@@ -1,0 +1,8 @@
+node_modules/
+*.log
+*.md
+Dockerfile
+*.yml
+README.md
+.*
+!.htaccess

@@ -2644,4 +2644,64 @@ class Requirement extends Model
             'error' => $errorMsg,
         ];
     }
+
+    /**
+     * Получает список файлов протоколов
+     * @param int $dealId
+     * @return array
+     */
+    public function getWorkProtocolFiles(int $dealId): array
+    {
+        $result = [];
+
+        $sql = $this->DB->Query(
+            "SELECT gw.id, gw.name
+             FROM government_work AS gw
+             WHERE gw.deal_id = {$dealId}
+        ");
+
+        $inc = 0;
+        while ($row = $sql->Fetch()) {
+            $result[$inc]['id'] = $row['id'];
+            $result[$inc]['work_name'] = $row['name'];
+
+            $filesPath = "/ulab/upload/request/{$dealId}/government_work/{$row['id']}/protocol/";
+            
+            if (is_dir($_SERVER['DOCUMENT_ROOT'] . $filesPath)) {
+                $files = scandir($_SERVER['DOCUMENT_ROOT'] . $filesPath);
+                $files = array_diff($files, array('.', '..'));
+                if (!empty($files)) {
+                    $filename = reset($files);
+                    $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                    
+                    $result[$inc]['type_file'] = $fileExtension;
+                    $result[$inc]['protocol_file'] = $filename;
+                    $result[$inc]['protocol_file_path'] = $filesPath . $filename;
+                    
+                    $extensionClass = '';
+                    if ($fileExtension === 'pdf') {
+                        $extensionClass = 'text-danger';
+                    } elseif (in_array($fileExtension, ['docx', 'doc'])) {
+                        $extensionClass = 'text-primary';
+                    } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                        $extensionClass = 'text-success';
+                    }
+                    $result[$inc]['extension_class'] = $extensionClass;
+                    
+                    $lastDotIndex = strrpos($filename, '.');
+                    $nameWithoutExt = ($lastDotIndex !== false) ? substr($filename, 0, $lastDotIndex) : $filename;
+                    
+                    if (mb_strlen($filename) > 35) {
+                        $result[$inc]['display_name'] = mb_substr($filename, 0, 32) . '...';
+                    } else {
+                        $result[$inc]['display_name'] = $filename;
+                    }
+                }
+            }
+
+            $inc++;
+        }
+        
+        return $result;
+    }
 }

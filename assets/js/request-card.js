@@ -1,4 +1,6 @@
 $(function ($) {
+    const $body = $('body')
+
     $('.popup-with-form').magnificPopup({
         type: 'inline',
         closeBtnInside:true,
@@ -157,7 +159,154 @@ $(function ($) {
 
         return false
     })
+
+    $body.on('change', '.pdf-upload-form input[type="file"]', function() {
+        $(this).closest('form').submit()
+    })
+
+    $body.on('submit', '.pdf-upload-form', function(e) {
+        e.preventDefault()
+        
+        const form = $(this)
+        const fileInput = form.find('input[type="file"]')
+        const file = fileInput[0].files[0]
+        const formData = new FormData()
+        const fileTypeInput = form.find('input[name="fileType"]')
+
+        formData.append('file', file)
+        
+        if (fileTypeInput.length) {
+            formData.append('fileType', fileTypeInput.val())
+        }
+        
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                const data = JSON.parse(response)
+                if (data.success) {
+                    const parentRow = form.closest('tr')
+                    let fileNameContainer = parentRow.find('td:nth-child(2) .file-name-container')
+                    
+                    if (fileNameContainer.length === 0) {
+                        const secondCell = parentRow.find('td:nth-child(2) div:first')
+                        fileNameContainer = $('<div class="file-name-container mb-2"></div>')
+                        secondCell.append(fileNameContainer)
+                    }
+                    
+                    fileNameContainer.html(`
+                        <a href="${data.fileUrl}" target="_blank">${truncateFileName(data.fileName, 25)}</a>
+                        <a href="#" class="ms-2 text-danger delete-pdf-file" data-deal-id="${form.attr('action').split('/').pop()}" data-file-type="${fileTypeInput.val()}">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    `)
+                }
+            }
+        })
+    })
+
+    $body.on('click', '.delete-pdf-file', function(e) {
+        e.preventDefault()
+        
+        const deleteBtn = $(this)
+        const dealId = deleteBtn.data('deal-id')
+        const fileType = deleteBtn.data('file-type')
+        
+        $.ajax({
+            url: `/ulab/request/deleteFileAjax/${dealId}`,
+            type: 'POST',
+            data: {
+                fileType: fileType
+            },
+            success: function(response) {
+                const data = JSON.parse(response)
+                if (data.success) {
+                    const fileContainer = deleteBtn.closest('.file-name-container')
+                    fileContainer.html('Файл не загружен')
+                }
+            }
+        })
+    })
+
+    $body.on('change', '.check-all', function() {
+        const isChecked = $(this).prop('checked')
+        $('.protocol-checkbox').prop('checked', isChecked)
+        
+        $('.download-selected-protocols').prop('disabled', !isChecked)
+    })
+
+    $body.on('change', '.protocol-checkbox', function() {
+        if (!$(this).prop('checked')) {
+            $('.check-all').prop('checked', false)
+        } 
+        else if ($('.protocol-checkbox:checked').length === $('.protocol-checkbox').length) {
+            $('.check-all').prop('checked', true)
+        }
+        
+        const hasCheckedProtocols = $('.protocol-checkbox:checked').length > 0
+        $('.download-selected-protocols').prop('disabled', !hasCheckedProtocols)
+    })
+
+    $body.on('click', '.download-selected-protocols', function(e) {
+        const selectedProtocols = $('.protocol-checkbox:checked')
+        
+        if (selectedProtocols.length === 1) {
+            const filePath = selectedProtocols.first().data('file-path')
+            const fileType = selectedProtocols.first().data('file-type')
+            
+            if (fileType === 'pdf') {
+                window.open(filePath, '_blank');
+            } else {
+                $('<a>', {
+                    href: filePath,
+                    download: ''
+                }).appendTo('body').get(0).click().remove();
+            }
+        } else {
+            const filePaths = []
+            const $form = $('#create-protocols-archive-form')
+
+            selectedProtocols.each(function() {
+                const filePath = $(this).data('file-path')
+                if (filePath) {
+                    filePaths.push(filePath)
+                }
+            })
+           
+            $form.find('input[name="files[]"]').remove()
+            
+            $.each(filePaths, function(i, path) {
+                $('<input>', {
+                    type: 'hidden',
+                    name: 'files[]',
+                    value: path
+                }).appendTo($form)
+            })
+            
+            $form.submit()
+        }
+    })
 })
+
+function truncateFileName(fileName, maxLength) {
+    if (fileName.length <= maxLength) {
+        return fileName
+    }
+    
+    const lastDotIndex = fileName.lastIndexOf('.')
+    const extension = lastDotIndex !== -1 ? fileName.slice(lastDotIndex) : ''
+    
+    const nameLength = maxLength - 3 - extension.length
+    if (nameLength <= 0) {
+        return fileName.slice(0, maxLength - 3) + '...'
+    }
+    
+    const name = fileName.slice(0, lastDotIndex !== -1 ? lastDotIndex : fileName.length)
+    return name.slice(0, nameLength) + '...' + extension
+}
 
 Dropzone.options.dropzoneExample = {
     paramName: "file", // The name that will be used to transfer the file

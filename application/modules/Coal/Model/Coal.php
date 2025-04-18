@@ -58,7 +58,12 @@ class Coal extends Model
 
         if (!empty($filter['order'])) {
             $orderFilter['dir'] = $filter['order']['dir'];
-            $orderFilter['by'] = $filter['order']['by'];
+
+            if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
+                $orderFilter['by'] = "LEFT(TRIM(CONCAT_WS(' ', bu.NAME, bu.LAST_NAME)), 1)";
+            } else {
+                $orderFilter['by'] = $filter['order']['by'];
+            }
         }
 
         $filters['order'] = "{$orderFilter['by']} {$orderFilter['dir']} ";
@@ -140,7 +145,7 @@ class Coal extends Model
 					fbdb.impuls_3 as fb_i3, fbdb.t_1 as fb_t1, fbdb.t_2 as fb_t2, fbdb.t_3 as fb_t3,
 					fbdb.speed_1 as fb_s1, fbdb.speed_2 as fb_s2, fbdb.speed_3 as fb_s3, fbdb.average as fb_average, 
 					fbdb.A_b as A_b,
-					CONCAT (IFNULL(bu.LAST_NAME,'-'),' ',IFNULL(bu.NAME,'')) as global_assigned_name
+					TRIM(CONCAT_WS(' ', bu.NAME, bu.LAST_NAME)) as global_assigned_name
                     FROM coal_regeneration as cr
                     LEFT JOIN empty_bdb as ebdb ON cr.id = ebdb.id_cr
                     LEFT JOIN full_bdb as fbdb ON cr.id = fbdb.id_cr

@@ -55,7 +55,7 @@ function setupTableResizeHandlers() {
     // Первоначальная загрузка таблиц
     setTimeout(function() {
         refreshAllTables()
-    }, 1000)
+    }, 100)
     
     $(window).on('resize', function() {
         clearTimeout(window.resizeTimer)
@@ -547,6 +547,42 @@ $(function ($) {
     setupTableResizeHandlers()
 })
 
+/**
+ * Настройка поиска по колонкам в DataTable
+ */
+window.setupDataTableColumnSearch = function(dataTable) {
+    dataTable.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                dataTable
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
+        })
+    })
+}
+
+/**
+ * Настройка обработчиков для фильтров журнала
+ */
+window.setupJournalFilters = function(dataTable) {
+    $('.filter-btn-search').on('click', function() {
+        $('#journal_filter').addClass('is-open')
+        $('.filter-btn-search').hide()
+    })
+
+    $('.filter').on('change', function() {
+        dataTable.ajax.reload()
+    })
+
+    $('.filter-btn-reset').on('click', function() {
+        location.reload()
+    })
+}
 
 /**
  * Округление
@@ -708,9 +744,3 @@ async function addImgToPdf(filePath, imgUrl, imgParams) {
         }
     })
 }
-
-
-
-
-
-
