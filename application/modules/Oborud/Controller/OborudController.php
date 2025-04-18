@@ -48,6 +48,12 @@ class OborudController extends Controller
 
         $organizationId = App::getOrganizationId();
 
+        $this->data['table_list'] = [
+            'journal_end' => 'Оборудование с истёкшим сроком проверки',
+            'journal_close_end' => 'Оборудование у которого истекает срок проверки',
+            'journal_need_check' => 'Требует проверки отделом метрологии',
+        ];
+
         $this->data['lab'] = $lab->getList();
         $this->data['statistics'] = $oborudModel->getStatisticsCounts($organizationId);
 

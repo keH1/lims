@@ -30,125 +30,46 @@
     </div>
 </div>
 
-<div class="panel panel-default">
-    <header class="panel-heading">
-        Оборудование с истёкшим сроком проверки
-        <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
-    </header>
-    <div class="panel-body">
-        <table id="journal_end" class="table table-striped journal">
-            <thead>
-            <tr class="table-light">
-                <th scope="col"></th>
-                <th scope="col" class="text-nowrap">Наименование</th>
-                <th scope="col" class="text-nowrap">Тип</th>
-                <th scope="col" class="text-nowrap">Заводской номер</th>
-                <th scope="col" class="text-nowrap">Инвентарный номер</th>
-                <th scope="col" class="text-nowrap">Поверка "До"</th>
-            </tr>
-            <tr class="header-search">
-                <th scope="col"></th>
-                <th scope="col">
-                    <input type="text" class="form-control search">
-                </th>
-                <th scope="col">
-                    <input type="text" class="form-control search">
-                </th>
-                <th scope="col">
-                    <input type="text" class="form-control search">
-                </th>
-                <th scope="col">
-                </th>
-                <th scope="col">
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+<?php foreach ($this->data['table_list'] as $id => $title): ?>
+    <div class="panel panel-default">
+        <header class="panel-heading">
+            <?=$title?>
+            <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
+        </header>
+        <div class="panel-body">
+            <table id="<?=$id?>" class="table table-striped journal">
+                <thead>
+                <tr class="table-light">
+                    <th scope="col"></th>
+                    <th scope="col" class="text-nowrap">Наименование</th>
+                    <th scope="col" class="text-nowrap">Тип</th>
+                    <th scope="col" class="text-nowrap">Заводской номер</th>
+                    <th scope="col" class="text-nowrap">Инвентарный номер</th>
+                    <th scope="col" class="text-nowrap">Поверка "До"</th>
+                </tr>
+                <tr class="header-search">
+                    <th scope="col"></th>
+                    <th scope="col">
+                        <input type="text" class="form-control search">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control search">
+                    </th>
+                    <th scope="col">
+                        <input type="text" class="form-control search">
+                    </th>
+                    <th scope="col">
+                    </th>
+                    <th scope="col">
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-
-
-<div class="panel panel-default">
-    <header class="panel-heading">
-        Оборудование у которого истекает срок проверки
-        <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
-    </header>
-    <div class="panel-body">
-        <table id="journal_close_end" class="table table-striped journal">
-            <thead>
-            <tr class="table-light">
-                <th scope="col"></th>
-                <th scope="col" class="text-nowrap">Наименование</th>
-                <th scope="col" class="text-nowrap">Тип</th>
-                <th scope="col" class="text-nowrap">Заводской номер</th>
-                <th scope="col" class="text-nowrap">Инвентарный номер</th>
-                <th scope="col" class="text-nowrap">Поверка "До"</th>
-            </tr>
-            <tr class="header-search">
-                <th scope="col"></th>
-                <th scope="col">
-                    <input type="text" class="form-control search">
-                </th>
-                <th scope="col">
-                    <input type="text" class="form-control search">
-                </th>
-                <th scope="col">
-                    <input type="text" class="form-control search">
-                </th>
-                <th scope="col">
-                </th>
-                <th scope="col">
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-
-<div class="panel panel-default">
-    <header class="panel-heading">
-        Требует проверки отделом метрологии
-        <span class="tools float-end"><a href="#" class="fa fa-chevron-up"></a></span>
-    </header>
-    <div class="panel-body">
-        <table id="journal_need_check" class="table table-striped journal">
-            <thead>
-            <tr class="table-light">
-                <th scope="col"></th>
-                <th scope="col" class="text-nowrap">Наименование</th>
-                <th scope="col" class="text-nowrap">Тип</th>
-                <th scope="col" class="text-nowrap">Заводской номер</th>
-                <th scope="col" class="text-nowrap">Инвентарный номер</th>
-                <th scope="col" class="text-nowrap">Поверка "До"</th>
-            </tr>
-            <tr class="header-search">
-                <th scope="col"></th>
-                <th scope="col">
-                    <input type="text" class="form-control search">
-                </th>
-                <th scope="col">
-                    <input type="text" class="form-control search">
-                </th>
-                <th scope="col">
-                    <input type="text" class="form-control search">
-                </th>
-                <th scope="col">
-                </th>
-                <th scope="col">
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div>
-
+<?php endforeach; ?>
 
 <div class="panel panel-default">
     <header class="panel-heading">
