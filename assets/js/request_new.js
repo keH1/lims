@@ -148,7 +148,7 @@ $(function ($) {
             const nameCell = row.find('[data-type="text"][data-required="true"]')
             if (nameCell.length && !nameCell.find('.cell-input').val()) {
                 hasEmptyRequired = true
-                emptyFieldName = 'Название работы'
+                emptyFieldName = 'Наименование работы'
                 emptyFieldRow = row
                 return false
             }
