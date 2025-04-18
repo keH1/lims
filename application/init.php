@@ -42,6 +42,3 @@ require_once(APP_PATH . '/include/DateHelper.php');
 
 require_once(APP_PATH . 'core/Registry.php');
 require_once(APP_PATH . 'core/Model.php');
-
-
-

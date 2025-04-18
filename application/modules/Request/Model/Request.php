@@ -60,7 +60,8 @@ class Request extends Model
 
     public function getList(): array
     {
-        $cdbResult = $this->DB->Query("select * from ba_tz");
+        $organizationId = App::getOrganizationId();
+        $cdbResult = $this->DB->Query("select * from ba_tz where organization_id = {$organizationId}");
 
         $requestList = [];
 
@@ -807,6 +808,7 @@ class Request extends Model
      */
     public function getDataToJournalRequests(int $userId, array $filter = []): array
     {
+        $organizationId = App::getOrganizationId();
         $requirementModel = new Requirement();
 
         $having = "";
@@ -1045,6 +1047,7 @@ class Request extends Model
                 }
             }
         }
+        $where .= "b.organization_id = {$organizationId} AND ";
         $where .= "1 ";
         $having .= "1";
 
@@ -1095,7 +1098,7 @@ class Request extends Model
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
@@ -1512,7 +1515,9 @@ class Request extends Model
      */
     public function getDatatoJournalActProbe(array $filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
+        $having = "";
         $limit = "";
         $order = [
             'by' => 'b.ID',
@@ -1559,9 +1564,8 @@ class Request extends Model
                     $where .= "b.MATERIAL LIKE '%{$filter['search']['MATERIAL']}%' AND ";
                 }
                 // Ответственный
-                if ( isset($filter['search']['ASSIGNED']) ) {
-//                    $where .= "b.ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
-                    $where .= "(u.NAME LIKE '%{$filter['search']['ASSIGNED']}%' OR u.LAST_NAME LIKE '%{$filter['search']['ASSIGNED']}%') AND ";
+                if (isset($filter['search']['ASSIGNED'])) {
+                    $having .= "ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
                 }
                 // Акт ПП
                 if ( isset($filter['search']['NUM_ACT_TABLE']) ) {
@@ -1609,7 +1613,7 @@ class Request extends Model
 
                 switch ($filter['order']['by']) {
                     case 'NUM_ACT_TABLE':
-                        $order['by'] = 'a.ACT_NUM';
+                        $order['by'] = 'YEAR(a.ACT_DATE) DESC, a.ACT_NUM';
                         break;
                     case 'DOGOVOR_TABLE':
                         $order['by'] = 'b.DOGOVOR_TABLE';
@@ -1624,7 +1628,7 @@ class Request extends Model
                         $order['by'] = 'b.MATERIAL';
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = 'b.ASSIGNED';
+                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.NAME, u.LAST_NAME)) SEPARATOR ', '), 1)";
                         break;
                     case 'REQUEST_TITLE':
                         $order['by'] = 'b.REQUEST_TITLE';
@@ -1649,14 +1653,17 @@ class Request extends Model
             }
         }
 
+        $where .= "b.organization_id = {$organizationId} AND ";
         $where .= "1 ";
+        $having .= "1";
 
         $result = [];
 
 
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
-                        b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, b.ASSIGNED, a.ACT_NUM,
+                        b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, a.ACT_NUM, 
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.NAME, u.LAST_NAME)) SEPARATOR ', ') as ASSIGNED, 
                         GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER,
                         GROUP_CONCAT(distinct IF(prtcl.NUMBER_AND_YEAR='', null, prtcl.NUMBER_AND_YEAR) SEPARATOR ', ') as PROTOCOLS
                     FROM ba_tz b
@@ -1666,7 +1673,9 @@ class Request extends Model
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND {$where}
-                    GROUP BY b.ID ORDER BY YEAR(a.ACT_DATE) DESC, {$order['by']} {$order['dir']} {$limit}"
+                    GROUP BY b.ID 
+                    HAVING {$having} 
+                    ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
@@ -1676,11 +1685,11 @@ class Request extends Model
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
-                    WHERE b.TYPE_ID != '3'
+                    WHERE b.TYPE_ID != '3' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
-            "SELECT b.ID val
+            "SELECT b.ID val, GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.NAME, u.LAST_NAME)) SEPARATOR ', ') as ASSIGNED 
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
@@ -1688,23 +1697,12 @@ class Request extends Model
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND {$where}
-                    GROUP BY b.ID"
+                    GROUP BY b.ID 
+                    HAVING {$having}"
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
             $row['DATE_ACT'] = !empty($row['DATE_ACT']) ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
-
-            $assigned = $this->getAssignedByDealId($row['ID_Z']);
-            $arrAss = [];
-            foreach ($assigned as $item) {
-                $arrAss[] = $item['short_name'];
-            }
-
-            if ( !empty($arrAss) ) {
-                $row['ASSIGNED'] = implode(', ', $arrAss);
-            } else {
-                $row['ASSIGNED'] = '';
-            }
 
             $arrNameLabs = [];
             $labs = [];
@@ -1735,7 +1733,7 @@ class Request extends Model
 
 
     /**
-     * журнал акта приёмки проб
+     * Получает данные для журнала счетов
      * @param array $filter
      * @return array
      */
@@ -1863,7 +1861,7 @@ class Request extends Model
                         $order['by'] = 'b.MATERIAL';
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = "group_concat(CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ')";
+                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT(usr.NAME, ' ', usr.LAST_NAME)) SEPARATOR ', '), 1)";
                         break;
                     case 'REQUEST_TITLE':
                         $order['by'] = 'b.REQUEST_TITLE';
@@ -1897,10 +1895,10 @@ class Request extends Model
 
         $data = $this->DB->Query(
             "SELECT DISTINCT 
-                        b.ID_Z, b.ID, b.REQUEST_TITLE, b.DOGOVOR_TABLE, b.MATERIAL, b.ASSIGNED, b.COMPANY_TITLE, b.ACCOUNT, b.price_discount, b.OPLATA, b.STAGE_ID, 
+                        b.ID_Z, b.ID, b.REQUEST_TITLE, b.DOGOVOR_TABLE, b.MATERIAL, b.COMPANY_TITLE, b.ACCOUNT, b.price_discount, b.OPLATA, b.STAGE_ID, 
                         i.DATE, 
                         a.DATE AS DATE_ACT_VR, a.SEND_DATE AS SEND_DATE_ACT_VR, a.NUMBER AS ACT_VR,
-                        group_concat(CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED
+                        GROUP_CONCAT(DISTINCT CONCAT(usr.NAME, ' ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED 
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
                     LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
@@ -1923,7 +1921,7 @@ class Request extends Model
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
             "SELECT 
-                        b.ID val, group_concat(CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED 
+                        b.ID val, GROUP_CONCAT(CONCAT(usr.NAME, ' ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED 
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
                     LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID

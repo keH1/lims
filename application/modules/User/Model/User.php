@@ -270,7 +270,7 @@ class User extends Model
             $shortName = StringHelper::shortName($user['NAME']);
 
             $user['short_name'] = "{$shortName}. {$user['LAST_NAME']}";
-            $user['user_name'] = "{$user['LAST_NAME']} {$user['NAME']}";
+            $user['user_name'] = "{$user['NAME']} {$user['LAST_NAME']}";
             $user['groups'] = $USER->GetUserGroupArray();
             $user['id'] = $user['ID'];
 
@@ -665,6 +665,7 @@ class User extends Model
             "LOGIN"             => $data['LOGIN'],
             "WORK_POSITION" => $data['WORK_POSITION'],
             "GROUP_ID"          => $groupId,
+            "UF_ORG_ID" => App::getOrganizationId()
         ];
 
         if (!empty($data['NEW_PASSWORD']) && !empty($data['NEW_PASSWORD_CONFIRM'])) {

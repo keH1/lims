@@ -2646,6 +2646,7 @@ class Requirement extends Model
     }
 
     /**
+     * Получает список файлов протоколов
      * @param int $dealId
      * @return array
      */
@@ -2671,15 +2672,36 @@ class Requirement extends Model
                 $files = array_diff($files, array('.', '..'));
                 if (!empty($files)) {
                     $filename = reset($files);
-                    $result[$inc]['type_file'] = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                    $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                    
+                    $result[$inc]['type_file'] = $fileExtension;
                     $result[$inc]['protocol_file'] = $filename;
                     $result[$inc]['protocol_file_path'] = $filesPath . $filename;
+                    
+                    $extensionClass = '';
+                    if ($fileExtension === 'pdf') {
+                        $extensionClass = 'text-danger';
+                    } elseif (in_array($fileExtension, ['docx', 'doc'])) {
+                        $extensionClass = 'text-primary';
+                    } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                        $extensionClass = 'text-success';
+                    }
+                    $result[$inc]['extension_class'] = $extensionClass;
+                    
+                    $lastDotIndex = strrpos($filename, '.');
+                    $nameWithoutExt = ($lastDotIndex !== false) ? substr($filename, 0, $lastDotIndex) : $filename;
+                    
+                    if (mb_strlen($filename) > 35) {
+                        $result[$inc]['display_name'] = mb_substr($filename, 0, 32) . '...';
+                    } else {
+                        $result[$inc]['display_name'] = $filename;
+                    }
                 }
             }
 
             $inc++;
         }
-
+        
         return $result;
     }
 }

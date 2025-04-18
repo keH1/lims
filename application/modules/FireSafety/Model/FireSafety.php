@@ -55,7 +55,7 @@ class FireSafety extends Model
 
                 // Фамилия, имя, отчество инструкируемого
                 if (isset($filter['search']['instructed_name'])) {
-                    $where .= "CONCAT(u.LAST_NAME, ' ', u.NAME, ' ', u.SECOND_NAME) LIKE '%{$filter['search']['instructed_name']}%' AND ";
+                    $where .= "TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)) LIKE '%{$filter['search']['instructed_name']}%' AND ";
                 }
 
                 // Профессия, должность инструкируемого
@@ -65,8 +65,8 @@ class FireSafety extends Model
 
                 // Фамилия, имя, отчество  инструктирующего, номер документа об образовании и (или) квалификации, документа об обучении
                 if (isset($filter['search']['theory_instructor_fio_doc'])) {
-                    $where .= "CONCAT(fsl.theory_instructor_lastname, ' ', fsl.theory_instructor_name, ' ', 
-                            fsl.theory_instructor_secondname, ', ', fsl.theory_instructor_doc) LIKE '%{$filter['search']['theory_instructor_fio_doc']}%' AND ";
+                    $where .= "TRIM(CONCAT(fsl.theory_instructor_lastname, ' ', fsl.theory_instructor_name, ' ', 
+                            fsl.theory_instructor_secondname, ', ', fsl.theory_instructor_doc)) LIKE '%{$filter['search']['theory_instructor_fio_doc']}%' AND ";
                 }
 
                 // Дата проведения практического инструктажа
@@ -76,8 +76,8 @@ class FireSafety extends Model
 
                 // Фамилия, имя, отчество инструктирующего, номер документа об образовании и (или) квалификации, документа об обучении
                 if (isset($filter['search']['practice_instructor_name_doc'])) {
-                    $where .= "CONCAT(fsl.practice_instructor_lastname, ' ', fsl.practice_instructor_name, ' ', 
-                            fsl.practice_instructor_secondname, ', ', fsl.practice_instructor_doc) LIKE '%{$filter['search']['practice_instructor_name_doc']}%' AND ";
+                    $where .= "TRIM(CONCAT(fsl.practice_instructor_lastname, ' ', fsl.practice_instructor_name, ' ', 
+                            fsl.practice_instructor_secondname, ', ', fsl.practice_instructor_doc)) LIKE '%{$filter['search']['practice_instructor_name_doc']}%' AND ";
                 }
             }
 
@@ -107,21 +107,21 @@ class FireSafety extends Model
                     $order['by'] = 'fsl.instruction_type';
                     break;
                 case 'instructed_name':
-                    $order['by'] = "CONCAT(u.LAST_NAME, ' ', u.NAME, ' ', u.SECOND_NAME)";
+                    $order['by'] = "LEFT(TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)), 1)";
                     break;
                 case 'instructed_position':
                     $order['by'] = 'u.WORK_POSITION';
                     break;
                 case 'theory_instructor_fio_doc':
-                    $order['by'] = "CONCAT(fsl.theory_instructor_lastname, ' ', fsl.theory_instructor_name, ' ', 
-                            fsl.theory_instructor_secondname, ', ', fsl.theory_instructor_doc)";
+                    $order['by'] = "LEFT(TRIM(CONCAT(fsl.theory_instructor_lastname, ' ', fsl.theory_instructor_name, ' ', 
+                            fsl.theory_instructor_secondname, ', ', fsl.theory_instructor_doc)), 1)";
                     break;
                 case 'practice_date':
                     $order['by'] = 'fsl.practice_date';
                     break;
                 case 'practice_instructor_name_doc':
-                    $order['by'] = "CONCAT(fsl.practice_instructor_lastname, ' ', fsl.practice_instructor_name, ' ', 
-                            fsl.practice_instructor_secondname, ', ', fsl.practice_instructor_doc)";
+                    $order['by'] = "LEFT(TRIM(CONCAT(fsl.practice_instructor_lastname, ' ', fsl.practice_instructor_name, ' ', 
+                            fsl.practice_instructor_secondname, ', ', fsl.practice_instructor_doc)), 1)";
                     break;
                 default:
                     $order['by'] = 'fsl.id';
@@ -146,12 +146,12 @@ class FireSafety extends Model
 
         $data = $this->DB->Query(
             "SELECT fsl.*,
-                        CONCAT(u.LAST_NAME, ' ', u.NAME, ' ', u.SECOND_NAME) AS instructed_name, 
+                        TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)) AS instructed_name, 
                         u.WORK_POSITION AS instructed_position, 
-                        CONCAT(fsl.theory_instructor_lastname, ' ', fsl.theory_instructor_name, ' ', 
-                            fsl.theory_instructor_secondname, ', ', fsl.theory_instructor_doc) AS theory_instructor_fio_doc, 
-                        CONCAT(fsl.practice_instructor_lastname, ' ', fsl.practice_instructor_name, ' ', 
-                            fsl.practice_instructor_secondname, ' ', fsl.practice_instructor_doc) AS practice_instructor_name_doc
+                        TRIM(CONCAT(fsl.theory_instructor_lastname, ' ', fsl.theory_instructor_name, ' ', 
+                            fsl.theory_instructor_secondname, ' ', fsl.theory_instructor_doc)) AS theory_instructor_fio_doc, 
+                        TRIM(CONCAT(fsl.practice_instructor_lastname, ' ', fsl.practice_instructor_name, ' ', 
+                            fsl.practice_instructor_secondname, ' ', fsl.practice_instructor_doc)) AS practice_instructor_name_doc
                     FROM fire_safety_log fsl 
                     LEFT JOIN b_user u ON fsl.instructed_id = u.ID
                     WHERE {$where}

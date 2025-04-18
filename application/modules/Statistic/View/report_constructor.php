@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<div class="mb-4">
+<div class="d-none">
     <div class="panel panel-default">
         <div class="panel-body">
             <div id="select_columns_block" class="row">
@@ -34,7 +34,7 @@
     </div>
 </div>
 
-<div class="mb-4">
+<div class="d-none">
     <div class="row">
         <div class="col-6">
             <div class="panel mb-0">

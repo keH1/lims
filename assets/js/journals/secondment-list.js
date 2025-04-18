@@ -54,11 +54,12 @@ $( document ).ready(function() {
                 class: 'text-nowrap',
                 render: function (data, type, item) {
                     if (type === 'display' || type === 'filter') {
-                        return `<a class="request-link"
-                               href="${item['uri']}/secondment/card/${item['s_id']}">
-<!--                               ${item['title']}-->
-                               ${item['s_id']}
-                            </a>`
+//                         return `<a class="request-link"
+//                                href="${item['uri']}/secondment/card/${item['s_id']}">
+// <!--                               ${item['title']}-->
+//                                ${item['s_id']}
+//                             </a>`
+                        return item.title
                     }
 
                     return item.s_id
@@ -86,7 +87,8 @@ $( document ).ready(function() {
                 data: 'project_name',
                 defaultContent: '',
                 render: function (data, type, item) {
-                    return data ?? '<span class="text-primary cursor-pointer">Выбрать проект</span>';
+                    // return data ?? '<span class="text-primary cursor-pointer">Выбрать проект</span>';
+                    return data ;
                 }
             },
             {
@@ -478,28 +480,28 @@ $( document ).ready(function() {
         secondmentJournal.draw()
     })
 
-    $("body").on("click", "[open-project-modal]", function (e) {
-        e.stopImmediatePropagation();
+    // $("body").on("click", "[open-project-modal]", function (e) {
+    //     e.stopImmediatePropagation();
 
-        $("[name='id']").val($(this).attr("open-project-modal"))
+    //     $("[name='id']").val($(this).attr("open-project-modal"))
 
-        let projectId = $(this).attr("data-js-project-id");
+    //     let projectId = $(this).attr("data-js-project-id");
 
-        if (projectId) {
-            $("[name='project_id']").val($(this).attr("data-js-project-id"))
-        }
+    //     if (projectId) {
+    //         $("[name='project_id']").val($(this).attr("data-js-project-id"))
+    //     }
 
 
-        $.magnificPopup.open({
-            items: {
-                src: '#project-modal',
-                type: 'inline'
-            },
-            fixedContentPos: false,
-            closeOnBgClick: false,
-            modal: true,
-        })
-    })
+    //     $.magnificPopup.open({
+    //         items: {
+    //             src: '#project-modal',
+    //             type: 'inline'
+    //         },
+    //         fixedContentPos: false,
+    //         closeOnBgClick: false,
+    //         modal: true,
+    //     })
+    // })
 
     $("#update-project").click(function (e) {
         $.ajax({

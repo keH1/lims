@@ -382,7 +382,9 @@ class RequestController extends Controller
             'order_type' => (int)$_POST['order_type'],
             'OBJECT' => $_POST['object'] ?? '',
             'DEADLINE' => $_POST['gov_deadline'] ?? '',
-            'ASSIGNED' => $_POST['id_assign'][0] ?? ''
+            'ASSIGNED' => $_POST['id_assign'][0] ?? '',
+            'organization_id'=>App::getOrganizationId()
+
         ];
 
         if ( !empty($_POST['id']) ) { // редактирование
@@ -1793,7 +1795,6 @@ class RequestController extends Controller
         }
 
         $this->data['protocol_modal'] = $requirement->getWorkProtocolFiles($requestData['ID_Z']);
-
         $this->data['empty_protocol_files'] = false;
         foreach ($this->data['protocol_modal'] as $protocol) {
             if (!empty($protocol['protocol_file_path'])) {
