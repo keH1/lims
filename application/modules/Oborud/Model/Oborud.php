@@ -213,13 +213,6 @@ class Oborud extends Model {
                     ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
-//		$this->pre("SELECT b.*, l.NAME laba_name, c.name as certificate_name, c.date_start, c.date_end
-//                    FROM ba_oborud as b
-//                    LEFT JOIN ba_laba as l ON l.ID = b.place_of_installation_or_storage
-//                    left join ba_oborud_certificate as c on c.oborud_id = b.ID and c.is_actual = 1
-//                    WHERE {$where}
-//                    group by b.ID
-//                    ORDER BY {$order['by']} {$order['dir']} {$limit}");
         $dataTotal = $this->DB->Query(
             "SELECT b.ID
                     FROM ba_oborud b
@@ -277,11 +270,17 @@ class Oborud extends Model {
 
             $row['IDENT'] = $ident;
 
-            $row['POVERKA_LAST'] = date('d.m.Y',  strtotime($row['POVERKA_LAST']));
-            $row['POVERKA'] = date('d.m.Y',  strtotime($row['POVERKA']));
+            if ( !empty($row['date_start']) ) {
+                $row['date_start'] = date('d.m.Y', strtotime($row['date_start']));
+            } else {
+                $row['date_start'] = '';
+            }
 
-            $row['date_start'] = date('d.m.Y',  strtotime($row['date_start']));
-            $row['date_end'] = date('d.m.Y',  strtotime($row['date_end']));
+            if ( !empty($row['date_end']) ) {
+                $row['date_end'] = date('d.m.Y', strtotime($row['date_end']));
+            } else {
+                $row['date_end'] = '';
+            }
 
             $row['certificate'] = '';
             $row['god_vvoda_expluatation'] = date("d.m.Y", strtotime($row['god_vvoda_expluatation']));
@@ -793,25 +792,8 @@ class Oborud extends Model {
     /**
      * @param $data
      * @param $file
+     * @return array|false|mixed
      */
-    // public function addCertificate($data, $file)
-    // {
-    //     if ( !empty($file['name']) ) {
-    //         $resultFile = $this->saveOborudFile($data['oborud_id'], $file);
-
-    //         if (!$resultFile['success']) {
-    //             $_SESSION['message_warning'] = "Не сохранился файл 'Свидетельство о поверке'. " . $resultFile['error'];
-    //         } else {
-    //             $data['file'] = $resultFile['data'];
-    //         }
-    //     }
-
-    //     $sqlData = $this->prepearTableData('ba_oborud_certificate', $data);
-
-    //     $sqlData['is_actual'] = isset($data['is_actual'])? 1 : 0;
-
-    //     $this->DB->Insert('ba_oborud_certificate', $sqlData);
-    // }
     public function addCertificate($data, $file)
     {
         if (!empty($file['name'])) {
@@ -824,10 +806,11 @@ class Oborud extends Model {
                 $data['file'] = $resultFile['data'];
             }
         }
-   
+
+        $data['is_actual'] = isset($data['is_actual']) ? 1 : 0;
+
         $sqlData = $this->prepearTableData('ba_oborud_certificate', $data);
-        $sqlData['is_actual'] = isset($data['is_actual']) ? 1 : 0;
-    
+
         $id = $this->DB->Insert('ba_oborud_certificate', $sqlData);
         $data['id'] = $id;
 
@@ -1081,16 +1064,6 @@ class Oborud extends Model {
     /**
      * на длительное хранение
      */
-    // public function setLongStorage($oborudId, $data, $newOborudId = '')
-    // {
-    //     $sqlData = $this->prepearTableData('ba_oborud', $data);
-
-    //     $this->DB->Update('ba_oborud', $sqlData, "where id = {$oborudId}");
-
-    //     if ( !empty($newOborudId) ) {
-    //         $this->DB->Update('ulab_methods_oborud', ['id_oborud' => $newOborudId], "where id_oborud = {$oborudId}");
-    //     }
-    // }
     public function setLongStorage($oborudId, $data, $newOborudId = '')
     {
         $sqlData = $this->prepearTableData('ba_oborud', $data);
@@ -1987,13 +1960,6 @@ class Oborud extends Model {
     {
         $result = [];
 
-//        $sql = $this->DB->Query("
-//            SELECT eg.id, eg.name, eg.id_storage_room
-//            FROM `equipment_general` AS eg
-//            WHERE eg.`id_storage_room` = '{$roomId}'
-//                OR eg.`id_storage_room` IS NULL
-//        ");
-
         $sql = $this->DB->Query("
             SELECT ID as id, OBJECT as name, roomnumber as id_storage_room
             FROM ba_oborud
@@ -2010,13 +1976,6 @@ class Oborud extends Model {
     public function getOborudByOperatingRoom(string $roomId = ''): array
     {
         $result = [];
-
-//        $sql = $this->DB->Query("
-//            SELECT eg.id, eg.name, eg.id_operating_room
-//            FROM `equipment_general` AS eg
-//            WHERE eg.`id_operating_room` = '{$roomId}'
-//                OR eg.`id_operating_room` IS NULL
-//        ");
 
         $sql = $this->DB->Query("
             SELECT ID as id, OBJECT as name, roomnumber as id_storage_room
@@ -2040,5 +1999,30 @@ class Oborud extends Model {
     {
         $result = $this->DB->Query("SELECT COUNT(*) FROM ba_oborud WHERE ID = {$oborudId}");
         return $result->Fetch()['COUNT(*)'] > 0;
+    }
+
+
+    /**
+     * получает статистику кол-во оборудования:
+     *  Всего единиц оборудования
+     *  Истёк срок проверки
+     *  Требует проверки
+     *  На консервации
+     * @param int $organizationId
+     * @return array|mixed
+     */
+    public function getStatisticsCounts(int $organizationId)
+    {
+        return $this->DB->Query(
+            "select 
+                count(o.ID) as all_oborud,
+                count(CASE WHEN o.CHECKED = 0 THEN 1 end) as need_check,
+                count(CASE WHEN o.LONG_STORAGE = 1 THEN 1 end) as long_storage,
+                count(CASE WHEN o.NO_METR_CONTROL <> 1 and c.is_actual = 1 and o.LONG_STORAGE = 0 and o.is_decommissioned = 0 and c.date_end < NOW() THEN 1 end) as end_verification
+            from ba_oborud as o
+            left join ba_oborud_certificate as c on c.oborud_id = o.ID and c.is_actual = 1
+            where o.organization_id = {$organizationId}
+            "
+        )->Fetch();
     }
 }
