@@ -67,12 +67,7 @@ $(function ($) {
             {
                 data: 'tz',
                 render: function (data, type, item) {
-                    if ( item['ID_Z'] < 9357 ) {
-                        return `<a class="number-tz" href="/ulab/requirement/card_old/${item['b_tz_id']}" >
-                                ${item['b_tz_id']}
-                            </a>`
-                    }
-                    return `<a class="number-tz" href="/ulab/requirement/card/${item['b_tz_id']}" >
+                    return `<a class="number-tz" href="/ulab/requirement/card_new/${item['b_tz_id']}" >
                                 ${item['b_tz_id']}
                             </a>`
                 }
@@ -85,7 +80,7 @@ $(function ($) {
                         return 'Вне ЛИС'
                     }
                     return `<a class="results-link"
-                               href="/ulab/result/card/${item['ID_Z']}?protocol_id=${item['protocol_id']}" >
+                               href="/ulab/result/card_oati/${item['ID_Z']}?protocol_id=${item['protocol_id']}" >
                                Открыть
                             </a>`
                 }
