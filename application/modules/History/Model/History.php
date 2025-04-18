@@ -17,7 +17,7 @@ class History extends Model
         $where = "";
         $limit = "";
         $order = [
-            'by' => 'DATE',
+            'by' => 'h.DATE',
             'dir' => 'DESC'
         ];
 
@@ -25,26 +25,26 @@ class History extends Model
             // работа с фильтрами
             if ( !empty($filter['search']) ) {
 				// Дата
-				if ( isset($filter['search']['dateStart']) ) {
-					$where .= "(DATE >= '{$filter['search']['dateStart']}' AND DATE <= '{$filter['search']['dateEnd']}') AND ";
+				if (isset($filter['search']['dateStart'])) {
+					$where .= "(h.DATE >= '{$filter['search']['dateStart']}' AND h.DATE <= '{$filter['search']['dateEnd']}') AND ";
 				}
-                if ( isset($filter['search']['REQUEST']) ) {
-                    $where .= "REQUEST LIKE '%{$filter['search']['REQUEST']}%' AND ";
+                if (isset($filter['search']['REQUEST'])) {
+                    $where .= "h.REQUEST LIKE '%{$filter['search']['REQUEST']}%' AND ";
                 }
-				if ( isset($filter['search']['PROT_NUM']) ) {
-                    $where .= "PROT_NUM = '{$filter['search']['PROT_NUM']}' AND ";
+				if (isset($filter['search']['PROT_NUM'])) {
+                    $where .= "h.PROT_NUM = '{$filter['search']['PROT_NUM']}' AND ";
                 }
-				if ( isset($filter['search']['TZ_ID']) ) {
-                    $where .= "TZ_ID = '{$filter['search']['TZ_ID']}' AND ";
+				if (isset($filter['search']['TZ_ID'])) {
+                    $where .= "h.TZ_ID = '{$filter['search']['TZ_ID']}' AND ";
                 }
-				if ( isset($filter['search']['DATE']) ) {
-                    $where .= "DATE LIKE '%{$filter['search']['DATE']}%' AND ";
+				if (isset($filter['search']['DATE'])) {
+                    $where .= "DATE_FORMAT(h.DATE, '%d.%m.%Y %H:%i:%s') LIKE '%{$filter['search']['DATE']}%' AND ";
                 }
-				if ( isset($filter['search']['TYPE']) ) {
-                    $where .= "TYPE LIKE '%{$filter['search']['TYPE']}%' AND ";
+				if (isset($filter['search']['TYPE'])) {
+                    $where .= "h.TYPE LIKE '%{$filter['search']['TYPE']}%' AND ";
                 }
-				if ( isset($filter['search']['ASSIGNED']) ) {
-                    $where .= "ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
+				if (isset($filter['search']['ASSIGNED'])) {
+                    $where .= "h.ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
                 }
             }
 
@@ -73,19 +73,20 @@ class History extends Model
 
         $result = [];
 
-        $data = $this->DB->Query("SELECT *
-                                  FROM HISTORY
+        $data = $this->DB->Query("SELECT h.ID, DATE_FORMAT(h.DATE, '%d.%m.%Y %H:%i:%s') AS DATE,
+                                         h.TYPE, h.PROT_NUM, h.TZ_ID, h.ASSIGNED, h.REQUEST
+                                  FROM HISTORY AS h
                                   WHERE {$where}
-                                  GROUP BY ID
+                                  GROUP BY h.ID
                                   ORDER BY {$order['by']} {$order['dir']} {$limit}
         ");
 
         $dataTotal = $this->DB->Query("SELECT count(*) val
-                                       FROM HISTORY
+                                       FROM HISTORY AS h
         ")->Fetch();
 
         $dataFiltered = $this->DB->Query("SELECT count(*) val
-                                          FROM HISTORY
+                                          FROM HISTORY AS h
 										  WHERE {$where}
         ")->Fetch();
 
