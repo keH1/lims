@@ -1213,7 +1213,9 @@ $(function ($) {
                     const option = $(this).clone(),
                           optionValue = option.val()
                     
-                    if (!optionValue) return
+                    if (!optionValue) {
+                        return
+                    }
                     
                     /* Запрет выбора ответственных
                     if (optionValue === currentValue || selectedResponsibles.indexOf(optionValue) === -1) {

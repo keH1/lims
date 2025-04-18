@@ -627,40 +627,15 @@
                     <td>
                         <label for="protocol-<?= $index ?>"><?= $protocol['work_name'] ?></label>
                     </td>
-                    <td <?= !empty($protocol['protocol_file']) ? 'title="' . $protocol['protocol_file'] . '"' : '' ?>>
-                        <?php
-                            if (!empty($protocol['protocol_file'])) {
-                                $fileName = $protocol['protocol_file'];
-                                $lastDotIndex = strrpos($fileName, '.');
-                                $extensionWithDot = ($lastDotIndex !== false) ? substr($fileName, $lastDotIndex) : '';
-                                
-                                $extensionClass = '';
-                                $fileType = !empty($protocol['type_file']) ? $protocol['type_file'] : '';
-                                
-                                if ($fileType === 'pdf') {
-                                    $extensionClass = 'text-danger';
-                                } elseif ($fileType === 'docx' || $fileType === 'doc') {
-                                    $extensionClass = 'text-primary';
-                                } elseif ($fileType === 'xls' || $fileType === 'xlsx') {
-                                    $extensionClass = 'text-success';
-                                }
-                                
-                                if (mb_strlen($fileName) > 35) {
-                                    echo mb_substr($fileName, 0, 32) . '...';
-                                    if (!empty($extensionWithDot)) {
-                                        echo '<span class="' . $extensionClass . '">' . $extensionWithDot . '</span>';
-                                    }
-                                } else {
-                                    $nameWithoutExt = $lastDotIndex !== false ? substr($fileName, 0, $lastDotIndex) : $fileName;
-                                    echo $nameWithoutExt;
-                                    if (!empty($extensionWithDot)) {
-                                        echo '<span class="' . $extensionClass . '">' . $extensionWithDot . '</span>';
-                                    }
-                                }
-                            } else {
-                                echo 'Нет файла протокола';
-                            }
-                        ?>
+                    <td <?= !empty($protocol['protocol_file_path']) && !empty($protocol['protocol_file']) ? 'title="' . $protocol['protocol_file'] . '"' : '' ?>>
+                        <?php if (!empty($protocol['protocol_file_path']) && $protocol['protocol_file_path']): ?>
+                            <span><?= $protocol['display_name'] ?></span>
+                            <span class="<?= $protocol['extension_class'] ?>">
+                                <?= "." . $protocol['type_file'] ?>
+                            </span>
+                        <?php else: ?>
+                            <span>Нет файла протокола</span>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

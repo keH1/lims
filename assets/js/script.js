@@ -632,9 +632,9 @@ function showErrorMessage(msg, anchor = '') {
     }
     
     // Автоматически скрываем сообщение через 5 секунд
-    setTimeout(function() {
-        $('#' + messageId).alert('close');
-    }, 5000);
+    // setTimeout(function() {
+    //     $('#' + messageId).alert('close');
+    // }, 5000);
 }
 
 function showSuccessMessage(msg) {
