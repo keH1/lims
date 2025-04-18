@@ -53,6 +53,11 @@ class History extends Model
                 if ( $filter['order']['dir'] === 'asc' ) {
                     $order['dir'] = 'ASC';
                 }
+                switch ($filter['order']['by']) {
+                    case 'ASSIGNED':
+                        $order['by'] = 'LEFT(TRIM(h.ASSIGNED), 1)';
+                        break;
+                }
             }
 
             // работа с пагинацией
@@ -73,7 +78,7 @@ class History extends Model
 
         $result = [];
 
-        $data = $this->DB->Query("SELECT h.ID, DATE_FORMAT(h.DATE, '%d.%m.%Y %H:%i:%s') AS DATE,
+        $data = $this->DB->Query("SELECT DATE_FORMAT(h.DATE, '%d.%m.%Y %H:%i:%s') AS DATE,
                                          h.TYPE, h.PROT_NUM, h.TZ_ID, h.ASSIGNED, h.REQUEST
                                   FROM HISTORY AS h
                                   WHERE {$where}
