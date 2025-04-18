@@ -110,6 +110,8 @@
             <tr class="table-light">
                 <th scope="col" class="text-nowrap">ФИО</th>
                 <th scope="col" class="text-nowrap">Должность</th>
+                <th scope="col" class="text-nowrap">Статус</th>
+                <th scope="col" class="text-nowrap">Заменяет</th>
                 <th scope="col" class="text-nowrap"></th>
             </tr>
             </thead>
@@ -241,6 +243,58 @@
 
 <form id="popup_form_users" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/import/addAffiliationUser" method="post">
     <div class="title mb-3 h-2">
+        Добавить сотрудника
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <input type="hidden" name="lab_id" value="<?=$this->data['info']['ID']?>">
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_user_id">Сотрудник <span class="redStars">*</span></label>
+        <select id="form_entity_user_id" class="form-control select2" name="user_id" required>
+            <option value="">Не выбран</option>
+            <?php foreach ($this->data['not_affiliation_users'] as $user): ?>
+                <option value="<?=$user['ID']?>" data-position="<?=$user['WORK_POSITION']?>"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_position">Должность <span class="redStars">*</span></label>
+        <select id="form_entity_position" class="form-control select2" name="position" required>
+            <option value="">Не выбрана</option>
+            <?php foreach ($this->data['position_list'] as $position): ?>
+                <option value="<?= $position ?>"><?= $position ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_status">Статус <span class="redStars">*</span></label>
+        <select id="form_entity_status" class="form-control select2" name="status" required>
+            <option value="">Не выбран</option>
+            <?php foreach ($this->data['status_list'] as $key => $status): ?>
+                <option value="<?= $key ?>"><?= $status ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_replace">Заменяет</label>
+        <select id="form_entity_replace" class="form-control select2" name="replace">
+            <option value="">Не выбран</option>
+            <?php foreach ($this->data['users'] as $user): ?>
+                <option value="<?=$user['ID']?>"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+<form id="popup_form_users_edit" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/ulab/import/addAffiliationUser" method="post">
+    <div class="title mb-3 h-2">
         Данные сотрудника
     </div>
 
@@ -249,10 +303,38 @@
     <input type="hidden" name="lab_id" value="<?=$this->data['info']['ID']?>">
 
     <div class="mb-3">
-        <label class="form-label" for="form_entity_user_id">Сотрудник *</label>
-        <select id="form_entity_user_id" class="form-control select2" name="user_id" required>
-            <option value="">Не выбран</option>
-            <?php foreach ($this->data['not_affiliation_users'] as $user): ?>
+        <label class="form-label" for="form_entity_user_id">Сотрудник</label>
+        <select id="form_entity_user_id" class="form-control select2" name="user_id" readonly>
+            <?php foreach ($this->data['users'] as $user): ?>
+                <option value="<?=$user['ID']?>" data-position="<?=$user['WORK_POSITION']?>"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_position">Должность</label>
+        <select id="form_entity_position" class="form-control select2" name="position" readonly>
+            <option value="">Не выбрана</option>
+            <?php foreach ($this->data['position_list'] as $position): ?>
+                <option value="<?= $position ?>"><?= $position ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_status">Статус <span class="redStars">*</span></label>
+        <select id="form_entity_status" class="form-control select2" name="status" required>
+            <?php foreach ($this->data['status_list'] as $key => $status): ?>
+                <option value="<?= $key ?>"><?= $status ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="form_entity_replace">Заменяет</label>
+        <select id="form_entity_replace" class="form-control select2" name="replace">
+            <option value="" selected>Не выбран</option>
+            <?php foreach ($this->data['users'] as $user): ?>
                 <option value="<?=$user['ID']?>"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
             <?php endforeach; ?>
         </select>

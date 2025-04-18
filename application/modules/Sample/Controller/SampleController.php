@@ -92,7 +92,7 @@ class SampleController extends Controller
         $this->data['contract_type'] = $contractData['CONTRACT_TYPE'] ?? 'Договор';
         $this->data['deal_id'] = $dealId;
         $this->data['tz_id'] = $tzId;
-        $this->data['curr_user'] = $_SESSION['SESS_AUTH']['USER_ID'];
+        $this->data['curr_user'] = App::getUserId();
         $this->data['deal_title'] = $tzData['REQUEST_TITLE'];
 
         // Основание для формирования протокола (акт приемки проб)

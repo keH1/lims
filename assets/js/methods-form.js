@@ -6,6 +6,15 @@ $(function () {
         width: 'resolve',
     })
 
+    $( window ).on( "resize", function() {
+        if ($("select").hasClass("select2-hidden-accessible")) {
+            $('.select2-hidden-accessible').select2("destroy").select2({
+                theme: 'bootstrap-5',
+                width: 'resolve',
+            })
+        }
+    })
+
     $('.condition-group input[type=checkbox]').click(function () {
         $(this).parents('.condition-group').find('input[type=number]').prop('readonly', this.checked)
     })
@@ -36,18 +45,6 @@ $(function () {
         }
     })
 
-    // $('#extended_field').click(function () {
-    //     if ( this.checked ) {
-    //         $('#in_field').prop('checked', true)
-    //     }
-    // })
-    //
-    // $('#in_field').click(function () {
-    //     if ( !this.checked ) {
-    //         $('#extended_field').prop('checked', false)
-    //     }
-    // })
-
     initDynamicRangeBlock()
     initSimpleRanges()
     $('.uncertainty-group').each(function() {
@@ -63,20 +60,6 @@ $(function () {
             scrollToFirstError()
         }
     })
-
-    // Скролл к первой ошибке
-    function scrollToFirstError() {
-        const $firstError = $('.is-invalid').first()
-        if ($firstError.length) {
-            $('html, body').animate({
-                    scrollTop: $firstError.offset().top - 100
-                },
-                500,
-                function () {
-                    $firstError.focus()
-                })
-        }
-    }
 
     function showError($element, message) {
         $element.addClass('is-invalid')
@@ -217,22 +200,17 @@ $(function () {
         };
 
         $from.add($to).on('input', validate)
-        validate() // При загрузки страницы
+        validate() // При загрузке страницы
     }
-
-    $('.add-result').click(function () {
-        let html = ``
-    })
-
 
     let countUncertainty = $('.uncertainty-block').length
 
     $('#add_uncertainty').click(function () {
         $('.uncertainty-block:last-child').after(
             `<div class="form-group row uncertainty-block">
-                <label class="col-sm-2 col-form-label">
+                <label class="col-lg-12 col-xl-2 col-form-label">
                 </label>
-                <div class="col-sm-8">
+                <div class="col-lg-11 col-xl-8">
                     <div class="input-group uncertainty-group">
                         <span class="input-group-text">от</span>
                         <input
@@ -278,7 +256,7 @@ $(function () {
                         >
                     </div>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-lg-1 col-xl-2">
                     <button
                             type="button"
                             class="btn btn-danger btn-square remove_uncertainty"
@@ -304,18 +282,22 @@ $(function () {
         })
 
         if ( idList.length > 0 ) {
-            $.ajax({
-                url: "/ulab/gost/getOborudByRoomAjax/",
-                data: {rooms: idList},
-                dataType: "json",
-                method: "POST",
-                async: false,
-                success: function (data) {
-                    $.each(data, function (i, item) {
-                        html += `<option value="${item.ID}">${item.OBJECT} | ${item.FACTORY_NUMBER} | ${item.REG_NUM}</option>`
-                    })
-                }
-            })
+            if ( idList.length > 0 ) {
+                $.ajax({
+                    url: "/ulab/gost/getOborudByRoomAjax/",
+                    data: {rooms: idList},
+                    dataType: "json",
+                    method: "POST",
+                    async: false,
+                    success: function (data) {
+                        $.each(data, function (i, item) {
+                            html += `<option value="${item.ID}">${item.OBJECT} | ${item.FACTORY_NUMBER} | ${item.REG_NUM}</option>`
+                        })
+                    }
+                })
+            }
+        } else {
+            html = `<option value="" disabled>Не выбрано помещение, либо к помещению не привязано оборудование</option>`
         }
 
 
@@ -437,31 +419,8 @@ $(function () {
                     $('#select-room').html(html)
                 }
             })
-
-            // $.ajax({
-            //     url: "/ulab/gost/getAssignedByLabIdAjax/",
-            //     data: {"lab": idList},
-            //     dataType: "json",
-            //     method: "POST",
-            //     success: function (data) {
-            //         let html = ''
-            //
-            //         $.each(data, function (i, item) {
-            //             if ( item.is_get === 1 ) {
-            //                 html += `<option value="${item.ID}" selected>${item.LAST_NAME} ${item.NAME}</option>`
-            //             } else {
-            //                 html += `<option value="${item.ID}">${item.LAST_NAME} ${item.NAME}</option>`
-            //             }
-            //
-            //         })
-            //
-            //         $('#select-assigned ~ .select2-container').find('#select2-select-assigned-container').html('')
-            //         $('#select-assigned').html(html)
-            //     }
-            // })
         } else {
             $('#select-room').html('<option value="" disabled>Сначала выберите лаборатории</option>')
-            // $('#select-assigned').html('<option value="" disabled>Сначала выберите лаборатории</option>')
         }
     })
 })

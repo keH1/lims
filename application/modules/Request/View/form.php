@@ -46,8 +46,9 @@
                 <div class="col-sm-8">
                     <select class="form-control" name="REQ_TYPE" id="req-type-select" required>
                         <option value="" selected disabled>Выберите тип заявки</option>
-                        <option value="SALE" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] === 'SALE') ? 'selected': ''?>>ИЦ</option>
-                        <option value="9" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] == '9') ? 'selected': ''?>>Гос работы</option>
+                        <?php foreach ($this->data['type_list'] as $type): ?>
+                            <option value="<?=$type['type_id']?>" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] === $type['type_id']) ? 'selected': ''?>><?=$type['name']?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="col-sm-2"></div>

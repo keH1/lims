@@ -9,11 +9,11 @@ class ReactiveController extends Controller
     private string $nameModel = 'Reactive';
 
     /**
-     * @desc Журнал «Реактивы»
+     * @desc Журнал "Журнал учета реактивов"
      */
     public function list()
     {
-        $this->data['title'] = 'Реактивы';
+        $this->data['title'] = 'Журнал учета реактивов';
 
         $usedModel = $this->model($this->nameModel);
 
@@ -25,31 +25,13 @@ class ReactiveController extends Controller
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
         $this->addJs("/assets/plugins/select2/js/select2.min.js");
 
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
+        $this->addJs("/assets/js/reactive-journal.js?v=2");
 
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-
-        $this->addJS("/assets/plugins/DataTables/Responsive-2.4.0/dataTables.responsive.js");
-
-        $this->addJs("/assets/js/reactive-journal.js");
-
-
-        $this->view('list');
+        $this->view('list', '', 'template_journal');
     }
 
     /**
-     * @desc Получает данные для журнала реактивы
+     * @desc Получает данные для журнала учета реактивов
      */
     public function getListProcessingAjax()
     {

@@ -49,7 +49,7 @@ class LabController extends Controller
         $this->data['date_start'] = date('Y-m-d', strtotime('-1 year'));
         $this->data['date_end'] = date('Y-m-d');
 
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
         $pressure = $labModel->getPressureByDate($this->data['date_end']);
 
         $this->data['rooms'] = $labModel->getLabaRoom();
@@ -135,7 +135,7 @@ class LabController extends Controller
         }
 
 
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = App::getUserId();
         $roomId = intval($_POST['form']['room_id']) - 100;
         $arrWarning = [];
         $isMethodMatch = 1;
@@ -282,7 +282,7 @@ class LabController extends Controller
         $labModel = $this->model('Lab');
 
         $location = "/lab/conditionList/";
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = App::getUserId();
 
         $_SESSION['pressure_post'] = $_POST;
         $_POST['form']['user_id'] = $userId;

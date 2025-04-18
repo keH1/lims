@@ -4,7 +4,7 @@ class Viewer extends Model {
 
     public function insertUpdateView($userId, $moduleId, $moduleName)
     {
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = App::getUserId();
 
         $sql = "INSERT IGNORE INTO module_viewed (user_id, module_id, module_name, created_at) 
                 VALUES ({$userId}, {$moduleId}, '{$moduleName}', now())";

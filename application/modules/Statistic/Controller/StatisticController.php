@@ -661,7 +661,7 @@ class StatisticController extends Controller
         $filter = $statisticModel->prepareFilter($_POST ?? []);
 
         $filter['entity']['key'] = $statisticModel->sanitize($_POST['entity']);
-        $filter['entity']['column'] = array_map($this->sanitize, $_POST['column']?? []);
+        $filter['entity']['column'] = array_map($statisticModel->sanitize, $_POST['column']?? []);
 
         $data = $statisticModel->getStatisticConstructorJournal($filter);
 
