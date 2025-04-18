@@ -15,7 +15,6 @@ $(function ($) {
             },
             url : '/ulab/protocol/getListProcessingAjax/',
             dataSrc: function (json) {
-                console.log(json)
                 return json.data
             }
         },
@@ -85,7 +84,6 @@ $(function ($) {
                     if ( item['PROTOCOL_OUTSIDE_LIS'] == 1 ) {
                         return 'Вне ЛИС'
                     }
-                    console.log(item['PROTOCOL_OUTSIDE_LIS'])
                     return `<a class="results-link"
                                href="/ulab/result/card/${item['ID_Z']}?protocol_id=${item['protocol_id']}" >
                                Открыть
