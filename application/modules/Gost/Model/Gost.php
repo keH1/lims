@@ -46,6 +46,7 @@ class Gost extends Model
      */
     public function addGost($data)
     {
+        $data["organization_id"] = App::getOrganizationId();
         $sqlData = $this->prepearGostData($data);
 
         $historyModel = new History();
@@ -140,6 +141,7 @@ class Gost extends Model
      */
     public function updateGost($id, $data)
     {
+        $data["organization_id"] = App::getOrganizationId();
         $sqlData = $this->prepearGostData($data);
 
         $historyModel = new History();

@@ -12,7 +12,6 @@ class App
 
     public function __construct()
     {
-
         $url = $this->parseUrl();
 
         $controllerName = ucfirst($url[0]);
@@ -67,7 +66,7 @@ class App
     {
         if (isset($_SERVER['REQUEST_URI'])) {
             $url = str_replace(URI, '', $_SERVER['REQUEST_URI']);
-            
+
             $uri = explode('?', $url);
             $uri = explode('/', filter_var(rtrim($uri[0], '/'), FILTER_SANITIZE_URL));
             array_shift($uri);
@@ -82,7 +81,8 @@ class App
      * @throws Exception
      * Инициализия объекта пользователя Bitrix
      */
-    protected static function bitrixUser(): \CUser|\Exception{
+    protected static function bitrixUser(): \CUser|\Exception
+    {
         global $USER;
         if (!$USER instanceof \CUser) {
             throw new \Exception("Класс CUser должен быть инициализирован");
@@ -95,7 +95,8 @@ class App
      * @throws Exception
      * ID пользователя Bitrix
      */
-    public static function getUserId():int {
+    public static function getUserId(): int
+    {
         return self::bitrixUser()->GetID();
     }
 
@@ -104,7 +105,8 @@ class App
      * @throws Exception
      * Проверка авторизации пользователя
      */
-    public static function isAuthorized(): bool{
+    public static function isAuthorized(): bool
+    {
         return self::bitrixUser()->isAuthorized();
     }
 
@@ -113,7 +115,8 @@ class App
      * @throws Exception
      * Проверка на наличие в группе администраторов Bitrix
      */
-    public static function isAdmin(): bool{
+    public static function isAdmin(): bool
+    {
         return self::bitrixUser()->isAdmin();
     }
 
@@ -122,7 +125,8 @@ class App
      * @throws Exception
      * Получение ID организации
      */
-    public static function getOrganizationId(): int{
+    public static function getOrganizationId(): int
+    {
         static $organizationId = 0;
         if ($organizationId > 0) {
             return $organizationId;
@@ -131,11 +135,11 @@ class App
         $userId = self::bitrixUser()->GetID();
         $by = "ID";
         $order = "DESC";
-        $arFilter = array("=ID" => $userId,"!UF_ORG_ID"=>false);
-        $arParams["SELECT"] = array("UF_ORG_ID");
-        $arRes = CUser::GetList($by,$order,$arFilter,$arParams);
+        $arFilter = ["ID" => $userId];
+        $arParams["SELECT"] = ["UF_ORG_ID"];
+        $arRes = CUser::GetList($by, $order, $arFilter, $arParams);
         if ($res = $arRes->Fetch()) {
-            $organizationId = $res["UF_ORG_ID"];
+            $organizationId = (int)$res["UF_ORG_ID"];
         }
 
         return $organizationId;
@@ -146,7 +150,8 @@ class App
      * @throws Exception
      * Массив ID груп пользователей
      */
-    public static function getUserGroupIds(): array {
+    public static function getUserGroupIds(): array
+    {
         return self::bitrixUser()->GetUserGroupArray();
     }
 
@@ -165,7 +170,8 @@ class App
             "SELECT p.* 
                     FROM `ulab_permission` as p  
                     LEFT JOIN `ulab_user_permission` as u ON p.id = u.permission_id
-                    WHERE u.user_id = {$userId} OR p.id = 1")->Fetch();
+                    WHERE u.user_id = {$userId} OR p.id = 1",
+        )->Fetch();
 
         $row['permission'] = json_decode($row['permission'], true);
         $homePage = $row['home_page'];

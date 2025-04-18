@@ -60,7 +60,8 @@ class Request extends Model
 
     public function getList(): array
     {
-        $cdbResult = $this->DB->Query("select * from ba_tz");
+        $organizationId = App::getOrganizationId();
+        $cdbResult = $this->DB->Query("select * from ba_tz where organization_id = {$organizationId}");
 
         $requestList = [];
 
@@ -807,6 +808,7 @@ class Request extends Model
      */
     public function getDataToJournalRequests(int $userId, array $filter = []): array
     {
+        $organizationId = App::getOrganizationId();
         $requirementModel = new Requirement();
 
         $having = "";
@@ -1045,6 +1047,7 @@ class Request extends Model
                 }
             }
         }
+        $where .= "b.organization_id = {$organizationId} AND ";
         $where .= "1 ";
         $having .= "1";
 
@@ -1095,7 +1098,7 @@ class Request extends Model
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
@@ -1512,6 +1515,7 @@ class Request extends Model
      */
     public function getDatatoJournalActProbe(array $filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $having = "";
         $limit = "";
@@ -1649,6 +1653,7 @@ class Request extends Model
             }
         }
 
+        $where .= "b.organization_id = {$organizationId} AND ";
         $where .= "1 ";
         $having .= "1";
 
@@ -1680,7 +1685,7 @@ class Request extends Model
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
-                    WHERE b.TYPE_ID != '3'
+                    WHERE b.TYPE_ID != '3' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(

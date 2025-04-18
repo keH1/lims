@@ -464,6 +464,7 @@ class Methods extends Model
      */
     public function getJournalList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -623,6 +624,7 @@ class Methods extends Model
             }
         }
 
+        $where .= "g.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $result = [];
@@ -654,7 +656,7 @@ class Methods extends Model
                     LEFT JOIN ulab_test_method tm ON tm.id = m.test_method_id 
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
-                    WHERE m.is_actual = 1"
+                    WHERE m.is_actual = 1 AND g.organization_id = {$organizationId}"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
@@ -811,6 +813,7 @@ class Methods extends Model
      */
     public function getJournalReportList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -915,6 +918,7 @@ class Methods extends Model
             }
         }
 
+        $where .= "g.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $result = [];
@@ -972,7 +976,7 @@ class Methods extends Model
             INNER JOIN ulab_start_trials AS st
             ON st.ugtp_id = gtp.id
 
-            WHERE 1
+            WHERE g.organization_id = {$organizationId}
             GROUP BY m.id
         ")->SelectedRowsCount();
 

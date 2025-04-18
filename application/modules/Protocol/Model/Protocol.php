@@ -92,6 +92,7 @@ class Protocol extends Model
      */
     public function getDataToJournal($filter)
     {
+        $organizationId = App::getOrganizationId();
         $RequestModel = new Request();
         $where = "";
         $having = "";
@@ -287,6 +288,7 @@ class Protocol extends Model
                 }
             }
         }
+        $where .= "b.organization_id = {$organizationId} AND ";
         $where .= "1 ";
         $having .= "1";
 
@@ -329,7 +331,7 @@ class Protocol extends Model
                     INNER JOIN PROTOCOLS p on p.ID_TZ = b.ID and p.NUMBER_AND_YEAR is not NULL
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' 
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
                     GROUP BY p.ID
                     "
         )->SelectedRowsCount();
