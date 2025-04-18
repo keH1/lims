@@ -338,14 +338,14 @@ class Protocol extends Model
             "SELECT p.ID val, GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', ') as ASSIGNED 
                     FROM ba_tz b
                     INNER JOIN PROTOCOLS p on p.ID_TZ = b.ID and p.NUMBER_AND_YEAR is not NULL
-                    inner join ulab_gost_to_probe as ugtp on p.ID = ugtp.protocol_id = p.ID
+                    inner join ulab_gost_to_probe as ugtp on p.ID = ugtp.protocol_id
                     inner join ulab_material_to_request as umtr on umtr.id = ugtp.material_to_request_id
                     inner join MATERIALS as m on umtr.material_id = m.ID
                     inner join ulab_methods as met on ugtp.new_method_id = met.id
                     left join ulab_methods_lab as m_lab on met.id = m_lab.method_id
                     left join ba_laba as lab on m_lab.lab_id = lab.ID
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
-                    LEFT JOIN b_user usr ON ass.user_id = usr.ID 
+                    LEFT JOIN b_user usr ON ass.user_id = usr.ID
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where} 
                     GROUP BY p.ID 
                     HAVING {$having}"

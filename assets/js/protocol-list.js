@@ -77,25 +77,6 @@ $(function ($) {
                             </a>`
                 }
             },
-            // {
-            //     data: 'DOGOVOR_TABLE',
-            // },
-            // {
-            //     data: 'PRICE',
-            //     render: $.fn.dataTable.render.intlNumber('ru-RU', { minimumFractionDigits: 2 })
-            // },
-            // {
-            //     data: 'ACCOUNT',
-            //     render: function (data, type, item) {
-            //         return item.ACCOUNT
-            //     }
-            // },
-            // {
-            //     data: 'DATE_OPLATA',
-            //     render: function (data, type, item) {
-            //         return item.DATE_OPLATA
-            //     }
-            // },
             {
                 data: 'linkName',
                 orderable: false,
@@ -103,7 +84,6 @@ $(function ($) {
                     if ( item['PROTOCOL_OUTSIDE_LIS'] == 1 ) {
                         return 'Вне ЛИС'
                     }
-                    console.log(item['PROTOCOL_OUTSIDE_LIS'])
                     return `<a class="results-link"
                                href="/ulab/result/card/${item['ID_Z']}?protocol_id=${item['protocol_id']}" >
                                Открыть
