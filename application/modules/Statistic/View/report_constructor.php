@@ -15,39 +15,39 @@
     </div>
 </div>
 
-<!--<div class="mb-4">-->
-<!--    <div class="panel panel-default">-->
-<!--        <div class="panel-body">-->
-<!--            <div id="select_columns_block" class="row">-->
-<!--                --><?php //foreach ($this->data['entities'][array_key_first($this->data['entities'])]['columns'] as $key => $column): ?>
-<!--                    <div class="col-4">-->
-<!--                        <div class="form-check">-->
-<!--                            <input class="form-check-input select_columns" type="checkbox" value="--><?//=$key?><!--" id="flexCheckDefault--><?//=$key?><!--" checked>-->
-<!--                            <label class="form-check-label" for="flexCheckDefault--><?//=$key?><!--">-->
-<!--                                --><?//=$column['title']?>
-<!--                            </label>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                --><?php //endforeach; ?>
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+<div class="d-none">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div id="select_columns_block" class="row">
+                <?php foreach ($this->data['entities'][array_key_first($this->data['entities'])]['columns'] as $key => $column): ?>
+                    <div class="col-4">
+                        <div class="form-check">
+                            <input class="form-check-input select_columns" type="checkbox" value="<?=$key?>" id="flexCheckDefault<?=$key?>" checked>
+                            <label class="form-check-label" for="flexCheckDefault<?=$key?>">
+                                <?=$column['title']?>
+                            </label>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!--<div class="mb-4">-->
-<!--    <div class="row">-->
-<!--        <div class="col-6">-->
-<!--            <div class="panel mb-0">-->
-<!--                <div id="chart-donut-1" class="chart-donut"></div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="col-6">-->
-<!--            <div class="panel mb-0">-->
-<!--                <div id="chart-donut-2" class="chart-donut"></div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+<div class="d-none">
+    <div class="row">
+        <div class="col-6">
+            <div class="panel mb-0">
+                <div id="chart-donut-1" class="chart-donut"></div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="panel mb-0">
+                <div id="chart-donut-2" class="chart-donut"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="filters mb-4">
     <div class="row">
