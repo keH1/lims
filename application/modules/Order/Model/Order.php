@@ -851,7 +851,7 @@ class Order extends Model {
      * @param $dealId
      * @return false|string
      */
-    public function getOrderByDealId($dealId)
+    public function getOrderByDealId($dealId, $isGetCutContractString = false)
     {
         global $DB;
         $result = $DB->Query("SELECT DOGOVOR_NUM FROM `ba_tz` WHERE ID_Z = {$dealId} ")->Fetch();
@@ -869,12 +869,14 @@ class Order extends Model {
         }
 
         $contract = $DB->Query("SELECT * FROM `DOGOVOR` WHERE ID = '{$idDogovor}'")->Fetch();
-        if (!empty($contract)) {
+
+        if (!empty($contract) && !$isGetCutContractString) {
             return $contract['CONTRACT_TYPE'] . ' №' . $contract['NUMBER'] . ' от ' . date('d.m.Y', strtotime($contract['DATE']));
+        } else if (!empty($contract) && $isGetCutContractString) {
+            return $contract['NUMBER'] . ' от ' . date('d.m.Y', strtotime($contract['DATE']));
         } else {
             return false;
         }
-
     }
 
     public function changeOrderByHeadRequest($idHeadRequest, $dealId)

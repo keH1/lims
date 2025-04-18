@@ -643,7 +643,7 @@ class RequestController extends Controller
         }
         
         if ($config['blocks']['order']) {
-            $this->prepareOrderData($orderData, $dogovorData, $requestData, $actVr, $tzId, $tzDoc);
+            $this->prepareOrderData($dealId, $orderData, $dogovorData, $requestData, $actVr, $tzId, $tzDoc, $isExistTz, $isConfirm);
         }
         
         if ($config['blocks']['invoice']) {
@@ -1631,7 +1631,7 @@ class RequestController extends Controller
     /**
      * Подготовка данных договора и приложения к договору
      */
-    private function prepareOrderData($orderData, $dogovorData, $requestData, $actVr, $tzId, $tzDoc)
+    private function prepareOrderData($dealId, $orderData, $dogovorData, $requestData, $actVr, $tzId, $tzDoc, $isExistTz, $isConfirm)
     {
         // Договор
         if (!empty($orderData) && $dogovorData['IS_ACTION'] == 0) {
@@ -1658,6 +1658,16 @@ class RequestController extends Controller
         $this->data['order']['is_disable_mail'] = empty($dogovorData) || 0;
         
         // Приложение к договору
+        $this->data['attach']['link'] = "/ulab/generator/TechnicalSpecification/{$dealId}";
+        $this->data['attach']['number'] = $tzDoc['TZ_ID'] ?? 'Не сформировано';
+        $this->data['attach']['date'] = !empty($tzDoc['DATE'])? StringHelper::dateRu($tzDoc['DATE']) : '--';
+        $this->data['attach']['date_send'] = !empty($tzDoc['SEND_DATE'])? StringHelper::dateRu($tzDoc['SEND_DATE']) : 'Не отправлен';
+        $this->data['attach']['actual_ver'] = $tzDoc['ACTUAL_VER'];
+        $this->data['attach']['is_disable_form'] = !$this->data['is_deal_osk'] && (
+			!$isExistTz || !empty($requestData['dateEnd']) || !$isConfirm || !empty($actVr));
+		$this->data['attach']['is_disable_form_test'] = !$this->data['is_deal_osk'];
+        $this->data['attach']['is_disable_mail'] = empty($tzDoc) || 0;
+
         if (!empty($tzDoc) && $dogovorData['IS_ACTION'] == 0) {
             $this->data['attach']['check'] = 'table-red';
         } elseif (!empty($tzDoc) && empty($tzDoc['pdf'])) {

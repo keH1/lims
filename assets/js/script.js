@@ -569,14 +569,17 @@ window.setupDataTableColumnSearch = function(dataTable) {
 /**
  * Настройка обработчиков для фильтров журнала
  */
-window.setupJournalFilters = function(dataTable) {
-    $('.filter-btn-search').on('click', function() {
-        $('#journal_filter').addClass('is-open')
-        $('.filter-btn-search').hide()
-    })
-
+window.setupJournalFilters = function(dataTables) {
     $('.filter').on('change', function() {
-        dataTable.ajax.reload()
+        if (typeof dataTables === 'object') {
+            $.each(dataTables, function(key, table) {
+                if (table !== null) {
+                    table.ajax.reload()
+                }
+            })
+        } else if (dataTables !== null) {
+            dataTables.ajax.reload()
+        }
     })
 
     $('.filter-btn-reset').on('click', function() {
