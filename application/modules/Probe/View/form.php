@@ -47,7 +47,7 @@
 
 				<div class="form-group col-sm-6">
 					<div class="col">
-						<label class="form-label mb-1" for="infoDescription">Дата поступления проб в ИЦ (дата доставки проб)</label>
+						<label class="form-label mb-1" for="infoDescription">Дата поступления проб (дата доставки проб)</label>
 						<input type="date" class="form-control bg-white" name="act[ACT_DATE]" value="<?=date('Y-m-d')?>">
 					</div>
 				</div>
