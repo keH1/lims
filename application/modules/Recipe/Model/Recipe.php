@@ -65,7 +65,11 @@ class Recipe extends Model
             if ($filter['order']['dir'] === 'asc') {
                 $orderFilter['dir'] = 'ASC';
             }
-            $orderFilter['by'] = $tableColumnForFilter[$filter['order']['by']];
+            if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
+                $orderFilter['by'] = "LEFT(TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)), 1)";
+            } else {
+                $orderFilter['by'] = $tableColumnForFilter[$filter['order']['by']];
+            }
         }
         $order = "{$orderFilter['by']} {$orderFilter['dir']} ";
 
@@ -165,7 +169,7 @@ class Recipe extends Model
             $requestFromSQL = $this->DB->Query(
                 "SELECT recipe_model.id, recipe_model.id_doc, recipe_model.check_in_day
                 ,CONCAT(storage_life_in_day,'<br>',IFNULL(check_property,'')) AS storage_life,recipe_type.name AS type_name,
-                CONCAT (IFNULL(b_user.LAST_NAME,'-'),' ',IFNULL(b_user.NAME,'')) as global_assigned_name,
+                TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) as global_assigned_name,
                 GROUP_CONCAT( CASE  WHEN is_solvent = 0 THEN
                             CONCAT( react.name ,' <br> К-во = ',unit_reactive .quantity,' ', react.unit_name  ,'<br>')
                             END SEPARATOR ' ') reactives_full,

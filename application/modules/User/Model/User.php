@@ -270,7 +270,7 @@ class User extends Model
             $shortName = StringHelper::shortName($user['NAME']);
 
             $user['short_name'] = "{$shortName}. {$user['LAST_NAME']}";
-            $user['user_name'] = "{$user['LAST_NAME']} {$user['NAME']}";
+            $user['user_name'] = "{$user['NAME']} {$user['LAST_NAME']}";
             $user['groups'] = $USER->GetUserGroupArray();
             $user['id'] = $user['ID'];
 

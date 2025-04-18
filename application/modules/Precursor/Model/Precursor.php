@@ -20,6 +20,15 @@ class Precursor extends Model
 
         //всю допфильтрацию вставлять после $result['recordsTotal'] = ... до $result['recordsFiltered'] = ...
 
+        if (isset($filter['order']['by'])) {
+            if ($filter['order']['by'] === 'global_assigned_name_receive') {
+                $filter['order']['by'] = "LEFT(TRIM(CONCAT_WS(' ', user_receive.NAME, user_receive.LAST_NAME)), 1)";
+            }
+            if ($filter['order']['by'] === 'global_assigned_name_remain') {
+                $filter['order']['by'] = "LEFT(TRIM(CONCAT_WS(' ', user_remain.NAME, user_remain.LAST_NAME)), 1)";
+            }
+        }
+
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
         //Дальше допфильтрацию не вставлять
 
@@ -315,13 +324,13 @@ class Precursor extends Model
                 DATE_FORMAT(reactive_receive_consume_full.date,'%d.%m.%Y')                 AS date_consume_dateformat,
                 reactive_receive_consume_full.date AS date_consume,
                 CONCAT(reactive_receive_consume_full.quantity_consume,' ',unit_of_quantity.name) AS quantity_consume_full,
-                CONCAT (user_receive.LAST_NAME) as global_assigned_name_receive,
+                TRIM(CONCAT_WS(' ', user_receive.NAME, user_receive.LAST_NAME)) as global_assigned_name_receive,
                 
                 CONCAT(IFNULL( reactive_remain_full.quantity_begin,0)+IFNULL(reactive_receive_consume_full.quantity_receive,0)
                     - IFNULL( reactive_receive_consume_full.quantity_consume,0),
                     ' ',unit_of_quantity.name) AS quantity_remain_month_full,
                 CONCAT( reactive_remain_full.quantity_end,' ',unit_of_quantity.name) AS quantity_actual_remain_end_full,
-                CONCAT (user_remain.LAST_NAME) as global_assigned_name_remain,
+                TRIM(CONCAT_WS(' ', user_remain.NAME, user_remain.LAST_NAME)) as global_assigned_name_remain,
                 
                 
             IF(date_receive IS  NOT NULL,MONTH(date_receive),MONTH(reactive_receive_consume_full.date)) AS mm

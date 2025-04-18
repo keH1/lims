@@ -629,9 +629,9 @@ class Statistic extends Model
             'columns' => [
                 'user' => [
                     'title' => 'Сотрудники',
-                    'select' => "b_user.ID user_id, CONCAT(b_user.NAME, ' ',  b_user.LAST_NAME) as user",
-                    'order' => "CONCAT(b_user.NAME, ' ',  b_user.LAST_NAME)",
-                    'filter' => "CONCAT(b_user.NAME, ' ',  b_user.LAST_NAME) like '%{dataFilter}%'",
+                    'select' => "b_user.ID user_id, TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) as user",
+                    'order' => "LEFT(TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)), 1)",
+                    'filter' => "TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) like '%{dataFilter}%'",
                     'where' => false,
                     'group' => 'b_user.ID',
                     'link' => '<a class="chart_link" data-id="{user_id}" data-entity="users" href="#">{user}</a>',
@@ -710,7 +710,7 @@ class Statistic extends Model
                 'bar' => [
                     'formatted' => 'Кол-во выполненных методик',
                     'formatted_2' => 'Стоимость выполненных методик',
-                    'sql' => "SELECT CONCAT(b_user.NAME, ' ',  b_user.LAST_NAME) as label, MONTH(ulab_start_trials.date) month,
+                    'sql' => "SELECT TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) as label, MONTH(ulab_start_trials.date) month,
                         sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as value,
                         sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end) as value_2
                     FROM b_user
@@ -718,7 +718,7 @@ class Statistic extends Model
                         inner join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
                     where b_user.ID = '{id}' AND YEAR(ulab_start_trials.date) = YEAR(CURDATE())
                     group by MONTH(ulab_start_trials.date)",
-                    'days_sql' => "SELECT CONCAT(b_user.NAME, ' ',  b_user.LAST_NAME) as label, DAY(ulab_start_trials.date) day, DATE(ulab_start_trials.date) date,
+                    'days_sql' => "SELECT TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) as label, DAY(ulab_start_trials.date) day, DATE(ulab_start_trials.date) date,
                         sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as value,
                         sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end) as value_2
                     FROM b_user

@@ -94,6 +94,7 @@ class Protocol extends Model
     {
         $RequestModel = new Request();
         $where = "";
+        $having = "";
         $limit = "";
         $order = [
             'by' => 'b.ID',
@@ -144,37 +145,7 @@ class Protocol extends Model
                 }
                 // Ответственный
                 if (isset($filter['search']['ASSIGNED'])) {
-                    $searchText = $filter['search']['ASSIGNED'];
-                    
-                    $searchNames = explode(',', $searchText);
-                    $whereNames = [];
-
-                    foreach ($searchNames as $searchName) {
-                        $searchName = trim($searchName);
-                        if (empty($searchName)) continue;
-
-                        if (mb_strlen($searchName, 'UTF-8') === 1) {
-                            $whereNames[] = "(EXISTS (
-                                SELECT 1 FROM assigned_to_request AS ass
-                                JOIN b_user AS usr ON ass.user_id = usr.ID
-                                WHERE ass.deal_id = b.ID_Z AND
-                                (usr.NAME LIKE '{$searchName}%' OR
-                                    usr.LAST_NAME LIKE '{$searchName}%')
-                            ))";
-                        } else {
-                            $whereNames[] = "(EXISTS (
-                                SELECT 1 FROM assigned_to_request AS ass
-                                JOIN b_user AS usr ON ass.user_id = usr.ID
-                                WHERE ass.deal_id = b.ID_Z AND
-                                (usr.LAST_NAME LIKE '%{$searchName}%' OR 
-                                    CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) LIKE '%{$searchName}%')
-                            ))";
-                        }
-                    }
-
-                    if (!empty($whereNames)) {
-                        $where .= "(" . implode(' OR ', $whereNames) . ") AND ";
-                    }
+                    $having .= "ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
                 }
                 // ТЗ
                 if ( isset($filter['search']['tz']) ) {
@@ -282,21 +253,7 @@ class Protocol extends Model
                         )";
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = "LEFT(
-                                            SUBSTRING_INDEX(
-                                                IFNULL(
-                                                    GROUP_CONCAT(
-                                                        DISTINCT CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME)
-                                                        ORDER BY usr.NAME ASC 
-                                                        SEPARATOR ', '
-                                                    ),
-                                                    ''
-                                                ),
-                                                ', ',
-                                                1
-                                            ),
-                                            1
-                                        )";
+                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', '), 1)";
                         break;
                     case 'DOGOVOR_TABLE':
                         $order['by'] = 'b.DOGOVOR_TABLE';
@@ -331,26 +288,20 @@ class Protocol extends Model
             }
         }
         $where .= "1 ";
+        $having .= "1";
 
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.TZ, b.STAGE_ID, b.ID_Z, b.REQUEST_TITLE, b.ACT_NUM, 
                           b.COMPANY_TITLE, b.ACCOUNT, p.PROBE, b.RESULTS, b.TAKEN_ID_DEAL, 
                           b.DOGOVOR_TABLE, b.PRICE, b.OPLATA, b.DATE_OPLATA, b.PDF,
                           b.USER_HISTORY, p.NUMBER_AND_YEAR, p.DATE, p.ID protocol_id, 
-                          p.NUMBER, p.PROTOCOL_TYPE, p.PDF protocol_pdf, p.PROTOCOL_OUTSIDE_LIS, p.ACTUAL_VERSION, p.is_non_actual,  
+                          p.NUMBER, p.PROTOCOL_TYPE, p.PDF protocol_pdf, p.PROTOCOL_OUTSIDE_LIS, p.ACTUAL_VERSION, p.is_non_actual, 
+                          GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', ') as ASSIGNED, 
                     CASE 
                         WHEN p.IN_ATTESTAT_DIAPASON = 1 
                             THEN 'A' 
                         ELSE '' 
                     END AS ATTESTAT, 
-                    IFNULL(
-                        GROUP_CONCAT(
-                            DISTINCT CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) 
-                            ORDER BY usr.NAME ASC 
-                            SEPARATOR ', '
-                        ),
-                        ''
-                    ) AS ASSIGNED,
                     GROUP_CONCAT(
                             DISTINCT m.NAME 
                             SEPARATOR ', '
@@ -366,7 +317,9 @@ class Protocol extends Model
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
-                    GROUP BY p.ID ORDER BY {$order['by']} {$order['dir']} {$limit}"
+                    GROUP BY p.ID 
+                    HAVING {$having} 
+                    ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
 
@@ -382,7 +335,7 @@ class Protocol extends Model
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT p.ID val
+            "SELECT p.ID val, GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', ') as ASSIGNED 
                     FROM ba_tz b
                     INNER JOIN PROTOCOLS p on p.ID_TZ = b.ID and p.NUMBER_AND_YEAR is not NULL
                     inner join ulab_gost_to_probe as ugtp on p.ID = ugtp.protocol_id = p.ID
@@ -394,7 +347,8 @@ class Protocol extends Model
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where} 
-                    GROUP BY p.ID"
+                    GROUP BY p.ID 
+                    HAVING {$having}"
         )->SelectedRowsCount();
 
         $result = [];

@@ -41,6 +41,10 @@ class Reactive extends Model
         $result['recordsTotal'] = count($this->getFromSQL('getList', $filtersForGetList));
         //всю допфильтрацию вставлять после $result['recordsTotal'] = ... до $result['recordsFiltered'] = ...
 
+        if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
+            $filter['order']['by'] = "LEFT(TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)), 1)";
+        }
+
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
         //Дальше допфильтрацию не вставлять
 
@@ -116,7 +120,7 @@ class Reactive extends Model
                         CONCAT( reactive_receive.quantity,' ',unit_of_quantity.name) as full_quantity,
                         DATE_FORMAT(reactive_receive.date_production,'%d.%m.%Y') as date_production_dateformat,
                         DATE_FORMAT(reactive_receive.date_expired,'%d.%m.%Y') as date_expired_dateformat,
-                        CONCAT (b_user.LAST_NAME) as global_assigned_name,
+                        TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) as global_assigned_name,
                         reactive.id,
                         reactive_model.is_precursor,
                         IF(reactive_receive.date_expired<CURDATE(),1,0) AS is_expired
