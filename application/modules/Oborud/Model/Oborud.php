@@ -203,8 +203,7 @@ class Oborud extends Model {
                 }
             }
         }
-        $where .= "b.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "b.organization_id = {$organizationId}";
 
         $data = $this->DB->Query(
             "SELECT b.*, l.NAME laba_name, c.name as certificate_name, c.date_start, c.date_end
@@ -440,8 +439,7 @@ class Oborud extends Model {
                 }
             }
         }
-        $where .= "b.organization_id = '{$organizationId}' AND ";
-        $where .= "1 ";
+        $where .= "b.organization_id = '{$organizationId}'";
 
         $data = $this->DB->Query(
             "SELECT *, 
