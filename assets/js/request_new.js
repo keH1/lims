@@ -7,6 +7,7 @@ $(function ($) {
     window.labsList = window.labsList || []
 
     initForm()
+    initGovDeadlineValidation()
     
     /**
      * @desc Переключает тип заявки
@@ -40,6 +41,9 @@ $(function ($) {
             initializeExistingRows()
             initializeEditableCells()
             
+            // if (isNewRequest && $('.gov-works-table tbody tr.gov-work-row').length === 0) {
+            //     addGovWorkRow()
+            // }
         } else if (reqType === 'SALE') {
             $('.type-sale-block').not('#sale-materials-block').removeClass('visually-hidden')
             
@@ -1209,9 +1213,7 @@ $(function ($) {
                     const option = $(this).clone(),
                           optionValue = option.val()
                     
-                    if (!optionValue) {
-                        return
-                    }
+                    if (!optionValue) return
                     
                     /* Запрет выбора ответственных
                     if (optionValue === currentValue || selectedResponsibles.indexOf(optionValue) === -1) {
@@ -1223,6 +1225,55 @@ $(function ($) {
                 
                 select.val(currentValue)
             }
+        })
+    }
+
+    /**
+     * Проверка даты в модальном окне при выборе сроков
+     */
+    function initGovDeadlineValidation() {
+        $body.on('change', '.modal-input[type="date"]', function() {
+            if (currentEditCell && 
+                currentEditCell.find('input[name^="gov_works[deadline]"]').length > 0) {
+                
+                const govDeadline = $('#gov_deadline').val()
+                if (!govDeadline) return
+                
+                const selectedDate = $(this).val()
+                
+                if (new Date(selectedDate) > new Date(govDeadline)) {
+                    $(this).val('')
+                    $(this).addClass('is-invalid')
+                    $(this).siblings('.invalid-feedback').text('Срок не может быть позже ' + 
+                        new Date(govDeadline).toLocaleDateString('ru-RU'))
+                        .show()
+                } else {
+                    $(this).removeClass('is-invalid')
+                    $(this).siblings('.invalid-feedback').hide()
+                }
+            }
+        })
+        
+        $body.on('change', '#gov_deadline', function() {
+            const govDeadline = $(this).val()
+            if (!govDeadline) return
+            
+            $('.gov-works-table tbody tr.gov-work-row').each(function() {
+                const deadlineCell = $(this).find('[data-type="date"]').filter(function() {
+                    return $(this).find('input[name^="gov_works[deadline]"]').length > 0
+                })
+                
+                if (deadlineCell.length) {
+                    const deadlineInput = deadlineCell.find('input')
+                    const deadlineValue = deadlineInput.val()
+                    
+                    if (deadlineValue && new Date(deadlineValue) > new Date(govDeadline)) {
+                        deadlineInput.val('')
+                        deadlineCell.find('.cell-display').text('')
+                        showErrorMessage('Срок работы №' + ($(this).index() + 1) + ' был сброшен, т.к. он позже общего срока', '#error-message')
+                    }
+                }
+            })
         })
     }
 })
