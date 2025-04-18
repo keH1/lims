@@ -16,7 +16,7 @@ class Water extends Model
             $filter['order']['by'] = "LEFT(global_assigned_name, 1)";
         }
 
-        $filtersForGetList = asrray_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
+        $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
         //Дальше допфильтрацию не вставлять
 
         $result['recordsFiltered'] = count($this->getFromSQL('getList', $filtersForGetList));
