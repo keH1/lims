@@ -82,7 +82,6 @@ class History extends Model
                                          h.TYPE, h.PROT_NUM, h.TZ_ID, h.ASSIGNED, h.REQUEST
                                   FROM HISTORY AS h
                                   WHERE {$where}
-                                  GROUP BY h.ID
                                   ORDER BY {$order['by']} {$order['dir']} {$limit}
         ");
 
