@@ -19,6 +19,10 @@ class Reactiveconsumption extends Model
         $result['recordsTotal'] = count($this->getFromSQL('getList', $filtersForGetList));
         //всю допфильтрацию вставлять после $result['recordsTotal'] = ... до $result['recordsFiltered'] = ...
 
+        if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
+            $filter['order']['by'] = "LEFT(TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)), 1)";
+        }
+
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
         //Дальше допфильтрацию не вставлять
 
@@ -79,8 +83,7 @@ class Reactiveconsumption extends Model
                  , consume.type
                  , CONCAT(consume.quantity, ' ',
                           unit_of_quantity.name)   AS quantity_consume_full
-                 , CONCAT(IFNULL(b_user.last_name, '-'), ' ',
-                          IFNULL(b_user.name, '')) AS global_assigned_name
+                 , TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) as global_assigned_name
                  , consume.id_id                   AS id
                 , consume.global_entry_date
             FROM (SELECT *

@@ -611,51 +611,37 @@
         </div>
     <?php endif; ?>
 
-    <?php foreach ($this->data['protocol_modal'] as $index => $protocol): ?>
-        <div class="mb-2">
-            <?php if (!empty($protocol['protocol_file_path'])): ?>
-                <input type="checkbox" class="form-check-input protocol-checkbox" id="protocol-<?= $index ?>" 
-                       data-file-path="<?= $protocol['protocol_file_path'] ?>"
-                       data-file-type="<?= $protocol['type_file'] ?>">
-            <?php endif; ?>
-            <label for="protocol-<?= $index ?>"><?= $protocol['work_name'] ?></label>
-            <span class="ms-3" title="<?= !empty($protocol['protocol_file']) ? $protocol['protocol_file'] : 'Нет файла протокола' ?>">
-                <?php
-                    if (!empty($protocol['protocol_file'])) {
-                        $fileName = $protocol['protocol_file'];
-                        $lastDotIndex = strrpos($fileName, '.');
-                        $extensionWithDot = ($lastDotIndex !== false) ? substr($fileName, $lastDotIndex) : '';
-                        
-                        $extensionClass = '';
-                        $fileType = !empty($protocol['type_file']) ? $protocol['type_file'] : '';
-                        
-                        if ($fileType === 'pdf') {
-                            $extensionClass = 'text-danger';
-                        } elseif ($fileType === 'docx' || $fileType === 'doc') {
-                            $extensionClass = 'text-primary';
-                        } elseif ($fileType === 'xls' || $fileType === 'xlsx') {
-                            $extensionClass = 'text-success';
-                        }
-                        
-                        if (mb_strlen($fileName) > 35) {
-                            echo mb_substr($fileName, 0, 32) . '...';
-                            if (!empty($extensionWithDot)) {
-                                echo '<span class="' . $extensionClass . '">' . $extensionWithDot . '</span>';
-                            }
-                        } else {
-                            $nameWithoutExt = $lastDotIndex !== false ? substr($fileName, 0, $lastDotIndex) : $fileName;
-                            echo $nameWithoutExt;
-                            if (!empty($extensionWithDot)) {
-                                echo '<span class="' . $extensionClass . '">' . $extensionWithDot . '</span>';
-                            }
-                        }
-                    } else {
-                        echo 'Нет файла протокола';
-                    }
-                ?>
-            </span>
-        </div>
-    <?php endforeach; ?>
+    <?php if (!empty($this->data['protocol_modal'])): ?>
+    <table class="table table-borderless">
+        <tbody>
+            <?php foreach ($this->data['protocol_modal'] as $index => $protocol): ?>
+                <tr>
+                    <td>
+                        <?php if (!empty($protocol['protocol_file_path'])): ?>
+                            <input type="checkbox" class="form-check-input protocol-checkbox" id="protocol-<?= $index ?>" 
+                                   data-file-path="<?= $protocol['protocol_file_path'] ?>"
+                                   data-file-type="<?= $protocol['type_file'] ?>"
+                            >
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <label for="protocol-<?= $index ?>"><?= $protocol['work_name'] ?></label>
+                    </td>
+                    <td <?= !empty($protocol['protocol_file_path']) && !empty($protocol['protocol_file']) ? 'title="' . $protocol['protocol_file'] . '"' : '' ?>>
+                        <?php if (!empty($protocol['protocol_file_path']) && $protocol['protocol_file_path']): ?>
+                            <span><?= $protocol['display_name'] ?></span>
+                            <span class="<?= $protocol['extension_class'] ?>">
+                                <?= "." . $protocol['type_file'] ?>
+                            </span>
+                        <?php else: ?>
+                            <span>Нет файла протокола</span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php endif; ?>
 
     <form id="create-protocols-archive-form" action="/ulab/request/createProtocolsArchive" method="POST">
         <input type="hidden" name="title" value="<?= $this->data['deal_title'] ?>">

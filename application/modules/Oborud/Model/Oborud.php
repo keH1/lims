@@ -417,6 +417,12 @@ class Oborud extends Model {
                     case 'date':
                         $order['by'] = 'm.datetime';
                         break;
+                    case 'responsible_user':
+                        $order['by'] = "LEFT(TRIM(CONCAT_WS(' ', ur.NAME, ur.LAST_NAME)), 1)";
+                        break;
+                    case 'receiver_user':
+                        $order['by'] = "LEFT(TRIM(CONCAT_WS(' ', uv.NAME, uv.LAST_NAME)), 1)";
+                        break;
                     default:
                         $order['by'] = 'b.ID';
                 }
@@ -438,9 +444,19 @@ class Oborud extends Model {
         $where .= "1 ";
 
         $data = $this->DB->Query(
-            "SELECT *
+            "SELECT *, 
+                        CASE
+                            WHEN TRIM(CONCAT_WS(' ', ur.NAME, ur.LAST_NAME)) = '' THEN '--'
+                            ELSE TRIM(CONCAT_WS(' ', ur.NAME, ur.LAST_NAME))
+                        END AS responsible_user,
+                        CASE
+                            WHEN TRIM(CONCAT_WS(' ', uv.NAME, uv.LAST_NAME)) = '' THEN '--'
+                            ELSE TRIM(CONCAT_WS(' ', uv.NAME, uv.LAST_NAME))
+                        END AS receiver_user
                     FROM ba_oborud as b
-                    LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID
+                    LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID 
+                    LEFT JOIN b_user AS ur ON ur.ID = m.responsible_user_id 
+                    LEFT JOIN b_user AS uv ON uv.ID = m.receiver_user_id 
                     WHERE {$where}
                     ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
@@ -448,14 +464,18 @@ class Oborud extends Model {
         $dataTotal = $this->DB->Query(
             "SELECT b.id
                     FROM ba_oborud b
-                    LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID
-                    WHERE organization_id = '{$organizationId}' AND 1"
+                    LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID 
+                    LEFT JOIN b_user AS ur ON ur.ID = m.responsible_user_id 
+                    LEFT JOIN b_user AS uv ON uv.ID = m.receiver_user_id 
+                    WHERE organization_id = '{$organizationId}'"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
             "SELECT b.id
                     FROM ba_oborud b
-                    LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID
+                    LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID 
+                    LEFT JOIN b_user ur ON ur.ID = m.responsible_user_id 
+                    LEFT JOIN b_user uv ON uv.ID = m.receiver_user_id 
                     WHERE {$where}"
         )->SelectedRowsCount();
 
@@ -467,12 +487,8 @@ class Oborud extends Model {
             if ( empty($row['place']) ) {
                 $row['place'] = 'Не перемещался';
                 $row['date'] = '--';
-                $row['responsible_user'] = '--';
-                $row['receiver_user'] = '--';
             } else {
                 $row['date'] = date('d.m.Y', strtotime($row['datetime']));
-                $row['responsible_user'] = $userModel->getUserData($row['responsible_user_id'])['short_name'];
-                $row['receiver_user'] = $userModel->getUserData($row['receiver_user_id'])['short_name'];
             }
 
             $result[] = $row;

@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @desc Пробы
- * Class ProbeController
+ * @desc Журнал счетов
+ * Class InvoiceController
  */
 class InvoiceController extends Controller
 {
@@ -16,7 +16,7 @@ class InvoiceController extends Controller
 
     /**
      * route /probe/list/
-     * @desc Список актов приёмки проб
+     * @desc Журнал счетов
      */
     public function list()
     {
@@ -39,7 +39,7 @@ class InvoiceController extends Controller
 
 
     /**
-     * @desc Получает данные для списка актов приёмки проб
+     * @desc Получает данные для журнала счетов
      */
     public function getListAjax()
     {

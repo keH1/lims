@@ -67,35 +67,11 @@ $(function ($) {
             {
                 data: 'tz',
                 render: function (data, type, item) {
-                    if ( item['ID_Z'] < 9357 ) {
-                        return `<a class="number-tz" href="/ulab/requirement/card_old/${item['b_tz_id']}" >
-                                ${item['b_tz_id']}
-                            </a>`
-                    }
-                    return `<a class="number-tz" href="/ulab/requirement/card/${item['b_tz_id']}" >
+                    return `<a class="number-tz" href="/ulab/requirement/card_new/${item['b_tz_id']}" >
                                 ${item['b_tz_id']}
                             </a>`
                 }
             },
-            // {
-            //     data: 'DOGOVOR_TABLE',
-            // },
-            // {
-            //     data: 'PRICE',
-            //     render: $.fn.dataTable.render.intlNumber('ru-RU', { minimumFractionDigits: 2 })
-            // },
-            // {
-            //     data: 'ACCOUNT',
-            //     render: function (data, type, item) {
-            //         return item.ACCOUNT
-            //     }
-            // },
-            // {
-            //     data: 'DATE_OPLATA',
-            //     render: function (data, type, item) {
-            //         return item.DATE_OPLATA
-            //     }
-            // },
             {
                 data: 'linkName',
                 orderable: false,
@@ -103,9 +79,8 @@ $(function ($) {
                     if ( item['PROTOCOL_OUTSIDE_LIS'] == 1 ) {
                         return 'Вне ЛИС'
                     }
-                    console.log(item['PROTOCOL_OUTSIDE_LIS'])
                     return `<a class="results-link"
-                               href="/ulab/result/card/${item['ID_Z']}?protocol_id=${item['protocol_id']}" >
+                               href="/ulab/result/card_oati/${item['ID_Z']}?protocol_id=${item['protocol_id']}" >
                                Открыть
                             </a>`
                 }

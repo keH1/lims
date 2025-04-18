@@ -15,9 +15,7 @@ class App
         $url = $this->parseUrl();
 
         $controllerName = ucfirst($url[0]);
-        if (!empty($url[0]) && file_exists(
-                APP_PATH . "modules/{$controllerName}/Controller/" . ucfirst($url[0]) . 'Controller.php',
-            )) {
+        if (!empty($url[0]) && file_exists(APP_PATH . "modules/{$controllerName}/Controller/" . ucfirst($url[0]) . 'Controller.php')) {
             $controller = $controllerName . 'Controller';
             $this->controller = $controller;
             unset($url[0]);
@@ -61,101 +59,13 @@ class App
 //
 //            call_user_func([$this->controller, $this->method], $this->id);
 //        }
-        call_user_func([$this->controller, $this->method], $this->id);
+		call_user_func([$this->controller, $this->method], $this->id);
     }
 
     protected function parseUrl()
     {
         if (isset($_SERVER['REQUEST_URI'])) {
             $url = str_replace(URI, '', $_SERVER['REQUEST_URI']);
-
-            if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($url, 'login') !== false) {
-                $_SESSION['last_auth_post'] = true;
-                $_SESSION['last_auth_post_time'] = time();
-            }
-
-            // Проверка, если нажали "Назад" после авторизации
-            if ($_SERVER['REQUEST_METHOD'] === 'GET' &&
-                isset($_SESSION['last_auth_post']) &&
-                $_SESSION['last_auth_post'] === true &&
-                (time() - $_SESSION['last_auth_post_time']) < 3600 &&
-                strpos($url, 'login') !== false &&
-                !isset($_GET['refresh'])) {
-                $urlParts = parse_url($_SERVER['REQUEST_URI']);
-                $query = isset($urlParts['query']) ? $urlParts['query'] : '';
-                parse_str($query, $params);
-                $params['refresh'] = '1';
-
-                $newUrl = $urlParts['path'];
-                if (!empty($params)) {
-                    $newUrl .= '?' . http_build_query($params);
-                }
-
-                echo
-                    '<!DOCTYPE html>
-                            <html>
-                            <head>
-                                <meta charset="UTF-8">
-                                <title>Перенаправление...</title>
-                                <script>
-                                window.onload = function() {
-                                    // Используем History API для замены текущей записи истории
-                                    if (window.history && window.history.replaceState) {
-                                        // Заменяем текущую запись в истории браузера
-                                        history.replaceState(null, "", "' . $newUrl . '");
-                                        // Перезагружаем страницу для получения свежего контента
-                                        location.reload();
-                                    } else {
-                                        // Для браузеров без поддержки History API
-                                        location.href = "' . $newUrl . '";
-                                    }
-                                };
-                                </script>
-                            </head>
-                            <body>
-                                <p>Перенаправление...</p>
-                            </body>
-                        </html>';
-                exit;
-            }
-
-            if ($_SERVER['REQUEST_METHOD'] === 'GET' &&
-                strpos($url, 'login') === false &&
-                isset($_SESSION['last_auth_post'])) {
-                unset($_SESSION['last_auth_post']);
-                unset($_SESSION['last_auth_post_time']);
-            }
-
-            if (strpos($url, 'login=yes') !== false) {
-                global $USER;
-                $isAuthorized = false;
-
-                if (isset($USER) && method_exists($USER, 'IsAuthorized') && $USER->IsAuthorized()) {
-                    $isAuthorized = true;
-                } elseif (isset($_SESSION['SESS_AUTH']) && !empty($_SESSION['SESS_AUTH']['USER_ID'])) {
-                    $isAuthorized = true;
-                }
-
-                if ($isAuthorized) {
-                    $urlParts = parse_url($_SERVER['REQUEST_URI']);
-                    if (isset($urlParts['query'])) {
-                        parse_str($urlParts['query'], $params);
-                        unset($params['login']);
-                        $urlParts['query'] = http_build_query($params);
-                    }
-
-                    $newUrl = $urlParts['path'];
-                    if (!empty($urlParts['query'])) {
-                        $newUrl .= '?' . $urlParts['query'];
-                    }
-                    if (isset($urlParts['fragment'])) {
-                        $newUrl .= '#' . $urlParts['fragment'];
-                    }
-
-                    header("Location: {$newUrl}", true, 302);
-                    exit;
-                }
-            }
 
             $uri = explode('?', $url);
             $uri = explode('/', filter_var(rtrim($uri[0], '/'), FILTER_SANITIZE_URL));
@@ -164,16 +74,6 @@ class App
         }
 
         return [];
-
-        // if (isset($_SERVER['REQUEST_URI'])) {
-        //     $url = str_replace(URI, '', $_SERVER['REQUEST_URI']);
-        //     $uri = explode('?', $url);
-        //     $uri = explode('/', filter_var(rtrim($uri[0], '/'), FILTER_SANITIZE_URL));
-        //     array_shift($uri);
-        //     return $uri;
-        // }
-
-        // return [];
     }
 
     /**
@@ -277,13 +177,13 @@ class App
         $homePage = $row['home_page'];
 
 
-        if (self::isAdmin() || $row['permission'] == 'all') {
+        if ( self::isAdmin() || $row['permission'] == 'all' ) {
             return true;
         }
 
-        $_SESSION['SESS_AUTH']['ROLE'] = $row['id'];
+		$_SESSION['SESS_AUTH']['ROLE'] = $row['id'];
 
 //		return isset($row['permission'][$controller][$method]);
-        return true;
+		return true;
     }
 }

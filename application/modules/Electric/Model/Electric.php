@@ -21,6 +21,10 @@ class Electric extends Model
         $result['recordsTotal'] = count($this->getFromSQL('getList', $filtersForGetList));
         //всю допфильтрацию вставлять после $result['recordsTotal'] = ... до $result['recordsFiltered'] = ...
 
+        if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
+            $filter['order']['by'] = "LEFT(TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)), 1)";
+        }
+
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
         //Дальше допфильтрацию не вставлять
         $result['recordsFiltered'] = count($this->getFromSQL('getList', $filtersForGetList));
@@ -70,7 +74,7 @@ class Electric extends Model
             SELECT DATE_FORMAT(electric_control.date, '%d.%m.%Y') AS date_dateformat, 
                    electric_control.*, 
                    CONCAT(ROOMS.number, ' - ', ROOMS.name) AS name, 
-                   CONCAT(b_user.last_name)                AS global_assigned_name, 
+                   TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) AS global_assigned_name, 
                    IF(voltage_ua_conclusion = 0 
                           AND voltage_ub_conclusion = 0 
                           AND voltage_uc_conclusion = 0
