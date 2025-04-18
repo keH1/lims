@@ -665,6 +665,7 @@ class User extends Model
             "LOGIN"             => $data['LOGIN'],
             "WORK_POSITION" => $data['WORK_POSITION'],
             "GROUP_ID"          => $groupId,
+            "UF_ORG_ID" => App::getOrganizationId()
         ];
 
         if (!empty($data['NEW_PASSWORD']) && !empty($data['NEW_PASSWORD_CONFIRM'])) {
