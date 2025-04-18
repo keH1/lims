@@ -15,6 +15,7 @@ $(function ($) {
             },
             url : '/ulab/protocol/getListProcessingAjax/',
             dataSrc: function (json) {
+                console.log(json)
                 return json.data
             }
         },
@@ -77,25 +78,6 @@ $(function ($) {
                             </a>`
                 }
             },
-            // {
-            //     data: 'DOGOVOR_TABLE',
-            // },
-            // {
-            //     data: 'PRICE',
-            //     render: $.fn.dataTable.render.intlNumber('ru-RU', { minimumFractionDigits: 2 })
-            // },
-            // {
-            //     data: 'ACCOUNT',
-            //     render: function (data, type, item) {
-            //         return item.ACCOUNT
-            //     }
-            // },
-            // {
-            //     data: 'DATE_OPLATA',
-            //     render: function (data, type, item) {
-            //         return item.DATE_OPLATA
-            //     }
-            // },
             {
                 data: 'linkName',
                 orderable: false,
