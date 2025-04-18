@@ -8,7 +8,7 @@
             </li>
             <li class="nav-item me-2">
                 <a class="nav-link" href="/validation_card.php?ID=<?=$this->data['form']['id']?>" title="Сформировать отчет о валидации и верификации методики">
-                    <i class="fa-regular fa-file-word"></i>
+                    Сформировать отчет
                 </a>
             </li>
         </ul>
