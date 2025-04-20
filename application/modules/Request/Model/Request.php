@@ -875,11 +875,8 @@ class Request extends Model
                     $having .= "MATERIAL LIKE '%{$text}%' AND ";
                 }
                 // Ответственный
-                if ( isset($filter['search']['ASSIGNED']) ) {
-                    $where .=
-                        "(usr.NAME LIKE '%{$filter['search']['ASSIGNED']}%' or 
-                        usr.LAST_NAME LIKE '%{$filter['search']['ASSIGNED']}%' or
-                        CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) LIKE '%{$filter['search']['ASSIGNED']}%') AND ";
+                if (isset($filter['search']['ASSIGNED'])) {
+                    $having .= "ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
                 }
                 // Акт ПП
                 if ( isset($filter['search']['NUM_ACT_TABLE']) ) {
@@ -1004,6 +1001,9 @@ class Request extends Model
                     case 'MATERIAL':
                         $order['by'] = "group_concat(distinct mater.NAME SEPARATOR ', ')";
                         break;
+                    case 'ASSIGNED':
+                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', '), 1)";
+                        break;
                     case 'NUM_ACT_TABLE':
                         $order['by'] = 'YEAR(ACT_DATE) DESC, a.ACT_NUM';
                         break;
@@ -1061,7 +1061,7 @@ class Request extends Model
                         count(c.id) c_count, count(c.date_return) с_date_return, k.ID k_id , d.IS_ACTION, CONCAT(d.CONTRACT_TYPE, ' ', d.NUMBER, ' от ', DATE_FORMAT(d.DATE, '%d.%m.%Y')) as DOGOVOR_TABLE,
                         tzdoc.pdf tz_pdf,
                         gw.departure_date, gw.object as object_gov,
-                        group_concat(distinct CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED,
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', ') as ASSIGNED,
                         group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
@@ -1099,7 +1099,8 @@ class Request extends Model
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
-            "SELECT b.ID val, group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL
+            "SELECT b.ID val, group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL, 
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', ') as ASSIGNED 
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ AS c ON b.ID=c.tz_id
