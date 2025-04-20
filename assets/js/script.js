@@ -208,12 +208,12 @@ function initTableScrollNavigation(wrapperSelector = '', scrollContainerSelector
 
     if (!$wrapper.find(`.${arrowRightClass}`).length) {
         $wrapper.append(`
-            <div class="${arrowLeftClass} arrow position-absolute right-0">
+            <div class="${arrowLeftClass} arrow position-absolute right--0-95">
                 <svg class="bi" width="40" height="40">
                     <use xlink:href="/ulab/assets/images/icons.svg#arrow-left"/>
                 </svg>
             </div>
-            <div class="${arrowRightClass} arrow position-absolute right-0">
+            <div class="${arrowRightClass} arrow position-absolute right--0-95">
                 <svg class="bi" width="40" height="40">
                     <use xlink:href="/ulab/assets/images/icons.svg#arrow-right"/>
                 </svg>

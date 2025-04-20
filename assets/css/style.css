@@ -700,6 +700,10 @@ div.dt-buttons {
     right: 0!important;
 }
 
+.right--0-95 {
+    right: -0.95rem !important;
+}
+
 .trial-results-wrapper .arrowRight {
     top: 60px;
     right: -20px;
