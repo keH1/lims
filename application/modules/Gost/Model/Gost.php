@@ -46,17 +46,18 @@ class Gost extends Model
      */
     public function addGost($data)
     {
+        $data["organization_id"] = App::getOrganizationId();
         $sqlData = $this->prepearGostData($data);
 
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Сздан новый ГОСТ: {$data['reg_doc']}",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 
@@ -91,12 +92,12 @@ class Gost extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Скопирован ГОСТ. ид: {$id}",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 
@@ -140,17 +141,18 @@ class Gost extends Model
      */
     public function updateGost($id, $data)
     {
+        $data["organization_id"] = App::getOrganizationId();
         $sqlData = $this->prepearGostData($data);
 
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Отредактирован ГОСТ. ид: {$id}",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 

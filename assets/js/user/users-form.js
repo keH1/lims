@@ -98,8 +98,10 @@ $(function () {
                     userModalForm.find('#newPassword').val('').removeAttr('required')
                     userModalForm.find('#newPasswordConfirm').val('').removeAttr('required')
 
-                    if (userModalForm.find('#departmentId').find('option[value="' + data['DEPARTMENT_ID'] + '"]').length > 0) {
-                        userModalForm.find('#departmentId').val(data['DEPARTMENT_ID']);
+                    let departmentId = data.UF_DEPARTMENT[data.UF_DEPARTMENT.length - 1];
+
+                    if (userModalForm.find('#departmentId').find('option[value="' + departmentId + '"]').length > 0) {
+                        userModalForm.find('#departmentId').val(departmentId);
                     } else {
                         userModalForm.find('#departmentId').val('');
                     }

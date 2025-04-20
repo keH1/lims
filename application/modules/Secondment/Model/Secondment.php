@@ -45,7 +45,7 @@ class Secondment extends Model
                 }
                 // Пользователь
                 if (isset($filter['search']['fio'])) {
-                    $where .= "CONCAT(b_u.LAST_NAME, ' ', b_u.NAME, ' ', b_u.SECOND_NAME) LIKE '%{$filter['search']['fio']}%' AND ";
+                    $where .= "TRIM(CONCAT_WS(' ', b_u.NAME, b_u.LAST_NAME)) LIKE '%{$filter['search']['fio']}%' AND ";
                 }
                 // Населенный пункт
                 if (isset($filter['search']['s_s_name'])) {
@@ -108,7 +108,7 @@ class Secondment extends Model
 
                 switch ($filter['order']['by']) {
                     case 'fio':
-                        $order['by'] = "CONCAT(b_u.LAST_NAME, ' ', b_u.NAME, ' ', b_u.SECOND_NAME)";
+                        $order['by'] = "LEFT(TRIM(CONCAT_WS(' ', b_u.NAME, b_u.LAST_NAME)), 1)";
                         break;
                     case 'title':
                         $order['by'] = "s.id";
@@ -159,12 +159,12 @@ class Secondment extends Model
 
         $result = [];
 
-        $userId = $_SESSION['SESS_AUTH']['USER_ID'];
+        $userId = App::getUserId();
 
         $data = $DB->Query(
             "SELECT s.id s_id, s.project_id, s.user_id, s.settlement_id, s.date_begin, s.date_end, s.stage, s.planned_expenses, 
                 s.total_spent, YEAR(s.created_at) created_year, s.overspending, 
-                CONCAT(b_u.LAST_NAME, ' ', b_u.NAME, ' ', b_u.SECOND_NAME) fio, 
+                TRIM(CONCAT_WS(' ', b_u.NAME, b_u.LAST_NAME)) AS fio, 
                 CONCAT(s.id, '/', IF(YEAR(s.created_at)  % 10, SUBSTR(YEAR(s.created_at), -2), YEAR(s.created_at))) title, 
                 s_s.name s_s_name, d_o.NAME d_o_name, f_s.settlement,
                 o_p.name project_name,

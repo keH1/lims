@@ -140,7 +140,7 @@
                                 <?php foreach ($this->data['material_gost'] as $umtr_id => $data): ?>
                                     <?php $i = 0; ?>
                                     <?php foreach ($data as $ugtp_id => $val): ?>
-                                        <tr class="<?= $val['table_green'] ?>" bgcolor="<?=$val['tester']['user_id'] == $_SESSION['SESS_AUTH']['USER_ID'] ? '#d2ddfa' : ''?>">
+                                        <tr class="<?= $val['table_green'] ?>" bgcolor="<?=$val['tester']['user_id'] == App::getUserId() ? '#d2ddfa' : ''?>">
                                             <td class="<?= $val['border_row'] ?>">
 													<?= $val['tester']['short_name'] ?: 'Не назначен' ?>
                                             </td>

@@ -49,14 +49,14 @@ class Methods extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $idMethod = $this->DB->Insert('ulab_methods', $sqlData);
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Создана Методика. ид новой Методики: {$idMethod}. ид ГОСТа: {$data['gost_id']}.",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 
@@ -78,14 +78,14 @@ class Methods extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $methodInfo = $this->get($id);
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Отредактирована Методика. ид: {$id}, ид ГОСТа: {$methodInfo['gost_id']}",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 
@@ -127,11 +127,8 @@ class Methods extends Model
         $result = $methodSql->Fetch();
 
         if ($result && isset($result['id'])) {
-            if ($result['id'] == 2669) {
-                $assignedList = $userMethod->getAllActiveUserId();
-            } else {
-                $assignedList = $this->getAssigned($result['id']);
-            }
+
+            $assignedList = $this->getAssigned($result['id']);
 
             foreach ($assignedList as $user) {
                 $result['assigned'][] = $userMethod->getUserShortById($user);
@@ -154,6 +151,8 @@ class Methods extends Model
 
     public function getList()
     {
+        $userMethod = new User();
+
         $methodSql = $this->DB->Query(
             "select 
                     m.*, 
@@ -177,6 +176,12 @@ class Methods extends Model
             $strClause = !empty($row['clause']) ? " {$row['clause']}" : '';
             $row['view_gost'] = "{$row['reg_doc']}{$strYear}{$strClause} | {$row['name']}";
 
+            $assignedList = $this->getAssigned($row['id']);
+
+            foreach ($assignedList as $user) {
+                $row['assigned'][] = $userMethod->getUserShortById($user);
+            }
+
             if ( !$row['is_confirm'] ) {
                 $row['date_color'] = '#dfdf11';
             }
@@ -185,7 +190,7 @@ class Methods extends Model
                 $row['date_color'] = '#f00';
             }
 
-            $result[] = $row;
+            $result[$row['id']] = $row;
         }
 
         return $result;
@@ -253,12 +258,12 @@ class Methods extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Методика отмечена неактуальной. ид: {$id}",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 
@@ -459,6 +464,7 @@ class Methods extends Model
      */
     public function getJournalList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -618,6 +624,7 @@ class Methods extends Model
             }
         }
 
+        $where .= "g.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $result = [];
@@ -649,7 +656,7 @@ class Methods extends Model
                     LEFT JOIN ulab_test_method tm ON tm.id = m.test_method_id 
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
-                    WHERE m.is_actual = 1"
+                    WHERE m.is_actual = 1 AND g.organization_id = {$organizationId}"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
@@ -806,6 +813,7 @@ class Methods extends Model
      */
     public function getJournalReportList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -910,6 +918,7 @@ class Methods extends Model
             }
         }
 
+        $where .= "g.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $result = [];
@@ -967,7 +976,7 @@ class Methods extends Model
             INNER JOIN ulab_start_trials AS st
             ON st.ugtp_id = gtp.id
 
-            WHERE 1
+            WHERE g.organization_id = {$organizationId}
             GROUP BY m.id
         ")->SelectedRowsCount();
 
@@ -1426,12 +1435,12 @@ class Methods extends Model
         $historyModel = new History();
         $userModel = new User();
 
-        $user = $userModel->getUserData($_SESSION['SESS_AUTH']['USER_ID']);
+        $user = $userModel->getUserData(App::getUserId());
 
         $dataHistory = [
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Скопирована Методика. ид источник: {$methodId}, ид новый: {$idNewMethod}",
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'ASSIGNED' => $user['user_name']
         ];
 

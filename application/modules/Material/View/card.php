@@ -92,7 +92,7 @@
                                 <td><?= $arrGost['name'] ?></td>
                                 <td>
                                     <button type="button" class="btn btn-outline-danger del-gost btn-square-new">
-                                        <i class="fa-solid fa-xmark"></i>
+                                        <i class="fa-solid fa-minus icon-fix"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -105,10 +105,9 @@
                     </tbody>
                 </table>
             </div>
+
             <button type="submit" class="btn btn-primary">Сохранить</button>
-
         </div>
-
     </div>
 </form>
 
@@ -304,8 +303,8 @@
                             <input type="hidden" name="scheme_id" value="<?= $scheme['id'] ?>">
                             <input type="hidden" name="material_id" value="<?= $this->data['id'] ?>">
                             <div class="mb-3">
-                                <button type="button" class="btn btn-danger float-end mb-1 delete-scheme"><i
-                                            class="fa-solid fa-minus"></i> Удалить схему
+                                <button type="button" class="btn btn-danger float-end mb-1 delete-scheme">
+                                    Удалить схему
                                 </button>
                                 <label for="scheme-name-<?= $scheme['id'] ?>" class="form-label">Название схемы: <span class="redStars">*</span></label>
                                 <input type="text" name="scheme-param" class="form-control"

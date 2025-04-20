@@ -363,7 +363,7 @@ class Lab extends Model
         )->SelectedRowsCount();
 
         //проверка на допуск к редактированию
-        $isCanEdit = in_array($_SESSION['SESS_AUTH']['USER_ID'], self::USERS_CAN_EDIT_CONDITIONS);
+        $isCanEdit = in_array(App::getUserId(), self::USERS_CAN_EDIT_CONDITIONS);
 
         while ($row = $data->Fetch()) {
             $row['ru_created_at'] = date('d.m.Y H:i:s', strtotime($row['created_at']));

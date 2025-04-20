@@ -21,13 +21,13 @@ class ImportController extends Controller
     public function index()
     {
         // если админ, то перенаправляем в журнал организации
-        if ( in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+        if ( App::isAdmin()) {
             $this->redirect('/import/organizationList/');
         }
 
         $orgModel = new Organization();
 
-        $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $data = $orgModel->getAffiliationUserInfo(App::getUserId());
 
         // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
         if ( !empty($data['org_id']) ) {
@@ -43,10 +43,10 @@ class ImportController extends Controller
      */
     public function organizationList()
     {
-        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
+        if ( !App::isAdmin()) {
             $orgModel = new Organization();
 
-            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+            $data = $orgModel->getAffiliationUserInfo(App::getUserId());
 
             // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
             if ( !empty($data['org_id']) ) {
@@ -85,8 +85,8 @@ class ImportController extends Controller
         $orgModel = new Organization();
         $userModel = new User();
 
-        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        if ( !App::isAdmin()) {
+            $data = $orgModel->getAffiliationUserInfo(App::getUserId());
 
 //            if (empty($data['org_id'])) {
 //                $this->redirect('/request/list/');
@@ -222,11 +222,21 @@ class ImportController extends Controller
         $this->data['title'] = 'Профиль лаборатории';
 
         $this->data['users'] = $userModel->getUsers();
+
+        $positionList = [];
+        foreach ($this->data['users'] as $us) {
+            if ( !empty($us['WORK_POSITION']) && !in_array($us['WORK_POSITION'], $positionList) ) {
+                $positionList[] = $us['WORK_POSITION'];
+            }
+		}
+
+        $this->data['position_list'] = $positionList;
         $this->data['info'] = $orgModel->getLabInfo($labId);
         $this->data['dep_info'] = $orgModel->getDepInfo($this->data['info']['dep_id']);
         $this->data['branch_info'] = $orgModel->getBranchInfo($this->data['dep_info']['branch_id']);
         $this->data['org_info'] = $orgModel->getOrgInfo($this->data['branch_info']['organization_id']);
         $this->data['not_affiliation_users'] = $orgModel->getNotAffiliationUser();
+        $this->data['status_list'] = $userModel->getStatusList();
 
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
@@ -445,8 +455,14 @@ class ImportController extends Controller
 
         $userId = (int)$_POST['user_id'];
         $labId = (int)$_POST['lab_id'];
+        $status = (int)$_POST['status'];
+        $replacementUserId = (isset($_POST['replace']) && $_POST['replace'] !== '') ? (int)$_POST['replace'] : null;
 
-        $data = ['lab_id' => $labId];
+        $data = [
+            'lab_id' => $labId,
+            'status' => $status,
+            'replacement_user_id' => $replacementUserId
+        ];
 
         $orgModel->setAffiliationUserInfo($userId, $data);
 
@@ -918,7 +934,7 @@ class ImportController extends Controller
         $this->data['users'] = $userModel->getUsers();
         $this->data['departments'] = Department::getList();
 
-        $this->data['is_may_change'] = in_array(self::WORKING_WITH_DEPARTMENTS, $_SESSION['SESS_AUTH']['GROUPS']);
+        $this->data['is_may_change'] = in_array(self::WORKING_WITH_DEPARTMENTS, App::getUserGroupIds());
 
         $this->addCSS('/assets/plugins/jquery-multi-select/css/multi-select.css');
         $this->addJs('/assets/plugins/jquery-multi-select/js/jquery.multi-select.js');
@@ -1020,7 +1036,7 @@ class ImportController extends Controller
             $this->data['onboarding'] = $importModel->getOnboardingById($onboardingId);
         }
 
-        $this->data['is_may_change'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], self::USERS_EDIT_ONBOARDING);
+        $this->data['is_may_change'] = in_array(App::getUserId(), self::USERS_EDIT_ONBOARDING);
         $this->data['name'] = empty($this->data['onboarding']) ? 'Добавление нового раздела' : 'Обновление раздела';
 
         $this->addJs('/assets/plugins/tinymce/tinymce.min.js');
@@ -2702,7 +2718,7 @@ class ImportController extends Controller
 
         $userId = (int)$_POST['user_id'];
 
-        $orgModel->deleteAffiliationUser($userId);
+        echo $orgModel->deleteAffiliationUser($userId);
     }
 
 

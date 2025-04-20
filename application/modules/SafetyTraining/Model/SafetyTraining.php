@@ -14,7 +14,7 @@ class SafetyTraining extends Model
     public function addSafetyTrainingLog(array $data): int
     {
         $sqlData = $this->prepearTableData('safety_training_log', $data);
-        $sqlData['created_by'] = (int)$_SESSION['SESS_AUTH']['USER_ID'];
+        $sqlData['created_by'] = App::getUserId();
 
         $result = $this->DB->Insert('safety_training_log', $sqlData);
 
@@ -44,7 +44,7 @@ class SafetyTraining extends Model
             if (!empty($filter['search'])) {
                 // ФИО
                 if (isset($filter['search']['fio'])) {
-                    $where .= "CONCAT(last_name, ' ', name, ' ', second_name) LIKE '%{$filter['search']['fio']}%' AND ";
+                    $where .= "TRIM(CONCAT(last_name, ' ', name, ' ', second_name)) LIKE '%{$filter['search']['fio']}%' AND ";
                 }
 
                 // Вид инструктажа
@@ -77,7 +77,7 @@ class SafetyTraining extends Model
 
             switch ($filter['order']['by']) {
                 case 'fio':
-                    $order['by'] = "CONCAT(last_name, ' ', name, ' ', second_name)";
+                    $order['by'] = "LEFT(TRIM(CONCAT(last_name, ' ', name, ' ', second_name)), 1)";
                     break;
                 case 'training_type':
                     $order['by'] = 'training_type';
@@ -114,7 +114,7 @@ class SafetyTraining extends Model
 
         $data = $this->DB->Query(
             "SELECT *,
-                        CONCAT(last_name, ' ', name, ' ', second_name) AS fio 
+                        TRIM(CONCAT(last_name, ' ', name, ' ', second_name)) AS fio 
                     FROM safety_training_log 
                     WHERE {$where}
                     ORDER BY {$order['by']} {$order['dir']} {$limit}"

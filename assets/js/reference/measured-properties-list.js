@@ -22,9 +22,9 @@ $(function ($) {
                     orderable: false,
                     render: function (data, type, item) {
                         if ( item.is_actual == 1 ) {
-                            return `<span class="text-green" title="Актуально в ФСА"><i class="fa-regular fa-circle-check"></i></span>`
+                            return `<span class="text-green" title="Актуально"><i class="fa-regular fa-circle-check"></i></span>`
                         } else {
-                            return `<span class="text-red" title="Неактуально в ФСА"><i class="fa-regular fa-circle-xmark"></i></span>`
+                            return `<span class="text-red" title="Неактуально"><i class="fa-regular fa-circle-xmark"></i></span>`
                         }
                     }
                 },
@@ -121,7 +121,7 @@ $(function ($) {
 
 
         $('.sync-data').click(function () {
-            if ( confirm("Процесс синхронизации с ФСА может занять несколько минут. Не закрывайте вкладку пока не завершится. Продолжить?") ) {
+            if ( confirm("Процесс синхронизации может занять несколько минут. Не закрывайте вкладку пока не завершится. Продолжить?") ) {
                 let $button = $(this)
                 $button.find('i').addClass('spinner-animation')
                 $button.addClass('disabled')

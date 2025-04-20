@@ -260,7 +260,7 @@ class Permission extends Model
 
             // ФИО
             if (isset($filter['search']['FULL_NAME'])) {
-                $where .= "CONCAT(u.LAST_NAME, ' ', u.NAME, ' ', u.SECOND_NAME) LIKE '%{$filter['search']['FULL_NAME']}%' AND ";
+                $where .= "TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)) LIKE '%{$filter['search']['FULL_NAME']}%' AND ";
             }
             // Отдел
             if (isset($filter['search']['WORK_DEPARTMENT'])) {
@@ -294,7 +294,7 @@ class Permission extends Model
             }
             switch ($filter['order']['by']) {
                 case 'FULL_NAME':
-                    $order['by'] = "CASE WHEN FULL_NAME IS NULL OR FULL_NAME = '' THEN 1 ELSE 0 END, FULL_NAME";
+                    $order['by'] = "LEFT(FULL_NAME, 1)";
                     break;
                 case 'LOGIN':
                     $order['by'] = "CASE WHEN LOGIN IS NULL OR LOGIN = '' THEN 1 ELSE 0 END, LOGIN";
@@ -343,7 +343,7 @@ class Permission extends Model
                     u.LOGIN, 
                     u.EMAIL,
                     u.SECOND_NAME,
-                    CONCAT(u.LAST_NAME, ' ', u.NAME, ' ', u.SECOND_NAME) AS FULL_NAME,
+                    TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)) AS FULL_NAME,
                     CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(b_dep_data.UF_DEPARTMENT, 'i:', -1), ';', 1) AS SIGNED) AS DEPARTMENT_ID,
                     bui.UF_DEPARTMENT_NAME as WORK_DEPARTMENT_OLD,
                     COALESCE(

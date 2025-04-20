@@ -2048,7 +2048,7 @@ class Result extends Model
             'ugtp_id' => $ugtpId,
             'state' => "'start'",
             'date' => '"' . date('Y-m-d') . '"',
-            'user' => (int)$_SESSION['SESS_AUTH']['USER_ID']
+            'user' => App::getUserId()
         ];
 
         $result = $this->DB->Insert('ulab_start_trials', $data);
@@ -2092,7 +2092,7 @@ class Result extends Model
             'ugtp_id' => $ugtpId,
             'state' => "'pause'",
             'date' => '"' . date('Y-m-d') . '"',
-            'user' => (int)$_SESSION['SESS_AUTH']['USER_ID']
+            'user' => App::getUserId()
         ];
 
         $result = $this->DB->Insert('ulab_start_trials', $data);
@@ -2142,7 +2142,7 @@ class Result extends Model
             'ugtp_id' => $ugtpId,
             'state' => "'complete'",
             'date' => '"' . date('Y-m-d') . '"',
-            'user' => (int)$_SESSION['SESS_AUTH']['USER_ID']
+            'user' => App::getUserId()
         ];
 
         $result = $this->DB->Insert('ulab_start_trials', $data);
@@ -2169,7 +2169,7 @@ class Result extends Model
     {
         $protocolModel = new Protocol();
 
-        $currentUserId = (int)$_SESSION['SESS_AUTH']['USER_ID'];
+        $currentUserId = App::getUserId();
         $dateBegin = $data['DATE_BEGIN'] ?? '';
         $dateEnd = $data['DATE_END'] ?? '';
         $changeTrialsDate = !empty($data['CHANGE_TRIALS_DATE']) ? 1 : 0;
@@ -3257,7 +3257,7 @@ class Result extends Model
         $protocolModel = new Protocol;
 
         $protocol = $protocolModel->getProtocolById($protocolId);
-        $permissionInfo = $permissionModel->getUserPermission((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
 
         $data['VERIFY'] = serialize($data['VERIFY']);
         $data['NO_COMPLIANCE'] = $data['NO_COMPLIANCE'] ?? 0;
@@ -3323,7 +3323,7 @@ class Result extends Model
             'ASSIGNED' => $_SESSION['SESS_AUTH']['NAME'],
             'PROT_NUM' => $protocol['NUMBER'],
             'TZ_ID' => $protocol['ID_TZ'],
-            'USER_ID' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'USER_ID' => App::getUserId(),
             'TYPE' => $strType,
             'REQUEST' => $deal['TITLE'],
             'PROTOCOL_ID' => $protocolId
@@ -3469,7 +3469,7 @@ class Result extends Model
                         'temp' => $item[$roomId]['temp'],
                         'humidity' => $item[$roomId]['wet'],
                         'pressure' => $item[$roomId]['pressure'],
-                        'user_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+                        'user_id' => App::getUserId(),
                         'created_at' => date('Y-m-d H:i:s')
                     ]
                 );

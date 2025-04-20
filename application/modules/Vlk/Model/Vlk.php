@@ -254,7 +254,7 @@ class Vlk extends Model
      */
     public function addMethodComponent($data)
     {
-        $data['create_user_id'] = (int)$_SESSION['SESS_AUTH']['USER_ID'];
+        $data['create_user_id'] = App::getUserId();
 
         $sqlData = $this->prepearTableData('ulab_method_component', $data);
         return $this->DB->Insert('ulab_method_component', $sqlData);
@@ -264,7 +264,7 @@ class Vlk extends Model
     {
         $currentDatetime = date('Y-m-d h:i:s');
         $data = [
-            'delete_user_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'delete_user_id' => App::getUserId(),
             'delete_at' => "{$currentDatetime}",
             'is_deleted' => 1,
         ];
@@ -379,7 +379,7 @@ class Vlk extends Model
     public function addHistoryMeasuring($uvmId, $action)
     {
         $data = [
-            'user_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'user_id' => App::getUserId(),
             'vlk_measuring_id' => $uvmId,
             'date' => date('Y-m-d H:i:s'),
             'action' => $action,
@@ -423,7 +423,7 @@ class Vlk extends Model
     {
         $permissionModel = new Permission;
 
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
 
         $where = "";
         $limit = "";

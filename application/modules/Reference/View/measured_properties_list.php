@@ -9,7 +9,7 @@
                 </li>
             <?php endif; ?>
             <li class="nav-item me-2">
-                <button class="btn btn-outline-secondary sync-data" type="button" title="Синхронизация данных с ФСА">
+                <button class="btn btn-outline-secondary sync-data" type="button" title="Синхронизация данных">
                     <i class="fa-solid fa-arrows-rotate"></i>
                     Синхронизировать
                 </button>
@@ -30,7 +30,7 @@
             <thead>
             <tr class="table-light">
                 <th scope="col"></th>
-                <th scope="col">ИД ФСА</th>
+                <th scope="col">ИД</th>
                 <th scope="col">Название</th>
                 <th scope="col">Используется</th>
             </tr>

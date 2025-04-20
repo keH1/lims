@@ -6,11 +6,11 @@
                     <i class="fa-solid fa-arrow-left-long"></i>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link" href="/validation_card.php?ID=<?=$this->data['form']['id']?>" title="Сформировать отчет о валидации и верификации методики">
-                    <i class="fa-regular fa-file-word"></i>
-                </a>
-            </li>
+<!--             <li class="nav-item me-2">-->
+<!--                <a class="nav-link" href="/validation_card.php?ID=--><?//=$this->data['form']['id']?><!--" title="Сформировать отчет о валидации и верификации методики">-->
+<!--                    <i class="fa-regular fa-file-word"></i>-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
     </nav>
 </header>
@@ -51,7 +51,7 @@
             </div>
 
             <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Определяемая характеристика / показатель (ФСА)</label>
+                <label class="col-sm-2 col-form-label">Определяемая характеристика / показатель</label>
                 <div class="col-sm-8">
                     <select class="form-control select2" name="form[measured_properties_id]">
                         <option value="">Выбрать показатель</option>
@@ -78,11 +78,7 @@
                     </select>
                 </div>
                 <div class="col-sm-2">
-<!--                    <div class="col-sm-2">-->
-<!--                        <a class="btn btn-square btn-outline-secondary" href="/ulab/reference/MethodList/--><?//=$this->data['form']['id']?><!--" title="Журнал">-->
-<!--                            <i class="fa-solid fa-list icon-fix-2"></i>-->
-<!--                        </a>-->
-<!--                    </div>-->
+
                 </div>
             </div>
 
@@ -641,10 +637,10 @@
         </header>
         <div class="panel-body">
             <div class="form-group row uncertainty-block">
-                <label class="col-sm-2 col-form-label">
+                <label class="col-lg-12 col-xl-2 col-form-label">
                     Неопределенность
                 </label>
-                <div class="col-sm-8">
+                <div class="col-lg-11 col-xl-8">
                     <div class="input-group uncertainty-group">
                         <span class="input-group-text">от</span>
                         <input
@@ -696,7 +692,7 @@
                         >
                     </div>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-lg-1 col-xl-2">
                     <button
                             id="add_uncertainty"
                             type="button"
@@ -763,7 +759,7 @@
                 <a href="#" class="fa fa-chevron-up"></a>
             </span>
         </header>
-        <div class="panel-body">
+        <div class="panel-body overflow-auto">
             <table class="table table-striped">
                 <thead>
                 <tr class="table-light">
@@ -786,7 +782,7 @@
                 </thead>
                 <tbody>
                 <tr class="align-middle oborud-block">
-                    <td colspan="6"></td>
+                    <td colspan="7"></td>
                 </tr>
 
                 <tr class="align-middle oborud-block">
@@ -799,7 +795,7 @@
                         >
                     </td>
                     <td>
-                        <select class="form-control select2 oborud-select" name="oborud[0][id_oborud]" style="min-width: 100%">
+                        <select class="form-control select2 oborud-select" name="oborud[0][id_oborud]">
                             <option value="">Выбрать оборудование</option>
                             <option value="0">Нет оборудования</option>
                             <?php foreach ($this->data['oborud'] as $item): ?>

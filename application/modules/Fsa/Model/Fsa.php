@@ -126,7 +126,7 @@ class Fsa extends Model
             'xml_file'      => $this->quoteStr($file),
             'result'        => $this->quoteStr($this->DB->ForSql($result)),
             'datetime'      => $this->quoteStr(date('Y-m-d H:i:s')),
-            'user_id'       => $_SESSION['SESS_AUTH']['USER_ID'],
+            'user_id'       => App::getUserId(),
         ];
 
         $this->DB->Insert('history_fsa', $data);

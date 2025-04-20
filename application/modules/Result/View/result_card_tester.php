@@ -99,8 +99,8 @@
             <input class="deal-id" type="hidden" name="deal_id" value="<?= $this->data['deal_id'] ?>">
         <?php endif; ?>
 
-        <?php if (!empty($_SESSION['SESS_AUTH']['USER_ID'])): ?>
-            <input class="user-id" type="hidden" name="user_id" value="<?= $_SESSION['SESS_AUTH']['USER_ID'] ?>">
+        <?php if (!empty(App::getUserId())): ?>
+            <input class="user-id" type="hidden" name="user_id" value="<?= App::getUserId() ?>">
         <?php endif; ?>
 
         <?php if (!empty($this->data['selected_protocol_id'])): ?>
@@ -154,7 +154,7 @@
                                 <?php foreach ($this->data['material_gost'] as $umtr_id => $data): ?>
                                     <?php $i = 0; ?>
                                     <?php foreach ($data as $ugtp_id => $val): ?>
-                                        <tr class="<?= $val['table_green'] ?>" bgcolor="<?=$val['tester']['user_id'] == $_SESSION['SESS_AUTH']['USER_ID'] ? '#d2ddfa' : ''?>">
+                                        <tr class="<?= $val['table_green'] ?>" bgcolor="<?=$val['tester']['user_id'] == App::getUserId() ? '#d2ddfa' : ''?>">
                                             <td class="<?= $i === 0 ? 'probe-border-top' : '' ?>">
 													<?= $val['tester']['short_name'] ?: 'Не назначен' ?>
                                             </td>
@@ -253,7 +253,7 @@
                                                 <?php else: ?>
                                                     <div class="d-flex actual-value-wrapper mb-1">
                                                         <input <?= $val['actual_value_type'] ?>
-                                                                class="me-2 actual-value actual-value-<?= $ugtp_id ?> w-100 border p-2 <?= $val['is_save_info'] ? 'bg-white' : 'bg-light-secondary' ?> <?=$val['tester']['user_id'] == $_SESSION['SESS_AUTH']['USER_ID'] ? '' : 'disabled bg-light-secondary'?>"
+                                                                class="me-2 actual-value actual-value-<?= $ugtp_id ?> w-100 border p-2 <?= $val['is_save_info'] ? 'bg-white' : 'bg-light-secondary' ?> <?=$val['tester']['user_id'] == App::getUserId() ? '' : 'disabled bg-light-secondary'?>"
                                                                 name="actual_value[<?= $umtr_id ?>][<?= $ugtp_id ?>][]"
                                                                 value="<?= $val['out_range'] ? $val['out_range'] : $val['actual_value'][0] ?>"
                                                             <?= $val['is_save_info'] ? '' : 'readonly' ?>>

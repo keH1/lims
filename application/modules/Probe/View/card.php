@@ -59,7 +59,7 @@
                 </div>
 
                 <div class="col-4">
-                    <div>Дата поступления проб в ИЦ (дата доставки проб)</div>
+                    <div>Дата поступления проб (дата доставки проб)</div>
                     <div><strong><?= $this->data['act_date'] ?></strong></div>
                 </div>
             </div>

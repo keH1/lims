@@ -13,7 +13,7 @@ class Probe extends Model
     public function addHistory($probeId, $action)
     {
         $data = [
-            'user_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+            'user_id' => App::getUserId(),
             'probe_id' => $probeId,
             'date' => date('Y-m-d H:i:s'),
             'action' => $action,
@@ -492,7 +492,7 @@ class Probe extends Model
 			'ID_TZ' => $tzId,
 			'deliveryman' => $data['deliveryman'],
 			'act_type' => 1,
-			'creater' => $_SESSION['SESS_AUTH']['USER_ID']
+			'creater' => App::getUserId()
 		];
 
 		if ( !empty($data['act_id']) ) { // обновление

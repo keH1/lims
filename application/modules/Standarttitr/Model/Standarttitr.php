@@ -21,6 +21,10 @@ class Standarttitr extends Model
         $result['recordsTotal'] = count($this->getFromSQL('getList', $filtersForGetList));
         //всю допфильтрацию вставлять после $result['recordsTotal'] = ... до $result['recordsFiltered'] = ...
 
+        if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
+            $filter['order']['by'] = "LEFT(TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)), 1)";
+        }
+
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
         //Дальше допфильтрацию не вставлять
 
@@ -124,8 +128,7 @@ class Standarttitr extends Model
                                                        standart_titr_receive.storage_life_in_year *
                                                        $this->dayInYear DAY),
                                       '%d.%m.%Y'))     AS storage_full
-                 , CONCAT(IFNULL(b_user.last_name, '-'), ' ',
-                          IFNULL(b_user.name, ''))     AS global_assigned_name
+                 , TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) AS global_assigned_name 
                  , IF(DATE_ADD(standart_titr_receive.date_production,
                                INTERVAL standart_titr_receive.storage_life_in_year *
                                         $this->dayInYear DAY) < CURDATE(), 1,

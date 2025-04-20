@@ -99,8 +99,8 @@
             <input class="deal-id" type="hidden" name="deal_id" value="<?= $this->data['deal_id'] ?>">
         <?php endif; ?>
 
-        <?php if (!empty($_SESSION['SESS_AUTH']['USER_ID'])): ?>
-            <input class="user-id" type="hidden" name="user_id" value="<?= $_SESSION['SESS_AUTH']['USER_ID'] ?>">
+        <?php if (!empty(App::getUserId())): ?>
+            <input class="user-id" type="hidden" name="user_id" value="<?= App::getUserId() ?>">
         <?php endif; ?>
 
         <?php if (!empty($this->data['selected_protocol_id'])): ?>
@@ -108,7 +108,7 @@
                    value="<?= $this->data['selected_protocol_id'] ?: '' ?>">
         <?php endif; ?>
 
-		<?if ($_SESSION['SESS_AUTH']['USER_ID'] == 61) {
+		<?if (App::getUserId() == 61) {
 			echo '111';
 			echo '<pre>';
 			print_r($this->data['material_gost']);
@@ -151,7 +151,7 @@
                                 <?php foreach ($this->data['material_gost'] as $umtr_id => $data): ?>
                                     <?php $i = 0; ?>
                                     <?php foreach ($data as $ugtp_id => $val): ?>
-                                        <tr class="<?= $val['table_green'] ?>" bgcolor="<?=$val['tester']['user_id'] == $_SESSION['SESS_AUTH']['USER_ID'] ? '#d2ddfa' : ''?>">
+                                        <tr class="<?= $val['table_green'] ?>" bgcolor="<?=$val['tester']['user_id'] == App::getUserId() ? '#d2ddfa' : ''?>">
 											<td class="<?= $i === 0 ? 'probe-border-top' : '' ?>">
 												<?= $val['tester']['short_name'] ?: 'Не назначен' ?>
 											</td>

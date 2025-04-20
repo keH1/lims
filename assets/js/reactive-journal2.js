@@ -38,17 +38,6 @@ $(function ($) {
             {
                 data: 'name',
                 width: '40%',
-                // render: function (data, type, item) {
-                //     if (type === 'display' || type === 'filter') {
-                //         return `<a class="popup-with-form-edit"
-                //                href="#edit-entry-modal-form-first"
-                //                data-id="${item['id']}">
-                //                ${item['name']}
-                //             </a>`
-                //     }
-                //
-                //     return item.request
-                // }
             },
             {
                 data: 'aggregate_name',
@@ -92,12 +81,6 @@ $(function ($) {
                 target: 'tr'
             }
         },
-        // columnDefs: [{
-        // //     // className: 'control',
-        // //     /*'targets': */
-        //     'orderable': false,
-        //     'targets': [6,7],
-        // }],
         language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
         pageLength: 25,
@@ -116,11 +99,16 @@ $(function ($) {
     })
 
     reactiveJournal.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-            reactiveJournal
-                .column($(this).parent().index())
-                .search(this.value)
-                .draw()
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function () {
+                reactiveJournal
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 

@@ -108,7 +108,7 @@ class ScaleCalibration extends Model
             $dataAdd = $data[$name];
         }
 
-        return $this->insertToSQL($dataAdd, $name, $_SESSION['SESS_AUTH']['USER_ID']);
+        return $this->insertToSQL($dataAdd, $name, App::getUserId());
 
 
     }
@@ -258,7 +258,7 @@ class ScaleCalibration extends Model
 						'mass_weight' => "'{$weightMass['weightMass']}'",
 						'weight_result' => "'{$scaleResult}'",
 						'scale_error' => "'{$scaleError['scaleError']}'",
-						'global_assigned' => $userId,//$_SESSION['SESS_AUTH']['USER_ID'],
+						'global_assigned' => $userId,
 						'global_entry_date' => "'{$resultDate}'"
 					];
 

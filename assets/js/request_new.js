@@ -7,6 +7,7 @@ $(function ($) {
     window.labsList = window.labsList || []
 
     initForm()
+    initGovDeadlineValidation()
     
     /**
      * @desc Переключает тип заявки
@@ -40,6 +41,9 @@ $(function ($) {
             initializeExistingRows()
             initializeEditableCells()
             
+            // if (isNewRequest && $('.gov-works-table tbody tr.gov-work-row').length === 0) {
+            //     addGovWorkRow()
+            // }
         } else if (reqType === 'SALE') {
             $('.type-sale-block').not('#sale-materials-block').removeClass('visually-hidden')
             
@@ -104,6 +108,12 @@ $(function ($) {
                 return false
             }
         }
+
+        // Валидация для коммерческой заявки
+        if (reqType === 'SALE' && !validationSale()) {
+            e.preventDefault()
+            return false
+        }
     })
     
     /**
@@ -138,7 +148,7 @@ $(function ($) {
             const nameCell = row.find('[data-type="text"][data-required="true"]')
             if (nameCell.length && !nameCell.find('.cell-input').val()) {
                 hasEmptyRequired = true
-                emptyFieldName = 'Название работы'
+                emptyFieldName = 'Наименование работы'
                 emptyFieldRow = row
                 return false
             }
@@ -223,6 +233,62 @@ $(function ($) {
         
         return true
     }
+
+    /**
+     * @desc Валидация для коммерческих заявок
+     */
+    function validationSale() {
+        let isValidEmail = true
+        $body.find('input[name="EMAIL"], input[name="POST_MAIL"], input[name="addEmail[]"]').each(function () {
+            if (!validateEmailField($(this))) {
+                isValidEmail = false
+            }
+        })
+
+        if (!isValidEmail) {
+            scrollToFirstError()
+            return false
+        }
+
+        return true
+    }
+
+    function validateEmailField($emailField) {
+        clearError($emailField)
+
+        let emailVal = $emailField.val()?.toString().trim() || ''
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
+
+        if (emailVal && !emailPattern.test(emailVal)) {
+            showError($emailField, 'Введите корректный e-mail (например: user@example.com)')
+            return false
+        }
+
+        return true
+    }
+
+    function showError($element, message) {
+        const $errorContainer = $element.next('.invalid-feedback')
+
+        if (!$errorContainer.length) {
+            $element.after('<div class="invalid-feedback"></div>')
+        }
+
+        $element.addClass('is-invalid')
+        $element.next('.invalid-feedback').text(message).show()
+    }
+
+    function clearError($element) {
+        $element.removeClass('is-invalid')
+        const $errorContainer = $element.next('.invalid-feedback')
+        if ($errorContainer.length) {
+            $errorContainer.text('').hide()
+        }
+    }
+
+    $body.on('input change', 'input[name="EMAIL"], input[name="POST_MAIL"], input[name="addEmail[]"]', function() {
+        validateEmailField($(this))
+    })
 
     /**
      * @desc Получает список материалов
@@ -400,18 +466,70 @@ $(function ($) {
             $('#material-block').after(newMaterial)
         }
     })
-            
+
+    /**
+     * Обновляет список ответственных в дополнительных селектах.
+     * Исключает из них главного ответственного.
+     * Сохраняет текущий выбор, если он всё ещё доступен.
+     */
+    function updateAssignedSelects() {
+        const $main = $('#assigned0')
+        const optionsHTML = $main.html()
+        const mainVal = $main.val()
+
+        $('.added_assigned select.assigned-select').each(function() {
+            const $select = $(this)
+            const oldVal = $select.val()
+
+            let $temp = $('<select>' + optionsHTML + '</select>')
+
+            let $option = $temp.find('option[value=""][disabled]').filter(function() {
+                return $(this).text().trim() === 'Выберите главного ответственного'
+            });
+            if ($option.length) {
+                $option.text('Выберите ответственного')
+            } else {
+                $temp.find('option').each(function() {
+                    if ($(this).text().trim() === 'Выберите главного ответственного') {
+                        $(this).text('Выберите ответственного')
+                    }
+                });
+            }
+
+            if (mainVal) {
+                $temp.find('option[value="' + mainVal + '"]').remove()
+            }
+
+            $select.html($temp.html())
+
+            // Если ранее выбранное значение все еще присутствует в обновлённом списке, восстанавливаем его
+            if ($select.find('option[value="' + oldVal + '"]').length > 0) {
+                $select.val(oldVal)
+            }
+        });
+    }
+
+    $body.on('change', '#assigned0', function() {
+        updateAssignedSelects();
+        $('.add_assigned').prop('disabled', !$(this).val())
+    })
+
     $body.on('click', '.add_assigned', function() {
         const lastAssigned = $('.added_assigned').last()
         let index = 1
-        
+
         if (lastAssigned.length > 0) {
             const lastAssignedId = lastAssigned.find('select[id^="assigned"]').attr('id')
             index = parseInt(lastAssignedId.replace('assigned', '')) + 1
         }
-        
-        const options = $('#assigned0').html()
-        
+
+        const mainVal = $('#assigned0').val()
+        let optionsHTML = $('#assigned0').html()
+
+        let $temp = $('<select>' + optionsHTML + '</select>');
+        $temp.find('option[value="' + mainVal + '"]').remove();
+        optionsHTML = $temp.html();
+
         const newAssigned = `
             <div class="form-group row added_assigned">
                 <label class="col-sm-2 col-form-label">Ответственный</label>
@@ -421,7 +539,7 @@ $(function ($) {
                             required
                             name="ASSIGNED[]"
                     >
-                        ${options}
+                        ${optionsHTML}
                     </select>
                     <input name="id_assign[]" id="assigned${index}-hidden" class="assigned_id" type="hidden" value="">
                 </div>
@@ -431,7 +549,7 @@ $(function ($) {
                     </button>
                 </div>
             </div>`
-        
+
         if (lastAssigned.length > 0) {
             lastAssigned.after(newAssigned)
         } else {
@@ -1109,6 +1227,55 @@ $(function ($) {
                 
                 select.val(currentValue)
             }
+        })
+    }
+
+    /**
+     * Проверка даты в модальном окне при выборе сроков
+     */
+    function initGovDeadlineValidation() {
+        $body.on('change', '.modal-input[type="date"]', function() {
+            if (currentEditCell && 
+                currentEditCell.find('input[name^="gov_works[deadline]"]').length > 0) {
+                
+                const govDeadline = $('#gov_deadline').val()
+                if (!govDeadline) return
+                
+                const selectedDate = $(this).val()
+                
+                if (new Date(selectedDate) > new Date(govDeadline)) {
+                    $(this).val('')
+                    $(this).addClass('is-invalid')
+                    $(this).siblings('.invalid-feedback').text('Срок не может быть позже ' + 
+                        new Date(govDeadline).toLocaleDateString('ru-RU'))
+                        .show()
+                } else {
+                    $(this).removeClass('is-invalid')
+                    $(this).siblings('.invalid-feedback').hide()
+                }
+            }
+        })
+        
+        $body.on('change', '#gov_deadline', function() {
+            const govDeadline = $(this).val()
+            if (!govDeadline) return
+            
+            $('.gov-works-table tbody tr.gov-work-row').each(function() {
+                const deadlineCell = $(this).find('[data-type="date"]').filter(function() {
+                    return $(this).find('input[name^="gov_works[deadline]"]').length > 0
+                })
+                
+                if (deadlineCell.length) {
+                    const deadlineInput = deadlineCell.find('input')
+                    const deadlineValue = deadlineInput.val()
+                    
+                    if (deadlineValue && new Date(deadlineValue) > new Date(govDeadline)) {
+                        deadlineInput.val('')
+                        deadlineCell.find('.cell-display').text('')
+                        showErrorMessage('Срок работы №' + ($(this).index() + 1) + ' был сброшен, т.к. он позже общего срока', '#error-message')
+                    }
+                }
+            })
         })
     }
 })

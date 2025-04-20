@@ -27,25 +27,39 @@ class OborudController extends Controller
 
         $this->data['lab'] = $lab->getLabaRoom();
 
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-
         $r = rand();
         $this->addJs("/assets/js/oborud-list.js?v={$r}");
 
-        $this->view('list');
+        $this->view('list', '', 'template_journal');
+    }
+
+
+    /**
+     * @desc Журнал метролога
+     */
+    public function metrolog()
+    {
+        $this->data['title'] = 'Журнал метролога';
+
+        /** @var Lab $lab*/
+        $lab = $this->model('Lab');
+        /** @var Oborud $oborudModel*/
+        $oborudModel = $this->model('Oborud');
+
+        $organizationId = App::getOrganizationId();
+
+        $this->data['table_list'] = [
+            'journal_end' => 'Оборудование с истёкшим сроком проверки',
+            'journal_close_end' => 'Оборудование у которого истекает срок проверки',
+            'journal_need_check' => 'Требует проверки отделом метрологии',
+        ];
+
+        $this->data['lab'] = $lab->getList();
+        $this->data['statistics'] = $oborudModel->getStatisticsCounts($organizationId);
+
+        $this->addJs("/assets/js/oborud/metrolog-list.js?v=1");
+
+        $this->view('metrolog_list', '', 'template_journal');
     }
 
 
@@ -640,7 +654,7 @@ class OborudController extends Controller
         $this->data['title'] = $id ? 'Редактирование стандартного образца' : 'Создание стандартного образца';
 
         $sample = $oborudModel->getSample($id);
-        $permissionInfo = $permissionModel->getUserPermission($_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
 
         $this->data['lab_list'] = $labModel->getList();
         $this->data['room_list'] = $labModel->getRoomByLabId($sample['LAB_ID']);
@@ -1036,7 +1050,7 @@ class OborudController extends Controller
         $permissionModel = $this->model('Permission');
 
         $result = $oborudModel->getComponent((int)$_POST['id']);
-        $permissionInfo = $permissionModel->getUserPermission((int)$_SESSION['SESS_AUTH']['USER_ID']);
+        $permissionInfo = $permissionModel->getUserPermission(App::getUserId());
 
         // Проверка на доступ к изменению данных
         $result['is_may_change'] = in_array($permissionInfo['id'],  [SMK_PERMISSION, ADMIN_PERMISSION]); // HEAD_IC_PERMISSION

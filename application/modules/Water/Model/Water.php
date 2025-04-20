@@ -12,6 +12,10 @@ class Water extends Model
         $result['recordsTotal'] = count($this->getFromSQL('getList', $filtersForGetList));
         //всю допфильтрацию вставлять после $result['recordsTotal'] = ... до $result['recordsFiltered'] = ...
 
+        if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
+            $filter['order']['by'] = "LEFT(global_assigned_name, 1)";
+        }
+
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
         //Дальше допфильтрацию не вставлять
 
@@ -61,7 +65,7 @@ class Water extends Model
                      IF(($fullConclusionImplode) = 0,'Соответствует', 'Не cоответствует') AS conclusion
                 FROM (SELECT water.*,
                             $parametersConclusionImplode,
-                               b_user.LAST_NAME as global_assigned_name
+                               TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) as global_assigned_name
                         FROM water
                                  LEFT JOIN b_user ON  water.global_assigned =b_user.ID
                         LEFT JOIN water_norm ON water.id_water_norm=water_norm.id) water_full
@@ -118,7 +122,7 @@ class Water extends Model
                     'uep' => $uep,
                     'id_water_norm' => 1,
                     'date_check' => "'{$date}'",
-                    'global_assigned' => 111,//$_SESSION['SESS_AUTH']['USER_ID'],
+                    'global_assigned' => 111,
                     'global_entry_date' => "'{$resultDate}'",
                 ];
 

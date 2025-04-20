@@ -44,7 +44,7 @@ class ReactivestorageController extends Controller
 
         $this->addJS("/assets/plugins/DataTables/Responsive-2.4.0/dataTables.responsive.js");
 
-        $this->addJs("/assets/js/reactivestorage-journal.js");
+        $this->addJs("/assets/js/reactivestorage-journal.js?v=2");
 
         $this->view('list');
     }

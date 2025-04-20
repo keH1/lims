@@ -796,7 +796,7 @@ class Sample extends Model
                 $user['is_confirm'] = $this->getHasConfirmUser($dealId, $user['user_id']);
                 $state[] = $user['is_confirm'];
 
-                if ( $_SESSION['SESS_AUTH']['USER_ID'] == $user['user_id'] ) {
+                if ( App::getUserId() == $user['user_id'] ) {
                     $labsId['is_curr_user'] = 1;
                     $labsId['curr_user_status'] = $user['is_confirm'];
                 }
@@ -925,7 +925,7 @@ class Sample extends Model
         foreach ($labHead['user'] as $user) {
             $data = [
                 'tz_id' => $tzId,
-                'user_sent_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+                'user_sent_id' => App::getUserId(),
                 'date_submission' => date('Y-m-d H:i:s'),
                 'leader' => $user['user_id'],
             ];
@@ -953,7 +953,7 @@ class Sample extends Model
         foreach ($userList as $userId) {
             $data = [
                 'tz_id' => $tzId,
-                'user_sent_id' => $_SESSION['SESS_AUTH']['USER_ID'],
+                'user_sent_id' => App::getUserId(),
                 'date_submission' => date('Y-m-d H:i:s'),
                 'leader' => $userId,
             ];
