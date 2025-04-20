@@ -75,14 +75,3 @@
     <tbody>
     </tbody>
 </table>
-
-<div class='arrowLeft'>
-    <svg class="bi" width="40" height="40">
-        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-left"/>
-    </svg>
-</div>
-<div class='arrowRight'>
-    <svg class="bi" width="40" height="40">
-        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-right"/>
-    </svg>
-</div>

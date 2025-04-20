@@ -144,7 +144,8 @@ $(function () {
 
             window.onresize = reportWindowSize
 
-            initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
+            journalDataTable
+                .on('init.dt draw.dt', () => initTableScrollNavigation())
 
             $('#workarea-content').on('change', '.user_in_method', function () {
                 const userId = $(this).data('user_id')

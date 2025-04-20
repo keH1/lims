@@ -68,6 +68,9 @@ $(function ($) {
         fixedHeader: false,
     })
 
+    fridgejournal
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     fridgejournal.columns().every(function() {
         let timeout
         $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
@@ -120,6 +123,4 @@ $(function ($) {
 
         $('.conditioner').val(conditionerRoom[val])
     })
-
-    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 })

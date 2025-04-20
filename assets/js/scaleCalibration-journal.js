@@ -93,6 +93,9 @@ $(function ($) {
         fixedHeader: false,
     })
 
+    precursorJournal
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     precursorJournal.columns().every(function() {
         let timeout
         $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
@@ -106,8 +109,6 @@ $(function ($) {
             }.bind(this), 1000)
         })
     })
-
-    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 
     /** modal */
     $('.popup-first').magnificPopup({

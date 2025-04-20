@@ -165,17 +165,6 @@
     <button type="submit" class="btn btn-primary">Отправить</button>
 </form>
 
-<div class='arrowLeft'>
-    <svg class="bi" width="40" height="40">
-        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-left"/>
-    </svg>
-</div>
-<div class='arrowRight'>
-    <svg class="bi" width="40" height="40">
-        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-right"/>
-    </svg>
-</div>
-
 <!-- <form id="auto-fill" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative auto-fill-form"
 	  action="/ulab/scale/autoFill/" method="post">
 

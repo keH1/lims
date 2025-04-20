@@ -99,6 +99,9 @@ $(function ($) {
         pageLength: 25,
     });
 
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     journal.on('order.dt', function() {
         if (sortMode === 'maxDate') {
             sortMode = 'normal'
@@ -133,6 +136,4 @@ $(function ($) {
     $('.filter-btn-reset').on('click', function () {
         location.assign(location.pathname);
     });
-
-    initTableScrollNavigation(journal, 'div.dataTables_scrollBody')
 });

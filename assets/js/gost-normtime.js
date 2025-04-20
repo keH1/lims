@@ -219,6 +219,9 @@ $(function () {
         fixedHeader:   false,
     });
 
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     journalDataTable.columns().every(function() {
         let timeout
         $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
@@ -253,6 +256,4 @@ $(function () {
     $('.filter-btn-reset').on('click', function () {
         location.reload()
     })
-
-    initTableScrollNavigation($journal, 'div.dataTables_scrollBody')
 })
