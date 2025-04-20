@@ -182,47 +182,91 @@ function scrollToFirstError() {
     }
 }
 
-function initTableScrollNavigation($journal, containerSelector) {
-    let container = $(containerSelector),
-        scroll = $journal.width()
+/**
+ * Инициализирует стрелоки для горизонтальной прокрутке таблицы
+ *
+ * @param {string} [wrapperSelector=''] CSS‑селектор обёртки DataTables (обычно '.dataTables_scroll').
+ * Внутрь неё будут добавлены кнопки-стрелки.
+ * @param {string} [scrollContainerSelector='']  CSS‑селектор прокручиваемой области таблицы (обычно '.dataTables_scrollBody').
+ * @param {string} [buttonPrefix=''] Префикс для классов стрелок. Если нужно инициализировать
+ * сразу несколько таблиц на странице, можно установить уникальный префикс, чтобы не было пересечений.
+ *
+ * Как использовать:
+ *   По завершении инициализации DataTables (события 'init.dt' и 'draw.dt') просто вызвать:
+ *     journalDataTable.on('init.dt draw.dt', () => initTableScrollNavigation());
+ */
+function initTableScrollNavigation(wrapperSelector = '', scrollContainerSelector = '', buttonPrefix = '') {
+    const arrowRightClass = `${buttonPrefix}arrowRight`;
+    const arrowLeftClass = `${buttonPrefix}arrowLeft`;
 
-    $('.btnRightTable, .arrowRight').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
+    const $wrapper = $(wrapperSelector || '.dataTables_scroll');
+    const $scrollContainer = $(scrollContainerSelector || '.dataTables_scrollBody');
+    const BUTTONS_GAP = 60;
+    const scrollStep = $scrollContainer.width();
 
-    $('.btnLeftTable, .arrowLeft').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: -scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
+    let animationFrame = null;
 
-    $(document).scroll(function() {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height()
+    if (!$wrapper.find(`.${arrowRightClass}`).length) {
+        $wrapper.append(`
+            <div class="${arrowLeftClass} arrow position-absolute right-0">
+                <svg class="bi" width="40" height="40">
+                    <use xlink:href="/ulab/assets/images/icons.svg#arrow-left"/>
+                </svg>
+            </div>
+            <div class="${arrowRightClass} arrow position-absolute right-0">
+                <svg class="bi" width="40" height="40">
+                    <use xlink:href="/ulab/assets/images/icons.svg#arrow-right"/>
+                </svg>
+            </div>
+        `);
+    }
 
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
-            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
-        }
-    })
+    const $arrowRight = $wrapper.find(`.${arrowRightClass}`);
+    const $arrowLeft  = $wrapper.find(`.${arrowLeftClass}`);
+
+    const updatePositions = () => {
+        const wrapperTop      = $wrapper.offset().top;
+        const containerTop    = $scrollContainer.offset().top;
+        const containerHeight = $scrollContainer.outerHeight();
+
+        const minTopOffset = (containerTop - wrapperTop) + 10;
+
+        const buttonHeight  = $arrowRight.outerHeight();
+        const maxTranslate  = containerHeight - buttonHeight * 2 - BUTTONS_GAP;
+
+        const scrollTop = $(window).scrollTop();
+
+        let translateY = scrollTop - containerTop + minTopOffset;
+        translateY = Math.max(minTopOffset, Math.min(translateY, minTopOffset + maxTranslate));
+
+        const visibility = maxTranslate > 0 ? 'visible' : 'hidden';
+
+        $arrowRight.css({ top: `${translateY}px`, visibility });
+        $arrowLeft.css({
+            top: `${translateY + BUTTONS_GAP}px`,
+            visibility
+        });
+    };
+
+    updatePositions();
+
+    const requestUpdate = () => {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(updatePositions);
+    };
+
+    $(window).on('scroll resize', requestUpdate);
+    new ResizeObserver(requestUpdate).observe($scrollContainer[0]);
+
+    $arrowRight.hover(
+        () => $scrollContainer.stop().animate({ scrollLeft: `+=${scrollStep}` }, 4000, 'linear'),
+        () => $scrollContainer.stop()
+    );
+
+    $arrowLeft.hover(
+        () => $scrollContainer.stop().animate({ scrollLeft: `-=${scrollStep}` }, 4000, 'linear'),
+        () => $scrollContainer.stop()
+    );
 }
 
 

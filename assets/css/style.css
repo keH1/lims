@@ -691,8 +691,13 @@ div.dt-buttons {
 }
 
 .arrowRight,
-.arrowLeft {
+.arrowLeft,
+.arrow {
     stroke: #cccccc;
+}
+
+.right-0 {
+    right: 0!important;
 }
 
 .trial-results-wrapper .arrowRight {
