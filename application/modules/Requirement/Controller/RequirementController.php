@@ -414,7 +414,7 @@ class RequirementController extends Controller
         $this->data['check_state'] = $requirementModel->getStateConfirm($dealId);
 
         if ( !isset($this->data['check_state']) || $this->data['check_state'] == CHECK_TZ_NOT_SENT ) {
-            $this->showWarningMessage("Техническое задание еще не передано для проверки руководителям лабораторий");
+//            $this->showWarningMessage("Техническое задание еще не передано для проверки руководителям лабораторий");
         } elseif ( $this->data['check_state'] == CHECK_TZ_NOT_APPROVE ) {
             $desc = $requirementModel->getDescConfirmTzNotApprove($tzId);
             $msg = '';
