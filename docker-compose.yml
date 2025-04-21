@@ -1,7 +1,7 @@
 ---
 services:
   cadvisor:
-    image: dockerhub.mos.ru/cadvisor:v0.33.0
+    image: cadvisor:v0.33.0
     container_name: cadvisor
     ports:
       - '${EXPOSE_CADVISOR_PORT}:8080'
@@ -60,7 +60,7 @@ services:
 
   memcached:
     container_name: memcached
-    image: dockerhub.mos.ru/memcached:1.6-alpine     
+    image: memcached:1.6-alpine     
     ports:
       - '${INTERFACE}:${EXPOSE_MEMCACHED_PORT}:11211'
     environment:
@@ -70,7 +70,7 @@ services:
     restart: unless-stopped
 
   promtail:
-    image: dockerhub.mos.ru/grafana/promtail:main-d5c04e3
+    image: grafana/promtail:main-d5c04e3
     container_name: promtail
     user: "nobody"
     volumes:
