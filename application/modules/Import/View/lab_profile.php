@@ -175,7 +175,7 @@
             <div class="form-group row mb-0 align-items-center">
                 <label class="col-sm-4 col-form-label">Нормативная документация</label>
                 <div class="col">
-                    <a href="/ulab/techCondition/list/"  title="Журнал НД, Импорт и экспорт" data-bs-placement="left" data-bs-toggle="tooltip">
+                    <a href="/ulab/normDocGost/list/"  title="Журнал НД" data-bs-placement="left" data-bs-toggle="tooltip">
                         Редактировать
                     </a>
                 </div>
@@ -203,18 +203,6 @@
                 </div>
             </div>
         </li>
-
-        <!--                <li class="list-group-item ">-->
-        <!--                    <div class="form-group row mb-0 align-items-center">-->
-        <!--                        <label class="col-sm-4 col-form-label">Конфигурационные справочники</label>-->
-        <!--                        <div class="col">-->
-        <!--                            <div class="btn btn-gradient disabled mt-0 w-100 rounded" title='Данный раздел находится в разработке.' data-bs-placement="left" data-bs-toggle="tooltip">-->
-        <!--                                Недоступно-->
-        <!--                            </div>-->
-        <!--                        </div>-->
-        <!--                    </div>-->
-        <!--                </li>-->
-
     </div>
 </div>
 
