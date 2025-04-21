@@ -675,7 +675,7 @@ class RequestController extends Controller
         }
         
         if ($config['blocks']['files']) {
-            $this->prepareFilesData($request, $protocolData, $requestData, $dealId, $tzId, $dogovorData, $actVr, $proposalData);
+            $this->prepareFilesData($request, $protocolData, $requestData, $dealId, $tzId, $dogovorData, $actVr, $proposalData, $invoiceData);
         }
 
         $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
@@ -1859,16 +1859,17 @@ class RequestController extends Controller
         $this->data['act_complete']['attach'] = $actVr['ACTUAL_VER']?? '';
         $this->data['act_complete']['date'] = !empty($actVr['DATE'])? StringHelper::dateRu($actVr['DATE']) : '--';
         $this->data['act_complete']['date_send'] = !empty($actVr['SEND_DATE'])? StringHelper::dateRu($actVr['SEND_DATE']) : 'Не отправлен';
-        $this->data['act_complete']['is_disable_form'] = false && !in_array($_SESSION['SESS_AUTH']['USER_ID'], [61, 88, 1, 25]) || 0;
+        $this->data['act_complete']['is_disable_form'] = false || 0;
         $this->data['act_complete']['is_disable_mail'] = empty($actVr) || 0;
         //TODO: пока ид организации задано жестко 1. потом переделать на получение к какой организации принадлежит заявка
         $this->data['act_complete']['assigned_users'] = $organizationModel->getAllLeaders(1);
     }
-    
+
+
     /**
      * Подготовка данных списка версий файлов
      */
-    private function prepareFilesData($request, $protocolData, $requestData, $dealId, $tzId, $dogovorData, $actVr, $proposalData)
+    private function prepareFilesData($request, $protocolData, $requestData, $dealId, $tzId, $dogovorData, $actVr, $proposalData, $invoiceData)
     {
         //// Список версий
         // Протокол
