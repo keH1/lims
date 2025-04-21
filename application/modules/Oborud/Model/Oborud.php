@@ -272,20 +272,26 @@ class Oborud extends Model {
 
             $row['IDENT'] = $ident;
 
-            if ( !empty($row['date_start']) ) {
+            if ( !empty($row['date_start']) && $row['date_start'] !== '0000-00-00' ) {
                 $row['date_start'] = date('d.m.Y', strtotime($row['date_start']));
             } else {
                 $row['date_start'] = '';
             }
 
-            if ( !empty($row['date_end']) ) {
+            if ( !empty($row['date_end']) && $row['date_end'] !== '0000-00-00' ) {
                 $row['date_end'] = date('d.m.Y', strtotime($row['date_end']));
             } else {
                 $row['date_end'] = '';
             }
 
             $row['certificate'] = '';
-            $row['god_vvoda_expluatation'] = date("d.m.Y", strtotime($row['god_vvoda_expluatation']));
+
+            if ( !empty($row['god_vvoda_expluatation']) && $row['god_vvoda_expluatation'] !== '0000-00-00' ) {
+                $row['god_vvoda_expluatation'] = date("d.m.Y", strtotime($row['god_vvoda_expluatation']));
+            } else {
+                $row['god_vvoda_expluatation'] = '';
+            }
+
 
             $room = $labModel->getRoomById($row['roomnumber']);
             $row['room'] = $room['name'];
