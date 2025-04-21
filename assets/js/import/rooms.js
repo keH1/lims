@@ -191,6 +191,7 @@ $(function ($) {
 
                     if (roomModalForm.find('#roomId').val() != '')
                     {
+                        roomModalForm.find('#title-type').text('Добавить помещение');
                         roomModalForm.find('#roomId').val('');
                         roomModalForm.find('#number').val('');
                         roomModalForm.find('#name').val('');

@@ -203,7 +203,7 @@
         <input id="conditionsId" type="hidden" value="<?= $this->data['id'] ?>" name="id">
 
         <div class="title mb-3 h-2">
-            Данные условий
+            Добавление данных об условиях
         </div>
 
         <div class="line-dashed-small"></div>
