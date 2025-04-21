@@ -187,7 +187,7 @@ class DocumentGenerator extends Model
 
         $res_tz = $this->DB->Query("SELECT * FROM `TZ_DOC` WHERE `TZ_ID`=" . $TZ_ID)->Fetch();
 
-        $dogovor_num = $orderModel->getOrderByDealId($dealID);
+        $dogovor_num = $orderModel->getOrderByDealId($dealID, true);
 
         $actProbe = $requirementModel->getActBase($dealID);
 
