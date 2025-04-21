@@ -107,7 +107,7 @@ $(function ($) {
         },
         {
             data: 'ASSIGNED',
-            orderable: false,
+            orderable: true,
             render: $.fn.dataTable.render.ellipsis(40, true)
         },
         {
@@ -403,7 +403,7 @@ $(function ($) {
         },
         {
             data: 'ASSIGNED',
-            orderable: false,
+            orderable: true,
             render: $.fn.dataTable.render.ellipsis(40, true)
         },
         {
