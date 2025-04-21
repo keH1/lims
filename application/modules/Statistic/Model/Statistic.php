@@ -1092,7 +1092,7 @@ class Statistic extends Model
                 $result['formatted'][1] = $dataEntity['chart']['bar']['formatted_2'] ?? 'Данные 2';
 
                 $result['double'] = true;
-            }else {
+            } else {
                 $result['double'] = false;
             }
         }
@@ -1100,32 +1100,24 @@ class Statistic extends Model
         return $result;
     }
 
+
     /**
      * @param $entityKey
-     * @param $columns
      * @return array
      */
-    public function getColumnsEntity($entityKey, $columns)
+    public function getColumnsEntity($entityKey)
     {
         if ( !array_key_exists($entityKey, $this->entities) ) {
             return [];
         }
 
-        $dataEntity = $this->entities[$entityKey];
+        return $this->entities[$entityKey]['columns'];
+    }
 
-        if (empty($columns)) {
-            return $dataEntity['columns'];
-        }
 
-        $resultColumns = [];
-
-        foreach ($columns as $columnKey) {
-            if ( array_key_exists($columnKey, $dataEntity['columns']) ) {
-                $resultColumns[$columnKey] = $dataEntity['columns'][$columnKey];
-            }
-        }
-
-        return $resultColumns;
+    public function getAllColumnsEntity()
+    {
+        return $this->entities;
     }
 
 
@@ -1144,8 +1136,6 @@ class Statistic extends Model
         ];
 
         $entityData = $this->entities[$filter['entity']['key']];
-
-
 
         if (!empty($filter)) {
             // из $filter собирать строку $where тут
@@ -1205,15 +1195,15 @@ class Statistic extends Model
         $groups = [];
         $joins = [];
 
-        foreach ($filter['entity']['column'] as $column) {
-            $fields[] = $entityData['columns'][$column]['select'];
+        foreach ($entityData['columns'] as $key => $column) {
+            $fields[] = $entityData['columns'][$key]['select'];
 
-            if ( !empty($entityData['columns'][$column]['where']) ) {
-                $where .= "{$entityData['columns'][$column]['where']} AND ";
+            if ( !empty($entityData['columns'][$key]['where']) ) {
+                $where .= "{$entityData['columns'][$key]['where']} AND ";
             }
 
-            if ( isset($entityData['columns'][$column]['group']) && $entityData['columns'][$column]['group'] !== false ) {
-                $groups[] = $entityData['columns'][$column]['group'];
+            if ( isset($entityData['columns'][$key]['group']) && $entityData['columns'][$key]['group'] !== false ) {
+                $groups[] = $entityData['columns'][$key]['group'];
             }
 
             if ( isset($entityData['dependency']) ) {
@@ -1222,8 +1212,8 @@ class Statistic extends Model
                 }
             }
 
-            if ( isset($entityData['columns'][$column]['dependency']) ) {
-                foreach ($entityData['columns'][$column]['dependency'] as $table => $joinStr) {
+            if ( isset($entityData['columns'][$key]['dependency']) ) {
+                foreach ($entityData['columns'][$key]['dependency'] as $table => $joinStr) {
                     $joins[$table] = $joinStr['join'];
                 }
             }
@@ -1232,6 +1222,10 @@ class Statistic extends Model
         $join = implode(' ', $joins);
         $where .= "1 ";
 
+        if ( empty($select) ) {
+            $select = '*';
+        }
+
         if ( !empty($groups) ) {
             $strGroup = implode(', ', $groups);
             $groupBy = "group by {$strGroup}";
@@ -1239,29 +1233,30 @@ class Statistic extends Model
 
         $data = $this->DB->Query(
             "SELECT 
-                        {$select}
-                    FROM {$from}
-                    {$join}
-                    WHERE {$where}
-                    {$groupBy}
-                    ORDER BY  {$order['by']} {$order['dir']} {$limit}"
+                {$select}
+            FROM {$from}
+            {$join}
+            WHERE {$where}
+            {$groupBy}
+            ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
             "SELECT 
-                        {$select}
-                    FROM {$from}
-                    {$join} 
-                    WHERE 1
-                    {$groupBy}"
+                {$select}
+            FROM {$from}
+            {$join} 
+            WHERE 1
+            {$groupBy}"
         )->SelectedRowsCount();
+
         $dataFiltered = $this->DB->Query(
             "SELECT 
-                        {$select}
-                    FROM {$from} 
-                    {$join}
-                    WHERE {$where}
-                    {$groupBy}"
+                {$select}
+            FROM {$from} 
+            {$join}
+            WHERE {$where}
+            {$groupBy}"
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
