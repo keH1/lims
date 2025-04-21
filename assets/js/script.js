@@ -394,9 +394,8 @@ $(function ($) {
 
     let $body = $("body")
     $body.on("change keyup input click", "input.number-only", function () {
-        if (this.value.match(/[^0-9]/g)) {
-            this.value = this.value.replace(/[^0-9]/g, '')
-        }
+        let cleanedValue = this.value.replace(/[^0-9]/g, '');
+        this.value = cleanedValue;
     })
 
 
