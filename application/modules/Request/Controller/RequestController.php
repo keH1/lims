@@ -1612,6 +1612,14 @@ class RequestController extends Controller
     private function prepareProposalData($requirement, $proposalData, $requestData, $tzId, $dealId, $isExistTz, $actVr)
     {
         // Коммерческое предложение
+        $this->data['proposal']['why_disable_mail'] = '';
+        if ( empty($proposalData) ) {
+            $this->data['proposal']['why_disable_mail'] .= 'Не сформировано коммерческое предложение. ';
+        }
+        if ( !empty($actVr) ) {
+            $this->data['proposal']['why_disable_mail'] .= 'Создан акт выполненных работ.';
+        }
+
         $this->data['proposal']['link'] = "/ulab/generator/CommercialOffer/{$dealId}";
         $this->data['proposal']['check'] = !empty($proposalData['ID']);
         $this->data['proposal']['number'] = $proposalData['ID'] ?? 'Не сформировано';

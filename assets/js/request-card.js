@@ -1,6 +1,8 @@
 $(function ($) {
     const $body = $('body')
 
+    $('[data-bs-toggle="popover"]').popover()
+
     $('.popup-with-form').magnificPopup({
         type: 'inline',
         closeBtnInside:true,

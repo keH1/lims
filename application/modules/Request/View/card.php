@@ -173,11 +173,15 @@
                 </td>
                 <td>
                     <?php if ($this->data['proposal']['is_disable_mail']): ?>
-                        <a class="no-decoration me-1 disabled" href="#" title="Отправить клиенту">
+<!--                    <div title="Отправить клиенту"-->
+<!--                         data-bs-container="body" data-bs-trigger="hover" data-bs-toggle="popover" data-bs-placement="top"-->
+<!--                         data-bs-content="--><?php //=$this->data['proposal']['why_disable_mail']?><!--">-->
+                        <a class="no-decoration me-1 disabled" href="#">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#mail"/>
                             </svg>
                         </a>
+<!--                    </div>-->
                     <?php else: ?>
                         <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$this->data['deal_id']?>" data-type="2" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$this->data['proposal']['attach']?>"
                            href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['request']['ID']}&TYPE=2&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}&ATTACH={$this->data['proposal']['attach']}" : "#email-check"?>"
