@@ -813,6 +813,7 @@ class Request extends Model
 
         $having = "";
         $where = "";
+        $whereType = '';
         $limit = "";
         $order = [
             'by' => 'b.ID',
@@ -862,9 +863,9 @@ class Request extends Model
                 }
                 // Тип заявки
                 if ( isset($filter['search']['TYPE_ID']) ) {
-                    $where .= "b.TYPE_ID = '9' AND ";
+                    $whereType = "b.TYPE_ID = '9' AND ";
                 } else {
-                    $where .= "b.TYPE_ID <> '9' AND ";
+                    $whereType = "b.TYPE_ID <> '9' AND ";
                 }
                 // Счет
                 if ( isset($filter['search']['ACCOUNT']) ) {
@@ -1081,7 +1082,7 @@ class Request extends Model
                     LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
                     left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
                     left join MATERIALS as mater on umtr.material_id = mater.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$whereType} {$where}
                     GROUP BY b.ID
                     HAVING {$having} 
                     ORDER BY {$order['by']} {$order['dir']} {$limit}"
@@ -1098,7 +1099,7 @@ class Request extends Model
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
+                    WHERE {$whereType} b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
@@ -1117,7 +1118,8 @@ class Request extends Model
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
                     left join MATERIALS as mater on umtr.material_id = mater.ID
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
+                    LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$whereType} {$where}
                     GROUP BY b.ID
                     HAVING {$having} "
         )->SelectedRowsCount();
