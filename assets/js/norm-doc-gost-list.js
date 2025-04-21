@@ -72,6 +72,9 @@ $(function () {
         buttons: dataTablesSettings.buttonPrint,
     });
 
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     journalDataTable.columns().every(function () {
         let timeout
         $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {

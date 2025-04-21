@@ -88,7 +88,3 @@
     <tbody>
     </tbody>
 </table>
-
-<div class="line-dashed"></div>
-
-<!--<a href="/probe_test.php">Вернуться на старый дизайн</a>-->
