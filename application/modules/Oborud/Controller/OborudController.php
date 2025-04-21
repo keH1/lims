@@ -49,9 +49,9 @@ class OborudController extends Controller
         $organizationId = App::getOrganizationId();
 
         $this->data['table_list'] = [
-            'journal_end' => 'Оборудование с истёкшим сроком проверки',
-            'journal_close_end' => 'Оборудование у которого истекает срок проверки',
-            'journal_need_check' => 'Требует проверки отделом метрологии',
+            'journal_end' => 'Оборудование с истёкшим сроком поверки',
+            'journal_close_end' => 'Оборудование у которого истекает срок поверки',
+            'journal_need_check' => 'Требует поверки отделом метрологии',
         ];
 
         $this->data['lab'] = $lab->getList();

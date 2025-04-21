@@ -99,7 +99,7 @@
                     <div class="stage rounded bg-red"></div>
                 </td>
                 <td>
-                    Истёк срок проверки
+                    Истёк срок поверки
                 </td>
                 <td class="text-center">
                     <?=$this->data['statistics']['end_verification']?>

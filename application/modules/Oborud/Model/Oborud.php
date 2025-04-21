@@ -2058,9 +2058,9 @@ class Oborud extends Model {
     {
         return $this->DB->Query(
             "select 
-                count(o.ID) as all_oborud,
-                count(CASE WHEN o.CHECKED = 0 THEN 1 end) as need_check,
-                count(CASE WHEN o.LONG_STORAGE = 1 THEN 1 end) as long_storage,
+                count(distinct o.ID) as all_oborud,
+                count(CASE WHEN o.CHECKED = 0 AND b.`LONG_STORAGE` = 0 AND b.`is_decommissioned` = 0 THEN 1 end) as need_check,
+                count(CASE WHEN o.LONG_STORAGE <> 0 AND b.`is_decommissioned` = 0 THEN 1 end) as long_storage,
                 count(CASE WHEN o.NO_METR_CONTROL <> 1 and c.is_actual = 1 and o.LONG_STORAGE = 0 and o.is_decommissioned = 0 and c.date_end < NOW() THEN 1 end) as end_verification
             from ba_oborud as o
             left join ba_oborud_certificate as c on c.oborud_id = o.ID and c.is_actual = 1
