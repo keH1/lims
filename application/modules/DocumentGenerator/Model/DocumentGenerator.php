@@ -2618,7 +2618,7 @@ class DocumentGenerator extends Model
             mkdir($newDirectory, 0777, true);
         }
 
-        file_put_contents($newDirectory.'/'.$info['curDate'].".docx", $file);
+        copy($file, $newDirectory.'/'.$info['curDate'].".docx");
 
         try {
             $fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
