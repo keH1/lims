@@ -361,7 +361,7 @@
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-danger btn-sm remove-gov-work">
+                                                <button type="button" class="btn btn-danger btn-sm btn-square-sm remove-gov-work">
                                                     <i class="fa-solid fa-xmark"></i>
                                                 </button>
                                             </td>
