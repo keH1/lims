@@ -51,7 +51,7 @@ class OborudController extends Controller
         $this->data['table_list'] = [
             'journal_end' => 'Оборудование с истёкшим сроком поверки',
             'journal_close_end' => 'Оборудование у которого истекает срок поверки',
-            'journal_need_check' => 'Требует поверки отделом метрологии',
+            'journal_need_check' => 'Требует проверки отделом метрологии',
         ];
 
         $this->data['lab'] = $lab->getList();
