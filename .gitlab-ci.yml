@@ -1,3 +1,9 @@
+spec:
+  inputs:
+    DEPLOY_BITRIX:
+      type: string
+      default: 'false'
+
 include:
   - project: 'devops/gitlab/template-cicd'
     ref: '${CICDREF}'
