@@ -37,12 +37,10 @@ $(function ($) {
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[3, "desc"]],
-        colReorder: true,
         dom: 'frt<"bottom"lip>',
-        fixedHeader: true,
-        scrollX: true
     })
-
+    
+    // window.adjustmentColumnsTable(journalDataTable)
     window.setupDataTableColumnSearch(journalDataTable);
     window.setupJournalFilters(journalDataTable);
 })
