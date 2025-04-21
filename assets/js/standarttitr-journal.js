@@ -1,9 +1,10 @@
 $(function ($) {
 
-    let $body = $("body")
+    let $body = $("body"),
+        $journal = $('#recipe_journal')
 
     /*recipe journal*/
-    let recipeJournal = $('#recipe_journal').DataTable({
+    let recipeJournal = $journal.DataTable({
         processing: true,
         serverSide: true,
         ajax: {
@@ -83,6 +84,9 @@ $(function ($) {
             }
         }
     })
+
+    recipeJournal
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
 
     recipeJournal.columns().every(function() {
         let timeout

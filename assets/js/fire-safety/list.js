@@ -99,6 +99,9 @@ $(function ($) {
         pageLength: 25,
     });
 
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     journal.on('order.dt', function() {
         if (sortMode === 'maxDate') {
             sortMode = 'normal'

@@ -13,8 +13,10 @@ const conditionerRoom = {
 }
 
 $(function ($) {
+    let $journal = $('#fridge_journal');
+
     /*recipe journal*/
-    let fridgejournal = $('#fridge_journal').DataTable({
+    let fridgejournal = $journal.DataTable({
         processing: true,
         serverSide: true,
         bAutoWidth: false,
@@ -65,6 +67,9 @@ $(function ($) {
         scrollX: true,
         fixedHeader: false,
     })
+
+    fridgejournal
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
 
     fridgejournal.columns().every(function() {
         let timeout

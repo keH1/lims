@@ -216,8 +216,11 @@ $(function () {
         buttons: dataTablesSettings.buttonPrint,
         bSortCellsTop: true,
         scrollX:       true,
-        fixedHeader:   true,
+        fixedHeader:   false,
     });
+
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
 
     journalDataTable.columns().every(function() {
         let timeout

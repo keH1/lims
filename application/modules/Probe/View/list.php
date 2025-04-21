@@ -75,5 +75,3 @@
     <tbody>
     </tbody>
 </table>
-
-<div class="line-dashed"></div>

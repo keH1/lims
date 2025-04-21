@@ -67,6 +67,9 @@ $(function () {
         scrollX:       true,
     });
 
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     journalDataTable.columns().every(function() {
         let timeout
         $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
@@ -105,7 +108,7 @@ $(function () {
     $body.on('click', '.control-samples-history', function () {
         const id = $(this).data('id');
         const $form = $('#history-modal-form');
-console.log('click');
+
         $form.find('.title').empty();
         $form.find('.history-info').empty();
 
@@ -115,7 +118,6 @@ console.log('click');
             dataType: "json",
             method: "POST",
             success: function (data) {
-                console.log('data', data);
                 $form.find('.title').text(`История образца контроля ${data.info.NUMBER}`);
 
                 let html = ``;

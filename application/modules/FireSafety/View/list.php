@@ -72,7 +72,6 @@
         </tbody>
     </table>
 
-
     <form id="fireSafetyModalForm" class="bg-light mfp-hide col-md-6 m-auto p-3 position-relative"
           action="/ulab/fireSafety/insert/" method="post">
 

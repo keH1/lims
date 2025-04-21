@@ -285,6 +285,9 @@ $(function ($) {
             },
         });
 
+        journalDataTable
+            .on('init.dt draw.dt', () => initTableScrollNavigation('#journal_users_wrapper', '#journal_users tbody'))
+
         let searchTimeouts = {};
         journalDataTable.columns().every(function () {
             let columnIndex = this.index();
