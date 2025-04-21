@@ -2056,16 +2056,40 @@ class Oborud extends Model {
      */
     public function getStatisticsCounts(int $organizationId)
     {
-        return $this->DB->Query(
+        $sql1 = $this->DB->Query(
             "select 
-                count(distinct o.ID) as all_oborud,
-                count(CASE WHEN o.CHECKED = 0 AND o.`LONG_STORAGE` = 0 AND o.`is_decommissioned` = 0 THEN 1 end) as need_check,
-                count(CASE WHEN o.LONG_STORAGE <> 0 AND o.`is_decommissioned` = 0 THEN 1 end) as long_storage,
+                count(distinct o.ID) as all_oborud
+            from ba_oborud as o
+            where o.organization_id = {$organizationId}"
+        )->Fetch();
+
+        $sql2 = $this->DB->Query(
+            "select 
+                count(CASE WHEN o.CHECKED = 0 AND o.`LONG_STORAGE` = 0 AND o.`is_decommissioned` = 0 THEN 1 end) as need_check
+            from ba_oborud as o
+            where o.organization_id = {$organizationId}"
+        )->Fetch();
+
+        $sql3 = $this->DB->Query(
+            "select 
+                count(CASE WHEN o.LONG_STORAGE <> 0 AND o.`is_decommissioned` = 0 THEN 1 end) as long_storage
+            from ba_oborud as o
+            where o.organization_id = {$organizationId}"
+        )->Fetch();
+
+        $sql4 = $this->DB->Query(
+            "select 
                 count(CASE WHEN o.NO_METR_CONTROL <> 1 and c.is_actual = 1 and o.LONG_STORAGE = 0 and o.is_decommissioned = 0 and c.date_end < NOW() THEN 1 end) as end_verification
             from ba_oborud as o
             left join ba_oborud_certificate as c on c.oborud_id = o.ID and c.is_actual = 1
-            where o.organization_id = {$organizationId}
-            "
+            where o.organization_id = {$organizationId}"
         )->Fetch();
+
+        return [
+            'all_oborud' => $sql1['all_oborud'],
+            'need_check' => $sql2['need_check'],
+            'long_storage' => $sql3['long_storage'],
+            'end_verification' => $sql4['end_verification'],
+        ];
     }
 }
