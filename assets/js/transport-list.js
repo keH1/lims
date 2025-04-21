@@ -52,7 +52,7 @@ $(function ($) {
                 orderable: false,
                 render: function (data, type, item) {
                     return `<div class="btn-group">
-                                <button data-js-update="${item.id}" class="btn"><i class="fa-solid fa-pen"></i></button>
+<!--                                <button data-js-update="${item.id}" class="btn"><i class="fa-solid fa-pen"></i></button>-->
                                 <button data-js-delete="${item.id}" class="btn"><i class="fa-solid fa-trash-can"></i></button>
                            </div>`
                 }

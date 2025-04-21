@@ -2,7 +2,7 @@
     <nav class="header-menu">
         <ul class="nav">
             <li class="nav-item me-1">
-                <a class="nav-link" href="<?=URI?>/nk/graduation/" title="Добавить градуировочную зависимось">
+                <a class="nav-link" href="<?=URI?>/nk/graduation/" title="Добавить лист измерений градуировочной зависимости">
                     <i class="fa-solid fa-plus"></i>
                 </a>
             </li>
