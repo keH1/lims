@@ -268,13 +268,12 @@ $(function ($) {
         buttons: dataTablesSettings.buttons,
     })
 
-
-    journalDataTable.columns().every(function () {
+    journalDataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
             clearTimeout(timeout)
             const searchValue = this.value
-            timeout = setTimeout(function () {
+            timeout = setTimeout(function() {
                 journalDataTable
                     .column($(this).parent().index())
                     .search(searchValue)
@@ -287,8 +286,12 @@ $(function ($) {
         $('#journal_material_2').DataTable().columns.adjust()
     })
 
+    let tmpTimeout = 0
     $body.on('input', '.filter, .work_radio', function () {
-        journalDataTable.ajax.reload()
+        clearTimeout(tmpTimeout)
+        tmpTimeout = setTimeout(function() {
+            journalDataTable.ajax.reload()
+        }.bind(this), 1000)
 
         let $btnGroupEdit = $('.btn-group-edit')
         let $btnAddMethods = $('.btn-add-methods')
@@ -1291,13 +1294,23 @@ function createChild(row) {
             },
         ],
         language: dataTablesSettings.language,
-    })
-
-    // Инициализация поиска для каждой колонки
-    table.find('.search').each(function (index) {
-        $(this).on('keyup', function () {
-            journal.column(index + 1).search($(this).val()).draw()
-        })
+        initComplete: function (settings) {
+            let api = this.api()
+            api.columns().every(function () {
+                console.log('asdadsa')
+                let timeout
+                $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'input', function () {
+                    clearTimeout(timeout)
+                    const searchValue = this.value
+                    timeout = setTimeout(function () {
+                        api
+                            .column($(this).parent().index())
+                            .search(searchValue)
+                            .draw()
+                    }.bind(this), 1000)
+                })
+            })
+        }
     })
 
     // двигаем строки
