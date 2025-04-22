@@ -2155,4 +2155,136 @@ class Request extends Model
             exit;
         }
     }
+
+    /**
+     * Обновляет статус заявки
+     * @param string $stage
+     * @param int $tzId
+     */
+    public function updateApplicationStage(string $stageId, int $tzId)
+    {
+        $stageNumber = 0;
+        $text = null;
+        
+        switch ($stageId) {
+            case 'NEW':
+            case 'PREPARATION':
+            case 'PREPAYMENT_INVOICE':
+            case 'EXECUTING':
+                $stageNumber = 0;
+                break;
+            case 'FINAL_INVOICE':
+                $stageNumber = 1;
+                break;
+            case '1':
+                $stageNumber = 2;
+                break;
+            case '2':
+                $stageNumber = 3;
+                break;
+            case '4':
+                $stageNumber = 4;
+                break;
+            case 'WON':
+                $stageNumber = 6;
+                $text = 'Акты получены сделка завершена!';
+                break;
+            case 'LOSE':
+                $stageNumber = 7;
+                $text = 'Сделка не состоялась!';
+                break;
+            case '5':
+                $stageNumber = 9;
+                $text = 'Не устроила цена!';
+                break;
+            case '6':
+                $stageNumber = 9;
+                $text = 'Заказчик не выходит на связь!';
+                break;
+            case '7':
+                $stageNumber = 9;
+                $text = 'Не проводим подобные испытания!';
+                break;
+            case '8':
+                $stageNumber = 9;
+                $text = 'Создана другая заявка по данному запросу!';
+                break;
+            case '9':
+                $stageNumber = 9;
+                $text = 'Заказчик выбрал лабораторию в своем городе!';
+                break;
+            case '10':
+                $stageNumber = 9;
+                $text = 'Заказчик решил не проводить испытания!';
+                break;
+            case '11':
+                $stageNumber = 9;
+                $text = 'Отказались сами - большая загруженность!';
+                break;
+            case '12':
+                $stageNumber = 9;
+                $text = 'Судебная экспертиза!';
+                break;
+            case '13':
+                $stageNumber = 9;
+                $text = 'Участие в тендере!';
+                break;
+        }
+        
+        $resultSelectTz = $this->DB->Query("SELECT * FROM `ba_tz` WHERE `ID` = " . $tzId)->Fetch();
+        
+        $dealEdited = [];
+        if (!empty($resultSelectTz['ID_Z'])) {
+            $dealEdited = $this->getDealById($resultSelectTz['ID_Z']);
+        }
+        
+        $resSelectEdit = $this->DB->Query("SELECT * FROM `ba_tz` WHERE `ID` = " . $tzId)->Fetch();
+        
+        if ($resSelectEdit && !empty($resSelectEdit['ACT_NUM']) && 
+            ($dealEdited['STAGE_ID'] == 'NEW' || 
+             $dealEdited['STAGE_ID'] == 'PREPARATION' || 
+             $dealEdited['STAGE_ID'] == 'PREPAYMENT_INVOICE' || 
+             $dealEdited['STAGE_ID'] == 'EXECUTING')) {
+            $stageNumber = 1;
+        }
+        
+        if ($resSelectEdit && !empty($resSelectEdit['PRICE']) && 
+            !empty($resSelectEdit['RESULTS']) && 
+            (empty($resSelectEdit['OPLATA']) || $resSelectEdit['OPLATA'] < $resSelectEdit['PRICE']) && 
+            $dealEdited['STAGE_ID'] == '2') {
+            $stageNumber = 5;
+        }
+        
+        $resUpd = '';
+        if (!empty($resultSelectTz['ID_Z'])) {
+            if (CModule::IncludeModule('crm')) {
+                $deal = new CCrmDeal;
+                $arDealUpdate = array('STAGE_ID' => $stageId);
+                $resUpd = $deal->Update($resultSelectTz['ID_Z'],
+                    $arDealUpdate,
+                    true,
+                    true,
+                    array('DISABLE_USER_FIELD_CHECK' => true)
+                );
+            }
+        }
+        
+        if ($stageId === 'WON') {
+            $actVr = $this->DB->Query("SELECT * FROM `AKT_VR` WHERE `TZ_ID`= {$tzId}")->Fetch();
+            if ($actVr) {
+                $dateAct = date('d.m.Y', strtotime($actVr['DATE']));
+                $data = [
+                    'act_number' => $actVr['NUMBER'],
+                    'request_id' => $resultSelectTz['ID_Z'],
+                    'date_act'   => "'{$dateAct}'",
+                ];
+                $this->DB->Insert('CompletedAct', $data);
+                $_SESSION['message_success'] = "Сделка успешно завершена";
+            }
+        }
+        
+        $this->DB->Query("UPDATE `ba_tz` SET `STAGE_ID`='" . $this->DB->ForSql($stageId) . "', `STAGE_NUMBER`= " . $stageNumber . " WHERE `ID`=" . $tzId);
+
+        return $resUpd;
+    }
 }
