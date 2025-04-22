@@ -104,7 +104,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       TZ: ${TZ}
-    command: mysqld --user=root --sql-mode=""
+    command: mariadbd
     restart: unless-stopped
     networks:
       - lims-ulab
