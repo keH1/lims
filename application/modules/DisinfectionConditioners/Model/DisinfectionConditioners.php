@@ -91,6 +91,7 @@ class DisinfectionConditioners extends Model
 
     public function addToSQL(array $data, string $type = null): int
     {
+        $organizationId = App::getOrganizationId();
         $namesTable = [
             'disinfection_conditioners'
         ];
@@ -103,11 +104,14 @@ class DisinfectionConditioners extends Model
             $dataAdd = $data[$name];
         }
 
+        $dataAdd[] = $organizationId;
+
         return $this->insertToSQL($dataAdd, $name, App::getUserId());
     }
 
     public function getFromSQL(string $name, array  $filters = null): array
     {
+        $organizationId = App::getOrganizationId();
         $namesTable = [
             'allRecord' => 'disinfection_conditioners'
         ];
@@ -129,13 +133,13 @@ class DisinfectionConditioners extends Model
                        r.NUMBER, 
                        TRIM(CONCAT_WS(' ', bu.NAME, bu.LAST_NAME)) as global_assigned_name 
                 FROM disinfection_conditioners AS dc
-
+                    
                 LEFT JOIN ROOMS r
                 ON dc.room_id = r.ID
  
                 LEFT JOIN b_user as bu
                 ON dc.global_assigned = bu.ID
-                 
+                WHERE dc.organization_id = {$organizationId}
                 HAVING {$filters['having']}
                 ORDER BY {$filters['order']}
                 {$filters['limit']}
