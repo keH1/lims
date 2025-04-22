@@ -54,8 +54,8 @@ $(function ($) {
     })
 
     $('.akt-finish').click(function() {
-        let tzId = $('#finish-modal-form').find('input[name=tz_id]').val(),
-            stage = $(this).data('stage')
+        let tzId = $('#finish-modal-form').find('input[name=tz_id]').val()
+        let stage = $(this).data('stage')
 
         $.ajax({
             method: 'POST',
@@ -69,7 +69,7 @@ $(function ($) {
                 if (response.success) {
                     location.reload()
                 } else {
-                    showErrorMessage(response.message || 'Не удалось обновить статус заявки', '#error-message')
+                    showErrorMessage(response.message, '#error-message')
                 }
             },
             error: function (jqXHR, exception) {
