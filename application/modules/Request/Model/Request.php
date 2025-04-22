@@ -2238,9 +2238,7 @@ class Request extends Model
             $dealEdited = $this->getDealById($resultSelectTz['ID_Z']);
         }
         
-        $resSelectEdit = $this->DB->Query("SELECT * FROM `ba_tz` WHERE `ID` = " . $tzId)->Fetch();
-        
-        if ($resSelectEdit && !empty($resSelectEdit['ACT_NUM']) && 
+        if ($resultSelectTz && !empty($resultSelectTz['ACT_NUM']) && 
             ($dealEdited['STAGE_ID'] == 'NEW' || 
              $dealEdited['STAGE_ID'] == 'PREPARATION' || 
              $dealEdited['STAGE_ID'] == 'PREPAYMENT_INVOICE' || 
@@ -2248,9 +2246,9 @@ class Request extends Model
             $stageNumber = 1;
         }
         
-        if ($resSelectEdit && !empty($resSelectEdit['PRICE']) && 
-            !empty($resSelectEdit['RESULTS']) && 
-            (empty($resSelectEdit['OPLATA']) || $resSelectEdit['OPLATA'] < $resSelectEdit['PRICE']) && 
+        if ($resultSelectTz && !empty($resultSelectTz['PRICE']) && 
+            !empty($resultSelectTz['RESULTS']) && 
+            (empty($resultSelectTz['OPLATA']) || $resultSelectTz['OPLATA'] < $resultSelectTz['PRICE']) && 
             $dealEdited['STAGE_ID'] == '2') {
             $stageNumber = 5;
         }
@@ -2271,19 +2269,35 @@ class Request extends Model
         
         if ($stageId === 'WON') {
             $actVr = $this->DB->Query("SELECT * FROM `AKT_VR` WHERE `TZ_ID`= {$tzId}")->Fetch();
-            if ($actVr) {
-                $dateAct = date('d.m.Y', strtotime($actVr['DATE']));
+
+            if ($actVr && !empty($resultSelectTz['ID_Z'])) {
+                $dealId = $resultSelectTz['ID_Z'];
+               
+                $completedActRecord = $this->DB->Query("SELECT * FROM `CompletedAct` WHERE `request_id` = {$dealId}")->Fetch();
+
                 $data = [
                     'act_number' => $actVr['NUMBER'],
-                    'request_id' => $resultSelectTz['ID_Z'],
-                    'date_act'   => "'{$dateAct}'",
+                    'request_id' => $dealId,
+                    'date_act'   => $actVr['DATE']
                 ];
-                $this->DB->Insert('CompletedAct', $data);
+                $sqlData = $this->prepearTableData('CompletedAct', $data);
+                
+                if ($completedActRecord) {
+                    $this->DB->Update('CompletedAct', $sqlData, "WHERE request_id = {$dealId}");
+                } else {
+                    $this->DB->Insert('CompletedAct', $sqlData);
+                }
+                
                 $_SESSION['message_success'] = "Сделка успешно завершена";
             }
         }
-        
-        $this->DB->Query("UPDATE `ba_tz` SET `STAGE_ID`='" . $this->DB->ForSql($stageId) . "', `STAGE_NUMBER`= " . $stageNumber . " WHERE `ID`=" . $tzId);
+
+        $data = [
+            'STAGE_ID' => $stageId,
+            'STAGE_NUMBER' => $stageNumber
+        ];
+        $sqlData = $this->prepearTableData('ba_tz', $data);
+        $this->DB->Update('ba_tz', $sqlData, "WHERE ID = {$tzId}");
 
         return $resUpd;
     }
