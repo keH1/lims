@@ -185,7 +185,7 @@
                             <input type="hidden" name="fileType" value="sample">
                             <label
                                     for="pdf-file-upload"
-                                    class="form-label upload-trigger label-pdf-file-upload <?=(!empty($this->data['sample']['has_file']) && $this->data['sample']['has_file'])? 'disabled' : ''?>"
+                                    class="upload-trigger label-pdf-file-upload <?=(!empty($this->data['sample']['has_file']) && $this->data['sample']['has_file'])? 'disabled' : ''?>"
                                     style="cursor: pointer;"
                                     title="Загрузить акт приемки проб"
                             >
