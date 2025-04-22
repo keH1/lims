@@ -3,13 +3,11 @@
 namespace Sprint\Migration;
 
 
-use Bitrix\Main\Application;
-
-class Version_20250414191158 extends Version
+class LOKI_Version_20250421154115 extends Version
 {
     protected $author = "k.shagalin";
 
-    protected $description = "добавление поля organization_id в таблицы";
+    protected $description = "LOKI-3050 добавление поля organization_id в таблицы";
 
     protected $moduleVersion = "5.0.0";
 
@@ -26,6 +24,24 @@ class Version_20250414191158 extends Version
             'ba_oborud',
             'ba_tz',
             'ulab_gost',
+            'ba_gost',
+            'water',
+            'ZERN',
+            'standart_titr',
+            'standart_titr_receive',
+            'standart_titr_manufacturer',
+            'ulab_measured_properties',
+            'fire_safety_log',
+            'safety_training_log',
+            'HISTORY',
+            'MATERIALS',
+            'secondment',
+            'coal_regeneration',
+            'full_bdb',
+            'empty_bdb',
+            'ulab_dimension',
+            'PROTOCOLS',
+            'ulab_start_trials',
         ];
 
         foreach ($tables as $tableName) {
@@ -34,21 +50,21 @@ class Version_20250414191158 extends Version
             SELECT column_name 
             FROM information_schema.columns 
             WHERE table_name = '" . $DB->ForSql($tableName) . "' 
-            AND column_name = 'organization_id'
+            AND column_name = '{$columnName}'
         ");
 
             if (!$result->Fetch()) {
                 // Если колонки нет, добавляем её
                 $DB->Query("
                 ALTER TABLE " . $DB->ForSql($tableName) . " 
-                ADD COLUMN organization_id INT DEFAULT 1
+                ADD COLUMN {$columnName} INT DEFAULT 1
             ");
             } else {
                 // Если колонка уже существует, заполняем её значением 1
                 $DB->Query("
                 UPDATE " . $DB->ForSql($tableName) . " 
-                SET organization_id = 1 
-                WHERE organization_id IS NULL
+                SET {$columnName} = 1 
+                WHERE {$columnName} IS NULL
             ");
             }
         }

@@ -59,32 +59,35 @@ $(function ($) {
 
         $.ajax({
             method: 'POST',
-            url: '/update_stage_id.php',
+            url: '/ulab/request/updateApplicationStageAjax',
             data: {
-                satge_id: stage,
-                tz_id: tzId,
+                stage_id: stage,
+                tz_id: tzId
             },
-            success: function(textContent) {
-                if (textContent) {
-                    location.reload();
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    location.reload()
+                } else {
+                    showErrorMessage(response.message, '#error-message')
                 }
             },
             error: function (jqXHR, exception) {
                 let msg = '';
                 if (jqXHR.status === 0) {
-                    msg = 'Not connect.\n Verify Network.';
+                    msg = 'Отсутствует соединение. Проверьте сеть.';
                 } else if (jqXHR.status === 404) {
-                    msg = 'Requested page not found. [404]';
+                    msg = 'Запрашиваемая страница не найдена [404].';
                 } else if (jqXHR.status === 500) {
-                    msg = 'Internal Server Error [500].';
+                    msg = 'Внутренняя ошибка сервера [500].';
                 } else if (exception === 'parsererror') {
-                    msg = 'Requested JSON parse failed.';
+                    msg = 'Ошибка при обработке ответа сервера.';
                 } else if (exception === 'timeout') {
-                    msg = 'Time out error.';
+                    msg = 'Время ожидания истекло.';
                 } else if (exception === 'abort') {
-                    msg = 'Ajax request aborted.';
+                    msg = 'Запрос был прерван.';
                 } else {
-                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                    msg = 'Неизвестная ошибка: ' + jqXHR.responseText;
                 }
                 console.log(msg)
             }

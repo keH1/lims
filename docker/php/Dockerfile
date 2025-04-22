@@ -1,32 +1,37 @@
-# Этап сборки
-FROM phpdockerio/php:8.3-fpm as builder
+FROM php:8.3.13-fpm-alpine3.20 AS builder
 
-RUN apt-get update && \
-    apt-get -y --no-install-recommends install \
-    php8.3-dev \
-    php8.3-gd \
-    php8.3-imagick \
-    php8.3-mysql \
-    php8.3-opcache \
-    php8.3-zip \
-    libreoffice-writer \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apk add --no-cache --virtual .build-deps \
+    autoconf \
+    g++ \
+    make \
+    && apk add --no-cache \
+    libzip-dev \
+    imagemagick-dev \
+    mariadb-dev \
+    && docker-php-ext-install \
+    gd \
+    mysqli \
+    opcache \
+    zip \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick \
+    && apk del .build-deps \
+    && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
-FROM php:8.3-fpm-alpine
+FROM php:8.3.13-fpm-alpine3.20
 
-COPY --from=builder /usr/lib/php/20230829/ /usr/lib/php/modules/
-COPY --from=builder /etc/php/8.3/ /etc/php/8.3/
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 RUN apk add --no-cache \
-    libreoffice-writer \
+    libreoffice \
     openjdk11-jre-headless \
+    && adduser -D -u 1000 www-data \
     && rm -rf /var/cache/apk/*
 
-COPY --chown=1000:33 ./ /var/www/bitrix/ulab
-COPY ./docker/php/php.ini /etc/php/8.3/fpm/conf.d/90-php.ini
-COPY ./docker/php/www.conf /etc/php/8.3/fpm/pool.d/www.conf
+COPY ./docker/php/php.ini /usr/local/etc/php/conf.d/90-php.ini
+COPY ./docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
-RUN chown -R 1000:33 /var/www/bitrix
-WORKDIR "/var/www/bitrix"
+WORKDIR /var/www/bitrix
 EXPOSE 9000
+USER www-data

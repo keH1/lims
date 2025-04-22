@@ -93,7 +93,7 @@ class Statistic extends Model
                               sum(case when ba_tz.STAGE_ID not IN ('5', '6', '7', '8', '9', 'LOSE') then ba_tz.price_discount else 0 end) value_2
                             FROM ba_tz
                             inner join ba_tz_type on ba_tz_type.type_id = ba_tz.TYPE_ID
-                            where ba_tz.TYPE_ID = '{id}' AND YEAR(ba_tz.DATE_CREATE_TIMESTAMP) = YEAR(CURDATE())
+                            where ba_tz.TYPE_ID = '{id}' AND YEAR(ba_tz.DATE_CREATE_TIMESTAMP) = YEAR(CURDATE()) and organization_id = {organizationId}
                             group by MONTH(ba_tz.DATE_CREATE_TIMESTAMP)",
                     'days_sql' => "SELECT ba_tz_type.name as label, DAY(ba_tz.DATE_CREATE_TIMESTAMP) day, DATE(ba_tz.DATE_CREATE_TIMESTAMP) date,
                               count(ba_tz.ID) as value,
@@ -101,6 +101,7 @@ class Statistic extends Model
                             FROM ba_tz
                             inner join ba_tz_type on ba_tz_type.type_id = ba_tz.TYPE_ID
                             where ba_tz.TYPE_ID = '{id}' AND MONTH(ba_tz.DATE_CREATE_TIMESTAMP) = '{month}' AND YEAR(ba_tz.DATE_CREATE_TIMESTAMP) = '{year}'
+                            AND organization_id = {organizationId}
                             group by DAY(ba_tz.DATE_CREATE_TIMESTAMP)"
                 ]
             ],
@@ -494,7 +495,7 @@ class Statistic extends Model
                                     inner join ulab_methods_oborud on ulab_methods_oborud.id_oborud = ba_oborud.ID
                                     inner join ulab_gost_to_probe on ulab_gost_to_probe.new_method_id = ulab_methods_oborud.method_id
                                     inner join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
-                                WHERE ba_oborud.ID = '{id}' AND YEAR(ulab_start_trials.date) = YEAR(CURDATE())
+                                WHERE ba_oborud.ID = '{id}' AND organization_id = {organizationId} AND YEAR(ulab_start_trials.date) = YEAR(CURDATE())
                                 AND ulab_methods_oborud.id_oborud <> 0 AND ulab_methods_oborud.method_id <> 0
                                 group by MONTH(ulab_start_trials.date)",
                     'days_sql' => "SELECT
@@ -507,6 +508,7 @@ class Statistic extends Model
                                     inner join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
                                 WHERE ba_oborud.ID = '{id}' AND YEAR(ulab_start_trials.date) = '{year}' AND MONTH(ulab_start_trials.date) = '{month}'
                                 AND ulab_methods_oborud.id_oborud <> 0 AND ulab_methods_oborud.method_id <> 0
+                                AND organization_id = {organizationId}
                                 group by DAY(ulab_start_trials.date)"
                 ]
             ],
@@ -605,6 +607,7 @@ class Statistic extends Model
                             inner join ulab_material_to_request on ulab_gost_to_probe.material_to_request_id = ulab_material_to_request.id
                             inner join PROTOCOLS on ulab_material_to_request.protocol_id = PROTOCOLS.ID
                             where ulab_methods.id = '{id}' and PROTOCOLS.NUMBER is not null AND YEAR(PROTOCOLS.DATE) = YEAR(CURDATE())
+                            AND ulab_gost.organization_id = {organizationId}
                             group by MONTH(PROTOCOLS.DATE)",
                     'days_sql' => "SELECT CONCAT(ulab_gost.reg_doc, ' ',  ulab_methods.clause, ' ', ulab_methods.name) as label,
                                 DAY(PROTOCOLS.DATE) day,
@@ -617,6 +620,7 @@ class Statistic extends Model
                             inner join ulab_material_to_request on ulab_gost_to_probe.material_to_request_id = ulab_material_to_request.id
                             inner join PROTOCOLS on ulab_material_to_request.protocol_id = PROTOCOLS.ID
                             where ulab_methods.id = '{id}' and PROTOCOLS.NUMBER is not null AND YEAR(PROTOCOLS.DATE) = '{year}' AND MONTH(PROTOCOLS.DATE) = '{month}'
+                            AND ulab_gost.organization_id = {organizationId}
                             group by DAY(PROTOCOLS.DATE)"
 
                 ]
@@ -896,7 +900,7 @@ class Statistic extends Model
                                 left join ulab_user_affiliation on ulab_user_affiliation.lab_id = ba_laba.ID
                                 left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = ulab_user_affiliation.user_id
                                 left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
-                            where ba_laba.id = '{id}' AND YEAR(ulab_start_trials.date) = YEAR(CURDATE()) AND ba_laba.id_dep IS NOT NULL
+                            where ba_laba.id = '{id}' AND ba_laba.organization_id = {organizationId}  AND YEAR(ulab_start_trials.date) = YEAR(CURDATE()) AND ba_laba.id_dep IS NOT NULL
                             group by MONTH(ulab_start_trials.date)",
                     'days_sql' => "select ba_laba.NAME label,
                         DAY(ulab_start_trials.date) day, DATE(ulab_start_trials.date) date, sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as value
@@ -1059,6 +1063,7 @@ class Statistic extends Model
      */
     public function getStatisticEntity($entityKey, $id)
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         if ( !array_key_exists($entityKey, $this->entities) || empty($id) ) {
@@ -1073,6 +1078,7 @@ class Statistic extends Model
         }
 
         $sql = str_replace('{id}', $id, $sql);
+        $sql = str_replace('{organizationId}', $organizationId, $sql);
         $data = $this->DB->Query($sql);
 
         $result['label'] = '';
@@ -1274,6 +1280,7 @@ class Statistic extends Model
 
     public function getReportByUsers($dateIn, $dateOut)
     {
+        $organizationId = App::getOrganizationId();
         $deal_arr = [];
         $deal_new = [];
 
@@ -1322,7 +1329,7 @@ class Statistic extends Model
 									FROM ba_tz b
 									LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
 									LEFT JOIN b_user as u ON u.ID = ass.user_id
-									WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''
+									WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
 									AND b.DATE_CREATE_TIMESTAMP >= '{$dateIn}' AND b.DATE_CREATE_TIMESTAMP <='{$dateOut}'
 									GROUP BY ass.user_id");
 
@@ -1336,6 +1343,7 @@ class Statistic extends Model
 									LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
 									LEFT JOIN b_user as u ON u.ID = ass.user_id
 									WHERE b.STAGE_ID IN ('8','LOSE','7','6','5','9','10','11','12','13') AND b.REQUEST_TITLE <> ''
+									AND b.organization_id = {$organizationId}
 									AND b.DATE_CREATE_TIMESTAMP >= '{$dateIn}' AND b.DATE_CREATE_TIMESTAMP <='{$dateOut}'
 									GROUP BY ass.user_id");
 
@@ -1349,6 +1357,7 @@ class Statistic extends Model
 									LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
 									LEFT JOIN b_user as u ON u.ID = ass.user_id
 									WHERE b.STAGE_ID IN ('2','WON') AND b.REQUEST_TITLE <> ''
+									AND b.organization_id = {$organizationId}
 									AND b.DATE_CREATE_TIMESTAMP >= '{$dateIn}' AND b.DATE_CREATE_TIMESTAMP <='{$dateOut}'
 									GROUP BY ass.user_id");
 
@@ -1362,6 +1371,7 @@ class Statistic extends Model
 									LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
 									LEFT JOIN b_user as u ON u.ID = ass.user_id
 									WHERE b.ACT_NUM != '' AND b.REQUEST_TITLE <> ''
+									AND b.organization_id = {$organizationId}
 									AND b.DATE_CREATE_TIMESTAMP >= '{$dateIn}' AND b.DATE_CREATE_TIMESTAMP <='{$dateOut}'
 									GROUP BY ass.user_id");
 
@@ -1375,6 +1385,7 @@ class Statistic extends Model
 									LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
 									LEFT JOIN b_user as u ON u.ID = ass.user_id
 									WHERE b.OPLATA >= b.PRICE AND b.REQUEST_TITLE <> ''
+									AND b.organization_id = {$organizationId}
 									AND b.DATE_CREATE_TIMESTAMP >= '{$dateIn}' AND b.DATE_CREATE_TIMESTAMP <='{$dateOut}'
 									GROUP BY ass.user_id");
 
@@ -1388,6 +1399,7 @@ class Statistic extends Model
 									LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
 									LEFT JOIN b_user as u ON u.ID = ass.user_id
 									WHERE b.OPLATA < b.PRICE AND b.OPLATA!= 0 AND b.REQUEST_TITLE <> ''
+									AND b.organization_id = {$organizationId}
 									AND b.DATE_CREATE_TIMESTAMP >= '{$dateIn}' AND b.DATE_CREATE_TIMESTAMP <='{$dateOut}'
 									GROUP BY ass.user_id");
 
@@ -1400,6 +1412,7 @@ class Statistic extends Model
 									FROM ba_tz b
 									LEFT JOIN PROTOCOLS as p ON p.ID_TZ = b.ID
 									WHERE b.REQUEST_TITLE <> ''
+									AND b.organization_id = {$organizationId}
 									AND b.DATE_CREATE_TIMESTAMP >= '{$dateIn}' AND b.DATE_CREATE_TIMESTAMP <='{$dateOut}'");
 
         while ($row = $protocol->Fetch()) {
@@ -1421,6 +1434,7 @@ class Statistic extends Model
      */
     public function getRadiologyRequest()
     {
+        $organizationId = App::getOrganizationId();
         $request = new Request();
         $responce = [];
 
@@ -1429,7 +1443,9 @@ class Statistic extends Model
 										LEFT JOIN `probe_to_materials` p ON p.`id` = g.`probe_id`
 										LEFT JOIN `MATERIALS_TO_REQUESTS` m ON m.`ID` = p.`material_request_id`																				
 										LEFT JOIN `ba_tz` b ON b.`ID_Z` = m.`ID_DEAL`																				
-										WHERE g.`gost_method` IN (5668, 961) AND b.ID_Z < 9763 GROUP BY b.`REQUEST_TITLE` ORDER BY b.`ID_Z` ");
+										WHERE g.`gost_method` IN (5668, 961) AND b.ID_Z < 9763 GROUP BY b.`REQUEST_TITLE` ORDER BY b.`ID_Z` 
+										AND b.organization_id = {$organizationId}
+										");
 
         while ($row = $results->Fetch()) {
             $dir = $_SERVER['DOCUMENT_ROOT'] . '/archiveRadiologyProtocol/' . $row['ID_Z'];
@@ -1446,6 +1462,7 @@ class Statistic extends Model
      */
     public function getRadiologyRequestNew()
     {
+        $organizationId = App::getOrganizationId();
         $request = new Request();
         $responce = [];
 
@@ -1453,7 +1470,7 @@ class Statistic extends Model
 										FROM `ulab_gost_to_probe` g 
 										LEFT JOIN `ulab_material_to_request` m ON m.`id` = g.`material_to_request_id`																				
 										LEFT JOIN `ba_tz` b ON b.`ID_Z` = m.`deal_id`																				
-										WHERE g.`method_id` IN (2675) AND b.ID_Z > 9763 GROUP BY b.`REQUEST_TITLE` ORDER BY b.`ID_Z` ");
+										WHERE g.`method_id` IN (2675) AND b.ID_Z > 9763 GROUP BY b.`REQUEST_TITLE` ORDER BY b.`ID_Z` AND b.organization_id = {$organizationId}");
 
         while ($row = $results->Fetch()) {
             $dir = $_SERVER['DOCUMENT_ROOT'] . '/archiveRadiologyProtocol/' . $row['ID_Z'];
@@ -1472,6 +1489,7 @@ class Statistic extends Model
      */
     public function getMineralogyRequest()
     {
+        $organizationId = App::getOrganizationId();
         $request = new Request();
         $responce = [];
 
@@ -1479,7 +1497,7 @@ class Statistic extends Model
 										LEFT JOIN `probe_to_materials` p ON p.`id` = g.`probe_id`
 										LEFT JOIN `MATERIALS_TO_REQUESTS` m ON m.`ID` = p.`material_request_id`																				
 										LEFT JOIN `ba_tz` b ON b.`ID_Z` = m.`ID_DEAL`																				
-										WHERE `gost_method` in (879,1076,4384,4420,5182,10173,10446,10440,9965,1213,485,960,966,693 ) GROUP BY b.`REQUEST_TITLE` ORDER BY b.`ID_Z` DESC ");
+										WHERE `gost_method` in (879,1076,4384,4420,5182,10173,10446,10440,9965,1213,485,960,966,693 ) AND b.organization_id = {$organizationId} GROUP BY b.`REQUEST_TITLE` ORDER BY b.`ID_Z` DESC ");
 
         while ($row = $results->Fetch()) {
             $dir = $dir = $_SERVER['DOCUMENT_ROOT'] . '/archiveMineralogyProtocol/' . $row['ID_Z'];
@@ -1506,7 +1524,8 @@ class Statistic extends Model
 
     public function setRadiologyDate($id, $date)
     {
-        $sqlData = $this->prepearTableData('ba_tz', ['date_radiology' => $date]);
+        $organizationId = App::getOrganizationId();
+        $sqlData = $this->prepearTableData('ba_tz', ['date_radiology' => $date,'organization_id' => $organizationId]);
 
         $where = "WHERE ID_Z = {$id}";
         return $this->DB->Update('ba_tz', $sqlData, $where);
@@ -1528,13 +1547,14 @@ class Statistic extends Model
      */
     public function getStatisticProtocolByMonth($dataReport)
     {
+        $organizationId = App::getOrganizationId();
         $protocolModel = new Protocol();
         $userModel = new User();
 
         $month = date('m', strtotime($dataReport));
         $year = date('Y', strtotime($dataReport));
 
-        $protocolSql = $this->DB->Query("SELECT * FROM `PROTOCOLS` p WHERE month(p.DATE) = {$month} AND year(p.DATE) = {$year}");
+        $protocolSql = $this->DB->Query("SELECT * FROM `PROTOCOLS` p WHERE month(p.DATE) = {$month} AND year(p.DATE) = {$year} AND p.organization_id = {$organizationId}");
         $count = $protocolSql->SelectedRowsCount();
         $allPrice = 0;
         $allWon = 0;
@@ -1609,6 +1629,7 @@ class Statistic extends Model
 
     public function getFinReport($dataReport)
     {
+        $organizationId = App::getOrganizationId();
         $month = date('m', strtotime($dataReport));
         $year = date('Y', strtotime($dataReport));
 
@@ -1627,7 +1648,7 @@ class Statistic extends Model
                 sum(if(month(DATE_CREATE_TIMESTAMP) = {$month} and OPLATA > 0 and OPLATA < price_discount and price_discount > 0, 1, 0)) as month_part_paid_count,
                 sum(if(month(DATE_CREATE_TIMESTAMP) = {$month} and OPLATA > 0 and OPLATA < price_discount and price_discount > 0, price_discount, 0)) as month_part_paid_price,
                 sum(if(OPLATA > 0 and OPLATA < price_discount and price_discount > 0, price_discount, 0)) as year_part_paid_price
-            from ba_tz where year(DATE_CREATE_TIMESTAMP) = {$year}"
+            from ba_tz where organization_id = {$organizationId} AND year(DATE_CREATE_TIMESTAMP) = {$year}"
         )->Fetch();
 
         $result['all_year_price_new'] = $sql['year_price_new'];
@@ -1642,7 +1663,7 @@ class Statistic extends Model
 
         $sql2 = $this->DB->Query(
             "select price_discount, OPLATA, LABA_ID, month(DATE_CREATE_TIMESTAMP) as `month` 
-            from ba_tz where year(DATE_CREATE_TIMESTAMP) = {$year}"
+            from ba_tz where organization_id = {$organizationId} AND year(DATE_CREATE_TIMESTAMP) = {$year}"
         );
 
         while ($row = $sql2->Fetch()) {
@@ -1767,6 +1788,7 @@ class Statistic extends Model
      */
     public function getStatisticStaffByMonth($monthReport)
     {
+        $organizationId = App::getOrganizationId();
         $user = new User();
         $request = new Request();
 
@@ -1788,6 +1810,7 @@ class Statistic extends Model
 									INNER JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
 									INNER JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
 									WHERE month(p.DATE) = {$month} AND year(p.DATE) = {$year} AND p.NUMBER is not NULL
+									AND p.organization_id = {$organizationId}
 									group by gtp.id");
 
         while ($idAssToGost = $assToGost->Fetch()) {
@@ -1833,6 +1856,7 @@ class Statistic extends Model
 									LEFT JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
 									LEFT JOIN PROTOCOLS p ON umtp.`protocol_id` = p.`ID`
 									WHERE year(b.DATE_CREATE_TIMESTAMP) <= {$year} AND month(b.DATE_CREATE_TIMESTAMP) <= {$month}
+									and b.organization_id = {$organizationId}
 									and gtp.`assigned` != 0 and gtp.`assigned` is not null and umtp.`protocol_id` = ''
 									and ACT_NUM is not null and b.STAGE_ID != 'LOSE' and b.STAGE_ID < 5 and (b.PRICE - b.OPLATA = 0) group by gtp.id");
 
@@ -1932,6 +1956,7 @@ class Statistic extends Model
      */
     public function getStatisticStaffByMonthNew($monthReport)
     {
+        $organizationId = App::getOrganizationId();
         $user = new User();
         $request = new Request();
 
@@ -1953,6 +1978,7 @@ class Statistic extends Model
 									INNER JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
 									INNER JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
 									WHERE month(p.DATE) = {$month} AND year(p.DATE) = {$year} AND p.NUMBER is not NULL
+									AND p.organization_id = {$organizationId}
 									group by gtp.id");
 
         while ($idAssToGost = $assToGost->Fetch()) {
@@ -1998,6 +2024,7 @@ class Statistic extends Model
 									LEFT JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
 									LEFT JOIN PROTOCOLS p ON umtp.`protocol_id` = p.`ID`
 									WHERE year(b.DATE_CREATE_TIMESTAMP) <= {$year} AND month(b.DATE_CREATE_TIMESTAMP) <= {$month}
+									and b.organization_id = {$organizationId}
 									and gtp.`assigned` != 0 and gtp.`assigned` is not null and umtp.`protocol_id` = ''
 									and ACT_NUM is not null and b.STAGE_ID != 'LOSE' and b.STAGE_ID < 5 and (b.PRICE - b.OPLATA = 0) group by gtp.id");
 
@@ -2098,6 +2125,7 @@ class Statistic extends Model
      */
     public function getStatisticMFCByMonth($monthReport)
     {
+        $organizationId = App::getOrganizationId();
         $userModel = new User();
         $requestModel = new Request();
         $companyModel = new Company();
@@ -2110,7 +2138,7 @@ class Statistic extends Model
         $requestArr = $this->DB->Query("SELECT b.ID_Z, b.LABA_ID, b.COMPANY_ID FROM `ba_tz` b 
 									WHERE month(b.DATE_CREATE_TIMESTAMP) = {$month} 
 									AND year(b.DATE_CREATE_TIMESTAMP) = {$year}
-									AND b.TYPE_ID = 'SALE'");
+									AND b.TYPE_ID = 'SALE' AND b.organization_id = {$organizationId}");
 
         while ($request = $requestArr->Fetch()) {
             $result['all'][] = $request['ID_Z'];
@@ -2136,7 +2164,9 @@ class Statistic extends Model
 
         }
 
-        $actBase = $this->DB->Query("SELECT * FROM ACT_BASE WHERE month(ACT_DATE) = {$month} 
+        $actBase = $this->DB->Query("SELECT * FROM ACT_BASE 
+                                        INNER JOIN ba_tz as tz ON ACT_BASE.ID_TZ = tz.ID
+                                    WHERE month(ACT_DATE) = {$month} AND tz.organization_id = {$organizationId}
 									AND year(ACT_DATE) = {$year}");
 
         while ($act = $actBase->Fetch()) {
@@ -2150,7 +2180,9 @@ class Statistic extends Model
             }
         }
 
-        $dogovorArr = $this->DB->Query("SELECT * FROM DOGOVOR WHERE month(DATE) = {$month} 
+        $dogovorArr = $this->DB->Query("SELECT * FROM DOGOVOR 
+                                    INNER JOIN ba_tz as tz ON DOGOVOR.TZ_ID = tz.ID
+                                    WHERE month(DATE) = {$month} AND tz.organization_id = {$organizationId}
 									AND year(DATE) = {$year}");
 
         while ($dogovor = $dogovorArr->Fetch()) {
@@ -2160,15 +2192,16 @@ class Statistic extends Model
             }
         }
 
-        $tzArr = $this->DB->Query("SELECT * FROM TZ_DOC WHERE month(DATE) = {$month} 
-									AND year(DATE) = {$year}");
+        $tzArr = $this->DB->Query("SELECT * FROM TZ_DOC WHERE month(DATE) = {$month}
+                                    INNER JOIN ba_tz as tz ON TZ_DOC.TZ_ID = tz.ID
+									AND year(DATE) = {$year} AND tz.organization_id = {$organizationId}");
 
         while ($tz = $tzArr->Fetch()) {
             $result['tz'][] = $tz['ID'];
         }
 
         $invoiceArr = $this->DB->Query("SELECT i.DATE, i.ID, b.OPLATA, b.PRICE FROM INVOICE i, ba_tz b WHERE month(i.DATE) = {$month} 
-									AND year(i.DATE) = {$year} AND b.ID = i.TZ_ID");
+									AND b.organization_id = {$organizationId}  AND year(i.DATE) = {$year} AND b.ID = i.TZ_ID");
         $result['invoice_price'] = 0;
         $result['invoice_pay_win'] = 0;
         while ($invoice = $invoiceArr->Fetch()) {
@@ -2206,6 +2239,7 @@ class Statistic extends Model
      */
     public function getStatisticMFCByMonthNew($monthReport)
     {
+        $organizationId = App::getOrganizationId();
         $userModel = new User();
         $requestModel = new Request();
         $companyModel = new Company();
@@ -2217,6 +2251,7 @@ class Statistic extends Model
 
         $requestArr = $this->DB->Query("SELECT b.ID_Z, b.LABA_ID, b.COMPANY_ID FROM `ba_tz` b 
 									WHERE month(b.DATE_CREATE_TIMESTAMP) = {$month} 
+									AND b.organization_id = {$organizationId}
 									AND year(b.DATE_CREATE_TIMESTAMP) = {$year}
 									AND b.TYPE_ID = 'SALE'");
 
@@ -2244,8 +2279,10 @@ class Statistic extends Model
 
         }
 
-        $actBase = $this->DB->Query("SELECT * FROM ACT_BASE WHERE month(ACT_DATE) = {$month} 
-									AND year(ACT_DATE) = {$year}");
+        $actBase = $this->DB->Query("SELECT * FROM ACT_BASE as ab
+                                        INNER JOIN ba_tz as b ON ab.ID_TZ = b.ID
+                                        WHERE month(ab.ACT_DATE) = {$month} AND b.organization_id = {$organizationId}
+									AND year(ab.ACT_DATE) = {$year}");
 
         while ($act = $actBase->Fetch()) {
             $result['new_act'][] = $act['ACT_NUM'];
@@ -2258,8 +2295,9 @@ class Statistic extends Model
             }
         }
 
-        $dogovorArr = $this->DB->Query("SELECT * FROM DOGOVOR WHERE month(DATE) = {$month} 
-									AND year(DATE) = {$year}");
+        $dogovorArr = $this->DB->Query("SELECT * FROM DOGOVOR as d INNER JOIN ba_tz as b ON d.TZ_ID = b.ID
+                                            WHERE month(d.DATE) = {$month} 
+									AND year(d.DATE) = {$year} AND b.organization_id = {$organizationId}");
 
         while ($dogovor = $dogovorArr->Fetch()) {
             $result['dogovors'][] = $dogovor['NUMBER'];
@@ -2268,15 +2306,16 @@ class Statistic extends Model
             }
         }
 
-        $tzArr = $this->DB->Query("SELECT * FROM TZ_DOC WHERE month(DATE) = {$month} 
-									AND year(DATE) = {$year}");
+        $tzArr = $this->DB->Query("SELECT * FROM TZ_DOC as d INNER JOIN ba_tz as tz ON d.TZ_ID = b.ID
+                                            WHERE month(DATE) = {$month} 
+									AND year(DATE) = {$year} AND b.organization_id = {$organizationId}");
 
         while ($tz = $tzArr->Fetch()) {
             $result['tz'][] = $tz['ID'];
         }
 
         $invoiceArr = $this->DB->Query("SELECT i.DATE, i.ID, b.OPLATA, b.PRICE FROM INVOICE i, ba_tz b WHERE month(i.DATE) = {$month} 
-									AND year(i.DATE) = {$year} AND b.ID = i.TZ_ID");
+									AND year(i.DATE) = {$year} AND b.ID = i.TZ_ID AND b.organization_id = {$organizationId}");
         $result['invoice_price'] = 0;
         $result['invoice_pay_win'] = 0;
         while ($invoice = $invoiceArr->Fetch()) {
@@ -2315,6 +2354,7 @@ class Statistic extends Model
      */
     public function getStatisticFinanceByMonth($monthReport)
     {
+        $organizationId = App::getOrganizationId();
         $userModel = new User();
         $requestModel = new Request();
         $companyModel = new Company();
@@ -2355,6 +2395,7 @@ class Statistic extends Model
 
         $requestArr = $this->DB->Query("SELECT b.ID_Z, b.LABA_ID, b.COMPANY_ID, b.PRICE  FROM `ba_tz` b 
 									WHERE month(b.DATE_CREATE_TIMESTAMP) = {$month} 
+									AND b.organization_id = {$organizationId}
 									AND year(b.DATE_CREATE_TIMESTAMP) = {$year}
 									AND b.STAGE_ID NOT IN ('LOSE','5','6','7','8','9','10','11','12')
 									AND b.TYPE_ID = 'SALE'");
@@ -2370,7 +2411,7 @@ class Statistic extends Model
 									INNER JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
 									INNER JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
 									INNER JOIN `ba_gost` bg ON gtp.gost_method = bg.ID
-									WHERE b.ID_Z IN ({$requestStr})");
+									WHERE b.ID_Z IN ({$requestStr}) AND b.organization_id = {$organizationId}");
 
         while ($reqByLab = $assToGost->Fetch()) {
 
@@ -2502,7 +2543,7 @@ class Statistic extends Model
         $partiallyPaidTotalByYear = [];
 
         $requestArrYear = $this->DB->Query("SELECT b.ID_Z, b.LABA_ID, b.COMPANY_ID, b.PRICE  FROM `ba_tz` b 
-									WHERE year(b.DATE_CREATE_TIMESTAMP) = {$year}
+									WHERE year(b.DATE_CREATE_TIMESTAMP) = {$year} AND b.organization_id = {$organizationId}
 									AND b.STAGE_ID NOT IN ('LOSE','5','6','7','8','9','10','11','12')
 									AND b.TYPE_ID = 'SALE'");
         $requestListYear = [];
@@ -2517,7 +2558,7 @@ class Statistic extends Model
 									INNER JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
 									INNER JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
 									INNER JOIN `ba_gost` bg ON gtp.gost_method = bg.ID
-									WHERE b.ID_Z IN ({$requestStrByYear})");
+									WHERE b.ID_Z IN ({$requestStrByYear}) AND b.organization_id = {$organizationId}");
 
         while ($reqByLabByYear = $assToGostYear->Fetch()) {
 
@@ -2650,6 +2691,7 @@ class Statistic extends Model
      */
     public function getStatisticFinanceByMonthNew($monthReport)
     {
+        $organizationId = App::getOrganizationId();
         $userModel = new User();
         $requestModel = new Request();
         $companyModel = new Company();
@@ -2689,7 +2731,8 @@ class Statistic extends Model
         $labIdsByYear[57] = [];
 
         $requestArr = $this->DB->Query("SELECT b.ID_Z, b.LABA_ID, b.COMPANY_ID, b.PRICE  FROM `ba_tz` b 
-									WHERE month(b.DATE_CREATE_TIMESTAMP) = {$month} 
+									WHERE month(b.DATE_CREATE_TIMESTAMP) = {$month}
+									AND b.organization_id = {$organizationId}
 									AND year(b.DATE_CREATE_TIMESTAMP) = {$year}
 									AND b.STAGE_ID NOT IN ('LOSE','5','6','7','8','9','10','11','12')
 									AND b.TYPE_ID = 'SALE'");
@@ -2705,7 +2748,7 @@ class Statistic extends Model
 									INNER JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
 									INNER JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
 									INNER JOIN `ba_gost` bg ON gtp.gost_method = bg.ID
-									WHERE b.ID_Z IN ({$requestStr})");
+									WHERE b.ID_Z IN ({$requestStr}) AND b.organization_id = {$organizationId}");
 
         while ($reqByLab = $assToGost->Fetch()) {
 
@@ -2837,7 +2880,7 @@ class Statistic extends Model
         $partiallyPaidTotalByYear = [];
 
         $requestArrYear = $this->DB->Query("SELECT b.ID_Z, b.LABA_ID, b.COMPANY_ID, b.PRICE  FROM `ba_tz` b 
-									WHERE year(b.DATE_CREATE_TIMESTAMP) = {$year}
+									WHERE year(b.DATE_CREATE_TIMESTAMP) = {$year} AND b.organization_id = {$organizationId}
 									AND b.STAGE_ID NOT IN ('LOSE','5','6','7','8','9','10','11','12')
 									AND b.TYPE_ID = 'SALE'");
         $requestListYear = [];
@@ -2852,7 +2895,7 @@ class Statistic extends Model
 									INNER JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
 									INNER JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
 									INNER JOIN `ba_gost` bg ON gtp.gost_method = bg.ID
-									WHERE b.ID_Z IN ({$requestStrByYear})");
+									WHERE b.ID_Z IN ({$requestStrByYear}) AND b.organization_id = {$organizationId}");
 
         while ($reqByLabByYear = $assToGostYear->Fetch()) {
 
@@ -2986,17 +3029,22 @@ class Statistic extends Model
      */
     public function getStatisticByYear($monthReport)
     {
+        $organizationId = App::getOrganizationId();
         $data = [];
         $year = 2023;//date('Y', strtotime($monthReport));
 
         $requestArr = $this->DB->Query("SELECT b.ID_Z, b.REQUEST_TITLE FROM `ba_tz` b 
-									WHERE year(b.DATE_CREATE_TIMESTAMP) = {$year} order by b.ID_Z desc")->Fetch();
+									WHERE  b.organization_id = {$organizationId} AND year(b.DATE_CREATE_TIMESTAMP) = {$year} order by b.ID_Z desc")->Fetch();
 
         $fullYearRequest1 = explode('№', $requestArr['REQUEST_TITLE'])[1];
 
         $data['fullYearRequest'] = explode('/', $fullYearRequest1)[0];
 
-        $contractArr = $this->DB->Query("SELECT * FROM DOGOVOR WHERE year(DATE) = {$year}");
+        $contractArr = $this->DB->Query("
+            SELECT * FROM DOGOVOR as d
+                INNER JOIN `ba_tz` tz ON d.`TZ_ID` = tz.`ID`
+                WHERE year(DATE) = {$year} AND tz.organization_id = {$organizationId}
+            ");
 
         $contract = [];
         $contractLongterm = [];
@@ -3018,7 +3066,9 @@ class Statistic extends Model
 									INNER JOIN `MATERIALS_TO_REQUESTS` mtr ON b.`ID_Z` = mtr.`ID_DEAL`
 									INNER JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
 									INNER JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
-									WHERE year(p.DATE) = {$year} AND p.NUMBER is not NULL group by gtp.id");
+									WHERE year(p.DATE) = {$year} AND p.NUMBER is not NULL AND p.organization_id = {$organizationId} 
+									group by gtp.id
+									");
 
         $tests = [];
         $prots = [];
@@ -3030,7 +3080,7 @@ class Statistic extends Model
 
         $data['fullYearTests'] = count($tests);
 
-        $protocolArr = $this->DB->Query("SELECT * FROM PROTOCOLS WHERE year(DATE) = {$year} AND `NUMBER` is not null");
+        $protocolArr = $this->DB->Query("SELECT * FROM PROTOCOLS as p WHERE p.organization_id = {$organizationId} AND year(p.DATE) = {$year} AND `p.NUMBER` is not null");
 
         while ($protocols = $protocolArr->Fetch()) {
             $prots[] = $protocols;
@@ -3038,7 +3088,13 @@ class Statistic extends Model
 
         $data['fullYearProtocols'] = count($prots) -1;
 
-        $probeArr = $this->DB->Query("SELECT * FROM ACT_BASE ab, MATERIALS_TO_REQUESTS mtr, probe_to_materials ptm  WHERE ab.ID_Z = mtr.ID_DEAL AND mtr.ID = ptm.material_request_id AND year(ab.ACT_DATE) = {$year} AND ab.`ACT_NUM` is not null");
+        $probeArr = $this->DB->Query("SELECT * FROM ACT_BASE ab, MATERIALS_TO_REQUESTS mtr, probe_to_materials ptm
+         INNER JOIN `ba_tz` as tz ON ab.`ID_TZ` = tz.`ID`
+         WHERE ab.ID_Z = mtr.ID_DEAL 
+            AND mtr.ID = ptm.material_request_id 
+            AND year(ab.ACT_DATE) = {$year} AND ab.`ACT_NUM` is not null
+            AND tz.organization_id = {$organizationId}
+         ");
 
         while ($probes = $probeArr->Fetch()) {
             $probe[] = $probes;
@@ -3055,17 +3111,20 @@ class Statistic extends Model
      */
     public function getStatisticByYearNew($monthReport)
     {
+        $organizationId = App::getOrganizationId();
         $data = [];
         $year = 2023;//date('Y', strtotime($monthReport));
 
         $requestArr = $this->DB->Query("SELECT b.ID_Z, b.REQUEST_TITLE FROM `ba_tz` b 
-									WHERE year(b.DATE_CREATE_TIMESTAMP) = {$year} order by b.ID_Z desc")->Fetch();
+									WHERE b.organization_id = {$organizationId} AND year(b.DATE_CREATE_TIMESTAMP) = {$year} order by b.ID_Z desc")->Fetch();
 
         $fullYearRequest1 = explode('№', $requestArr['REQUEST_TITLE'])[1];
 
         $data['fullYearRequest'] = explode('/', $fullYearRequest1)[0];
 
-        $contractArr = $this->DB->Query("SELECT * FROM DOGOVOR WHERE year(DATE) = {$year}");
+        $contractArr = $this->DB->Query("SELECT * FROM DOGOVOR as d
+         INNER JOIN `ba_tz` as b ON .`d.TZ_ID` = b.`ID`
+         WHERE year(DATE) = {$year} AND b.organization_id = {$organizationId}");
 
         $contract = [];
         $contractLongterm = [];
@@ -3087,7 +3146,9 @@ class Statistic extends Model
 									INNER JOIN `MATERIALS_TO_REQUESTS` mtr ON b.`ID_Z` = mtr.`ID_DEAL`
 									INNER JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
 									INNER JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
-									WHERE year(p.DATE) = {$year} AND p.NUMBER is not NULL group by gtp.id");
+									WHERE year(p.DATE) = {$year} AND p.NUMBER is not NULL group by gtp.id
+									    AND p.organization_id = {$organizationId}
+									");
 
         $tests = [];
         $prots = [];
@@ -3099,7 +3160,7 @@ class Statistic extends Model
 
         $data['fullYearTests'] = count($tests);
 
-        $protocolArr = $this->DB->Query("SELECT * FROM PROTOCOLS WHERE year(DATE) = {$year} AND `NUMBER` is not null");
+        $protocolArr = $this->DB->Query("SELECT * FROM PROTOCOLS WHERE PROTOCOLS.organization_id = {$organizationId} AND year(DATE) = {$year} AND `NUMBER` is not null AND ");
 
         while ($protocols = $protocolArr->Fetch()) {
             $prots[] = $protocols;
@@ -3157,6 +3218,7 @@ class Statistic extends Model
 
     public function getStatisticStaffByMonthForChart($monthReport)
     {
+        $organizationId = App::getOrganizationId();
         $user = new User();
 
         $month = date('m', strtotime($monthReport));
@@ -3173,6 +3235,7 @@ class Statistic extends Model
 									INNER JOIN `probe_to_materials` ptm ON mtr.`ID` = ptm.`material_request_id`
 									INNER JOIN `gost_to_probe` gtp ON ptm.`id` = gtp.`probe_id`
 									WHERE month(p.DATE) = {$month} AND year(p.DATE) = {$year} AND p.NUMBER is not NULL
+									AND p.organization_id = {$organizationId}
 									group by gtp.id");
 
         while ($idAssToGost = $assToGost->Fetch()) {
@@ -3189,6 +3252,7 @@ class Statistic extends Model
 									LEFT JOIN PROTOCOLS p ON umtp.`protocol_id` = p.`ID`
 									LEFT JOIN `b_uts_user` u2d ON gtp.`assigned` = u2d.`VALUE_ID`
 									WHERE year(b.DATE_CREATE_TIMESTAMP) <= {$year} AND month(b.DATE_CREATE_TIMESTAMP) <= {$month}
+									and b.organization_id = {$organizationId}
 									and gtp.`assigned` != 0 and gtp.`assigned` is not null and umtp.`protocol_id` = ''
 									and ACT_NUM is not null and b.STAGE_ID != 'LOSE' and b.STAGE_ID < 5 and (b.PRICE - b.OPLATA = 0) group by gtp.id 
 									order by u2d.UF_DEPARTMENT, gtp.`assigned`");
@@ -3228,6 +3292,7 @@ class Statistic extends Model
      */
     public function getJournalReportMethodList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $labModel = new Lab();
 
         $where = "";
@@ -3341,7 +3406,7 @@ class Statistic extends Model
             }
         }
 
-        $where .= "1 ";
+        $where .= "lab.organization_id = {$organizationId} ";
 
         $result = [];
 
@@ -3381,7 +3446,7 @@ class Statistic extends Model
                     inner join PROTOCOLS as p on mater.protocol_id = p.ID
                     inner JOIN b_crm_company com ON com.ID = tz.COMPANY_ID
                     inner JOIN ACT_BASE act ON act.ID_TZ = tz.ID                   
-                    WHERE p.NUMBER is not null 
+                    WHERE p.NUMBER is not null AND lab.organization_id = {$organizationId}
                     group by p.ID, m.id"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
@@ -3429,6 +3494,7 @@ class Statistic extends Model
      */
     public function getJournalReportOborudList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -3504,7 +3570,7 @@ class Statistic extends Model
             }
         }
 
-        $where .= "1 ";
+        $where .= "bo.organization_id = {$organizationId} ";
 
         $result = [];
 
@@ -3524,7 +3590,7 @@ class Statistic extends Model
                     FROM TZ_OB_CONNECT as toc
                     left join PROTOCOLS p ON p.ID = toc.PROTOCOL_ID 
                     inner join ba_oborud bo on toc.ID_OB = bo.ID
-                    WHERE p.NUMBER is not NULL and 1
+                    WHERE p.NUMBER is not NULL and bo.organization_id = {$organizationId}
                     group by bo.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
@@ -3718,6 +3784,7 @@ group by umtr.id");
      */
     public function reportOZ($dateStart, $dateEnd)
     {
+        $organizationId = App::getOrganizationId();
         $dateStart = "'{$dateStart} 00:00:00'";
         $dateEnd = "'{$dateEnd} 23:59:59'";
 
@@ -3742,7 +3809,9 @@ group by umtr.id");
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID
 					left join tz_status_history sh ON b.ID_Z = sh.deal_id
-                    WHERE b.TYPE_ID != '3' AND (b.STAGE_ID not in ('LOSE',5,6,7,8,9,10,11,12) OR sh.status_id != 23)AND b.REQUEST_TITLE <> '' AND b.REQUEST_TITLE LIKE '%ПР%' AND (b.DATE_CREATE_TIMESTAMP >= {$dateStart} AND b.DATE_CREATE_TIMESTAMP <= {$dateEnd}) AND 1
+                    WHERE b.TYPE_ID != '3' AND (b.STAGE_ID not in ('LOSE',5,6,7,8,9,10,11,12) OR sh.status_id != 23) 
+                        AND b.REQUEST_TITLE <> '' AND b.REQUEST_TITLE LIKE '%ПР%' AND (b.DATE_CREATE_TIMESTAMP >= {$dateStart} AND b.DATE_CREATE_TIMESTAMP <= {$dateEnd}) 
+                        AND tz.organization_id = {$organizationId}
                     GROUP BY b.ID ORDER BY b.DATE_CREATE_TIMESTAMP DESC");
 
         $allSum = 0;
@@ -3767,6 +3836,7 @@ group by umtr.id");
      */
     private function getSqlReportFromLims($where)
     {
+        $organizationId = App::getOrganizationId();
         return "select 
                 tz.ID_Z, 
                 tz.DAY_TO_TEST,
@@ -3788,7 +3858,9 @@ group by umtr.id");
             inner join ulab_methods as method on method.id = ugtp.new_method_id
             inner join ulab_methods_lab as ml on ml.method_id = method.id
             left join ulab_start_trials as st on st.ugtp_id = ugtp.id
-            where /*(tz.OPLATA > 0 or tz.price_discount is null) and*/ umtr.deal_id not in (select TAKEN_ID_DEAL from ba_tz where TAKEN_ID_DEAL is not null) and {$where}
+            where umtr.deal_id not in (select TAKEN_ID_DEAL from ba_tz where TAKEN_ID_DEAL is not null) 
+              and tz.organization_id = {$organizationId}
+              and {$where}
             group by tz.ID_Z";
     }
 
@@ -3800,7 +3872,12 @@ group by umtr.id");
      */
     public function getCountTzNew($dateStart, $dateEnd)
     {
-        return $this->DB->Query("select * from TZ_DOC where `DATE` between '{$dateStart} 00:00:00' and '{$dateEnd} 23:59:59'")->SelectedRowsCount();
+        $organizationId = App::getOrganizationId();
+        return $this->DB->Query("select * from TZ_DOC as doc
+        inner join ba_tz as tz on tz.ID = doc.TZ_ID
+         where `doc.DATE` between '{$dateStart} 00:00:00' and '{$dateEnd} 23:59:59'
+         and tz.organization_id = {$organizationId}
+         ")->SelectedRowsCount();
     }
 
 
@@ -3811,6 +3888,7 @@ group by umtr.id");
      */
     public function getCountTzInWork($dateStart, $dateEnd)
     {
+        $organizationId = App::getOrganizationId();
         return $this->DB->Query(
             "select distinct umtr.deal_id from ulab_start_trials as st 
                     inner join ulab_gost_to_probe as ugtp on st.ugtp_id = ugtp.id
@@ -3830,7 +3908,11 @@ group by umtr.id");
      */
     public function getCountTzComplete($dateStart, $dateEnd)
     {
-        return $this->DB->Query("select * from AKT_VR where `DATE` between '{$dateStart} 00:00:00' and '{$dateEnd} 23:59:59'")->SelectedRowsCount();
+        $organizationId = App::getOrganizationId();
+        return $this->DB->Query("
+            select * from AKT_VR as av
+            inner join ba_tz as bt av.TZ_ID = bt.ID
+            where bt.organization_id = {$organizationId} AND  `av.DATE` between '{$dateStart} 00:00:00' and '{$dateEnd} 23:59:59'")->SelectedRowsCount();
     }
 
 
@@ -3860,6 +3942,7 @@ group by umtr.id");
      */
     public function getTzInWork($dateStart, $dateEnd, $lab_id)
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         $holidaysArray = array(
@@ -3887,6 +3970,8 @@ group by umtr.id");
         }else {
             $labWhere .= "uml.lab_id = {$lab_id}";
         }
+
+        $labWhere .=" and bt.organization_id = {$organizationId}";
 
         $response = $this->DB->Query(
 //            "select distinct
@@ -4029,6 +4114,7 @@ group by umtr.id");
 
     public function getStatisticEntityForMonth($id, $month, $entityKey)
     {
+        $organizationId = App::getOrganizationId();
         $year = date('Y');
 
         $months =
@@ -4063,6 +4149,7 @@ group by umtr.id");
         $sql = str_replace('{id}', $id, $sql);
         $sql = str_replace('{month}', $month, $sql);
         $sql = str_replace('{year}', $year, $sql);
+        $sql = str_replace('{organizationId}', $organizationId, $sql);
         $data = $this->DB->Query($sql);
 
         $result['label'] = '';
@@ -4108,6 +4195,7 @@ group by umtr.id");
      */
     public function getTzStat(array $filter = []): array
     {
+        $organizationId = App::getOrganizationId();
         $statusModel = new Status();
         $requestModel = new Request();
 
@@ -4167,7 +4255,7 @@ group by umtr.id");
                     $where .= "LOCATE('{$filter['search']['DATE_CREATE_TIMESTAMP']}', DATE_FORMAT(bt.DATE_CREATE_TIMESTAMP, '%d.%m.%Y')) > 0 AND ";
                 }
 
-                $where .= " 1 ";
+                $where .= "bt.organization_id = {$organizationId} ";
 
                 // Статус заявки
                 if ( isset($filter['search']['stageGroup']) ) {
@@ -4262,7 +4350,7 @@ group by umtr.id");
         $dataTotal = $this->DB->Query(
             "SELECT bt.ID_Z as id
                                 FROM ba_tz bt
-                                WHERE YEAR(bt.DATE_SOZD) = 2024"
+                                WHERE bt.organization_id = {$organizationId} AND YEAR(bt.DATE_SOZD) = 2024"
         )->SelectedRowsCount();
 
 
@@ -4308,6 +4396,7 @@ group by umtr.id");
      */
     public function getDiffDayProtocolJournal($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $requestModel = new Request();
         $statusModel = new Status();
         $methodModel = new Methods();
@@ -4388,7 +4477,7 @@ group by umtr.id");
             }
         }
 
-        $where .= "1 ";
+        $where .= "tz.organization_id = {$organizationId}";
 
         $result = [];
 
@@ -4424,6 +4513,7 @@ group by umtr.id");
             where 
                 p.NUMBER is not null and 
                 p.INVALID <> 1 and
+                tz.organization_id = {$organizationId} and
                 tz.STAGE_ID not in ('LOSE','5','6','7','8','9','10','11','12')"
         )->SelectedRowsCount();
 

@@ -15,6 +15,7 @@ class FireSafety extends Model
     {
         $sqlData = $this->prepearTableData('fire_safety_log', $data);
         $sqlData['created_by'] = App::getUserId();
+        $sqlData['organization_id'] = App::getOrganizationId();
 
         if (!isset($data['practice_date']) || $data['practice_date'] === '' || $data['practice_date'] === null) {
             $sqlData['practice_date'] = 'NULL';
@@ -31,6 +32,7 @@ class FireSafety extends Model
      */
     public function getFireSafetyLog(array $filter = []): array
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -140,7 +142,7 @@ class FireSafety extends Model
             }
         }
 
-        $where .= "1 ";
+        $where .= "organization_id =  {$organizationId} ";
 
         $result = [];
 

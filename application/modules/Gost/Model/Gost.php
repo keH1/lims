@@ -58,7 +58,8 @@ class Gost extends Model
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Сздан новый ГОСТ: {$data['reg_doc']}",
             'USER_ID' => App::getUserId(),
-            'ASSIGNED' => $user['user_name']
+            'ASSIGNED' => $user['user_name'],
+            'organization_id' => App::getOrganizationId(),
         ];
 
         $historyModel->addHistory($dataHistory);
@@ -98,7 +99,8 @@ class Gost extends Model
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Скопирован ГОСТ. ид: {$id}",
             'USER_ID' => App::getUserId(),
-            'ASSIGNED' => $user['user_name']
+            'ASSIGNED' => $user['user_name'],
+            'organization_id' => App::getOrganizationId(),
         ];
 
         $historyModel->addHistory($dataHistory);
@@ -106,31 +108,28 @@ class Gost extends Model
         return $newId;
     }
 
-
     /**
      * @param $idGost
      * @return array|false
      */
     public function getGost($idGost)
     {
-        return $this->DB->Query("select * from `ulab_gost` where id = {$idGost}")->Fetch();
+        $organizationId = App::getOrganizationId();
+        return $this->DB->Query("select * from `ulab_gost` where id = {$idGost} and organization_id = {$organizationId}")->Fetch();
     }
-
 
     /**
      * @param $id
      */
     public function deletePermanentlyGost($id)
     {
+        $organizationId = App::getOrganizationId();
         $methodModel = new Methods();
-
         $methodList = $methodModel->getListByGostId($id);
-
         foreach ($methodList as $method) {
             $methodModel->deletePermanentlyMethod($method['id']);
         }
-
-        $this->DB->Query("delete from ulab_gost where id = {$id}");
+        $this->DB->Query("delete from ulab_gost where id = {$id} and organization_id = {$organizationId}");
     }
 
 
@@ -141,7 +140,8 @@ class Gost extends Model
      */
     public function updateGost($id, $data)
     {
-        $data["organization_id"] = App::getOrganizationId();
+        $organizationId = App::getOrganizationId();
+        $data["organization_id"] = $organizationId;
         $sqlData = $this->prepearGostData($data);
 
         $historyModel = new History();
@@ -153,12 +153,13 @@ class Gost extends Model
             'DATE' => date('Y-m-d H:i:s'),
             'TYPE' => "Отредактирован ГОСТ. ид: {$id}",
             'USER_ID' => App::getUserId(),
-            'ASSIGNED' => $user['user_name']
+            'ASSIGNED' => $user['user_name'],
+            'organization_id' => $organizationId,
         ];
 
         $historyModel->addHistory($dataHistory);
 
-        $where = "WHERE id = {$id}";
+        $where = "WHERE id = {$id} and organization_id = {$organizationId}";
         return $this->DB->Update('ulab_gost', $sqlData, $where);
     }
 
@@ -168,9 +169,10 @@ class Gost extends Model
      */
     public function getUlabGostList()
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
-        $sql = $this->DB->Query("SELECT * FROM ulab_gost");
+        $sql = $this->DB->Query("SELECT * FROM ulab_gost WHERE organization_id = {$organizationId}");
 
         while ($row = $sql->Fetch()) {
             $result[] = $row;
@@ -189,9 +191,10 @@ class Gost extends Model
      */
     public function getList(): array
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
-        $baGost = $this->DB->Query("SELECT * FROM ba_gost WHERE `NUM_OA_NEW` <> '0' AND `NON_ACTUAL` <> 1");
+        $baGost = $this->DB->Query("SELECT * FROM ba_gost WHERE `NUM_OA_NEW` <> '0' AND `NON_ACTUAL` <> 1 AND organization_id = {$organizationId}");
 
         while ($row = $baGost->Fetch()) {
             $result[] = $row;
@@ -209,6 +212,7 @@ class Gost extends Model
      */
     public function add(array $data): int
     {
+        $data['organization_id'] = App::getOrganizationId();
         foreach ($data as $key => $item) {
             if (is_string($item)) {
                 $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
@@ -230,6 +234,7 @@ class Gost extends Model
      */
     public function update(int $gostId, array $data)
     {
+        $data['organization_id'] = App::getOrganizationId();
         foreach ($data as $key => $item) {
             if (is_string($item)) {
                 $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
@@ -243,6 +248,7 @@ class Gost extends Model
 
     public function getListAndPricesByDealId(int $dealId, $tu = false)
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         if ( $tu ) {
@@ -251,7 +257,7 @@ class Gost extends Model
             $where = " ((`IN_OA` <> '0' AND ulab_method_id is not null) or (`IN_OA` = '0' and ulab_method_id is null and `NUM_OA_NEW` <> 0)) ";
         }
 
-        $baGost = $this->DB->Query("SELECT distinct * FROM ba_gost WHERE  `NON_ACTUAL` <> 1 and {$where}");
+        $baGost = $this->DB->Query("SELECT distinct * FROM ba_gost WHERE  `NON_ACTUAL` <> 1 AND organization_id = {$organizationId} AND {$where}");
 
 
         $contract = $this->DB->Query("
@@ -287,6 +293,7 @@ class Gost extends Model
 
     public function getUlabGostAndPrice($dealId = 0)
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         // TODO: пока без цены
@@ -295,7 +302,7 @@ class Gost extends Model
                     FROM ulab_methods m 
                     inner join ulab_gost g on m.gost_id = g.id
                     left join ulab_measured_properties mp on m.measured_properties_id = mp.id
-                    WHERE m.gost_id = g.id");
+                    WHERE m.gost_id = g.id AND g.organization_id = {$organizationId}");
 
         while ($row = $gostSql->Fetch()) {
             if ( !empty($row['mp_name']) ) {
@@ -326,7 +333,8 @@ class Gost extends Model
 	 */
 	public function getTuByGostID($idGost)
     {
-        return $this->DB->Query("SELECT `ID_TU` FROM `ba_gost` WHERE `ID` = {$idGost}")->Fetch();
+        $organizationId = App::getOrganizationId();
+        return $this->DB->Query("SELECT `ID_TU` FROM `ba_gost` WHERE `ID` = {$idGost} AND organization_id = {$organizationId}")->Fetch();
 	}
 
 	/**
@@ -335,9 +343,9 @@ class Gost extends Model
 	 */
 	public function getGostForOption($idGost)
     {
-
+        $organizationId = App::getOrganizationId();
 		$tu = $this->DB->Query("SELECT `NORM_TEXT`, `ID`, `GOST`, `SPECIFICATION`, `GOST_YEAR`, `GOST_PUNKT` 
-								FROM `ba_gost` WHERE `ID` = {$idGost}")->Fetch();
+								FROM `ba_gost` WHERE `ID` = {$idGost} AND organization_id = {$organizationId}")->Fetch();
 
 		$gostName = !empty($tu['GOST']) ? trim($tu['GOST']) : '';
 		$gostYear = !empty($tu['GOST_YEAR']) ? '-' . trim($tu['GOST_YEAR']) : '';
@@ -358,6 +366,7 @@ class Gost extends Model
 	 */
 	public function getAssignedByGostList($list)
 	{
+        $organizationId = App::getOrganizationId();
 		$a = [];
 
 		if (!empty($list)) {
@@ -376,7 +385,7 @@ class Gost extends Model
 			    return [];
             }
 
-			$gostsArr = $this->DB->Query("SELECT * FROM `ba_gost` WHERE `ID` IN ({$arr})");
+			$gostsArr = $this->DB->Query("SELECT * FROM `ba_gost` WHERE `ID` IN ({$arr}) AND organization_id = {$organizationId}");
 
 			while ($gost_assigned = $gostsArr->Fetch()) {
 				$assigned = unserialize($gost_assigned['ASSIGNED']);
@@ -424,11 +433,12 @@ class Gost extends Model
 
 	public function getAssignedByGostID($gostId)
 	{
+        $organizationId = App::getOrganizationId();
 		$user = new User();
 
 		$a = [];
 
-		$gostsArr = $this->DB->Query("SELECT * FROM `ba_gost` WHERE `ID` = {$gostId}");
+		$gostsArr = $this->DB->Query("SELECT * FROM `ba_gost` WHERE `ID` = {$gostId} AND organization_id = {$organizationId}");
 
 		while ($gost_assigned = $gostsArr->Fetch()) {
 			$assigned = unserialize($gost_assigned['ASSIGNED']);
@@ -472,6 +482,7 @@ class Gost extends Model
      */
     public function getGostMaterialByDealID($dealID)
 	{
+        $organizationId = App::getOrganizationId();
 		$result = [];
 
 		$res = $this->DB->Query(
@@ -485,7 +496,8 @@ class Gost extends Model
             inner join `ulab_gost` as g on g.id = m.gost_id 
             left join `ulab_dimension` as d on d.id = m.unit_id
             left join ulab_measured_properties as p on p.id = m.measured_properties_id 
-            where mtr.deal_id = {$dealID} group by mtr.material_id, gtp.method_id, gtp.tech_condition_id, gtp.id order by mtr.material_number, mtr.material_id, mtr.ID, gtp.gost_number
+            where mtr.deal_id = {$dealID} and g.organization_id = {$organizationId}
+            group by mtr.material_id, gtp.method_id, gtp.tech_condition_id, gtp.id order by mtr.material_number, mtr.material_id, mtr.ID, gtp.gost_number
 		");
 
 		while ($row = $res->Fetch()) {
@@ -509,9 +521,10 @@ class Gost extends Model
 	
 	public function getMaterialByUgtpId($id)
 	{
+        $organizationId = App::getOrganizationId();
 		return $this->DB->Query("SELECT umtr.`cipher`, umtr.`name_for_protocol`, m.`NAME` FROM `ulab_gost_to_probe` ugtp
  									INNER JOIN `ulab_material_to_request` umtr ON ugtp.`material_to_request_id` = umtr.`id`
  									LEFT JOIN `MATERIALS` m ON umtr.`material_id` = m.`ID`
- 									WHERE ugtp.`id` = {$id}")->Fetch();
+ 									WHERE ugtp.`id` = {$id} AND m.organization_id = {$organizationId}")->Fetch();
 	}
 }

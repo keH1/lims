@@ -2122,4 +2122,32 @@ class RequestController extends Controller
 
         $requestModel->createProtocolsArchive($data);
     }
+
+    /**
+     * Обновляет статус заявки
+     */
+    public function updateApplicationStageAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+        
+        /** @var Request $requestModel */
+        $requestModel = $this->model('Request');
+
+        $stageId = !empty($_POST['stage_id']) ? $_POST['stage_id'] : '';
+        $tzId = !empty($_POST['tz_id']) ? (int)$_POST['tz_id'] : 0;
+
+        $result = $requestModel->updateApplicationStage($stageId, $tzId);
+        
+        if ($result) {
+            echo json_encode([
+                'success' => true
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Не удалось обновить статус сделки'
+            ]);
+        }
+    }
 }

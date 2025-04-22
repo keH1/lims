@@ -1,12 +1,11 @@
-FROM nginx:1.20.2
+FROM nginx:1.26.0-alpine
 
-COPY docker/nginx/nginx.conf /etc/nginx/
-COPY docker/nginx/default.conf /etc/nginx/conf.d/
-COPY docker/nginx/upstream.conf /etc/nginx/conf.d/
-COPY --chown=1000:33 ./ /tmp/ulab
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx/upstream.conf /etc/nginx/conf.d/upstream.conf
 
-RUN usermod -u 1000 www-data
+RUN adduser -D -u 1000 www-data \
+    && chown -R www-data:www-data /var/cache/nginx /var/log/nginx
 
-EXPOSE 80 443
-
-CMD ["nginx"]
+EXPOSE 80
+USER www-data

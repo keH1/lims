@@ -102,6 +102,8 @@ class Coal extends Model
 
     public function addToSQL(array $data, string $type = null): int
     {
+        $data['organization_id'] = App::getOrganizationId();
+
         $namesTable = [
             'coal_regeneration',
 			'empty_bdb',
@@ -124,6 +126,7 @@ class Coal extends Model
 
 	public function getFromSQL(string $name, array $filters = null): array
 	{
+        $organizationId = App::getOrganizationId();
 		$namesTable = [
 			'allRecord' => 'coal_regeneration'
 		];
@@ -131,7 +134,7 @@ class Coal extends Model
 		$response = [];
 
 		if (isset($namesTable[$name])) {
-			$requestFromSQL = $this->DB->Query("SELECT * from $namesTable[$name]");
+			$requestFromSQL = $this->DB->Query("SELECT * from $namesTable[$name] WHERE organization_id = $organizationId");
 		}
 
 		if ($name == 'getList') {
@@ -149,7 +152,8 @@ class Coal extends Model
                     FROM coal_regeneration as cr
                     LEFT JOIN empty_bdb as ebdb ON cr.id = ebdb.id_cr
                     LEFT JOIN full_bdb as fbdb ON cr.id = fbdb.id_cr
-                    LEFT JOIN b_user as bu ON  cr.global_assigned = bu.ID                
+                    LEFT JOIN b_user as bu ON  cr.global_assigned = bu.ID
+                    WHERE cr.organization_id = $organizationId
                     HAVING  {$filters['having']}
                     ORDER BY {$filters['order']}
                     {$filters['limit']}
@@ -161,7 +165,8 @@ class Coal extends Model
  												cr.date_regeneration_end, ebdb.id as e_id, fbdb.id as f_id
  												FROM coal_regeneration as cr
  												LEFT JOIN empty_bdb as ebdb ON cr.id = ebdb.id_cr
-                    							LEFT JOIN full_bdb as fbdb ON cr.id = fbdb.id_cr 
+                    							LEFT JOIN full_bdb as fbdb ON cr.id = fbdb.id_cr
+                                                WHERE cr.organization_id = $organizationId
  												");
 		}
 
@@ -191,10 +196,11 @@ class Coal extends Model
      */
     public function getMinMaxDateFridgeControl()
     {
+        $organizationId = App::getOrganizationId();
         return $this->DB->Query(
             "select max(date_calibration) as max_date, min(date_calibration) as min_date 
                     from coal_regeneration
-                    where date_calibration <> '0000-00-00 00:00:00'"
+                    where organization_id = {$organizationId} AND date_calibration <> '0000-00-00 00:00:00'"
         )->Fetch();
     }
 }

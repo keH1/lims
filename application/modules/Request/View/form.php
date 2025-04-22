@@ -107,10 +107,16 @@
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <input name="id_assign[]" id="assigned0-hidden" type="hidden" class="assigned_id" value="<?=$this->data['request']['assign'][0]['user_id'] ?? ''?>">
+                    <input name="id_assign[]" id="assigned0-hidden"
+                           type="hidden" class="assigned_id"
+                           value="<?=$this->data['request']['assign'][0]['user_id'] ?? ''?>"
+                    >
                 </div>
+
                 <div class="col-sm-2">
-                    <button class="btn btn-primary add_assigned btn-add-del" <?= empty($this->data['request']['assign'][0]['user_id']) ? "disabled" : "" ?> type="button">
+                    <button class="btn btn-primary add_assigned btn-add-del" type="button"
+                        <?= empty($this->data['request']['assign'][0]['user_id']) ? "disabled" : "" ?>
+                    >
                         <i class="fa-solid fa-plus icon-fix"></i>
                     </button>
                 </div>
@@ -143,7 +149,7 @@
                     </div>
                 <?php endfor; ?>
             <?php endif; ?>
-            
+
             <datalist id="materials">
                 <?php if (isset($this->data['materials'])): ?>
                     <?php foreach ($this->data['materials'] as $material): ?>
