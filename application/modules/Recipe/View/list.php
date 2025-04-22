@@ -81,7 +81,7 @@
 <form id="add-entry-modal-form-first" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative"
       action="/ulab/recipe/addModelRecipe/" method="post">
     <div class="title mb-3 h-2">
-        Рецепт
+        Добавить запись
     </div>
     <div class="line-dashed-small"></div>
 
