@@ -1,3 +1,3 @@
 FROM alpine:latest
 
-COPY . /app
+COPY --chown=1000:33 . /app
