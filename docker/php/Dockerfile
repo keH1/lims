@@ -1,40 +1,20 @@
-FROM php:8.3.13-fpm-alpine3.20 AS builder
+FROM phpdockerio/php:8.3-fpm
 
-RUN apk add --no-cache --virtual .build-deps \
-    autoconf \
-    g++ \
-    make \
-    && apk add --no-cache \
-    libzip-dev \
-    imagemagick-dev \
-    mariadb-dev \
-    libpng-dev \
-    freetype-dev \
-    icu-dev \
-    libxml2-dev \
-    libmcrypt-dev \
-    memcached-dev \
-    && docker-php-ext-configure gd --with-freetype \
-    && docker-php-ext-install \
-    gd \
-    mysqli \
-    opcache \
-    zip \
-    intl \
-    soap \
-    mbstring \
-    # Установка расширений через pecl
-    && pecl install imagick mcrypt memcache memcached \
-    && docker-php-ext-enable imagick mcrypt memcache memcached \
-    && apk del .build-deps \
-    && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
-
-FROM php:8.3.13-fpm-alpine3.20
-
-COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
-COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
-
-RUN apk add --no-cache \
+RUN apt-get update \
+    && apt-get -y --no-install-recommends install \
+    php8.3-dev \
+    php8.3-gd \
+    php8.3-imagick \
+    php8.3-intl \
+    php8.3-interbase \
+    php8.3-mbstring \
+    php8.3-mcrypt \
+    php8.3-memcache \
+    php8.3-memcached \
+    php8.3-mysql \
+    php8.3-opcache \
+    php8.3-soap \
+    php8.3-zip \
     libreoffice \
     libreoffice-writer \
     libreoffice-calc \
@@ -42,22 +22,15 @@ RUN apk add --no-cache \
     libreoffice-draw \
     libreoffice-math \
     libreoffice-base \
-    libreoffice-lang-ru \
+    libreoffice-l10n-ru \
     libreoffice-help-ru \
-    openjdk11-jre-headless \
-    libpng \
-    freetype \
-    imagemagick \
-    icu-libs \
-    libxml2 \
-    libmcrypt \
-    libmemcached \
-    && adduser -D -u 1000 www-data \
-    && rm -rf /var/cache/apk/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-COPY ./php.ini /usr/local/etc/php/conf.d/90-php.ini
-COPY ./www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY ./php.ini /etc/php/8.3/fpm/conf.d/90-php.ini
+COPY ./php.ini /etc/php/8.3/cli/conf.d/90-php.ini
 
-WORKDIR /var/www/bitrix
+RUN usermod -u 1000 www-data
+
+WORKDIR "/var/www/bitrix"
+
 EXPOSE 9000
-USER www-data
