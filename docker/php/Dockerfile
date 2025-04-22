@@ -8,13 +8,24 @@ RUN apk add --no-cache --virtual .build-deps \
     libzip-dev \
     imagemagick-dev \
     mariadb-dev \
+    libpng-dev \
+    freetype-dev \
+    icu-dev \
+    libxml2-dev \
+    libmcrypt-dev \
+    memcached-dev \
+    && docker-php-ext-configure gd --with-freetype \
     && docker-php-ext-install \
     gd \
     mysqli \
     opcache \
     zip \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
+    intl \
+    soap \
+    mbstring \
+    # Установка расширений через pecl
+    && pecl install imagick mcrypt memcache memcached \
+    && docker-php-ext-enable imagick mcrypt memcache memcached \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
@@ -25,12 +36,27 @@ COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 RUN apk add --no-cache \
     libreoffice \
+    libreoffice-writer \
+    libreoffice-calc \
+    libreoffice-impress \
+    libreoffice-draw \
+    libreoffice-math \
+    libreoffice-base \
+    libreoffice-lang-ru \
+    libreoffice-help-ru \
     openjdk11-jre-headless \
+    libpng \
+    freetype \
+    imagemagick \
+    icu-libs \
+    libxml2 \
+    libmcrypt \
+    libmemcached \
     && adduser -D -u 1000 www-data \
     && rm -rf /var/cache/apk/*
 
-COPY ./docker/php/php.ini /usr/local/etc/php/conf.d/90-php.ini
-COPY ./docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY ./php.ini /usr/local/etc/php/conf.d/90-php.ini
+COPY ./www.conf /usr/local/etc/php-fpm.d/www.conf
 
 WORKDIR /var/www/bitrix
 EXPOSE 9000
