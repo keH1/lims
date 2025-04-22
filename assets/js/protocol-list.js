@@ -98,7 +98,7 @@ $(function ($) {
                     if ( item['DOC'] !== '' ) {
                         return `<a class="results-link"
                                href="${item['DOC']}" >
-                               PDF
+                               Скачать
                             </a>`
                     }
 

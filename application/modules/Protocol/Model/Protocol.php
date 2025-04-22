@@ -362,27 +362,20 @@ class Protocol extends Model
             $protocol = '';
             if (empty($row['PROTOCOL_OUTSIDE_LIS'])) {
                 if (!empty($row['ACTUAL_VERSION'])) {
-
-                    $directory = !empty($row['b_id']) && !empty($yearProtocol) && !empty($row['protocol_id']) ? $row['b_id'] . $yearProtocol . '/' . $row['protocol_id'] : '';
-
-                    if (!empty($directory) && !empty($row['NUMBER'])) {
-
-                        $pathToPdfProtocol = current(glob(PROTOCOL_PATH. 'archive/' . $directory . '/*.pdf'));
-                        $link = explode('/', $pathToPdfProtocol);
-                        $fileName = end($link);
-
-                        $pathToSigFile = PROTOCOL_PATH . 'archive/' . $directory . '/' . $row['NUMBER'] . '.sig';
-
-                        if (isset($row['PROTOCOL_TYPE']) && in_array($row['PROTOCOL_TYPE'], [33, 34, 35, 36, 37, 38, 39]) && file_exists($pathToSigFile) && file_exists($pathToPdfProtocol)) {
-                            $protocol = '/protocol_generator/archive/' . $directory . '/' . $fileName;
-                        } elseif (isset($row['PROTOCOL_TYPE']) && !in_array($row['PROTOCOL_TYPE'], [33, 34, 35, 36, 37, 38, 39]) && file_exists($pathToPdfProtocol)) { //Если тип заявки НЕ упрощенный и есть файл pdf
-                            $protocol = '/protocol_generator/archive/' . $directory . '/' . $fileName;;
-                        }
+                    $filePath = "{$row['b_id']}{$yearProtocol}/{$row['protocol_id']}/{$row['ACTUAL_VERSION']}";
+                    if (is_file(PROTOCOL_PATH. "archive/{$filePath}.pdf") ) {
+                        $protocol = "/protocol_generator/archive/{$filePath}.pdf";
+                    } else if (is_file(PROTOCOL_PATH. "archive/{$filePath}.docx")) {
+                        $protocol = "/protocol_generator/archive/{$filePath}.docx";
                     }
                 }
             } else {
-                $protocol = !empty($row['protocol_pdf']) ? '/pdf/' . $row['protocol_id'] . "/" . $row['protocol_pdf'] : '';
-//                $protocol = !empty($row['protocol_pdf']) ? $row['protocol_id'] . "/" . $row['protocol_pdf'] : '';
+                if (
+                    !empty($row['protocol_pdf']) &&
+                    is_file($_SERVER['DOCUMENT_ROOT'] . "/pdf/{$row['protocol_id']}/{$row['protocol_pdf']}")
+                ) {
+                    $protocol = "/pdf/{$row['protocol_id']}/{$row['protocol_pdf']}";
+                }
             }
 
             $y = !empty($row['NUMBER_AND_YEAR']) && in_array($row['PROTOCOL_TYPE'], [33, 34, 35, 36, 37, 38, 39]) ? ' У' : '';
