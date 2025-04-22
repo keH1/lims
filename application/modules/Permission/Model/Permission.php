@@ -259,7 +259,7 @@ class Permission extends Model
         ])->fetchAll();
         
         $organizationUsers = array_column($users, 'ID');
-        $organizationUsersStr = implode(",",$organizationUsers);
+        $organizationUsersStr = implode(",", $organizationUsers);
         $where = "";
         $whereDepartment = "";
         $limit = "";

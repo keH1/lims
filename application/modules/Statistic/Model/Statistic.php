@@ -900,7 +900,7 @@ class Statistic extends Model
                                 left join ulab_user_affiliation on ulab_user_affiliation.lab_id = ba_laba.ID
                                 left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = ulab_user_affiliation.user_id
                                 left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
-                            where ba_laba.id = '{id}' AND  AND YEAR(ulab_start_trials.date) = YEAR(CURDATE()) AND ba_laba.id_dep IS NOT NULL
+                            where ba_laba.id = '{id}' AND ba_laba.organization_id = {organizationId}  AND YEAR(ulab_start_trials.date) = YEAR(CURDATE()) AND ba_laba.id_dep IS NOT NULL
                             group by MONTH(ulab_start_trials.date)",
                     'days_sql' => "select ba_laba.NAME label,
                         DAY(ulab_start_trials.date) day, DATE(ulab_start_trials.date) date, sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as value
@@ -1063,6 +1063,7 @@ class Statistic extends Model
      */
     public function getStatisticEntity($entityKey, $id)
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         if ( !array_key_exists($entityKey, $this->entities) || empty($id) ) {
@@ -1077,6 +1078,7 @@ class Statistic extends Model
         }
 
         $sql = str_replace('{id}', $id, $sql);
+        $sql = str_replace('{organizationId}', $organizationId, $sql);
         $data = $this->DB->Query($sql);
 
         $result['label'] = '';
@@ -4145,7 +4147,6 @@ group by umtr.id");
             return $result;
         }
 
-        $sql = str_replace('{id}', $id, $sql);
         $sql = str_replace('{id}', $id, $sql);
         $sql = str_replace('{month}', $month, $sql);
         $sql = str_replace('{year}', $year, $sql);

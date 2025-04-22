@@ -325,11 +325,11 @@ class Reference extends Model
                 }
                 $name = $this->quoteStr($this->DB->ForSql(trim($item['name'])));
                 $isActual = $item['is_actual']? 1 : 0;
-                $updateAffected = $this->DB->Update('ulab_measured_properties', ['is_actual' => $isActual, 'name' => $name,'organization_id'=>$organizationId], "where fsa_id = {$item['fsa_id']}");
+                $updateAffected = $this->DB->Update('ulab_measured_properties', ['is_actual' => $isActual, 'name' => $name,'organization_id' => $organizationId], "where fsa_id = {$item['fsa_id']}");
 
                 if ( !$updateAffected ) {
                     $countInsert++;
-                    $this->DB->Insert('ulab_measured_properties', ['fsa_id' => $item['fsa_id'], 'name' => $name, 'is_actual' => $isActual,'organization_id'=>$organizationId]);
+                    $this->DB->Insert('ulab_measured_properties', ['fsa_id' => $item['fsa_id'], 'name' => $name, 'is_actual' => $isActual,'organization_id' => $organizationId]);
                 } else {
                     $countUpdate++;
                 }
