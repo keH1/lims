@@ -42,7 +42,7 @@ class User extends Model
         $organizationId = App::getOrganizationId();
         $order = 'ASC';
         $by='ID';
-        $filter = ['ACTIVE' => 'Y','UF_ORG_ID'=>$organizationId];
+        $filter = ['ACTIVE' => 'Y','UF_ORG_ID' => $organizationId];
         $tmp = 'sort';
         $users = CUser::GetList($by, $order, $filter);
 

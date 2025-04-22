@@ -3858,8 +3858,7 @@ group by umtr.id");
             inner join ulab_methods as method on method.id = ugtp.new_method_id
             inner join ulab_methods_lab as ml on ml.method_id = method.id
             left join ulab_start_trials as st on st.ugtp_id = ugtp.id
-            where /*(tz.OPLATA > 0 or tz.price_discount is null) and*/
-                umtr.deal_id not in (select TAKEN_ID_DEAL from ba_tz where TAKEN_ID_DEAL is not null) 
+            where umtr.deal_id not in (select TAKEN_ID_DEAL from ba_tz where TAKEN_ID_DEAL is not null) 
               and tz.organization_id = {$organizationId}
               and {$where}
             group by tz.ID_Z";
