@@ -2,3 +2,6 @@ include:
   - project: 'devops/gitlab/template-cicd'
     ref: '${CICDREF}'
     file: 'php-pipeline.yml'
+
+notify_success:
+  when: manual

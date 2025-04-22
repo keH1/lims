@@ -8,11 +8,11 @@
                     </svg>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="<?=URI?>/help/LIMS_Manual_Stand/VLK/Sample_card/Sample_card.html" title="Техническая поддержка">
-                    <i class="fa-solid fa-question"></i>
-                </a>
-            </li>
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link popup-help" href="--><?//=URI?><!--/help/LIMS_Manual_Stand/VLK/Sample_card/Sample_card.html" title="Техническая поддержка">-->
+<!--                    <i class="fa-solid fa-question"></i>-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
     </nav>
 </header>
@@ -469,10 +469,6 @@
     </div>
 </div>
 
-<?php if (!empty($this->data['id'])): ?>
-<div class="line-dashed"></div>
-<a href="/standart_sample.php?ID=<?=$this->data['id']?>">Вернуться на старый дизайн</a>
-<?php endif; ?>
 
 <form id="component-modal-form" class="bg-light mfp-hide col-md-6 m-auto p-3 position-relative"
       action="<?=URI?>/oborud/componentInsert/" method="post">

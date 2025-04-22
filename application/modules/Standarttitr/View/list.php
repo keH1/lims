@@ -30,46 +30,46 @@
                 Провести Стандарт-титр
             </button>
         </div>
-        <div class="col-auto">
-            <button type="button" name="add_entry"
-                    class="btn btn-primary popup-third btn-add-entry w-100 mw-100 mt-0 btn-reactive">
-                Изготовитель
-            </button>
-        </div>
+<!--        <div class="col-auto">-->
+<!--            <button type="button" name="add_entry"-->
+<!--                    class="btn btn-primary popup-third btn-add-entry w-100 mw-100 mt-0 btn-reactive">-->
+<!--                Изготовитель-->
+<!--            </button>-->
+<!--        </div>-->
     </div>
 </div>
-<div class="mb-4">
-    <div class="row">
-        <div class="col">
-            <select id="selectStandartTitrUpdate"
-                    class="form-control h-auto reactive-update select-standart_titr">
-                <?php
-                foreach ($this->data['standart_titr_receive'] as $val): ?>
-                    <option value="" selected disabled></option>
-                    <option value="<?= $val['id'] ?>"
-                            data-idreceive="<?= $val['id_receive'] ?>"
-                    >
-                        <?= $val['name'] ?></option>
-                <?php
-                endforeach; ?>
-            </select>
-        </div>
-        <div class="col-auto">
-            <button id="standartTitrUpdate" type="button" name="add_entry"
-                    class="btn btn-primary popup-first btn-add-entry w-100 mw-100 mt-0 btn-update"
-                    disabled>
-                Ред. Стандарт-титр
-            </button>
-        </div>
-        <div class="col-auto">
-            <button id="receiveUpdate" type="button" name="add_entry"
-                    class="btn btn-primary popup-second btn-add-entry w-100 mw-100 mt-0 btn-update"
-                    disabled>
-                Ред. Проводку
-            </button>
-        </div>
-    </div>
-</div>
+<!--<div class="mb-4">-->
+<!--    <div class="row">-->
+<!--        <div class="col">-->
+<!--            <select id="selectStandartTitrUpdate"-->
+<!--                    class="form-control h-auto reactive-update select-standart_titr">-->
+<!--                --><?php
+//                foreach ($this->data['standart_titr_receive'] as $val): ?>
+<!--                    <option value="" selected disabled></option>-->
+<!--                    <option value="--><?//= $val['id'] ?><!--"-->
+<!--                            data-idreceive="--><?//= $val['id_receive'] ?><!--"-->
+<!--                    >-->
+<!--                        --><?//= $val['name'] ?><!--</option>-->
+<!--                --><?php
+//                endforeach; ?>
+<!--            </select>-->
+<!--        </div>-->
+<!--        <div class="col-auto">-->
+<!--            <button id="standartTitrUpdate" type="button" name="add_entry"-->
+<!--                    class="btn btn-primary popup-first btn-add-entry w-100 mw-100 mt-0 btn-update"-->
+<!--                    disabled>-->
+<!--                Ред. Стандарт-титр-->
+<!--            </button>-->
+<!--        </div>-->
+<!--        <div class="col-auto">-->
+<!--            <button id="receiveUpdate" type="button" name="add_entry"-->
+<!--                    class="btn btn-primary popup-second btn-add-entry w-100 mw-100 mt-0 btn-update"-->
+<!--                    disabled>-->
+<!--                Ред. Проводку-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 <!--./filters-->
 <div class="filters mb-4">
     <div class="row">

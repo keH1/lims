@@ -8,12 +8,12 @@
         </div>
 
         <div class="col">
-            <div class="form-check" style="margin: auto;display: inline-block;vertical-align: -webkit-baseline-middle;">
-                <input class="form-check-input is-all" type="checkbox" value="" id="isAll">
-                <label class="form-check-label" for="isAll">
-                    Сокращенный анализ
-                </label>
-            </div>
+<!--            <div class="form-check" style="margin: auto;display: inline-block;vertical-align: -webkit-baseline-middle;">-->
+<!--                <input class="form-check-input is-all" type="checkbox" value="" id="isAll">-->
+<!--                <label class="form-check-label" for="isAll">-->
+<!--                    Сокращенный анализ-->
+<!--                </label>-->
+<!--            </div>-->
         </div>
 
         <div class="col-auto">
