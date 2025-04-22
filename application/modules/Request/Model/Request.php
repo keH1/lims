@@ -1742,6 +1742,7 @@ class Request extends Model
      */
     public function getDatatoJournalInvoice(array $filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $having = "";
         $limit = "";
@@ -1889,7 +1890,7 @@ class Request extends Model
             }
         }
 
-        $where .= "1";
+        $where .= "b.organization_id = {$organizationId}";
         $having .= "1";
 
         $result = [];
@@ -1919,7 +1920,7 @@ class Request extends Model
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
                     LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
@@ -1993,12 +1994,18 @@ class Request extends Model
      */
     public function getConfirmNotAccountTz()
     {
+        $organizationId = App::getOrganizationId();
         $year = date("Y", time())%10 ? substr(date("Y", time()), -2) : date("Y", time());
 
         $smtp = $this->DB->Query(
             "SELECT b.ID_Z, b.ID, b.REQUEST_TITLE, b.COMPANY_TITLE 
                     FROM ba_tz b, `CHECK_TZ` ch 
-                    WHERE b.ACCOUNT IS NULL AND ch.tz_id = b.ID AND ch.confirm = 1 AND b.REQUEST_TITLE LIKE '%/{$year}' GROUP BY b.ID ORDER BY b.ID DESC");
+                    WHERE b.ACCOUNT IS NULL 
+                      AND ch.tz_id = b.ID 
+                      AND ch.confirm = 1 
+                      AND b.REQUEST_TITLE LIKE '%/{$year}' 
+                      AND b.organization_id = {$organizationId}
+                    GROUP BY b.ID ORDER BY b.ID DESC");
 
         $result = [];
 
@@ -2043,14 +2050,16 @@ class Request extends Model
 
 	public function getTakenDealByDealId($dealId)
 	{
-		$takenDeal = $this->DB->Query("SELECT TAKEN_ID_DEAL FROM ba_tz WHERE ID_Z = {$dealId}")->Fetch();
+        $organizationId = App::getOrganizationId();
+		$takenDeal = $this->DB->Query("SELECT TAKEN_ID_DEAL FROM ba_tz WHERE ID_Z = {$dealId} AND organization_id = {$organizationId}")->Fetch();
 
 		return $takenDeal['TAKEN_ID_DEAL'];
 	}
 
     public function updateDealScheme($dealId, $schemeId)
     {
-        $this->DB->Query("UPDATE ba_tz SET scheme_id = '{$schemeId}' WHERE ID_Z = {$dealId}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("UPDATE ba_tz SET scheme_id = '{$schemeId}' WHERE ID_Z = {$dealId} AND organization_id = {$organizationId}");
     }
 
     public function getDealScheme($schemeId)

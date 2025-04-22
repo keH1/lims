@@ -15,9 +15,8 @@ class SafetyTraining extends Model
     {
         $sqlData = $this->prepearTableData('safety_training_log', $data);
         $sqlData['created_by'] = App::getUserId();
-
+        $sqlData['organization_id'] = App::getOrganizationId();
         $result = $this->DB->Insert('safety_training_log', $sqlData);
-
         return intval($result);
     }
 
@@ -27,6 +26,7 @@ class SafetyTraining extends Model
      */
     public function getSafetyTrainingLog(array $filter = []): array
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -63,11 +63,11 @@ class SafetyTraining extends Model
 
             // везде
             if (isset($filter['search']['everywhere'])) {
-                $where .=
-                    "";
+                $where .= "1 AND ";
             }
         }
 
+        $where .= "organization_id = {$organizationId}";
 
         // работа с сортировкой
         if (!empty($filter['order'])) {

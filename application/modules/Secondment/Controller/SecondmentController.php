@@ -162,7 +162,7 @@ class SecondmentController extends Controller
     public function insertUpdateInfo()
     {
         setlocale(LC_ALL, 'ru_RU.utf8');
-
+        $organizationId = App::getOrganizationId();
         /** @var Secondment $secondment */
         $secondment = $this->model('Secondment');
 
@@ -336,7 +336,8 @@ class SecondmentController extends Controller
                 'other' => floatval($_POST['other']),
                 'comment_other' => $_POST['comment_other'],
                 'planned_expenses' => $_POST['planned_expenses'],
-                'comment_planned_expenses' => $_POST['comment_planned_expenses']
+                'comment_planned_expenses' => $_POST['comment_planned_expenses'],
+                'organization_id' => $organizationId,
 
             ];
 
@@ -433,7 +434,8 @@ class SecondmentController extends Controller
                 'date_begin' => $_POST['date_begin'],
                 'date_end' => $_POST['date_end'],
                 'project_id' => $_POST['project_id'] ?? 0,
-                'creator_user_id' => $currentUserId
+                'creator_user_id' => $currentUserId,
+                'organization_id' => $organizationId,
             ];
             
             $secondmentId = $secondment->create($data, 'secondment');
@@ -1658,7 +1660,7 @@ class SecondmentController extends Controller
         $archiveData = [
             "secondment_id" => $secondmentId,
             "json_data" => $_POST["json_data"],
-            "user_id" => $_SESSION["SESS_AUTH"]["USER_ID"],
+            "user_id" => App::getUserId(),
             "created_at" => date('Y-m-d H:i:s')
         ];
 

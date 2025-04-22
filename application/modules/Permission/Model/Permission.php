@@ -245,6 +245,21 @@ class Permission extends Model
      * @hide true
      */
     public function getDatatoJournalUsers(array $filter = []) {
+
+        $organizationId = App::getOrganizationId();
+        
+        $users = \Bitrix\Main\UserTable::getList([
+            'filter' => [
+                '=UF_ORG_ID' => $organizationId,
+                '!UF_ORG_ID' => false,
+            ],
+            'select' => [
+                'ID'
+            ]
+        ])->fetchAll();
+        
+        $organizationUsers = array_column($users, 'ID');
+        $organizationUsersStr = implode(",",$organizationUsers);
         $where = "";
         $whereDepartment = "";
         $limit = "";
@@ -329,7 +344,7 @@ class Permission extends Model
             }
         }
 
-        $where .= "1 ";
+        $where .= "u.ID IN ({$organizationUsersStr}) ";
         $whereDepartment .= "1 ";
 
         $data = $this->DB->Query("
@@ -442,7 +457,7 @@ class Permission extends Model
                         FROM b_uts_user 
                     ) AS b_dep_data ON b_dep_data.VALUE_ID = u.ID
                     WHERE
-                        u.ACTIVE = 'Y'
+                        u.ACTIVE = 'Y' AND u.ID IN ({$organizationUsersStr})
                     GROUP BY
                         u.ID
             ) subquery"
