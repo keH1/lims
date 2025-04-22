@@ -9,7 +9,7 @@ class Oborud extends Model {
     /**
      * @var int
      */
-    protected $poverkaTime = 5184000;
+    protected $poverkaTime = 7776000; // 90 дней в секундах
 
     /**
      * @param $data
@@ -336,23 +336,24 @@ class Oborud extends Model {
                 return $result;
             }
 
-            foreach ($certificateList as $certificate) {
-                if ($certificate['is_actual']) {
-                    $poverka = strtotime($certificate['date_end']) - time();
+            // берем сертификат с максимальной датой окончания
+            $certificate = $certificateList[0];
 
-                    if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
-                        $result['bgStage'] = 'bg-light-green';
-                        $result['titleStage'] = 'Нет замечаний';
-                    } else if (($poverka <= 0) && !$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
-                        $result['bgStage'] = 'bg-red';
-                        $result['titleStage'] = 'Истек срок поверки!';
-                    } else if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] == '0' && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
-                        $result['bgStage'] = 'bg-light-blue';
-                        $result['titleStage'] = 'Оборудование не проверено отделом метрологии!';
-                    } else if (!$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
-                        $result['bgStage'] = 'bg-yellow';
-                        $result['titleStage'] = 'До истечения срока поверки осталось менее 90 дней!';
-                    }
+            if ($certificate['is_actual']) {
+                $poverka = strtotime($certificate['date_end']) - strtotime(date("d.m.Y"));
+
+                if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
+                    $result['bgStage'] = 'bg-light-green';
+                    $result['titleStage'] = 'Нет замечаний';
+                } else if (($poverka < 0) && !$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
+                    $result['bgStage'] = 'bg-red';
+                    $result['titleStage'] = 'Истек срок поверки! ' . $poverka;
+                } else if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] == '0' && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
+                    $result['bgStage'] = 'bg-light-blue';
+                    $result['titleStage'] = 'Оборудование не проверено отделом метрологии!';
+                } else if (!$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
+                    $result['bgStage'] = 'bg-yellow';
+                    $result['titleStage'] = 'До истечения срока поверки осталось менее 90 дней!';
                 }
             }
         } else {
@@ -575,7 +576,7 @@ class Oborud extends Model {
             $where = "and is_actual = 1";
         }
 
-        $sql = $this->DB->Query("select * from ba_oborud_certificate where oborud_id = {$oborudId} {$where} order by is_actual desc, id desc");
+        $sql = $this->DB->Query("select * from ba_oborud_certificate where oborud_id = {$oborudId} {$where} order by is_actual desc, date_end desc");
 
         $result = [];
 
