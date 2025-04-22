@@ -14,9 +14,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libxml2-dev \
     libmcrypt-dev \
     memcached-dev \
-    # Зависимости для gd с поддержкой freetype и png
-    && docker-php-ext-configure gd --with-freetype --with-png \
-    # Установка расширений PHP
+    && docker-php-ext-configure gd --with-freetype \
     && docker-php-ext-install \
     gd \
     mysqli \
@@ -28,7 +26,6 @@ RUN apk add --no-cache --virtual .build-deps \
     # Установка расширений через pecl
     && pecl install imagick mcrypt memcache memcached \
     && docker-php-ext-enable imagick mcrypt memcache memcached \
-    # Удаление временных зависимостей
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
@@ -55,7 +52,6 @@ RUN apk add --no-cache \
     libxml2 \
     libmcrypt \
     libmemcached \
-    # Создание пользователя www-data с UID 1000
     && adduser -D -u 1000 www-data \
     && rm -rf /var/cache/apk/*
 
