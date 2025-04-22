@@ -2497,6 +2497,21 @@ class Requirement extends Model
         $result = [];
 
         while ($row = $sql->Fetch()) {
+            // если файл есть в базе, но не найден в файловой системе, считаем, что файла нет
+            if (
+                !empty($row['file_name_result']) &&
+                !is_file(UPLOAD_DIR . "/request/{$dealId}/government_work/{$row['id']}/result/{$row['file_name_result']}")
+            ) {
+                $row['file_name_result'] = '';
+            }
+            if (
+                !empty($row['file_name_protocol']) &&
+                !is_file(UPLOAD_DIR . "/request/{$dealId}/government_work/{$row['id']}/protocol/{$row['file_name_protocol']}")
+            ) {
+                $row['file_name_protocol'] = '';
+                $row['date_protocol'] = '';
+            }
+
             if ( !empty($row['date_protocol']) ) {
                 $row['date_protocol'] = date('d.m.Y H:i:s', strtotime($row['date_protocol']));
             }
@@ -2518,15 +2533,15 @@ class Requirement extends Model
     {
         $materialModel = new Material();
         $dealId = intval($data['deal_id']);
-
+        $materialId = intval($data['material_id']);
 
 
         $sqlData = $this->prepearTableData('government_work', $data);
 
-        $id = $this->DB->Insert('government_work', $sqlData);
+        $id = (int)$this->DB->Insert('government_work', $sqlData);
 
         if ( !empty($id) ) {
-            $resultFile = $this->addFilesWork($id, $data['deal_id'], $files);
+            $resultFile = $this->addFilesWork($id, $dealId, $files);
 
             if ( $resultFile['success'] ) {
                 $data['date_protocol'] = $resultFile['data']['date_protocol'];
@@ -2535,7 +2550,7 @@ class Requirement extends Model
             }
 
             $maxMaterial = $this->DB->Query(
-                "select max(material_number) as max_number from ulab_material_to_request where deal_id = {$dealId} and material_id = {$data['material_id']}"
+                "select max(material_number) as max_number from ulab_material_to_request where deal_id = {$dealId} and material_id = {$materialId}"
             )->Fetch();
 
             $material = $materialModel->getById($data['material_id']);
@@ -2573,12 +2588,12 @@ class Requirement extends Model
 
     /**
      * загружает файлы на сервер, добавляет информацию в таблицу
-     * @param $workId
-     * @param $dealId
+     * @param int $workId
+     * @param int $dealId
      * @param $files
      * @return array|false[]
      */
-    public function addFilesWork($workId, $dealId, $files)
+    public function addFilesWork(int $workId, int $dealId, $files)
     {
         $dataFiles = [];
         $data = [];

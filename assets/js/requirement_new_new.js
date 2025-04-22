@@ -865,13 +865,13 @@ $(function ($) {
                     </form>`
                 let textDateProtocol = ``
 
-                if ( json?.data?.file_name_result !== undefined ) {
+                if (json?.data?.file_name_result) {
                     linkFileResult =
                         `<a href="/ulab/upload/request/${dealId}/government_work/${json.data.work_id}/result/${json.data.file_name_result}">
                             ${json.data.file_name_result}
                         </a>`
                 }
-                if ( json?.data?.file_name_protocol !== undefined ) {
+                if (json?.data?.file_name_protocol) {
                     linkFileProtocol =
                         `<a href="/ulab/upload/request/${dealId}/government_work/${json.data.work_id}/protocol/${json.data.file_name_protocol}">
                             ${json.data.file_name_protocol}
