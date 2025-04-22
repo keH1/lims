@@ -132,7 +132,7 @@
         <div class="row">
             <div class="col">
                 <input type="date" id="inputDateStart" class="form-control filter filter-date-start bg-transparent"
-                       value="<?= $this->data['date_start'] ?>" placeholder="Введите дату начала:">
+                       value="" placeholder="Введите дату начала:">
             </div>
             <div class="col">
                 <input type="date" id="inputDateEnd" class="form-control filter filter-date-end bg-transparent"
@@ -203,7 +203,7 @@
         <input id="conditionsId" type="hidden" value="<?= $this->data['id'] ?>" name="id">
 
         <div class="title mb-3 h-2">
-            Данные условий
+            Добавление данных об условиях
         </div>
 
         <div class="line-dashed-small"></div>

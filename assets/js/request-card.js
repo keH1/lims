@@ -1,6 +1,8 @@
 $(function ($) {
     const $body = $('body')
 
+    $('[data-bs-toggle="popover"]').popover()
+
     $('.popup-with-form').magnificPopup({
         type: 'inline',
         closeBtnInside:true,
@@ -193,7 +195,7 @@ $(function ($) {
                     
                     if (fileNameContainer.length === 0) {
                         const secondCell = parentRow.find('td:nth-child(2) div:first')
-                        fileNameContainer = $('<div class="file-name-container mb-2"></div>')
+                        fileNameContainer = $('<div class="file-name-container"></div>')
                         secondCell.append(fileNameContainer)
                     }
                     
@@ -203,6 +205,9 @@ $(function ($) {
                             <i class="fa fa-times"></i>
                         </a>
                     `)
+
+                    parentRow.addClass('table-green')
+                    $('.label-pdf-file-upload').addClass('disabled')
                 }
             }
         })
@@ -226,6 +231,8 @@ $(function ($) {
                 if (data.success) {
                     const fileContainer = deleteBtn.closest('.file-name-container')
                     fileContainer.html('Файл не загружен')
+                    fileContainer.closest('tr').removeClass('table-green')
+                    $('.label-pdf-file-upload').removeClass('disabled')
                 }
             }
         })

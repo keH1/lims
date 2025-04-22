@@ -1055,6 +1055,7 @@ class Methods extends Model
      */
     public function getJournalMatrixList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $labModel = new Lab();
 
         $labId = 0;
@@ -1169,7 +1170,7 @@ class Methods extends Model
             }
         }
 
-        $where .= "1 ";
+        $where .= "g.organization_id = {$organizationId}";
 
         $result = [];
 
@@ -1190,7 +1191,7 @@ class Methods extends Model
                     FROM ulab_gost g
                     LEFT JOIN ulab_methods m ON g.id = m.gost_id 
                     LEFT JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id 
-                    WHERE 1"
+                    WHERE g.organization_id = {$organizationId}"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(

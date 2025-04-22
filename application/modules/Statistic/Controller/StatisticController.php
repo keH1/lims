@@ -628,6 +628,7 @@ class StatisticController extends Controller
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
 
+
     /**
      * @desc Получение колонок для конструктора журнала
      */
@@ -640,7 +641,9 @@ class StatisticController extends Controller
         /** @var Statistic $statisticModel */
         $statisticModel = $this->model('Statistic');
 
-        $result = $statisticModel->getColumnsEntity($_POST['entity'], $_POST['column']);
+//        $statisticModel->pre($_POST);
+
+        $result = $statisticModel->getColumnsEntity($_POST['entity']);
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
@@ -661,7 +664,6 @@ class StatisticController extends Controller
         $filter = $statisticModel->prepareFilter($_POST ?? []);
 
         $filter['entity']['key'] = $statisticModel->sanitize($_POST['entity']);
-        $filter['entity']['column'] = array_map($statisticModel->sanitize, $_POST['column']?? []);
 
         $data = $statisticModel->getStatisticConstructorJournal($filter);
 

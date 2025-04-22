@@ -111,45 +111,13 @@ $(function ($) {
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 2, "asc" ]],
-        colReorder: true,
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttonPrint,
     });
 
-    journalDataTable.columns().every(function () {
-        let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
-            clearTimeout(timeout)
-            const searchValue = this.value
-            timeout = setTimeout(function () {
-                journalDataTable
-                    .column($(this).parent().index())
-                    .search(searchValue)
-                    .draw()
-            }.bind(this), 1000)
-        })
-    })
-
-    /*journal filters*/
-    $('.filter-btn-search').on('click', function () {
-        $('#journal_filter').addClass('is-open')
-        $('.filter-btn-search').hide()
-    })
-
-    $('.filter').on('change', function () {
-        journalDataTable.ajax.reload()
-    })
-
-    function reportWindowSize() {
-        journalDataTable
-            .columns.adjust()
-    }
-
-    window.onresize = reportWindowSize
-
-    $('.filter-btn-reset').on('click', function () {
-        location.reload()
-    })
+    // window.adjustmentColumnsTable(journalDataTable)
+    window.setupDataTableColumnSearch(journalDataTable)
+    window.setupJournalFilters(journalDataTable)
 
     /*journal buttons*/
     let container = $('div.dataTables_scrollBody'),

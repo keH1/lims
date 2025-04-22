@@ -188,6 +188,7 @@ $(function ($) {
                 open: function() {
                     const roomModalForm = $('#room-modal-form');
                     roomModalForm.find('.form-button').text('Добавить помещение');
+                    roomModalForm.find('#title-type').text('Добавить помещение');
 
                     if (roomModalForm.find('#roomId').val() != '')
                     {
@@ -264,6 +265,7 @@ $(function ($) {
                     const roomModalForm = $('#room-modal-form');
 
                     roomModalForm.find('.form-button').text('Сохранить помещение');
+                    roomModalForm.find('#title-type').text('Редактировать помещение');
 
                     roomModalForm.find('#roomId').val(roomId);
                     //roomModalForm.find('#labId').val(data['LAB_ID']);

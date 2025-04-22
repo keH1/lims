@@ -193,16 +193,16 @@
             </div>
         </li>
 
-        <li class="list-group-item  ">
-            <div class="form-group row mb-0 align-items-center">
-                <label class="col-sm-4 col-form-label">Прайс</label>
-                <div class="col">
-                    <a href="/ulab/gost/listPrice/" >
-                        Редактировать
-                    </a>
-                </div>
-            </div>
-        </li>
+<!--        <li class="list-group-item  ">-->
+<!--            <div class="form-group row mb-0 align-items-center">-->
+<!--                <label class="col-sm-4 col-form-label">Прайс</label>-->
+<!--                <div class="col">-->
+<!--                    <a href="/ulab/gost/listPrice/" >-->
+<!--                        Редактировать-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
     </div>
 </div>
 

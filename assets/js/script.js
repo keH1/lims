@@ -4,27 +4,93 @@ function initDataTable(selector, options) {
         serverSide: true,
         scrollX: true,
         bSortCellsTop: true,
-        fixedHeader: false
+        fixedHeader: false,
+        colReorder: true,
+        fixedColumns: false,
+        // bAutoWidth: false,
+        // autoWidth: false,
+
+        // processing: true,
+        // serverSide: true,
+        // scrollX: true,
+        // bSortCellsTop: true,
+        // fixedHeader: false
     }
     
     const tableOptions = $.extend(true, {}, defaultOptions, options)
     const dataTable = $(selector).DataTable(tableOptions)
+
+    setupTableResizeHandlers()
     
-    dataTable.on('column-visibility.dt', function(e, settings, column, state) {
-        dataTable.columns().every(function() {
-            if (this.visible()) {
-                $(this.header()).css('width', $(this.header()).width() + 'px')
-                $(this.footer()).css('width', $(this.header()).width() + 'px')
-            }
-        })
+    // dataTable.on('column-visibility.dt', function(e, settings, column, state) {
+    //     dataTable.columns().every(function() {
+    //         if (this.visible()) {
+    //             $(this.header()).css('width', $(this.header()).width() + 'px')
+    //             $(this.footer()).css('width', $(this.header()).width() + 'px')
+    //         }
+    //     })
         
-        dataTable.columns.adjust().draw()
-    })
+    //     dataTable.columns.adjust().draw()
+    // })
    
     return dataTable
 }
 
-window.initDataTable = initDataTable
+// window.initDataTable = initDataTable
+
+/**
+ * Настройка поиска по колонкам в DataTable
+ * @param {Object} dataTable - DataTable
+ */
+window.setupDataTableColumnSearch = function(dataTable) {
+    dataTable.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                dataTable
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
+        })
+    })
+}
+
+/**
+ * Настройка обработчиков для фильтров журнала
+ * @param {Object} dataTable - DataTable
+ */
+window.setupJournalFilters = function(dataTable) {
+    $('.filter-btn-search').on('click', function() {
+        $('#journal_filter').addClass('is-open')
+        $('.filter-btn-search').hide()
+    })
+
+    $('.filter').on('change', function() {
+        dataTable.ajax.reload()
+    })
+
+    $('.filter-btn-reset').on('click', function() {
+        location.reload()
+    })
+}
+
+/**
+ * Настройка обработчика изменения размера окна для таблицы
+ * @param {Object} dataTable - DataTable
+ */
+window.adjustmentColumnsTable = function(dataTable) {
+    alert('adjustmentColumnsTable')
+    if (!dataTable) {
+        return
+    }
+    
+    window.onresize = function() {
+        dataTable.columns.adjust()
+    }
+}
 
 function setupTableResizeHandlers() {
     /**
@@ -327,12 +393,10 @@ $(function ($) {
     })
 
     let $body = $("body")
-    $body.on("change keyup input click", "input.number-only", function () {
-        if (this.value.match(/[^0-9]/g)) {
-            this.value = this.value.replace(/[^0-9]/g, '')
-        }
+    $body.on("change keyup input click", "input.number-only", function() {
+        const cleanedValue = this.value.replace(REGEX.NUMBERS_ONLY, '')
+        this.value = cleanedValue
     })
-
 
     //счет оферта
     $('input[name="order_type"]').change(function () {
@@ -631,48 +695,8 @@ $(function ($) {
         setTimeout( function() {location.reload()});
     })
 
-    setupTableResizeHandlers()
+    // setupTableResizeHandlers()
 })
-
-/**
- * Настройка поиска по колонкам в DataTable
- */
-window.setupDataTableColumnSearch = function(dataTable) {
-    dataTable.columns().every(function() {
-        let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
-            clearTimeout(timeout)
-            const searchValue = this.value
-            timeout = setTimeout(function() {
-                dataTable
-                    .column($(this).parent().index())
-                    .search(searchValue)
-                    .draw()
-            }.bind(this), 1000)
-        })
-    })
-}
-
-/**
- * Настройка обработчиков для фильтров журнала
- */
-window.setupJournalFilters = function(dataTables) {
-    $('.filter').on('change', function() {
-        if (typeof dataTables === 'object') {
-            $.each(dataTables, function(key, table) {
-                if (table !== null) {
-                    table.ajax.reload()
-                }
-            })
-        } else if (dataTables !== null) {
-            dataTables.ajax.reload()
-        }
-    })
-
-    $('.filter-btn-reset').on('click', function() {
-        location.reload()
-    })
-}
 
 /**
  * Округление

@@ -259,22 +259,22 @@ class RequestController extends Controller
 
         $this->validationForAll($_POST, $location);
 
+        if ( empty($_POST['company_id']) ) {
+            $companyId = $company->add($_POST['company']);
+
+            if ( $companyId === false ) {
+                $this->showErrorMessage("Не удалось создать нового Клиента");
+                $this->redirect($location);
+            }
+        } else {
+            $companyId = (int)$_POST['company_id'];
+        }
+
         if ($_POST['REQ_TYPE'] === 'SALE') {
             $this->validationSale($_POST, $location);
 
-            // Только для типа заявки SALE
             $resetId = 1;
-            if ( empty($_POST['company_id']) ) {
-                $companyId = $company->add($_POST['company']);
-
-                if ( $companyId === false ) {
-                    $this->showErrorMessage("Не удалось создать нового Клиента");
-                    $this->redirect($location);
-                }
-            } else {
-                $companyId = (int)$_POST['company_id'];
-            }
-
+            
             $dataBank = [
                 'ENTITY_ID'                 => $companyId,
                 'ENTITY_TYPE_ID'            => CCrmOwnerType::Company,
@@ -340,9 +340,6 @@ class RequestController extends Controller
 
                 $additionalData[] = $work;
             }
-
-            //Для типа заявки гос. работ возвращаем только company_id
-            $companyId = (int)$_POST['company_id'];
 
             $saveMail = 'N;';
             $orderName = '';
@@ -1615,6 +1612,14 @@ class RequestController extends Controller
     private function prepareProposalData($requirement, $proposalData, $requestData, $tzId, $dealId, $isExistTz, $actVr)
     {
         // Коммерческое предложение
+        $this->data['proposal']['why_disable_mail'] = '';
+        if ( empty($proposalData) ) {
+            $this->data['proposal']['why_disable_mail'] .= 'Не сформировано коммерческое предложение. ';
+        }
+        if ( !empty($actVr) ) {
+            $this->data['proposal']['why_disable_mail'] .= 'Создан акт выполненных работ.';
+        }
+
         $this->data['proposal']['link'] = "/ulab/generator/CommercialOffer/{$dealId}";
         $this->data['proposal']['check'] = !empty($proposalData['ID']);
         $this->data['proposal']['number'] = $proposalData['ID'] ?? 'Не сформировано';

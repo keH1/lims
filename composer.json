@@ -1,0 +1,7 @@
+{
+    "name": "lims-ulab",
+    "version": "0.0.1",
+    "description": "Default PHP project configuration",
+    "type": "project",
+    "require": {}
+}
