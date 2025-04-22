@@ -91,6 +91,7 @@ class StandarttitrController extends Controller
         $usedModel = $this->model($this->nameModel);
 
         $newAdd = $_POST['toSQL'];
+        $newAdd['standart_titr_manufacturer']['organization_id'] = App::getOrganizationId();
 
         $isAdd = $usedModel->addToSQL($newAdd);
 
@@ -113,7 +114,7 @@ class StandarttitrController extends Controller
         $usedModel = $this->model($this->nameModel);
 
         $newAdd['standart_titr'] = $_POST['standart_titr'];
-
+        $newAdd['standart_titr']['organziation_id'] = App::getOrganizationId();
         $isAdd = $usedModel->addToSQL($newAdd, 'standartTitr');
 
         if (!$isAdd) {
@@ -135,6 +136,7 @@ class StandarttitrController extends Controller
         $usedModel = $this->model($this->nameModel);
 
         $newAdd['standart_titr_receive'] = $_POST['receive'];
+        $newAdd['standart_titr_receive']['organziation_id'] = App::getOrganizationId();
         $isAdd = $usedModel->addToSQL($newAdd);
 
         if (!$isAdd) {
@@ -174,6 +176,7 @@ class StandarttitrController extends Controller
         $usedModel = $this->model($this->nameModel);
 
         $newAdd['standart_titr'] = $_POST['standart_titr'];
+        $newAdd['standart_titr']['organization_id'] = App::getOrganizationId();
 
         $isAdd = $usedModel->newUpdateSQL($newAdd);
 
@@ -192,6 +195,7 @@ class StandarttitrController extends Controller
         $usedModel = $this->model($this->nameModel);
 
         $newAdd['standart_titr_receive'] = $_POST['receive'];
+        $newAdd['standart_titr_receive']['organization_id'] = App::getOrganizationId();
         $isAdd = $usedModel->newUpdateSQL($newAdd);
 
         $this->checkAndShowSuccessOrErrorMessage($isAdd, $successMsg, $unsuccessfulMsg);

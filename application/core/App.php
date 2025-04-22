@@ -133,14 +133,17 @@ class App
         }
 
         $userId = self::bitrixUser()->GetID();
-        $by = "ID";
-        $order = "DESC";
-        $arFilter = ["ID" => $userId];
-        $arParams["SELECT"] = ["UF_ORG_ID"];
-        $arRes = CUser::GetList($by, $order, $arFilter, $arParams);
-        if ($res = $arRes->Fetch()) {
-            $organizationId = (int)$res["UF_ORG_ID"];
-        }
+        $user = \Bitrix\Main\UserTable::getList([
+            'filter' => [
+                '=ID' => $userId,
+                '!UF_ORG_ID'=>false
+            ],
+            'select' => [
+                'UF_ORG_ID'
+            ]
+        ])->fetch();
+
+        $organizationId = (int)$user["UF_ORG_ID"];
 
         return $organizationId;
     }

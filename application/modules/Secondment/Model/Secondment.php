@@ -24,8 +24,8 @@ class Secondment extends Model
     public function getDataToSecondmentJournal($filter)
     {
         global $DB;
-
-        $where = "s.del = 0 AND ";
+        $organizationId = App::getOrganizationId();
+        $where = "s.del = 0 AND s.organization_id = $organizationId AND ";
         $limit = "";
         $order = [
             'by' => 's_id',
@@ -191,7 +191,8 @@ class Secondment extends Model
              LEFT JOIN settlements AS s_s ON s.settlement_id = s_s.id 
              LEFT JOIN DEV_OBJECTS AS d_o ON s.object_id = d_o.ID
              LEFT JOIN secondment_oborud AS s_o ON s_o.secondment_id = s.id 
-             LEFT JOIN ba_oborud AS b_o ON b_o.ID = s_o.oborud_id 
+             LEFT JOIN ba_oborud AS b_o ON b_o.ID = s_o.oborud_id
+             WHERE s.organization_id = {$organizationId}
              GROUP BY s.id"
         )->SelectedRowsCount();
 
@@ -399,6 +400,7 @@ class Secondment extends Model
      */
     public function getSecondmentDataById(int $id): array
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
 
         if (empty($id) || $id < 0) {
@@ -416,7 +418,7 @@ class Secondment extends Model
             "SELECT s.*, s.id s_id, YEAR(s.created_at) created_year, s_s.name s_s_name
                 FROM secondment AS s 
                     LEFT JOIN settlements AS s_s ON s.settlement_id = s_s.id
-                    WHERE s.id={$this->DB->ForSql($id)}"
+                    WHERE s.id={$this->DB->ForSql($id)} AND s.organization_id={$organizationId}"
         )->Fetch();
 
         if (!empty($secondment) && is_array($secondment)) {
@@ -787,8 +789,9 @@ class Secondment extends Model
 
     public function updateRow($data, $id)
     {
+        $organizationId = App::getOrganizationId();
         $sqlData = $this->prepearTableData('secondment', $data);
-        $where = "WHERE id = {$id}";
+        $where = "WHERE id = {$id} AND organization_id = {$organizationId}";
         return $this->DB->Update('secondment', $sqlData, $where);
     }
 

@@ -39,9 +39,10 @@ class User extends Model
      */
     public function getUsers()
     {
+        $organizationId = App::getOrganizationId();
         $order = 'ASC';
         $by='ID';
-        $filter = ['ACTIVE' => 'Y'];
+        $filter = ['ACTIVE' => 'Y','UF_ORG_ID' => $organizationId];
         $tmp = 'sort';
         $users = CUser::GetList($by, $order, $filter);
 
