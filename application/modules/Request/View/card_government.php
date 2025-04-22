@@ -144,12 +144,12 @@
                 <td class="w30"></td>
                 <td class="w30"></td>
             </tr>
-            <tr>
+            <tr class="<?=(!empty($this->data['sample']['has_file']) && $this->data['sample']['has_file'])? 'table-green' : ''?>">
                 <td><strong>Акт приемки проб</strong></td>
                 <td>
                     <div>
                         <?php if (!empty($this->data['sample']['has_file']) && $this->data['sample']['has_file']): ?>
-                            <div class="file-name-container mb-2">
+                            <div class="file-name-container">
                                 <a href="<?= $this->data['sample']['file_url'] ?>"
                                    target="_blank"
                                 >
@@ -163,7 +163,7 @@
                                 </a>
                             </div>
                             <?php else: ?>
-                                <div class="file-name-container mb-2">
+                                <div class="file-name-container">
                                     Файл не загружен
                                 </div>
                             <?php endif; ?>
@@ -181,9 +181,14 @@
                                 method="post" enctype="multipart/form-data"
                         >
                         <div class="input-group">
-                            <input type="file" id="pdf-file-upload-<?=$this->data['deal_id']?>" class="form-control form-control-sm" name="file" accept="application/pdf" style="display: none;">
+                            <input type="file" id="pdf-file-upload" name="file" accept="application/pdf" style="display: none;">
                             <input type="hidden" name="fileType" value="sample">
-                            <label for="pdf-file-upload-<?=$this->data['deal_id']?>" class="form-label upload-trigger" style="cursor: pointer;">
+                            <label
+                                    for="pdf-file-upload"
+                                    class="form-label upload-trigger label-pdf-file-upload <?=(!empty($this->data['sample']['has_file']) && $this->data['sample']['has_file'])? 'disabled' : ''?>"
+                                    style="cursor: pointer;"
+                                    title="Загрузить акт приемки проб"
+                            >
                                 <svg class="icon" width="30" height="30">
                                     <use xlink:href="/ulab/assets/images/icons.svg#upload"></use>
                                 </svg>
