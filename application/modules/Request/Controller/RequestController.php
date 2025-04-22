@@ -107,10 +107,12 @@ class RequestController extends Controller
 
         $this->data['contracts'] = [];
 
-        $this->addCSS("/assets/plugins/popup/main.popup.bundle.css");
-        $this->addJs('/assets/plugins/popup/main.popup.bundle.js');
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
 
-        $this->addJs('/assets/js/request_new.js');
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
+
+        $this->addJs('/assets/js/request_new.js?v=2');
 
         $this->view('form');
     }
@@ -227,7 +229,12 @@ class RequestController extends Controller
         $this->data['display'] = $this->getDisplayClass();
         $this->data['type_list'] = $request->getTypeRequestList();
 
-        $this->addJs('/assets/js/request_new.js');
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
+
+        $this->addJs('/assets/js/request_new.js?v=2');
 
         $this->view('form');
     }

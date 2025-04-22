@@ -8,7 +8,13 @@ $(function ($) {
 
     initForm()
     initGovDeadlineValidation()
-    
+
+    $('.assigned-select').select2({
+        theme: 'bootstrap-5',
+        placeholder: $(this).data('placeholder')
+    })
+
+
     /**
      * @desc Переключает тип заявки
      */
@@ -536,9 +542,10 @@ $(function ($) {
                 <div class="col-sm-8">
                     <select class="form-control assigned-select"
                             id="assigned${index}"
-                            required
+                            data-placeholder="Выберите ответственного"
                             name="ASSIGNED[]"
                     >
+                    <option value=""></option>
                         ${optionsHTML}
                     </select>
                     <input name="id_assign[]" id="assigned${index}-hidden" class="assigned_id" type="hidden" value="">
@@ -555,6 +562,11 @@ $(function ($) {
         } else {
             $('#main-responsible-block').after(newAssigned)
         }
+
+        $body.find('.assigned-select').select2({
+            theme: 'bootstrap-5',
+            placeholder: $(this).data('placeholder')
+        })
     })
 
     $body.on('click', '.add_email', function() {
