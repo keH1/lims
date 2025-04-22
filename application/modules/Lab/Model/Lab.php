@@ -171,7 +171,7 @@ class Lab extends Model
         $laboratories = $this->DB->Query(
             "SELECT l.NAME laba_name, r.LAB_ID, r.NUMBER, r.ID room_id, r.NAME room_name, r.PLACEMENT 
                 FROM `ba_laba` as l, ROOMS as r 
-                WHERE l.ID = r.LAB_ID AND {$where}
+                WHERE l.ID = r.LAB_ID {$where}
                 ORDER BY r.LAB_ID"
         );
 
