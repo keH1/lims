@@ -64,7 +64,5 @@
     <script type="text/javascript" src="<?=URI.$js?>"></script>
 <?php endforeach; ?>
 
-
-
-
+<script src="<?=URI?>/assets/js/constants.js?v=<?=rand();?>" type="text/javascript"></script>
 <script src="<?=URI?>/assets/js/script.js?v=<?=rand();?>" type="text/javascript"></script>
