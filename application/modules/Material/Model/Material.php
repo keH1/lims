@@ -1043,6 +1043,11 @@ class Material extends Model
      */
     public function setNewName(int $id_material, string $name)
     {
-        $this->DB->Query("UPDATE MATERIALS SET NAME = '{$name}' WHERE ID = '{$id_material}'");
+        $data = [
+            'NAME' => $name
+        ];
+        $sqlData = $this->prepearTableData('MATERIALS', $data);
+
+        $this->DB->Update('MATERIALS', $sqlData, "WHERE ID = {$id_material}");
     }
 }
