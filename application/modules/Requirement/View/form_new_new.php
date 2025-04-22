@@ -202,7 +202,11 @@
                         <div class="form-group">
                             <label class="form-label mb-1" for="day_to_test">Срок проведения испытаний</label>
                             <div class="input-group mb-3">
-                                <input type="number" class="clear_confirm_change form-control number-only day-to-test" id="day_to_test" name="tz[DAY_TO_TEST]" value="<?= $this->data['tz']['DAY_TO_TEST']?? 20 ?>" aria-describedby="basic-addon2">
+                                <input type="number" class="clear_confirm_change form-control number-only day-to-test"
+                                       id="day_to_test" name="tz[DAY_TO_TEST]"
+                                       value="<?= $this->data['tz']['DAY_TO_TEST'] ?? 20 ?>"
+                                       aria-describedby="basic-addon2"
+                                >
                                 <select class="input-group-text col-3 clear_confirm_change" id="basic-addon2" name="tz[type_of_day]">
                                     <option value="work_day" <?=$this->data['tz']['type_of_day'] == 'work_day' ? 'selected' : ''?>>рабочих дней</option>
                                     <option value="day" <?=$this->data['tz']['type_of_day'] == 'day' ? 'selected' : ''?>>дней</option>

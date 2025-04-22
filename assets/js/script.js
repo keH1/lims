@@ -393,12 +393,10 @@ $(function ($) {
     })
 
     let $body = $("body")
-    $body.on("change keyup input click", "input.number-only", function () {
-        if (this.value.match(/[^0-9]/g)) {
-            this.value = this.value.replace(/[^0-9]/g, '')
-        }
+    $body.on("change keyup input click", "input.number-only", function() {
+        const cleanedValue = this.value.replace(REGEX.NUMBERS_ONLY, '')
+        this.value = cleanedValue
     })
-
 
     //счет оферта
     $('input[name="order_type"]').change(function () {
