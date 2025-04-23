@@ -2129,9 +2129,21 @@ class Request extends Model
         }
         
         $addedFiles = 0;
-        foreach ($data['filePaths'] as $filePath) {
+        $fileNameMap = [];
+        
+        foreach ($data['filePaths'] as $index => $filePath) {
             $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filePath;
-            $fileName = basename($filePath);
+            $originalFileName = basename($filePath);
+            
+            if (isset($fileNameMap[$originalFileName])) {
+                $fileNameMap[$originalFileName]++;
+                $fileExt = pathinfo($originalFileName, PATHINFO_EXTENSION);
+                $fileNameWithoutExt = pathinfo($originalFileName, PATHINFO_FILENAME);
+                $fileName = $fileNameWithoutExt . '_' . $fileNameMap[$originalFileName] . '.' . $fileExt;
+            } else {
+                $fileNameMap[$originalFileName] = 0;
+                $fileName = $originalFileName;
+            }
             
             if (file_exists($fullPath)) {
                 $zip->addFile($fullPath, $fileName);
