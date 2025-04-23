@@ -1497,6 +1497,7 @@ class Oborud extends Model {
      */
     public function getSampleList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -1603,7 +1604,7 @@ class Oborud extends Model {
             }
         }
 
-        $where .= "1 ";
+        $where .= "organization_id = {$organizationId}";
 
         $result = [];
 
@@ -1661,13 +1662,14 @@ class Oborud extends Model {
      */
     public function getSample($sampleId)
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
 
         if (empty($sampleId) || $sampleId < 0) {
             return $response;
         }
 
-        $result = $this->DB->Query("SELECT * FROM ST_SAMPLE WHERE ID = {$sampleId}")->Fetch();
+        $result = $this->DB->Query("SELECT * FROM ST_SAMPLE WHERE ID = {$sampleId} AND organization_id = {$organizationId}")->Fetch();
 
         if (!empty($result)) {
             $response = $result;
@@ -1683,6 +1685,7 @@ class Oborud extends Model {
      */
     public function addSample($data)
     {
+        $organizationId = App::getOrganizationId();
         // Дата выпуска
         if (empty($data['MANUFACTURE_DATE'])) {
             unset($data['MANUFACTURE_DATE']);
@@ -1694,7 +1697,7 @@ class Oborud extends Model {
 
         // Срок годности не ограничен (1 - срок годности не ограничен)
         $data['UNLIMITED_EXPIRY'] = $data['UNLIMITED_EXPIRY'] ?? 0;
-
+        $data['organization_id'] = $organizationId;
         $sqlData = $this->prepearTableData('ST_SAMPLE', $data);
 
         return $this->DB->Insert('ST_SAMPLE', $sqlData);
@@ -1707,6 +1710,7 @@ class Oborud extends Model {
      */
     public function updateSample($id, $data)
     {
+        $organizationId = App::getOrganizationId();
         if (empty($data['MANUFACTURE_DATE'])) {
             unset($data['MANUFACTURE_DATE']);
         }
@@ -1715,10 +1719,10 @@ class Oborud extends Model {
         }
 
         $data['UNLIMITED_EXPIRY'] = $data['UNLIMITED_EXPIRY'] ?? 0;
-
+        $data['organization_id'] = $organizationId;
         $sqlData = $this->prepearTableData('ST_SAMPLE', $data);
 
-        $where = "WHERE ID = {$id}";
+        $where = "WHERE ID = {$id} AND organization_id = {$organizationId}";
         return $this->DB->Update('ST_SAMPLE', $sqlData, $where);
     }
 
@@ -1729,7 +1733,8 @@ class Oborud extends Model {
      */
     public function updateFieldSample($sampleId, $field, $value)
     {
-        $this->DB->Update('ST_SAMPLE', [$field => $this->quoteStr($this->DB->ForSql($value))], "WHERE ID = {$sampleId}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Update('ST_SAMPLE', [$field => $this->quoteStr($this->DB->ForSql($value))], "WHERE ID = {$sampleId} AND organization_id = {$organizationId}");
     }
 
     /**
@@ -1753,6 +1758,7 @@ class Oborud extends Model {
      */
     public function getSampleHistory($sampleId)
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         if (empty($sampleId) || $sampleId < 0) {
@@ -1761,7 +1767,10 @@ class Oborud extends Model {
 
         $userModel = new User();
 
-        $sql = $this->DB->Query("SELECT * FROM ulab_st_samples_history WHERE st_sample_id = {$sampleId} order by id asc");
+        $sql = $this->DB->Query("
+                SELECT * FROM ulab_st_samples_history as sh
+                INNER JOIN ST_SAMPLE as s ON s.ID = sh.st_sample_id
+                WHERE sh.st_sample_id = {$sampleId} AND s.organization_id = {$organizationId} order by sh.id asc");
 
         while ($row = $sql->Fetch()) {
             $user = $userModel->getUserData($row['user_id']);
@@ -1905,9 +1914,10 @@ class Oborud extends Model {
      */
     public function getStSamples()
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
 
-        $result = $this->DB->Query("SELECT * FROM ST_SAMPLE");
+        $result = $this->DB->Query("SELECT * FROM ST_SAMPLE WHERE organization_id = {$organizationId}");
 
         while ($row = $result->Fetch()) {
             $response[] = $row;
@@ -1921,6 +1931,7 @@ class Oborud extends Model {
      */
     public function getValidComponents()
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
 
         $result = $this->DB->Query(
@@ -1931,7 +1942,9 @@ class Oborud extends Model {
                     FROM ulab_component uc 
                     INNER JOIN ST_SAMPLE ss ON ss.ID = uc.st_sample_id 
                     LEFT JOIN ulab_dimension as udc on udc.id = uc.certified_unit_id
-                    WHERE ss.IS_ACTUAL = 1 AND IF (ss.UNLIMITED_EXPIRY, 1, ss.EXPIRY_DATE > CURDATE())"
+                    WHERE ss.IS_ACTUAL = 1 AND IF (ss.UNLIMITED_EXPIRY, 1, ss.EXPIRY_DATE > CURDATE())
+                    AND ss.organization_id = {$organizationId}
+                    "
         );
 
         while ($row = $result->Fetch()) {
@@ -1994,7 +2007,8 @@ class Oborud extends Model {
 
     public function deleteOborud($oborudId)
     {
-        $this->DB->Query("DELETE FROM ba_oborud WHERE ID = '{$oborudId}'");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("DELETE FROM ba_oborud WHERE ID = '{$oborudId}' AND organization_id = {$organizationId}");
     }
 
     public function getOborudByStorageRoom(string $roomId = ''): array

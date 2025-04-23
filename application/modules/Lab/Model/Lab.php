@@ -160,7 +160,7 @@ class Lab extends Model
     public function getLabaRoom($labIdList = [])
     {
         $organizationId = App::getOrganizationId();
-        $where = 'l.organization_id = ' . $organizationId;
+        $where = 'l.ID = r.LAB_ID AND l.organization_id = ' . $organizationId;
 
         if ( !empty($labIdList) ) {
             $labIdList = array_map('intval', $labIdList);
@@ -171,7 +171,7 @@ class Lab extends Model
         $laboratories = $this->DB->Query(
             "SELECT l.NAME laba_name, r.LAB_ID, r.NUMBER, r.ID room_id, r.NAME room_name, r.PLACEMENT 
                 FROM `ba_laba` as l, ROOMS as r 
-                WHERE l.ID = r.LAB_ID AND {$where}
+                WHERE {$where}
                 ORDER BY r.LAB_ID"
         );
 
