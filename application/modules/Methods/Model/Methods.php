@@ -350,6 +350,12 @@ class Methods extends Model
     {
         $this->DB->Query("delete from ulab_methods_lab where method_id = {$idMethod}");
 
+        if ( empty($data) ) {
+            return;
+        }
+
+        $data = array_unique($data, SORT_NUMERIC);
+
         foreach ($data as $item) {
             $this->DB->Insert('ulab_methods_lab', ['method_id' => $idMethod, 'lab_id' => (int)$item]);
         }
@@ -383,6 +389,12 @@ class Methods extends Model
     public function updateRoom($idMethod, $data)
     {
         $this->DB->Query("delete from ulab_methods_room where method_id = {$idMethod}");
+
+        if ( empty($data) ) {
+            return;
+        }
+
+        $data = array_unique($data, SORT_NUMERIC);
 
         foreach ($data as $item) {
             $this->DB->Insert('ulab_methods_room', ['method_id' => $idMethod, 'room_id' => (int)$item]);
