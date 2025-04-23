@@ -1,6 +1,6 @@
 <form action="" class="row col-5 mb-4" method="post">
 	<div class="col-6">
-		<input type="date" class="form-control" name="month" value="<?=$this->data['statistic_date']?>">
+		<input type="date" class="form-control bg-white" name="month" value="<?=$this->data['statistic_date']?>">
 	</div>
 	<div class="col-4">
 		<button type="submit" class="btn btn-success">Сформировать</button>
