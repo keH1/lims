@@ -99,22 +99,36 @@ $(function ($) {
             return $(this).val();
         }).get()
 
+        let stateList = $journalMethods.find(".probe-check:checked").map(function() {
+            return $(this).data('state');
+        }).get()
+
         let measurementIdList = $journalMethods.find(".probe-check:checked").map(function() {
             let tmp = $(this).data('measurement_id')
             if ( tmp === `undefined` ) { return }
             return $(this).data('measurement_id')
         }).get()
 
+        $btnStart.addClass('disabled')
+        $btnPause.addClass('disabled')
+        $btnStop.addClass('disabled')
+
         if ( probeIdList.length > 0 ) {
-            $btnStart.removeClass('disabled')
-            $btnPause.removeClass('disabled')
-            $btnStop.removeClass('disabled')
+            if ( stateList.includes('not_start') || stateList.includes('pause') ) {
+                $btnStart.removeClass('disabled')
+            }
+
+            if ( stateList.includes('start') ) {
+                $btnPause.removeClass('disabled')
+            }
+
+            if ( stateList.includes('start') || stateList.includes('pause') ) {
+                $btnStop.removeClass('disabled')
+            }
+
             $btnCreateProtocol.removeClass('disabled')
             $btnUnboundProtocol.removeClass('disabled')
         } else {
-            $btnStart.addClass('disabled')
-            $btnPause.addClass('disabled')
-            $btnStop.addClass('disabled')
             $btnCreateProtocol.addClass('disabled')
             $btnUnboundProtocol.addClass('disabled')
         }
@@ -176,12 +190,19 @@ $(function ($) {
                 width: "20px",
                 className: 'cursor-pointer text-center',
                 render: function (data, type, item) {
+                    let state = 'not_start'
+
+                    if ( item?.state_action?.state ) {
+                        state = item.state_action.state
+                    }
+
                     return `
                         <input 
                             class="form-check-input probe-check method-id-${item['method_id']}" 
                             type="checkbox" 
                             data-method_id="${item['method_id']}" 
                             data-measurement_id="${item.measurement.id}"
+                            data-state="${state}"
                             id="method_name_${item['method_id']}_${item['probe_number']}_${item['ugtp_id']}"
                             name="gost_check[${item['ugtp_id']}]"
                             value="${item['ugtp_id']}"
