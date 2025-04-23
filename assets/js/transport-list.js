@@ -11,6 +11,7 @@ $(function ($) {
         scrollX: true,
         fixedHeader: false,
         colReorder: true,
+        scrollCollapse: false, // Автоматическая смена высоты
         ajax: {
             type : 'POST',
             data: function ( d ) {
