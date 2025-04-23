@@ -118,7 +118,7 @@ services:
       - lims-ulab
 
   lims-ulab:
-    container_name: lims-ulab
+    container_name: lims_ulab
     image: ${IMAGE_TAG:-reg.gitlab.itnap.ru/loki/lims:dev}
     volumes:
       - web_data:/app
