@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Расходы реактивов
+ * @desc Списание реактивов
  * Class ReactiveconsumptionController
  */
 class ReactiveconsumptionController extends Controller
@@ -9,11 +9,11 @@ class ReactiveconsumptionController extends Controller
     private string $nameModel = 'Reactiveconsumption';
 
     /**
-     * @desc Журнал расхода реактивов
+     * @desc Журнал списания реактивов
      */
     public function list()
     {
-        $this->data['title'] = 'Журнал расхода реактивов';
+        $this->data['title'] = 'Журнал списания реактивов';
 
 
         /** @var  Recipe $usedModel */
@@ -53,7 +53,7 @@ class ReactiveconsumptionController extends Controller
     }
 
     /**
-     * @desc Получает данные для журнала расхода реактивов
+     * @desc Получает данные для журнала списания реактивов
      */
     public function getListProcessingAjax()
     {
@@ -84,11 +84,11 @@ class ReactiveconsumptionController extends Controller
     }
 
     /**
-     * @desc Добавляет расход реактива
+     * @desc Добавляет списания реактива
      */
     public function addReactiveConsume()
     {
-        $successMsg = 'Расход реактива успешно проведен';
+        $successMsg = 'Списание реактива успешно проведено';
         $unsuccessfulMsg = 'Не удалось провести реактив';
         $usedModel = $this->model($this->nameModel);
 

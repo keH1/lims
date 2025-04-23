@@ -72,11 +72,12 @@ class Water extends Model
                         FROM water
                                  LEFT JOIN b_user ON  water.global_assigned =b_user.ID
                         LEFT JOIN water_norm ON water.id_water_norm=water_norm.id) water_full
+                WHERE water_full.organization_id = {$organizationId}
                 HAVING date_check >= {$filters['dateStart']} AND date_check  <= {$filters['dateEnd']}
                         AND {$filters['having']}
                 ORDER BY {$filters['order']}                    
                 {$filters['limit']}
-                WHERE water_full.organization_id = {$organizationId}
+
                 ";
         } elseif ($typeName == 'lastWaterNorm') {
             $request = "SELECT *, MAX(water_norm.global_entry_date) AS max

@@ -6,3 +6,5 @@ Dockerfile
 README.md
 .*
 !.htaccess
+*.json
+!composer.json

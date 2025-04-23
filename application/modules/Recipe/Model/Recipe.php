@@ -89,6 +89,7 @@ class Recipe extends Model
 
     public function addToSQL(array $data, string $type = null): int
     {
+        $organizationId = App::getOrganizationId();
         $namesTable = [
             'reactive_model' => 'reactive_model',
             'unit_reactive' => 'unit_reactive',
@@ -114,6 +115,7 @@ class Recipe extends Model
             $dataAdd = $data[$name];
         }
         if ($type == 'modelRecipe') {
+            $data['recipe_model']['organization_id'] = $organizationId;
             $dataFirstAdd['recipe_model'] = $data['recipe_model'];
             $idFirstAdd = $this->addToSQL($dataFirstAdd);
             if (!$idFirstAdd) {
@@ -135,6 +137,7 @@ class Recipe extends Model
             return $this->addToSQL($dataSecondAdd);
         }
         if ($type == 'solutionAsReactive') {
+            $dataFirstAdd['library_reactive']['organization_id'] = $organizationId;
             $dataFirstAdd['library_reactive']['id_library_reactive_table_name'] = $libraryReactive['reactive_lab'];
             $idFirstAdd = $this->addToSQL($dataFirstAdd);
             if (!$idFirstAdd) {
@@ -152,6 +155,7 @@ class Recipe extends Model
 
     public function getFromSQL(string $name, string $having = null, string $order = null, string $limit = null): array
     {
+        $organizationId = App::getOrganizationId();
         $methodModel = new Methods();
 
         $nameArray = [
@@ -213,6 +217,7 @@ class Recipe extends Model
                 JOIN unit_of_concentration ON recipe_model.id_unit_of_concentration = unit_of_concentration.id
                 JOIN recipe_type ON  recipe_model.id_recipe_type= recipe_type.id
                 LEFT JOIN b_user ON  recipe_model.global_assigned =b_user.ID
+                WHERE recipe_model.organization_id = {$organizationId}
                 GROUP BY recipe_model.id
                 HAVING {$having}
                 ORDER BY {$order}
@@ -269,6 +274,7 @@ class Recipe extends Model
                 JOIN unit_of_concentration ON recipe_model.id_unit_of_concentration = unit_of_concentration.id
                 JOIN recipe_type ON  recipe_model.id_recipe_type= recipe_type.id
                 LEFT JOIN b_user ON  recipe_model.global_assigned =b_user.ID
+                WHERE recipe_model.organization_id = {$organizationId}
                 GROUP BY recipe_model.id
                 HAVING 1
         "
@@ -329,7 +335,8 @@ class Recipe extends Model
                             JOIN unit_of_quantity
                                  ON reactive_model.id_unit_of_quantity =
                                     unit_of_quantity.id) react
-                  ON react.id_library_reactive = library_reactive.id 
+                  ON react.id_library_reactive = library_reactive.id
+                  WHERE library_reactive.organization_id = {$organizationId}
 "
             );
         }
@@ -352,6 +359,7 @@ class Recipe extends Model
                                 JOIN reactive_pure ON reactive.id_pure = reactive_pure.id 
                                 JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity = unit_of_quantity.id                   
                 ) react ON  react.id_library_reactive= library_reactive.id
+                 WHERE library_reactive.organization_id = {$organizationId}
              "
             );
         }
@@ -361,7 +369,8 @@ class Recipe extends Model
                 "SELECT recipe_model.id,
             CONCAT( recipe_model.name,' C=',recipe_model.concentration,' ', unit_of_concentration.name) as name
             FROM recipe_model
-            JOIN unit_of_concentration ON recipe_model.id_unit_of_concentration = unit_of_concentration.id            
+            JOIN unit_of_concentration ON recipe_model.id_unit_of_concentration = unit_of_concentration.id
+            WHERE recipe_model.organization_id = {$organizationId}
              "
             );
         }
@@ -381,6 +390,7 @@ class Recipe extends Model
 
     public function getByID(string $name, $ID): string
     {
+        $organizationId = App::getOrganizationId();
         if ($name == 'idUnitOfQuantity') {
             $requestFromSQL = $this->DB->Query(
                 "SELECT reactive.id_unit_of_quantity 
@@ -393,7 +403,7 @@ class Recipe extends Model
                                     FROM reactive
                                     JOIN reactive_model ON reactive.id_reactive_model = reactive_model.id
                                 ) reactive ON reactive.id_library_reactive = unit_reactive.id_library_reactive
-                        WHERE is_solvent =1 and recipe_model.id = $ID        
+                        WHERE is_solvent =1 and recipe_model.id = $ID and recipe_model.organization_id = {$organizationId}      
              "
             );
         }
