@@ -165,7 +165,7 @@ class Lab extends Model
         if ( !empty($labIdList) ) {
             $labIdList = array_map('intval', $labIdList);
             $str = implode(',', $labIdList);
-            $where = "AND l.ID IN ({$str})";
+            $where .= " AND l.ID IN ({$str})";
         }
 
         $laboratories = $this->DB->Query(
