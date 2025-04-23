@@ -113,7 +113,8 @@ services:
     container_name: bitrix
     image: ${IMAGE_TAG_BITRIX:-reg.gitlab.itnap.ru/loki/infra:main}
     volumes:
-      - bitrix_data:/app
+      - bitrix_data:/target
+    command: sh -c "cp -r /app/* /target/ && echo 'Data copied to volume'"  
     networks:
       - lims-ulab
 
@@ -121,7 +122,8 @@ services:
     container_name: lims_ulab
     image: ${IMAGE_TAG:-reg.gitlab.itnap.ru/loki/lims:dev}
     volumes:
-      - web_data:/app
+      - web_data:/target
+    command: sh -c "cp -r /app/* /target/ && echo 'Data copied to volume'"  
     networks:
       - lims-ulab
 
