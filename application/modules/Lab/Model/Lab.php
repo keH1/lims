@@ -243,7 +243,7 @@ class Lab extends Model
         }
 
         $smtp = $this->DB->Query(
-            "SELECT * 
+            "SELECT r.* 
                 FROM ROOMS as r 
                 INNER JOIN ba_laba AS l ON r.LAB_ID = l.ID
                 WHERE LAB_ID IN ({$labID}) AND l.organization_id = {$organizationId}
