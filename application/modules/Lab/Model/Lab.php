@@ -352,8 +352,7 @@ class Lab extends Model
             }
         }
 
-        $where .= "u_c.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "u_c.organization_id = {$organizationId}";
 
         $result = [];
 

@@ -121,8 +121,7 @@ class NormDocGost extends Model
             }
         }
 
-        $where .= "g.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "g.organization_id = {$organizationId}";
 
         $result = [];
 
@@ -229,8 +228,7 @@ class NormDocGost extends Model
             }
         }
 
-        $where .= "g.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "g.organization_id = {$organizationId}";
 
         $data = $this->DB->Query(
             "select m.*, d.unit_rus, d.name as unit_name, d.fsa_id as unit_fsa_id

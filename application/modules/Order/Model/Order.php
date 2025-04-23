@@ -109,8 +109,7 @@ class Order extends Model {
                 }
             }
         }
-        $where .= "b.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "b.organization_id = {$organizationId}";
 
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.STAGE_ID, b.ID_Z, b.COMPANY_TITLE, b.DOGOVOR_TABLE, 
@@ -238,8 +237,7 @@ class Order extends Model {
             }
         }
 
-        $where .= "tz.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "tz.organization_id = {$organizationId}";
 
         $data = $this->DB->Query(
             "select 

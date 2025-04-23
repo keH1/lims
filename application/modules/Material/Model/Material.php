@@ -896,8 +896,7 @@ class Material extends Model
             }
         }
 
-        $where .= "m.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "m.organization_id = {$organizationId}";
 
         $data = $this->DB->Query(
             "SELECT * 

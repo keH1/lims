@@ -157,8 +157,7 @@ class Transport extends Model {
             }
         }
 
-        $where .= "v.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "v.organization_id = {$organizationId}";
 
         $result = [];
 
@@ -236,8 +235,7 @@ class Transport extends Model {
             }
         }
 
-        $where .= "organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "organization_id = {$organizationId}";
 
         $result = [];
 

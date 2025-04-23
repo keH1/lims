@@ -168,8 +168,7 @@ class Nk extends Model {
             }
         }
 
-        $where .= "ug.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "ug.organization_id = {$organizationId}";
 
         $result = [];
 
