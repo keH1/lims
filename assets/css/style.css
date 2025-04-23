@@ -640,7 +640,7 @@ button.dt-button.buttons-print:focus {
 
 /*journal filters*/
 
-#workarea .filters input[type="date"] {
+.filters input[type="date"] {
     background-color: #ffffff;
 }
 
