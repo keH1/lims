@@ -105,9 +105,8 @@ class Electric extends Model
             JOIN ROOMS ON ROOMS.id = electric_control.id_room
             JOIN b_user ON b_user.id = electric_control.global_assigned
             WHERE electric_control.organization_id = {$organizationId}
-            HAVING id_room {$filters['idWhichFilter']} AND
-                date BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']} 
-                 AND {$filters['having']}
+                AND id_room {$filters['idWhichFilter']}
+                AND date BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']} 
             ORDER BY {$filters['order']}
                 {$filters['limit']}
             ";
@@ -126,8 +125,9 @@ class Electric extends Model
                     $request = "
                 SELECT id AS id,
                 CONCAT(number,' - ', name) AS name
-                JOIN ba_laba as lab ON ROOMS.LAB_ID = lab.ID
-                FROM ROOMS WHERE lab.organization_id = {$organizationId}        
+                FROM ROOMS as r
+                JOIN ba_laba as lab ON r.LAB_ID = lab.ID
+                WHERE lab.organization_id = {$organizationId}        
              ";
                 }
             } else {
