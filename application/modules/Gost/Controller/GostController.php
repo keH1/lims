@@ -196,8 +196,6 @@ class GostController extends Controller
         $this->data['test_method_list'] = $methodsModel->getTestMethodList();
         $this->data['lab_list'] = $labModel->getList();
         $this->data['room_list'] = $labModel->getRoomByLabId($this->data['lab']);
-//        $this->data['assigned_list'] = $userModel->getAssignedUserListByLab($this->data['lab']);
-//        $this->data['lab_user_list'] = $labModel->getLabAndUser();
         $this->data['user_list'] = $userModel->getUserList1();
 
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
@@ -268,11 +266,8 @@ class GostController extends Controller
 
         $data = $_POST['form'];
 
+        // сбрасывает "проверено" при любом сохранении. можно добавить условие, чтобы сбрасывало только при изменениях (на будущее)
         $data['is_confirm'] = 0;
-
-        if ( in_array(App::getUserId(), [214]) ) {
-            $data['is_confirm'] = 1;
-        }
 
         $data['in_field'] = $_POST['form']['in_field'] ?? 0;
         $data['is_extended_field'] = $_POST['form']['is_extended_field'] ?? 0;
