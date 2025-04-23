@@ -370,7 +370,7 @@ class Recipe extends Model
             CONCAT( recipe_model.name,' C=',recipe_model.concentration,' ', unit_of_concentration.name) as name
             FROM recipe_model
             JOIN unit_of_concentration ON recipe_model.id_unit_of_concentration = unit_of_concentration.id
-            WHERE recipe_model.organization_id
+            WHERE recipe_model.organization_id = {$organizationId}
              "
             );
         }
