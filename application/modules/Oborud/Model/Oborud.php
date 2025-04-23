@@ -347,7 +347,7 @@ class Oborud extends Model {
                     $result['titleStage'] = 'Нет замечаний';
                 } else if (($poverka < 0) && !$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
                     $result['bgStage'] = 'bg-red';
-                    $result['titleStage'] = 'Истек срок поверки! ' . $poverka;
+                    $result['titleStage'] = 'Истек срок поверки!';
                 } else if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] == '0' && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
                     $result['bgStage'] = 'bg-light-blue';
                     $result['titleStage'] = 'Оборудование не проверено отделом метрологии!';
