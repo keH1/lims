@@ -253,6 +253,8 @@ class Lab extends Model
      */
     public function getJournalCondition($filter = [])
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -335,6 +337,7 @@ class Lab extends Model
             }
         }
 
+        $where .= "u_c.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $result = [];
@@ -352,7 +355,7 @@ class Lab extends Model
             "SELECT u_c.*, u_c.id u_c_id
                     FROM ulab_conditions u_c 
                     LEFT JOIN ROOMS AS r ON r.ID = u_c.room_id 
-                    WHERE 1"
+                    WHERE u_c.organization_id = {$organizationId}"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
@@ -412,7 +415,10 @@ class Lab extends Model
             return $response;
         }
 
-        $result = $this->DB->Query("SELECT * FROM ulab_conditions WHERE id = {$id}")->Fetch();
+        $organizationId = App::getOrganizationId();
+
+        $result = $this->DB->Query(
+            "SELECT * FROM ulab_conditions WHERE id = {$id} AND organization_id = {$organizationId}")->Fetch();
 
         if (!empty($result)) {
             $result['room_id'] = $result['room_id'] + 100;
@@ -431,6 +437,7 @@ class Lab extends Model
      */
     public function addConditions(array $data): int
     {
+        $data['organization_id'] = App::getOrganizationId();
         $sqlData = $this->prepearTableData('ulab_conditions', $data);
 
         $result = $this->DB->Insert('ulab_conditions', $sqlData);
@@ -446,9 +453,11 @@ class Lab extends Model
      */
     public function updateConditions(int $id, array $data)
     {
+        $organizationId = App::getOrganizationId();
+
         $sqlData = $this->prepearTableData('ulab_conditions', $data);
 
-        $where = "WHERE id = {$id}";
+        $where = "WHERE id = {$id} AND organization_id = {$organizationId}";
         return $this->DB->Update('ulab_conditions', $sqlData, $where);
     }
 
@@ -458,7 +467,8 @@ class Lab extends Model
      */
     public function removeConditionById(int $id)
     {
-        $this->DB->Query("DELETE FROM ulab_conditions WHERE id = {$id}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("DELETE FROM ulab_conditions WHERE id = {$id} AND organization_id = {$organizationId}");
     }
 
 
@@ -485,6 +495,8 @@ class Lab extends Model
         if ( empty($protocolId) || $protocolId < 0) {
             return $response;
         }
+
+        $organizationId = App::getOrganizationId();
 
         $ustSql = $this->DB->Query(
             "SELECT ust.* 
@@ -530,7 +542,7 @@ class Lab extends Model
                 FROM ulab_gost_to_probe ugtp 
                     INNER JOIN ulab_gost_room ugr on ugr.ugtp_id = ugtp.id 
                     INNER JOIN ulab_conditions uc on uc.room_id = ugr.room_id 
-                    WHERE {$where}"
+                    WHERE {$where} AND organization_id = {$organizationId}"
         )->Fetch();
 
         if ( !empty($conditionsSql) ) {
@@ -695,6 +707,7 @@ class Lab extends Model
     {
         $response = [];
         $where = "";
+        $organizationId = App::getOrganizationId();
 
         if ( empty($roomId) || $roomId < 0 || (empty($dateStart) && empty($dateEnd)) )  {
             return $response;
@@ -714,7 +727,7 @@ class Lab extends Model
 
         $result = $this->DB->Query(
             "SELECT DATE_FORMAT(DATE(created_at), '%d.%m.%Y') grouped_date FROM ulab_conditions
-                WHERE room_id = {$roomId} {$where} GROUP BY DATE(created_at)"
+                WHERE room_id = {$roomId} AND organization_id = {$organizationId} {$where} GROUP BY DATE(created_at)"
         );
 
         while ($row = $result->Fetch()) {
@@ -787,6 +800,7 @@ class Lab extends Model
     {
         $response = [];
         $where = "";
+        $organizationId = App::getOrganizationId();
 
         if ( empty($roomId) || $roomId < 0 || (empty($dateStart) && empty($dateEnd)) )  {
             return $response;
@@ -806,7 +820,7 @@ class Lab extends Model
 
         $result = $this->DB->Query(
             "SELECT COUNT(*) amount, MIN(temp) min_temp, MAX(temp) max_temp, MIN(humidity) min_humidity, MAX(humidity) max_humidity FROM ulab_conditions 
-                WHERE room_id = {$roomId} {$where}"
+                WHERE room_id = {$roomId} AND organization_id = {$organizationId} {$where} "
         )->Fetch();
 
         if (!empty($result)) {
@@ -986,8 +1000,13 @@ class Lab extends Model
     public function getConditionsRoomToday($roomId)
     {
         $now = date("Y-m-d");
+        $organizationId = App::getOrganizationId();
 
-        return $this->DB->Query("select * from ulab_conditions where room_id = {$roomId} and DATE(created_at) = DATE('{$now}') order by id desc ")->Fetch();
+        return $this->DB->Query(
+            "select * from ulab_conditions 
+                        where room_id = {$roomId} 
+                        and DATE(created_at) = DATE('{$now}') 
+                        and organization_id = {$organizationId} order by id desc ")->Fetch();
     }
 
     /**

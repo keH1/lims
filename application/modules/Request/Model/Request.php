@@ -163,7 +163,13 @@ class Request extends Model
             return $result;
         }
 
-        $ba_contr = $this->DB->Query("SELECT * FROM `DOGOVOR` WHERE `CLIENT_ID` = {$companyId}");
+        $organizationId = App::getOrganizationId();
+
+        $ba_contr = $this->DB->Query(
+            "SELECT d.* 
+                FROM `DOGOVOR` AS d 
+                INNER JOIN `ba_tz` AS tz ON tz.`ID` = d.`TZ_ID` 
+                WHERE d.`CLIENT_ID` = {$companyId} AND tz.`organization_id` = {$organizationId}");
 
         while ($row = $ba_contr->Fetch()) {
             $row['DATE'] = date("d.m.Y", strtotime($row['DATE']));

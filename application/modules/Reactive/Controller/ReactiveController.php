@@ -90,7 +90,10 @@ class ReactiveController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
+        $organizationId = App::getOrganizationId();
+
         $newAdd = $_POST['toSQL'];
+        $newAdd['reactive_receive']['organization_id'] = $organizationId;
 
         $isAdd = $usedModel->addToSQL($newAdd);
 

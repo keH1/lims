@@ -13,6 +13,8 @@ class NormDocGost extends Model
      */
     public function getJournalList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -119,6 +121,7 @@ class NormDocGost extends Model
             }
         }
 
+        $where .= "g.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $result = [];
@@ -139,7 +142,7 @@ class NormDocGost extends Model
             "SELECT distinct *
                     FROM ulab_norm_doc_gost g
                     LEFT JOIN ulab_norm_doc_methods m ON g.id = m.gost_id 
-                    WHERE 1"
+                    WHERE g.organization_id = {$organizationId}"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
             "SELECT distinct *
@@ -162,6 +165,8 @@ class NormDocGost extends Model
 
     public function methodsJournal($filter)
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -223,25 +228,30 @@ class NormDocGost extends Model
                 }
             }
         }
+
+        $where .= "g.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $data = $this->DB->Query(
             "select m.*, d.unit_rus, d.name as unit_name, d.fsa_id as unit_fsa_id
-                    from `ulab_norm_doc_methods` as m
-                    left join `ulab_dimension` as d on d.id = m.unit_id
+                    from `ulab_norm_doc_methods` as m 
+                    inner join `ulab_norm_doc_gost` as g on g.id = m.gost_id 
+                    left join `ulab_dimension` as d on d.id = m.unit_id 
                     where {$where} 
                     ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
         $dataTotal = $this->DB->Query(
             "select m.id
-                    from `ulab_norm_doc_methods` as m
-                    where m.`gost_id` =  {$filter['search']['id']}"
+                    from `ulab_norm_doc_methods` as m 
+                    inner join `ulab_norm_doc_gost` as g on g.id = m.gost_id 
+                    where m.`gost_id` =  {$filter['search']['id']} AND g.organization_id = {$organizationId}"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
             "select m.id
-                    from `ulab_norm_doc_methods` as m
+                    from `ulab_norm_doc_methods` as m 
+                    inner join `ulab_norm_doc_gost` as g on g.id = m.gost_id 
                     left join `ulab_dimension` as d on d.id = m.unit_id
                     where {$where} "
         )->SelectedRowsCount();
@@ -274,6 +284,7 @@ class NormDocGost extends Model
      */
     public function addGost($data)
     {
+        $data['organization_id'] = App::getOrganizationId();
         $sqlData = $this->prepearTableData('ulab_norm_doc_gost', $data);
 
         return $this->DB->Insert('ulab_norm_doc_gost', $sqlData);
@@ -316,7 +327,10 @@ class NormDocGost extends Model
      */
     public function getGost($idGost)
     {
-        return $this->DB->Query("select * from `ulab_norm_doc_gost` where id = {$idGost}")->Fetch();
+        $organizationId = App::getOrganizationId();
+        return $this->DB->Query(
+            "select * from `ulab_norm_doc_gost` where id = {$idGost} AND `organization_id` = {$organizationId}"
+        )->Fetch();
     }
 
 
@@ -325,13 +339,14 @@ class NormDocGost extends Model
      */
     public function deletePermanentlyGost($id)
     {
+        $organizationId = App::getOrganizationId();
         $methodList = $this->getListMethodByGostId($id);
 
         foreach ($methodList as $method) {
             $this->deletePermanentlyMethod($method['id']);
         }
 
-        $this->DB->Query("delete from ulab_norm_doc_gost where id = {$id}");
+        $this->DB->Query("delete from ulab_norm_doc_gost where id = {$id} AND organization_id = {$organizationId}");
     }
 
 
@@ -367,9 +382,11 @@ class NormDocGost extends Model
      */
     public function updateGost($id, $data)
     {
+        $organizationId = App::getOrganizationId();
+
         $sqlData = $this->prepearTableData('ulab_norm_doc_gost', $data);
 
-        $where = "WHERE id = {$id}";
+        $where = "WHERE id = {$id} AND organization_id = {$organizationId}";
 
         return $this->DB->Update('ulab_norm_doc_gost', $sqlData, $where);
     }
@@ -413,6 +430,8 @@ class NormDocGost extends Model
             return [];
         }
 
+        $organizationId = App::getOrganizationId();
+
         $result = $this->DB->Query(
             "select 
                     m.*, 
@@ -421,7 +440,7 @@ class NormDocGost extends Model
                 from `ulab_norm_doc_methods` as m
                 left join `ulab_dimension` as d on d.id = m.unit_id
                 inner join `ulab_norm_doc_gost` as g on g.id = m.gost_id 
-                where m.id = {$id}"
+                where m.id = {$id} AND g.organization_id = {$organizationId}"
         )->Fetch();
 
         if ( !empty($result) ) {
@@ -476,13 +495,15 @@ class NormDocGost extends Model
      */
     public function getListMethodByGostId($gostId)
     {
+        $organizationId = App::getOrganizationId();
+
         $sql = $this->DB->Query(
             "select m.*,
                         d.id unit_id, d.unit_rus, d.name unit_name
                     from `ulab_methods` as m
                     inner join ulab_gost as g on g.id = m.gost_id 
                     left join `ulab_dimension` as d on d.id = m.unit_id
-                    where m.`gost_id` = {$gostId} 
+                    where m.`gost_id` = {$gostId} AND g.organization_id = {$organizationId} 
                     order by m.id desc"
         );
 
@@ -507,6 +528,8 @@ class NormDocGost extends Model
      */
     public function getMethodList()
     {
+        $organizationId = App::getOrganizationId();
+
         $sql = $this->DB->Query(
             "select 
                     m.*, 
@@ -515,7 +538,7 @@ class NormDocGost extends Model
                 from `ulab_norm_doc_methods` as m
                 left join `ulab_dimension` as d on d.id = m.unit_id
                 inner join `ulab_norm_doc_gost` as g on g.id = m.gost_id 
-                where 1"
+                where `organization_id` = {$organizationId}"
         );
 
         $result = [];

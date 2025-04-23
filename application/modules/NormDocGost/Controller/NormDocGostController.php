@@ -69,13 +69,19 @@ class NormDocGostController extends Controller
     {
         $this->data['title'] = 'Редактирование нормативной документации';
 
-        /** @var NormDocGost $normDocGost */
-        $normDocGost = $this->model('NormDocGost');
+        /** @var NormDocGost $normDocGostModel */
+        $normDocGostModel = $this->model('NormDocGost');
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
+        $normDocGost = $normDocGostModel->getGost($id);
+        if (empty($normDocGost)) {
+            $this->showErrorMessage("Нормативной документации с ИД {$id} не существует");
+            $this->redirect('/normDocGost/list/');
+        }
+
         $this->data['id'] = $id;
-        $this->data['form'] = $normDocGost->getGost($id);
+        $this->data['form'] = $normDocGost;
 
         $this->data['methods_list'] = $methodsModel->getListByGostId($id);
 
@@ -91,15 +97,21 @@ class NormDocGostController extends Controller
     {
         $this->data['title'] = 'Редактирование Методики';
 
-        /** @var NormDocGost $normDocGost */
-        $normDocGost = $this->model('NormDocGost');
+        /** @var NormDocGost $normDocGostModel */
+        $normDocGostModel = $this->model('NormDocGost');
         /** @var Material $materialModel */
         $materialModel = $this->model('Material');
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
+        $normDocGost = $normDocGostModel->getMethod($id);
+        if (empty($normDocGost)) {
+            $this->showErrorMessage("Методики с ИД {$id} не существует");
+            $this->redirect('/normDocGost/list/');
+        }
+
         //// данные методики
-        $this->data['form'] = $normDocGost->getMethod($id);
+        $this->data['form'] = $normDocGost;
 
 //        if ( !$this->data['form']['is_confirm'] ) {
 //            $this->showWarningMessage('Методика не проверена отделом метрологии');

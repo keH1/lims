@@ -123,11 +123,15 @@ class MaterialController extends Controller
         /** @var NormDocGost $normDocGostModel */
         $normDocGostModel = $this->model('NormDocGost');
 
+        $data = $materialModel->getById($matID);
+        if (empty($data)) {
+            $this->showErrorMessage("Материал с ИД {$id} не существует");
+            $this->redirect('/material/list/');
+        }
+
         $this->data['title'] = "Карточка материала";
 
         $this->data['id'] = $matID;
-
-        $data = $materialModel->getById($matID);
 
         $this->data['groups'] = $materialModel->getGroupMaterial($matID);
 

@@ -22,6 +22,8 @@ class Order extends Model {
      */
     public function getDataToJournal($filter)
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -107,6 +109,7 @@ class Order extends Model {
                 }
             }
         }
+        $where .= "b.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $data = $this->DB->Query(
@@ -122,7 +125,7 @@ class Order extends Model {
             "SELECT count(*) val
                     FROM ba_tz b
                     INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''"
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}"
         )->Fetch();
 
         $dataFiltered = $this->DB->Query(
@@ -178,6 +181,8 @@ class Order extends Model {
      */
     public function getReviseDataToJournal($filter)
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -232,6 +237,8 @@ class Order extends Model {
                 }
             }
         }
+
+        $where .= "tz.organization_id = {$organizationId} AND ";
         $where .= "1 ";
 
         $data = $this->DB->Query(
@@ -255,7 +262,7 @@ class Order extends Model {
             from DOGOVOR as d
             inner join DEALS_TO_CONTRACTS as dtc on dtc.ID_CONTRACT = d.ID
             inner join ba_tz as tz on dtc.ID_DEAL = tz.ID_Z
-            group by d.ID"
+            where tz.organization_id = {$organizationId} group by d.ID"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
@@ -538,7 +545,15 @@ class Order extends Model {
      */
     public function getContractById(int $orderId)
     {
-        return $this->DB->Query("SELECT *, CONCAT(CONTRACT_TYPE, ' №', NUMBER, ' от ', DATE_FORMAT(`DATE`, '%d.%m.%Y')) AS cont FROM `DOGOVOR` WHERE ID = {$orderId}")->Fetch();
+        $organizationId = App::getOrganizationId();
+
+        return $this->DB->Query(
+            "SELECT d.*, 
+                        CONCAT(d.`CONTRACT_TYPE`, ' №', d.`NUMBER`, ' от ', DATE_FORMAT(d.`DATE`, '%d.%m.%Y')) AS cont 
+                    FROM `DOGOVOR` AS d 
+                    INNER JOIN `ba_tz` AS tz ON tz.`ID` = d.`TZ_ID` 
+                    WHERE d.`ID` = {$orderId} AND tz.`organization_id` = {$organizationId}"
+        )->Fetch();
     }
 
     /**

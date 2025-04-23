@@ -216,6 +216,8 @@ class Solution extends Model
         array $data,
         string $type = null
     ): int {
+        $organizationId = App::getOrganizationId();
+
         $namesTable = [
             'library_reactive'     => 'library_reactive',
             'reactive_lab'         => 'reactive_lab',
@@ -235,6 +237,7 @@ class Solution extends Model
                 $data['id_recipe_model']);
 
             if ($idRecipeModelCount['count'] == 0) {
+                $dataFirstAdd['library_reactive']['organization_id'] = $organizationId;
                 $dataFirstAdd['library_reactive']['id_library_reactive_table_name']
                     = $this->libraryReactive['reactive_lab'];
                 $idFirstAdd = $this->addToSQL($dataFirstAdd);
@@ -242,6 +245,7 @@ class Solution extends Model
                     return 0;
                 }
 
+                $dataSecondAdd['reactive_lab']['organization_id'] = $organizationId;
                 $dataSecondAdd['reactive_lab']['name'] = $data['name'];
                 $dataSecondAdd['reactive_lab']['id_recipe_model']
                     = $data['id_recipe_model'];
@@ -249,6 +253,8 @@ class Solution extends Model
                     = $unitsReactive[0]['id_unit_of_quantity'];
                 $dataSecondAdd['reactive_lab']['id_library_reactive']
                     = $idFirstAdd;
+                $dataSecondAdd['reactive_lab']['organization_id']
+                    = $organizationId;
 
                 $idSecondAdd = $this->addToSQL($dataSecondAdd);
                 if (!$idSecondAdd) {
@@ -262,6 +268,7 @@ class Solution extends Model
                 exit;
             }
 
+            $dataThirdAdd['reactive_lab_receive']['organization_id'] = $organizationId;
             $dataThirdAdd['reactive_lab_receive']['id_library_reactive']
                 = $idFirstAdd;
             $dataThirdAdd['reactive_lab_receive']['date_receive']
@@ -285,6 +292,7 @@ class Solution extends Model
                 $unitsReactiveId[] = $item['id_library_reactive'];
             }
 
+            $itemAdd['reactive_consume']['organization_id'] = $organizationId;
             $itemAdd['reactive_consume']['date']
                 = $data['date_preparation'];
             $itemAdd['reactive_consume']['type']
@@ -312,6 +320,7 @@ class Solution extends Model
 
     public function getFromSQL(string $typeName, array $filters = null): array
     {
+        $organizationId = App::getOrganizationId();
         /*
         if ($typeName == 'getListOLD') {
             $requestFromSQL = $this->DB->Query("
@@ -374,24 +383,24 @@ class Solution extends Model
                         ' ') AS names
                   FROM (SELECT reactive_consume.*
                                , CONCAT(id_library_reactive, '-', id_all_receive) AS id_id
-                          FROM reactive_consume) AS reactive_consume
+                          FROM reactive_consume WHERE reactive_consume.organization_id = {$organizationId}) AS reactive_consume
                            JOIN (SELECT id
                                       , CONCAT(id_library_reactive, '-', id) AS id_id
                                       , id_library_reactive
                                       , number
-                                 FROM reactive_receive
+                                 FROM reactive_receive WHERE reactive_receive.organization_id = {$organizationId} 
                                  UNION
                                  SELECT id
                                       , CONCAT(id_library_reactive, '-', id) AS id_id
                                       , id_library_reactive
                                       , number
-                                 FROM gso_receive
+                                 FROM gso_receive WHERE gso_receive.organization_id = {$organizationId} 
                                  UNION
                                  SELECT id
                                       , CONCAT(id_library_reactive, '-', id) AS id_id
                                       , id_library_reactive
                                       , number
-                                 FROM standart_titr_receive
+                                 FROM standart_titr_receive WHERE standart_titr_receive.organization_id = {$organizationId} 
                                  UNION
                                  SELECT reactive_lab_receive.id
                                       , CONCAT(reactive_lab_receive.id_library_reactive,
@@ -399,7 +408,7 @@ class Solution extends Model
                                                reactive_lab_receive.id) AS id_id
                                       , reactive_lab_receive.id_library_reactive
                                       , NULL
-                                 FROM reactive_lab_receive) reactives_receive
+                                 FROM reactive_lab_receive WHERE reactive_lab_receive.organization_id = {$organizationId}) reactives_receive
                                 ON reactives_receive.id_id =
                                      reactive_consume.id_id
                            LEFT JOIN
@@ -407,19 +416,19 @@ class Solution extends Model
                              , CONCAT('ГСО-', gso.number, '-') AS number
                              , name
                              , id_unit_of_quantity
-                        FROM gso
+                        FROM gso WHERE gso.organization_id = {$organizationId}
                         UNION
                         SELECT id_library_reactive
                              , 'Лаб. реактив' AS number
                              , name
                              , id_unit_of_quantity
-                        FROM reactive_lab
+                        FROM reactive_lab WHERE reactive_lab.organization_id = {$organizationId} 
                         UNION
                         SELECT id_library_reactive
                              , CONCAT('СТ-', standart_titr.number, '-') AS number
                              , name
                              , id_unit_of_quantity
-                        FROM standart_titr
+                        FROM standart_titr WHERE standart_titr.organization_id = {$organizationId} 
                         UNION
                         SELECT reactive.id_library_reactive
                              , CONCAT(reactive.number, '-') AS number
@@ -432,28 +441,32 @@ class Solution extends Model
                                  JOIN reactive_model
                                       ON reactive.id_reactive_model = reactive_model.id
                                  JOIN reactive_pure
-                                      ON reactive.id_pure = reactive_pure.id) reactives
+                                      ON reactive.id_pure = reactive_pure.id 
+                                      WHERE reactive.organization_id = {$organizationId}) reactives
                        ON reactives.id_library_reactive =
                           reactive_consume.id_library_reactive
                            JOIN unit_of_quantity
-                                ON unit_of_quantity.id = reactives.id_unit_of_quantity
+                                ON unit_of_quantity.id = reactives.id_unit_of_quantity  
                   GROUP BY reactive_consume.id_reactive_lab_receive) reactives_full
-                     LEFT JOIN reactive_lab_receive ON reactive_lab_receive.id =
-                                                       reactives_full.id_reactive_lab_receive
+                     LEFT JOIN reactive_lab_receive 
+                                ON reactive_lab_receive.id = reactives_full.id_reactive_lab_receive 
+                                AND reactive_lab_receive.organization_id = {$organizationId} 
                      LEFT JOIN reactive_lab
-                               ON reactive_lab_receive.id_reactive_lab = reactive_lab.id
+                               ON reactive_lab_receive.id_reactive_lab = reactive_lab.id 
+                               AND reactive_lab.organization_id = {$organizationId} 
                      LEFT JOIN recipe_model
-                               ON reactive_lab.id_recipe_model = recipe_model.id
-                     LEFT JOIN ba_gost ON recipe_model.id_doc = ba_gost.id
+                               ON reactive_lab.id_recipe_model = recipe_model.id 
+                     LEFT JOIN ba_gost ON recipe_model.id_doc = ba_gost.id 
                      LEFT JOIN b_user ON reactive_lab_receive.global_assigned = b_user.id
                      JOIN unit_of_quantity
-                          ON reactive_lab.id_unit_of_quantity = unit_of_quantity.id                     
+                          ON reactive_lab.id_unit_of_quantity = unit_of_quantity.id                       
             HAVING  id {$filters['idWhichFilter']} AND name_recipe is not null
                AND date_receive BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']} 
                  AND {$filters['having']}
             ORDER BY {$filters['order']}
                 {$filters['limit']}
         ";
+
         } /*else if ($typeName == 'getListReactive') {
             $requestFromSQL = "
             SELECT
@@ -550,11 +563,13 @@ class Solution extends Model
         string $name,
         $ID
     ): array {
+        $organizationId = App::getOrganizationId();
+
         if ($name == 'idRecipeModelCount') {
             $requestFromSQL = $this->DB->Query(
                 " SELECT  IFNULL(SUM(1),0) AS count, id_library_reactive, id
                         FROM reactive_lab
-                        WHERE id_recipe_model = $ID
+                        WHERE id_recipe_model = $ID AND organization_id = {$organizationId}
              "
             );
         }
@@ -571,7 +586,7 @@ class Solution extends Model
                                     FROM gso
                                     UNION
                                     SELECT id_unit_of_quantity, reactive_lab.id_library_reactive
-                                    FROM reactive_lab
+                                    FROM reactive_lab WHERE organization_id = {$organizationId} 
                                     UNION
                                     SELECT id_unit_of_quantity
                                          , standart_titr.id_library_reactive
