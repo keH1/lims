@@ -110,6 +110,7 @@ services:
       - lims-ulab
 
   bitrix:
+    container_name: bitrix
     image: ${IMAGE_TAG_BITRIX:-reg.gitlab.itnap.ru/loki/infra:main}
     volumes:
       - bitrix_data:/app
@@ -117,6 +118,7 @@ services:
       - lims-ulab
 
   lims-ulab:
+    container_name: lims-ulab
     image: ${IMAGE_TAG:-reg.gitlab.itnap.ru/loki/lims:dev}
     volumes:
       - web_data:/app
