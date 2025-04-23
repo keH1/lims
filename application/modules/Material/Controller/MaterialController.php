@@ -570,4 +570,18 @@ class MaterialController extends Controller
 
         echo json_encode([], JSON_UNESCAPED_UNICODE);
     }
+
+    /**
+     * @desc Устанавливает новое имя материала
+     */
+    public function setNewNameAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var  Material $materialModel */
+        $materialModel = $this->model('Material');
+
+        $materialModel->setNewName((int)$_POST['id_material'], $_POST['name']);
+    }
 }

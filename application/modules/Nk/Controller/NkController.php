@@ -24,7 +24,7 @@ class NkController extends Controller
         /** @var Nk $nkModel */
         $nkModel = $this->model('Nk');
 
-        $this->data['title'] = empty($id)? 'Создание градуировочной зависимости' : "Редактирование градуировочной зависимости";
+        $this->data['title'] = empty($id)? 'Создание листа измерений градуировочной зависимости' : "Редактирование листа измерений градуировочной зависимости";
 
         $graduation = $nkModel->getGraduation($id);
 
@@ -72,7 +72,7 @@ class NkController extends Controller
 
         $graduationId = (int)$_POST['id'];
         $location   = empty($graduationId)? '/nk/graduation/' : "/nk/graduation/{$graduationId}";
-        $successMsg = empty($graduationId)? 'Лист измерения успешно создан' : "Лист измерения успешно изменен";
+        $successMsg = empty($graduationId)? 'Лист измерения градуировочной зависимости успешно создан' : "Лист измерения градуировочной зависимости успешно изменен";
 
         $_SESSION['graduation_post'] = $_POST;
 

@@ -1055,4 +1055,18 @@ class Material extends Model
 
         return $materials;
     }
+
+    /**
+     * @param int $id_material
+     * @param string $name
+     */
+    public function setNewName(int $id_material, string $name)
+    {
+        $data = [
+            'NAME' => $name
+        ];
+        $sqlData = $this->prepearTableData('MATERIALS', $data);
+
+        $this->DB->Update('MATERIALS', $sqlData, "WHERE ID = {$id_material}");
+    }
 }

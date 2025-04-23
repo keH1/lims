@@ -55,6 +55,7 @@ class Reactiveconsumption extends Model
 
     public function addToSQL(array $data, string $typeName = null): int
     {
+        $organizationId = App::getOrganizationId();
         if ($typeName == null) {
             $dataAdd = $data;
         } else if ($typeName == 'reactiveConsume') {
@@ -64,6 +65,7 @@ class Reactiveconsumption extends Model
             $dataFirstAdd['reactive_consume'] = $data['reactive_consume'];
             $dataFirstAdd['reactive_consume'] ['id_library_reactive'] = $extractID[0];
             $dataFirstAdd['reactive_consume'] ['id_all_receive'] = $extractID[1];
+            $dataFirstAdd['reactive_consume'] ['organization_id'] = $organizationId;
 
             return $this->insertToSQL($dataFirstAdd);
         } else {
@@ -74,6 +76,7 @@ class Reactiveconsumption extends Model
 
     public function getFromSQL(string $typeName, array $filters = null): array
     {
+        $organizationId = App::getOrganizationId();
         if ($typeName == 'getList') {
             $request = " 
             SELECT reactives.number
@@ -131,7 +134,8 @@ class Reactiveconsumption extends Model
                           ON reactives.id_id = consume.id_id
                      JOIN unit_of_quantity
                           ON reactives.id_unit_of_quantity = unit_of_quantity.id
-                     LEFT JOIN b_user ON consume.global_assigned = b_user.id                    
+                     LEFT JOIN b_user ON consume.global_assigned = b_user.id
+            WHERE consume.organization_id = {$organizationId}
             HAVING id {$filters['idWhichFilter']} AND                
                    {$filters['having']}
             ORDER BY {$filters['order']}
@@ -193,7 +197,8 @@ class Reactiveconsumption extends Model
                                JOIN reactive_pure
                                     ON reactive.id_pure = reactive_pure.id) AS reactives
                          LEFT JOIN unit_of_quantity
-                                   ON unit_of_quantity.id = reactives.id_unit_of_quantity                                                   
+                                   ON unit_of_quantity.id = reactives.id_unit_of_quantity
+                      WHERE reactive.organization_id = {$organizationId}
              ";
             } else {
                 throw new InvalidArgumentException("Неизвестный аргумент {$this->selectInList[$typeName][0]} в константе selectInList");

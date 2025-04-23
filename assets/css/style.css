@@ -71,7 +71,7 @@ body.noscroll {
 a.no-decoration {
     text-decoration: none;
 }
-a.disabled, input.disabled, select.disabled {
+a.disabled, input.disabled, select.disabled, label.disabled {
     cursor: not-allowed;
     opacity: 0.5;
     pointer-events: none;

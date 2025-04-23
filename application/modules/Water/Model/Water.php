@@ -41,12 +41,15 @@ class Water extends Model
         } else {
             throw new InvalidArgumentException("Неизвестный аргумент $typeName в функции addToSQL");
         }
+        $dataAdd['water']['organization_id'] = App::getOrganizationId();
         return $this->insertToSQL($dataAdd);
 
     }
 
     private function getFromSQL(string $typeName, array $filters = null): array
     {
+        $organizationId = App::getOrganizationId();
+
         $parameters = ['uep', 'nh4', 'no3', 'so4', 'cl', 'al', 'fe', 'ca', 'pb', 'cu', 'zn'];
         if ($typeName == 'getList') {
             $parametersConclusion['ph'] = "IF(water.ph <= water_norm.ph_max
@@ -69,10 +72,13 @@ class Water extends Model
                         FROM water
                                  LEFT JOIN b_user ON  water.global_assigned =b_user.ID
                         LEFT JOIN water_norm ON water.id_water_norm=water_norm.id) water_full
+                WHERE water_full.organization_id = {$organizationId}
                 HAVING date_check >= {$filters['dateStart']} AND date_check  <= {$filters['dateEnd']}
                         AND {$filters['having']}
                 ORDER BY {$filters['order']}                    
-                {$filters['limit']}";
+                {$filters['limit']}
+
+                ";
         } elseif ($typeName == 'lastWaterNorm') {
             $request = "SELECT *, MAX(water_norm.global_entry_date) AS max
                 FROM water_norm";

@@ -8,15 +8,15 @@ $(function () {
         theme: 'bootstrap-5',
     })
 
+    let journalDataTable = null
     const $journal = $('#journal_all')
     const $trHeaderTitle = $journal.find('.header-title')
     const $trHeaderSearch = $journal.find('.header-search')
 
-    $('#select_entities').change(function () {
-        const entity = $(this).val()
-        const $selectColumnBlock = $('#select_columns_block')
+    let columns = []
+    let chartData = []
 
-        $selectColumnBlock.empty()
+    $('#select_entities').change(function () {
         if ( $.fn.DataTable.isDataTable('#journal_all') ) {
             $journal.DataTable().clear().destroy();
         }
@@ -26,46 +26,12 @@ $(function () {
 
         $('.chart-donut').empty()
         destroyChartBar()
-
-        $.ajax({
-            method: 'POST',
-            url: "/ulab/statistic/getStatisticColumnAjax/",
-            data: {
-                entity: entity,
-            },
-            dataType: "json",
-            success: function (data) {
-                $.each(data, function (i, item) {
-                    $selectColumnBlock.append(`
-                        <div class="col-4">
-                            <div class="form-check">
-                                <input class="form-check-input select_columns" type="checkbox" value="${i}" id="flexCheckDefault${i}" checked>
-                                <label class="form-check-label" for="flexCheckDefault${i}">
-                                    ${item.title}
-                                </label>
-                            </div>
-                        </div>
-                    `)
-                })
-
-                if ($selectColumnBlock.find('.form-check-input').length > 0 ) {
-                    $('#generate_journal').prop('disabled', false);
-                } else {
-                    $('#generate_journal').prop('disabled', true);
-                }
-            }
-        })
+        columns = []
     })
 
 
     $('#generate_journal').click(function () {
         const entity = $('#select_entities').val()
-        const column = $('.select_columns:checked').map(function () {
-            return $(this).val()
-        }).get()
-
-        let columns = [],
-            chartData = []
 
         if ( $.fn.DataTable.isDataTable('#journal_all') ) {
             $journal.DataTable().clear().destroy();
@@ -81,7 +47,6 @@ $(function () {
             url: "/ulab/statistic/getStatisticColumnAjax/",
             data: {
                 entity: entity,
-                column: column,
             },
             dataType: "json",
             success: function (data) {
@@ -129,7 +94,7 @@ $(function () {
                 })
 
                 /*journal requests*/
-                let journalDataTable = $journal.DataTable({
+                journalDataTable = $journal.DataTable({
                     destroy : true,
                     retrieve: true,
                     bAutoWidth: false,
@@ -147,63 +112,62 @@ $(function () {
                             d.dateStart = $('#inputDateStart').val()
                             d.dateEnd = $('#inputDateEnd').val()
                             d.entity = entity
-                            d.column = column
                         },
                         url : '/ulab/statistic/getStatisticConstructorJournal/',
                         dataSrc: function (json) {
-                            $('.chart-donut').empty()
-                            chartData = []
-
-                            if (Object.keys(json['chart']).length &&
-                                Object.keys(json['chart']['donut']).length) {
-                                let donuts = json['chart']['donut']
-
-                                $.each(donuts, function (k, donut) {
-                                    $.each(json.data, function (key, val) {
-                                        if ( val[donut['label']] === undefined || val[donut['label']] === null ) {
-                                            val[donut['label']] = ''
-                                        }
-
-                                        if (donut['formatted'] === undefined ||
-                                            val[donut['value']] == 0 ||
-                                            val[donut['value']]== null) {
-                                            return
-                                        }
-
-                                        let formatted = donut['formatted'].replace('{value}', val[donut['value']])
-
-                                        if (!chartData[k]) {
-                                            chartData[k] = []
-                                        }
-
-                                        chartData[k].push(
-                                            {
-                                                value: val[donut['value']],
-                                                label: val[donut['label']],
-                                                formatted: formatted
-                                            }
-                                        )
-                                    })
-                                })
-
-                                $.each(chartData, function (key, val) {
-                                    Morris.Donut({
-                                        element: `chart-donut-${key+1}`,
-                                        data: val,
-                                        backgroundColor: false,
-                                        colors: [
-                                            '#4acacb', '#fe8676', '#6a8bc0', '#808080',
-                                            '#ff8c00', '#ffd700', '#ba55d3', '#008000',
-                                            '#ff69b4', '#4682b4', '#ff7f50', '#bdb76b',
-                                            '#000080', '#800080', '#bc8f8f', '#d2691e',
-                                            '#ff0000', '#adff2f', '#5ab6df', '#9400d3',
-                                            '#2f4f4f', '#00ffff', '#708090', '#ffff00',
-                                            '#ff0000',
-                                        ],
-                                        formatter: function (x, data) { return data.formatted }
-                                    }).select(0)
-                                })
-                            }
+                            // $('.chart-donut').empty()
+                            // chartData = []
+                            //
+                            // if (Object.keys(json['chart']).length &&
+                            //     Object.keys(json['chart']['donut']).length) {
+                            //     let donuts = json['chart']['donut']
+                            //
+                            //     $.each(donuts, function (k, donut) {
+                            //         $.each(json.data, function (key, val) {
+                            //             if ( val[donut['label']] === undefined || val[donut['label']] === null ) {
+                            //                 val[donut['label']] = ''
+                            //             }
+                            //
+                            //             if (donut['formatted'] === undefined ||
+                            //                 val[donut['value']] == 0 ||
+                            //                 val[donut['value']]== null) {
+                            //                 return
+                            //             }
+                            //
+                            //             let formatted = donut['formatted'].replace('{value}', val[donut['value']])
+                            //
+                            //             if (!chartData[k]) {
+                            //                 chartData[k] = []
+                            //             }
+                            //
+                            //             chartData[k].push(
+                            //                 {
+                            //                     value: val[donut['value']],
+                            //                     label: val[donut['label']],
+                            //                     formatted: formatted
+                            //                 }
+                            //             )
+                            //         })
+                            //     })
+                            //
+                            //     $.each(chartData, function (key, val) {
+                            //         Morris.Donut({
+                            //             element: `chart-donut-${key+1}`,
+                            //             data: val,
+                            //             backgroundColor: false,
+                            //             colors: [
+                            //                 '#4acacb', '#fe8676', '#6a8bc0', '#808080',
+                            //                 '#ff8c00', '#ffd700', '#ba55d3', '#008000',
+                            //                 '#ff69b4', '#4682b4', '#ff7f50', '#bdb76b',
+                            //                 '#000080', '#800080', '#bc8f8f', '#d2691e',
+                            //                 '#ff0000', '#adff2f', '#5ab6df', '#9400d3',
+                            //                 '#2f4f4f', '#00ffff', '#708090', '#ffff00',
+                            //                 '#ff0000',
+                            //             ],
+                            //             formatter: function (x, data) { return data.formatted }
+                            //         }).select(0)
+                            //     })
+                            // }
 
                             return json.data
                         },
@@ -214,38 +178,41 @@ $(function () {
                     pageLength: 25,
                     order: [defaultOrder],
                     dom: 'frt<"bottom"lip>',
+                    initComplete: function (settings) {
+                        let api = this.api()
+                        api.columns().every(function () {
+                            let timeout
+                            $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'input', function () {
+                                clearTimeout(timeout)
+                                const searchValue = this.value
+                                timeout = setTimeout(function () {
+                                    api
+                                        .column($(this).parent().index())
+                                        .search(searchValue)
+                                        .draw()
+                                }.bind(this), 1000)
+                            })
+                        })
+                    }
                 });
-
-                journalDataTable.columns().every(function () {
-                    let timeout
-                    $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-                        clearTimeout(timeout)
-                        const searchValue = this.value
-                        timeout = setTimeout(function () {
-                            journalDataTable
-                                .column($(this).parent().index())
-                                .search(searchValue)
-                                .draw()
-                        }.bind(this), 1000)
-                    })
-                })
-
-                $('.filter').on('change', function () {
-                    journalDataTable.ajax.reload()
-
-                    destroyChartBar()
-                })
-
-                function reportWindowSize() {
-                    journalDataTable
-                        .columns.adjust()
-                }
-
-                window.onresize = reportWindowSize
-
             }
         })
     })
+
+    $body.on('change', '.filter', function () {
+        if ( $.fn.DataTable.isDataTable('#journal_all') ) {
+            journalDataTable.ajax.reload()
+        }
+        destroyChartBar()
+    })
+
+    function reportWindowSize() {
+        if ( $.fn.DataTable.isDataTable('#journal_all') ) {
+            journalDataTable.columns.adjust()
+        }
+    }
+
+    window.onresize = reportWindowSize
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()
@@ -416,6 +383,7 @@ $(function () {
      */
     function destroyChartBar() {
         if (chartBar) {
+            chartData = []
             $chartBarBlock.addClass('d-none')
             chartBar.destroy();
         }

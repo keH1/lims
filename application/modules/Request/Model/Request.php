@@ -1748,6 +1748,7 @@ class Request extends Model
      */
     public function getDatatoJournalInvoice(array $filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $having = "";
         $limit = "";
@@ -1895,7 +1896,7 @@ class Request extends Model
             }
         }
 
-        $where .= "1";
+        $where .= "b.organization_id = {$organizationId}";
         $having .= "1";
 
         $result = [];
@@ -1925,7 +1926,7 @@ class Request extends Model
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
                     LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
@@ -1999,12 +2000,18 @@ class Request extends Model
      */
     public function getConfirmNotAccountTz()
     {
+        $organizationId = App::getOrganizationId();
         $year = date("Y", time())%10 ? substr(date("Y", time()), -2) : date("Y", time());
 
         $smtp = $this->DB->Query(
             "SELECT b.ID_Z, b.ID, b.REQUEST_TITLE, b.COMPANY_TITLE 
                     FROM ba_tz b, `CHECK_TZ` ch 
-                    WHERE b.ACCOUNT IS NULL AND ch.tz_id = b.ID AND ch.confirm = 1 AND b.REQUEST_TITLE LIKE '%/{$year}' GROUP BY b.ID ORDER BY b.ID DESC");
+                    WHERE b.ACCOUNT IS NULL 
+                      AND ch.tz_id = b.ID 
+                      AND ch.confirm = 1 
+                      AND b.REQUEST_TITLE LIKE '%/{$year}' 
+                      AND b.organization_id = {$organizationId}
+                    GROUP BY b.ID ORDER BY b.ID DESC");
 
         $result = [];
 
@@ -2049,14 +2056,16 @@ class Request extends Model
 
 	public function getTakenDealByDealId($dealId)
 	{
-		$takenDeal = $this->DB->Query("SELECT TAKEN_ID_DEAL FROM ba_tz WHERE ID_Z = {$dealId}")->Fetch();
+        $organizationId = App::getOrganizationId();
+		$takenDeal = $this->DB->Query("SELECT TAKEN_ID_DEAL FROM ba_tz WHERE ID_Z = {$dealId} AND organization_id = {$organizationId}")->Fetch();
 
 		return $takenDeal['TAKEN_ID_DEAL'];
 	}
 
     public function updateDealScheme($dealId, $schemeId)
     {
-        $this->DB->Query("UPDATE ba_tz SET scheme_id = '{$schemeId}' WHERE ID_Z = {$dealId}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("UPDATE ba_tz SET scheme_id = '{$schemeId}' WHERE ID_Z = {$dealId} AND organization_id = {$organizationId}");
     }
 
     public function getDealScheme($schemeId)
@@ -2126,9 +2135,21 @@ class Request extends Model
         }
         
         $addedFiles = 0;
-        foreach ($data['filePaths'] as $filePath) {
+        $fileNameMap = [];
+        
+        foreach ($data['filePaths'] as $index => $filePath) {
             $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filePath;
-            $fileName = basename($filePath);
+            $originalFileName = basename($filePath);
+            
+            if (isset($fileNameMap[$originalFileName])) {
+                $fileNameMap[$originalFileName]++;
+                $fileExt = pathinfo($originalFileName, PATHINFO_EXTENSION);
+                $fileNameWithoutExt = pathinfo($originalFileName, PATHINFO_FILENAME);
+                $fileName = $fileNameWithoutExt . '_' . $fileNameMap[$originalFileName] . '.' . $fileExt;
+            } else {
+                $fileNameMap[$originalFileName] = 0;
+                $fileName = $originalFileName;
+            }
             
             if (file_exists($fullPath)) {
                 $zip->addFile($fullPath, $fileName);
@@ -2160,5 +2181,151 @@ class Request extends Model
             unlink($zipPath);
             exit;
         }
+    }
+
+    /**
+     * Обновляет статус заявки
+     * @param string $stage
+     * @param int $tzId
+     */
+    public function updateApplicationStage(string $stageId, int $tzId)
+    {
+        $stageNumber = 0;
+        $text = null;
+        
+        switch ($stageId) {
+            case 'NEW':
+            case 'PREPARATION':
+            case 'PREPAYMENT_INVOICE':
+            case 'EXECUTING':
+                $stageNumber = 0;
+                break;
+            case 'FINAL_INVOICE':
+                $stageNumber = 1;
+                break;
+            case '1':
+                $stageNumber = 2;
+                break;
+            case '2':
+                $stageNumber = 3;
+                break;
+            case '4':
+                $stageNumber = 4;
+                break;
+            case 'WON':
+                $stageNumber = 6;
+                $text = 'Акты получены сделка завершена!';
+                break;
+            case 'LOSE':
+                $stageNumber = 7;
+                $text = 'Сделка не состоялась!';
+                break;
+            case '5':
+                $stageNumber = 9;
+                $text = 'Не устроила цена!';
+                break;
+            case '6':
+                $stageNumber = 9;
+                $text = 'Заказчик не выходит на связь!';
+                break;
+            case '7':
+                $stageNumber = 9;
+                $text = 'Не проводим подобные испытания!';
+                break;
+            case '8':
+                $stageNumber = 9;
+                $text = 'Создана другая заявка по данному запросу!';
+                break;
+            case '9':
+                $stageNumber = 9;
+                $text = 'Заказчик выбрал лабораторию в своем городе!';
+                break;
+            case '10':
+                $stageNumber = 9;
+                $text = 'Заказчик решил не проводить испытания!';
+                break;
+            case '11':
+                $stageNumber = 9;
+                $text = 'Отказались сами - большая загруженность!';
+                break;
+            case '12':
+                $stageNumber = 9;
+                $text = 'Судебная экспертиза!';
+                break;
+            case '13':
+                $stageNumber = 9;
+                $text = 'Участие в тендере!';
+                break;
+        }
+        
+        $resultSelectTz = $this->DB->Query("SELECT * FROM `ba_tz` WHERE `ID` = " . $tzId)->Fetch();
+        
+        $dealEdited = [];
+        if (!empty($resultSelectTz['ID_Z'])) {
+            $dealEdited = $this->getDealById($resultSelectTz['ID_Z']);
+        }
+        
+        if ($resultSelectTz && !empty($resultSelectTz['ACT_NUM']) && 
+            ($dealEdited['STAGE_ID'] == 'NEW' || 
+             $dealEdited['STAGE_ID'] == 'PREPARATION' || 
+             $dealEdited['STAGE_ID'] == 'PREPAYMENT_INVOICE' || 
+             $dealEdited['STAGE_ID'] == 'EXECUTING')) {
+            $stageNumber = 1;
+        }
+        
+        if ($resultSelectTz && !empty($resultSelectTz['PRICE']) && 
+            !empty($resultSelectTz['RESULTS']) && 
+            (empty($resultSelectTz['OPLATA']) || $resultSelectTz['OPLATA'] < $resultSelectTz['PRICE']) && 
+            $dealEdited['STAGE_ID'] == '2') {
+            $stageNumber = 5;
+        }
+        
+        $resUpd = '';
+        if (!empty($resultSelectTz['ID_Z'])) {
+            if (CModule::IncludeModule('crm')) {
+                $deal = new CCrmDeal;
+                $arDealUpdate = array('STAGE_ID' => $stageId);
+                $resUpd = $deal->Update($resultSelectTz['ID_Z'],
+                    $arDealUpdate,
+                    true,
+                    true,
+                    array('DISABLE_USER_FIELD_CHECK' => true)
+                );
+            }
+        }
+        
+        if ($stageId === 'WON') {
+            $actVr = $this->DB->Query("SELECT * FROM `AKT_VR` WHERE `TZ_ID`= {$tzId}")->Fetch();
+
+            if ($actVr && !empty($resultSelectTz['ID_Z'])) {
+                $dealId = $resultSelectTz['ID_Z'];
+               
+                $completedActRecord = $this->DB->Query("SELECT * FROM `CompletedAct` WHERE `request_id` = {$dealId}")->Fetch();
+
+                $data = [
+                    'act_number' => $actVr['NUMBER'],
+                    'request_id' => $dealId,
+                    'date_act'   => $actVr['DATE']
+                ];
+                $sqlData = $this->prepearTableData('CompletedAct', $data);
+                
+                if ($completedActRecord) {
+                    $this->DB->Update('CompletedAct', $sqlData, "WHERE request_id = {$dealId}");
+                } else {
+                    $this->DB->Insert('CompletedAct', $sqlData);
+                }
+                
+                $_SESSION['message_success'] = "Сделка успешно завершена";
+            }
+        }
+
+        $data = [
+            'STAGE_ID' => $stageId,
+            'STAGE_NUMBER' => $stageNumber
+        ];
+        $sqlData = $this->prepearTableData('ba_tz', $data);
+        $this->DB->Update('ba_tz', $sqlData, "WHERE ID = {$tzId}");
+
+        return $resUpd;
     }
 }

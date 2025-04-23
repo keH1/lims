@@ -126,10 +126,11 @@ class Grain extends Model
 
     public function getGrainSeaveValues(int $grainListID): array
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
         $query = $this->DB->Query("SELECT *
                                    FROM ZERN
-                                   WHERE ID = " . $grainListID
+                                   WHERE ID = {$grainListID} AND organization_id = {$organizationId}"
         )->Fetch();
 
         $result = [
@@ -144,6 +145,7 @@ class Grain extends Model
 
     public function update(int $grainListID, array $post): void
     {
+        $organizationId = App::getOrganizationId();
         $name = StringHelper::removeSpace($post['grain_list_name'] ?? '');
         $name = $this->DB->ForSql($name);
         $zern = $this->DB->Query("SELECT ID FROM ZERN WHERE NAME LIKE '{$name}'")->Fetch();
@@ -156,6 +158,7 @@ class Grain extends Model
         $data['DATA'] =  json_encode($post['grain'], JSON_UNESCAPED_UNICODE);
         $data['NORM1'] =  serialize($post['NORM1']);
         $data['NORM2'] =  serialize($post['NORM2']);
+        $data['organization_id'] =  $organizationId;
 
         $sqlData = $this->prepearTableData('ZERN', $data);
 
@@ -165,6 +168,7 @@ class Grain extends Model
 
     public function getDataToJournalGrain(array $filter = []): array
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -201,7 +205,7 @@ class Grain extends Model
                 }
             }
         }
-        $where .= "1 ";
+        $where .= "organization_id = {$organizationId} ";
 
         $result = [];
 
@@ -214,11 +218,11 @@ class Grain extends Model
         ");
 
         $dataTotal = $this->DB->Query("SELECT count(*) val
-                                       FROM ZERN
+                                       FROM ZERN WHERE organization_id = {$organizationId}
         ")->Fetch();
 
         $dataFiltered = $this->DB->Query("SELECT count(*) val
-                                          FROM ZERN
+                                          FROM ZERN WHERE organization_id = {$organizationId}
         ")->Fetch();
 
         while ($row = $data->Fetch()) {
@@ -234,16 +238,17 @@ class Grain extends Model
 
     public function addZern(string $name): int
     {
+        $organizationId = App::getOrganizationId();
         $name = StringHelper::removeSpace($name);
         $name = $this->DB->ForSql($name);
-        $zern = $this->DB->Query("SELECT ID FROM ZERN WHERE NAME LIKE '{$name}'")->Fetch();
+        $zern = $this->DB->Query("SELECT ID FROM ZERN WHERE organization_id = {$organizationId} AND NAME LIKE '{$name}'")->Fetch();
 
         $zernId = (int)$zern['ID'];
         if (!empty($zernId)) {
             return $zernId;
         }
 
-        $sqlData = $this->prepearTableData('ZERN', ['NAME' => $name]);
+        $sqlData = $this->prepearTableData('ZERN', ['NAME' => $name,'organization_id' => $organizationId]);
         $result = $this->DB->Insert('ZERN', $sqlData);
 
         return intval($result);

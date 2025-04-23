@@ -52,12 +52,13 @@ class Lab extends Model
      */
     public function getLabAndUser($labId = 0)
     {
+        $organizationId = App::getOrganizationId();
         $userModel = new User();
 
-        $where = "1";
+        $where = "organization_id = {$organizationId}";
 
         if ( $labId > 0 ) {
-            $where = "l.id = {$labId}";
+            $where = " AND l.id = {$labId}";
         }
 
         $sql = $this->DB->Query("select l.* from ba_laba as l where {$where}");
@@ -99,9 +100,9 @@ class Lab extends Model
      */
     public function getList(): array
     {
+        $organizationId = App::getOrganizationId();
         $results = [];
-
-        $laboratories = $this->DB->Query("SELECT * FROM `ba_laba` where id_dep is not null");
+        $laboratories = $this->DB->Query("SELECT * FROM `ba_laba` where organization_id = {$organizationId} and id_dep is not null");
 
         while ($row = $laboratories->Fetch()) {
             $row['DEPARTMENT'] = $row['id_dep'];
@@ -118,9 +119,10 @@ class Lab extends Model
      */
     public function get($labId)
     {
+        $organizationId = App::getOrganizationId();
         if (empty($labId)) { return []; }
 
-        return $this->DB->Query("select * from ba_laba where ID = {$labId}")->Fetch();
+        return $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and ID = {$labId}")->Fetch();
     }
 
 
@@ -130,9 +132,10 @@ class Lab extends Model
 	 */
 	public function getLabaById($id)
 	{
+        $organizationId = App::getOrganizationId();
 		if (empty($id)) { return []; }
 
-		$result = $this->DB->Query("select * from ba_laba where ID = {$id}")->Fetch();
+		$result = $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and ID = {$id}")->Fetch();
 
 		return $result['short_name'];
 	}
@@ -144,9 +147,10 @@ class Lab extends Model
      */
     public function getLabByDepartment($departmentId)
     {
+        $organizationId = App::getOrganizationId();
         if (empty($departmentId)) { return []; }
 
-        return $this->DB->Query("select * from ba_laba where `id_dep` = {$departmentId}")->Fetch();
+        return $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and `id_dep` = {$departmentId}")->Fetch();
     }
 
 
@@ -155,18 +159,19 @@ class Lab extends Model
      */
     public function getLabaRoom($labIdList = [])
     {
-        $where = '1';
+        $organizationId = App::getOrganizationId();
+        $where = 'l.ID = r.LAB_ID AND l.organization_id = ' . $organizationId;
 
         if ( !empty($labIdList) ) {
             $labIdList = array_map('intval', $labIdList);
             $str = implode(',', $labIdList);
-            $where = "l.ID IN ({$str})";
+            $where .= " AND l.ID IN ({$str})";
         }
 
         $laboratories = $this->DB->Query(
             "SELECT l.NAME laba_name, r.LAB_ID, r.NUMBER, r.ID room_id, r.NAME room_name, r.PLACEMENT 
                 FROM `ba_laba` as l, ROOMS as r 
-                WHERE l.ID = r.LAB_ID AND {$where}
+                WHERE {$where}
                 ORDER BY r.LAB_ID"
         );
 
@@ -203,7 +208,14 @@ class Lab extends Model
      */
     public function getRooms()
     {
-        $smtp = $this->DB->Query("SELECT * FROM `ROOMS`");
+        $organizationId = App::getOrganizationId();
+
+        $smtp = $this->DB->Query("
+            SELECT * FROM `ROOMS` as r
+            INNER JOIN ba_laba AS l
+             ON r.LAB_ID = l.ID
+            WHERE l.organization_id = {$organizationId}
+        ");
 
         $result = [];
 
@@ -221,6 +233,8 @@ class Lab extends Model
      */
     public function getRoomByLabId($labID)
     {
+        $organizationId = App::getOrganizationId();
+
         if ( empty($labID) ) {
             return [];
         }
@@ -230,8 +244,9 @@ class Lab extends Model
 
         $smtp = $this->DB->Query(
             "SELECT * 
-                FROM ROOMS 
-                WHERE LAB_ID IN ({$labID})
+                FROM ROOMS as r 
+                INNER JOIN ba_laba AS l ON r.LAB_ID = l.ID
+                WHERE LAB_ID IN ({$labID}) AND l.organization_id = {$organizationId}
                 ORDER BY LAB_ID"
         );
 

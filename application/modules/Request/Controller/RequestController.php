@@ -107,10 +107,12 @@ class RequestController extends Controller
 
         $this->data['contracts'] = [];
 
-        $this->addCSS("/assets/plugins/popup/main.popup.bundle.css");
-        $this->addJs('/assets/plugins/popup/main.popup.bundle.js');
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
 
-        $this->addJs('/assets/js/request_new.js');
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
+
+        $this->addJs('/assets/js/request_new.js?v=2');
 
         $this->view('form');
     }
@@ -227,7 +229,12 @@ class RequestController extends Controller
         $this->data['display'] = $this->getDisplayClass();
         $this->data['type_list'] = $request->getTypeRequestList();
 
-        $this->addJs('/assets/js/request_new.js');
+        $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
+
+        $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
+
+        $this->addJs('/assets/js/request_new.js?v=2');
 
         $this->view('form');
     }
@@ -259,22 +266,22 @@ class RequestController extends Controller
 
         $this->validationForAll($_POST, $location);
 
+        if ( empty($_POST['company_id']) ) {
+            $companyId = $company->add($_POST['company']);
+
+            if ( $companyId === false ) {
+                $this->showErrorMessage("Не удалось создать нового Клиента");
+                $this->redirect($location);
+            }
+        } else {
+            $companyId = (int)$_POST['company_id'];
+        }
+
         if ($_POST['REQ_TYPE'] === 'SALE') {
             $this->validationSale($_POST, $location);
 
-            // Только для типа заявки SALE
             $resetId = 1;
-            if ( empty($_POST['company_id']) ) {
-                $companyId = $company->add($_POST['company']);
-
-                if ( $companyId === false ) {
-                    $this->showErrorMessage("Не удалось создать нового Клиента");
-                    $this->redirect($location);
-                }
-            } else {
-                $companyId = (int)$_POST['company_id'];
-            }
-
+            
             $dataBank = [
                 'ENTITY_ID'                 => $companyId,
                 'ENTITY_TYPE_ID'            => CCrmOwnerType::Company,
@@ -340,9 +347,6 @@ class RequestController extends Controller
 
                 $additionalData[] = $work;
             }
-
-            //Для типа заявки гос. работ возвращаем только company_id
-            $companyId = (int)$_POST['company_id'];
 
             $saveMail = 'N;';
             $orderName = '';
@@ -1615,6 +1619,14 @@ class RequestController extends Controller
     private function prepareProposalData($requirement, $proposalData, $requestData, $tzId, $dealId, $isExistTz, $actVr)
     {
         // Коммерческое предложение
+        $this->data['proposal']['why_disable_mail'] = '';
+        if ( empty($proposalData) ) {
+            $this->data['proposal']['why_disable_mail'] .= 'Не сформировано коммерческое предложение. ';
+        }
+        if ( !empty($actVr) ) {
+            $this->data['proposal']['why_disable_mail'] .= 'Создан акт выполненных работ.';
+        }
+
         $this->data['proposal']['link'] = "/ulab/generator/CommercialOffer/{$dealId}";
         $this->data['proposal']['check'] = !empty($proposalData['ID']);
         $this->data['proposal']['number'] = $proposalData['ID'] ?? 'Не сформировано';
@@ -2109,5 +2121,33 @@ class RequestController extends Controller
         ];
 
         $requestModel->createProtocolsArchive($data);
+    }
+
+    /**
+     * Обновляет статус заявки
+     */
+    public function updateApplicationStageAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+        
+        /** @var Request $requestModel */
+        $requestModel = $this->model('Request');
+
+        $stageId = !empty($_POST['stage_id']) ? $_POST['stage_id'] : '';
+        $tzId = !empty($_POST['tz_id']) ? (int)$_POST['tz_id'] : 0;
+
+        $result = $requestModel->updateApplicationStage($stageId, $tzId);
+        
+        if ($result) {
+            echo json_encode([
+                'success' => true
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Не удалось обновить статус сделки'
+            ]);
+        }
     }
 }

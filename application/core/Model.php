@@ -320,6 +320,7 @@ class Model
         } else {
             $dataAdd['global_assigned'] = App::getUserId();
         }
+        $dataAdd['organization_id'] = App::getOrganizationId();
 
         $dataAdd['global_entry_date'] = date("Y-m-d H:i:s");
         $this->checkAndAddGlobal($nameTable, $dataAdd);

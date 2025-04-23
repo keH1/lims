@@ -3,7 +3,7 @@
         <ul class="nav">
             <li class="nav-item me-2">
                 <a class="nav-link" href="/ulab/oborud/list/" title="Вернуться к списку">
-                    <i class="fa-solid fa-list"></i>
+                    <i class="fa-solid fa-arrow-left-long"></i>
                 </a>
             </li>
             <?php if (!empty($this->data['id'])): ?>
@@ -59,11 +59,11 @@
                     </div>
                 </li>
             <?php endif; ?>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Equipment_card/Equipment_card.html" title="Техническая поддержка">
-                    <i class="fa-solid fa-question"></i>
-                </a>
-            </li>
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Equipment_card/Equipment_card.html" title="Техническая поддержка">-->
+<!--                    <i class="fa-solid fa-question"></i>-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
     </nav>
 </header>

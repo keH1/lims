@@ -6,11 +6,11 @@
                     <i class="fa-solid fa-plus"></i>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="<?=URI?>/help/LIMS_Manual_Stand/VLK/Sample_list/Sample_list.html" title="Техническая поддержка">
-                    <i class="fa-solid fa-question"></i>
-                </a>
-            </li>
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link popup-help" href="--><?//=URI?><!--/help/LIMS_Manual_Stand/VLK/Sample_list/Sample_list.html" title="Техническая поддержка">-->
+<!--                    <i class="fa-solid fa-question"></i>-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
     </nav>
 </header>
@@ -54,7 +54,7 @@
         <th scope="col" class="text-nowrap">Дата выпуска</th>
         <th scope="col" class="text-nowrap">Годен до</th>
         <th scope="col">Метрологические характеристики</th>
-        <th scope="col">История</th>
+<!--        <th scope="col">История</th>-->
     </tr>
     <tr class="header-search">
         <th scope="col"></th>
@@ -73,7 +73,7 @@
         <th scope="col">
             <input type="text" class="form-control search">
         </th>
-        <th scope="col"></th>
+<!--        <th scope="col"></th>-->
     </tr>
     </thead>
     <tbody>

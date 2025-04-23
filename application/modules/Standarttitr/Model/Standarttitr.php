@@ -102,6 +102,7 @@ class Standarttitr extends Model
 
     public function getFromSQL(string $typeName, array $filters = null): array
     {
+        $organizationId = App::getOrganizationId();
         if ($typeName == 'getList') {
             $request = "
             SELECT CONCAT('СТ-', standart_titr.number, IFNULL
@@ -139,10 +140,12 @@ class Standarttitr extends Model
                      JOIN standart_titr_manufacturer
                           ON standart_titr_receive.id_standart_titr_manufacturer =
                              standart_titr_manufacturer.id
-                     LEFT JOIN b_user ON standart_titr_receive.global_assigned = b_user.id  
+                     LEFT JOIN b_user ON standart_titr_receive.global_assigned = b_user.id
+            WHERE standart_titr.organization_id = {$organizationId}
             HAVING  id {$filters['idWhichFilter']}             
                      AND                   {$filters['having']}
                     ORDER BY date_receive IS NULL DESC, {$filters['order']}
+                    
                     {$filters['limit']} 
         ";
         } elseif ($typeName == 'data_for_update') {
@@ -159,7 +162,7 @@ class Standarttitr extends Model
             FROM standart_titr_receive
             LEFT JOIN standart_titr ON standart_titr.id_library_reactive =
                                     standart_titr_receive.id_library_reactive  
-                WHERE standart_titr_receive.id = {$filters['id']}                  
+                WHERE standart_titr_receive.id = {$filters['id']} AND standart_titr_receive.organization_id = {$organizationId}                  
                              ";
         } elseif (array_key_exists($typeName, $this->selectInList)) {
             if ($this->selectInList[$typeName][0] == 1) {

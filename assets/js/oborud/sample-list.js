@@ -50,13 +50,13 @@ $(function () {
                     return $components;
                 }
             },
-            {
-                data: 'HISTORY',
-                orderable: false,
-                render: function (data, type, item) {
-                    return `<a href="#" data-id="${item.ID}" class="control-samples-history"><i class="fa-regular fa-clock"></i></a>`;
-                }
-            },
+            // {
+            //     data: 'HISTORY',
+            //     orderable: false,
+            //     render: function (data, type, item) {
+            //         return `<a href="#" data-id="${item.ID}" class="control-samples-history"><i class="fa-regular fa-clock"></i></a>`;
+            //     }
+            // },
         ],
         language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],

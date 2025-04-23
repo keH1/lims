@@ -6,36 +6,36 @@
                     <i class="fa-solid fa-plus icon-fix"></i>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link" href="/protocol_generator/oborud_card2.php?ID=0" title="Скачать карточки">
-                    Скачать карточки
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link" href="/protocol_generator/metr_request.php" title="Скачать заявку на поверку">
-                    Скачать заявку на поверку
-                </a>
-            </li>
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link" href="/protocol_generator/oborud_card2.php?ID=0" title="Скачать карточки">-->
+<!--                    Скачать карточки-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link" href="/protocol_generator/metr_request.php" title="Скачать заявку на поверку">-->
+<!--                    Скачать заявку на поверку-->
+<!--                </a>-->
+<!--            </li>-->
             <li class="nav-item me-2">
                 <a class="nav-link" href="/protocol_generator/passport_rc.php" title="Скачать формы 2-5">
                     Скачать формы 2-5
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-with-form" href="#verification_graph" title="Скачать график">
-                    Скачать график
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-with-form" href="#inv_graph" title="Скачать график">
-                    Скачать Инв. ведомость
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Lists/Equipment_list/equipment_list.html" title="Техническая поддержка">
-                    <i class="fa-solid fa-question"></i>
-                </a>
-            </li>
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link popup-with-form" href="#verification_graph" title="Скачать график">-->
+<!--                    Скачать график-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link popup-with-form" href="#inv_graph" title="Скачать график">-->
+<!--                    Скачать Инв. ведомость-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Lists/Equipment_list/equipment_list.html" title="Техническая поддержка">-->
+<!--                    <i class="fa-solid fa-question"></i>-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
     </nav>
 </header>
