@@ -986,6 +986,7 @@ $(function ($) {
 function getHtmlMethod(methodList, normDocList, gostNumber = 0, defaultMethod = 0, defaultTu = 0) {
     let optionMethod = getHtmlOptionsMethod(methodList, defaultMethod)
     let optionCondition = getHtmlOptionsNormDoc(normDocList, defaultTu)
+    let typeRequest = $('#type_id').val()
 
     return `<div class="row justify-content-between method-block mb-2" data-gost_number="${gostNumber}">
                 <div class="col-4">
@@ -1014,7 +1015,7 @@ function getHtmlMethod(methodList, normDocList, gostNumber = 0, defaultMethod = 
                         <option value="">Исполнитель</option>
                     </select>
                 </div>
-                <div class="col">
+                <div class="col ${typeRequest == 9? 'd-none' : ''}">
                     <div class="input-group">
                         <input class="form-control price-input" name="form[${gostNumber}][price]" type="number" min="0" step="0.01" value="0">
                         <span class="input-group-text">₽</span>
@@ -1188,6 +1189,7 @@ function getHtmlOptionGost(gostList, defaultId) {
 function createChild(row) {
     // row — исходный объект данных
     let rowData = row.data()
+    let typeRequest = $('#type_id').val()
 
     let probeId = []
     const dealId = rowData.deal_id
@@ -1204,7 +1206,7 @@ function createChild(row) {
                 <th scope="col">Методика испытаний</th>
                 <th scope="col">Нормативная документация</th>
                 <th scope="col">Исполнитель</th>
-                <th scope="col">Цена</th>
+                <th scope="col" class="${typeRequest == 9? 'd-none' : ''}">Цена</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -1296,8 +1298,13 @@ function createChild(row) {
         language: dataTablesSettings.language,
         initComplete: function (settings) {
             let api = this.api()
+
+            if ( typeRequest == 9 ) { // 9 - ид гос заявок
+                let column = api.column(4)
+                column.visible(false)
+            }
+
             api.columns().every(function () {
-                console.log('asdadsa')
                 let timeout
                 $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'input', function () {
                     clearTimeout(timeout)
