@@ -153,6 +153,7 @@
 
         <input type="hidden" id="tz_id" name="tz_id" value="<?= $this->data['tz_id'] ?>">
         <input type="hidden" id="deal_id" name="deal_id" value="<?= $this->data['deal_id'] ?>">
+        <input type="hidden" id="type_id" value="<?= $this->data['tz']['TYPE_ID'] ?>">
         <input type="hidden" id="clear_confirm" name="clear_confirm" value="0">
 
         <div class="panel panel-default">
@@ -649,17 +650,17 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-4">
+    <div class="row justify-content-between">
+        <div class="<?=$this->data['tz']['TYPE_ID'] == '9'? 'col-3' : 'col-4'?>">
             <label class="form-label mb-1">Методика испытаний <span class="redStars">*</span></label>
         </div>
-        <div class="col-4">
+        <div class="<?=$this->data['tz']['TYPE_ID'] == '9'? 'col-3' : 'col-4'?>">
             <label class="form-label mb-1">Нормативная документация</label>
         </div>
-        <div class="col-2">
+        <div class="<?=$this->data['tz']['TYPE_ID'] == '9'? 'col-3' : 'col-2'?>">
             <label class="form-label mb-1">Исполнитель</label>
         </div>
-        <div class="col">
+        <div class="<?=$this->data['tz']['TYPE_ID'] == '9'? 'd-none' : 'col'?>">
             <label class="form-label mb-1">Цена</label>
         </div>
     </div>
