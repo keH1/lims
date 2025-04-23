@@ -95,15 +95,17 @@ $(function ($) {
     })
 
     function toggleProbe() {
-        let probeIdList = $journalMethods.find(".probe-check:checked").map(function() {
+        const checkedProbe = $journalMethods.find(".probe-check:checked")
+
+        let probeIdList = checkedProbe.map(function() {
             return $(this).val();
         }).get()
 
-        let stateList = $journalMethods.find(".probe-check:checked").map(function() {
+        let stateList = checkedProbe.map(function() {
             return $(this).data('state');
         }).get()
 
-        let measurementIdList = $journalMethods.find(".probe-check:checked").map(function() {
+        let measurementIdList = checkedProbe.map(function() {
             let tmp = $(this).data('measurement_id')
             if ( tmp === `undefined` ) { return }
             return $(this).data('measurement_id')
