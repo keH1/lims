@@ -913,10 +913,6 @@ $(function ($) {
                 `)
             },
             complete: function () {
-                $form.find('input[type="text"]').val('')
-                $form.find('input[type="file"]').val('')
-                $form.find('input[type="number"]').val(1)
-
                 journalDataTable.ajax.reload()
 
                 $button.html(btnHtml)
