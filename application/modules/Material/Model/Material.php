@@ -42,13 +42,13 @@ class Material extends Model
         return $result;
     }
 
-
     /**
-     * @param $id
+     * @param int $id
      */
-    public function changeActiveMaterial($id)
+    public function changeActiveMaterial(int $id): void
     {
         $organizationId = App::getOrganizationId();
+
         $this->DB->Query("update `MATERIALS` set `is_active` = ! `is_active` where ID = {$id} AND `organization_id` = {$organizationId}");
     }
 
@@ -1032,10 +1032,18 @@ class Material extends Model
         return $result;
     }
 
-    public function setName($id_material, $name)
+    /**
+     * @param int $id_material
+     * @param string $name
+     * @return bool
+     */
+    public function setName(int $id_material, string $name): bool
     {
         $organizationId = App::getOrganizationId();
-        $this->DB->Query("UPDATE MATERIALS SET NAME = '{$name}' WHERE ID = '{$id_material}' AND organization_id = {$organizationId}");
+        $sqlData = $this->prepearTableData('MATERIALS', ['NAME' => $name]);
+
+        $where = "WHERE ID = {$id_material} AND organization_id = {$organizationId}";
+        return (bool)$this->DB->Update('MATERIALS', $sqlData, $where);
     }
 
     /**

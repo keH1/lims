@@ -253,8 +253,6 @@ class Solution extends Model
                     = $unitsReactive[0]['id_unit_of_quantity'];
                 $dataSecondAdd['reactive_lab']['id_library_reactive']
                     = $idFirstAdd;
-                $dataSecondAdd['reactive_lab']['organization_id']
-                    = $organizationId;
 
                 $idSecondAdd = $this->addToSQL($dataSecondAdd);
                 if (!$idSecondAdd) {

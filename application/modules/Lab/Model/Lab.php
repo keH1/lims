@@ -1009,18 +1009,34 @@ class Lab extends Model
 
     /**
      * @param $roomId
-     * @return array|false
+     * @return array
      */
     public function getConditionsRoomToday($roomId)
     {
-        $now = date("Y-m-d");
+        $roomId = (int)$roomId;
+        $response = [];
+
+        if ($roomId <= 0) {
+            return $response;
+        }
+
         $organizationId = App::getOrganizationId();
 
-        return $this->DB->Query(
-            "select * from ulab_conditions 
-                        where room_id = {$roomId} 
-                        and DATE(created_at) = DATE('{$now}') 
-                        and organization_id = {$organizationId} order by id desc ")->Fetch();
+        $result = $this->DB->Query("
+            SELECT *
+            FROM ulab_conditions
+            WHERE room_id = {$roomId}
+                AND organization_id = {$organizationId}
+                AND created_at >= CURRENT_DATE()
+                AND created_at <  CURRENT_DATE() + INTERVAL 1 DAY
+            ORDER BY id DESC
+        ")->Fetch();
+
+        if (!empty($result) && is_array($result)) {
+            $response = $result;
+        }
+
+        return $response;
     }
 
     /**
