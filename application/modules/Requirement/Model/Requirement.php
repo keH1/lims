@@ -2707,9 +2707,20 @@ class Requirement extends Model
                     $nameWithoutExt = ($lastDotIndex !== false) ? substr($filename, 0, $lastDotIndex) : $filename;
                     
                     if (mb_strlen($filename) > 35) {
-                        $result[$inc]['display_name'] = mb_substr($filename, 0, 32) . '...';
+                        $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
+                        $filenameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+                        
+                        $maxFilenameLength = 32 - mb_strlen($fileExtension) - 4;
+                        $trimmedFilename = mb_substr($filenameWithoutExt, 0, $maxFilenameLength) . '...';
+                        
+                        $result[$inc]['display_name'] = $trimmedFilename;
+                        $result[$inc]['display_extension'] = $fileExtension;
                     } else {
-                        $result[$inc]['display_name'] = $filename;
+                        $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
+                        $filenameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+                        
+                        $result[$inc]['display_name'] = $filenameWithoutExt;
+                        $result[$inc]['display_extension'] = $fileExtension;
                     }
                 }
             }

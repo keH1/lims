@@ -636,7 +636,7 @@
                         <?php if (!empty($protocol['protocol_file_path']) && $protocol['protocol_file_path']): ?>
                             <span><?= $protocol['display_name'] ?></span>
                             <span class="<?= $protocol['extension_class'] ?>">
-                                <?= "." . $protocol['type_file'] ?>
+                                .<?= $protocol['display_extension'] ?>
                             </span>
                         <?php else: ?>
                             <span>Нет файла протокола</span>

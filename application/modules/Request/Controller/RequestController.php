@@ -1817,6 +1817,7 @@ class RequestController extends Controller
         }
 
         $this->data['protocol_modal'] = $requirement->getWorkProtocolFiles($requestData['ID_Z']);
+
         $this->data['empty_protocol_files'] = false;
         foreach ($this->data['protocol_modal'] as $protocol) {
             if (!empty($protocol['protocol_file_path'])) {
