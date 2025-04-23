@@ -2159,7 +2159,7 @@ class Request extends Model
             }
             return;
         }
-        
+
         if (file_exists($zipPath)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/zip');
@@ -2321,5 +2321,18 @@ class Request extends Model
         $this->DB->Update('ba_tz', $sqlData, "WHERE ID = {$tzId}");
 
         return $resUpd;
+    }
+
+    /**
+     * Обновляет статус протокола
+     * @param int $dealId
+     */
+    public function updateProtocolStatus(int $dealId)
+    {
+        $sqlData = [
+            'PROTOCOL_SEND_DATE' => date('Y-m-d')
+        ];
+        $sqlData = $this->prepearTableData('ba_tz', $sqlData);
+        $this->DB->Update('ba_tz', $sqlData, "WHERE ID_Z = {$dealId}");
     }
 }
