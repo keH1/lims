@@ -2708,16 +2708,16 @@ class Requirement extends Model
 
                     $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
                     $filenameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+                    $result[$inc]['display_extension'] = $fileExtension;
                     
                     if (mb_strlen($filename) > 35) {
                         $maxFilenameLength = 32 - mb_strlen($fileExtension) - 4;
                         $trimmedFilename = mb_substr($filenameWithoutExt, 0, $maxFilenameLength) . '...';
                         
                         $result[$inc]['display_name'] = $trimmedFilename;
-                        $result[$inc]['display_extension'] = $fileExtension;
+
                     } else {
                         $result[$inc]['display_name'] = $filenameWithoutExt;
-                        $result[$inc]['display_extension'] = $fileExtension;
                     }
                 }
             }
