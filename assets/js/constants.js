@@ -1,4 +1,6 @@
 const REGEX = {
     // Очистка строки от нечисловых символов
-    NUMBERS_ONLY: /[^0-9]/g
+    NUMBERS_ONLY: /[^0-9]/g,
+    // Поиск всех пробелов
+    FIND_SPACES: /\s+/g
 }
