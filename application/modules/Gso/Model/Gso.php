@@ -59,6 +59,8 @@ class Gso extends Model
 
     public function addToSQL(array $data, string $type = null): int
     {
+        $organizationId = App::getOrganizationId();
+
         $namesTable = [
             'gso_manufacturer' => 'gso_manufacturer',
             'gso' => 'gso',
@@ -88,6 +90,7 @@ class Gso extends Model
                 return 0;
             }
             $data['gso'] ['id_library_reactive'] = $idFirstAdd;
+            $data['gso']['organization_id'] = $organizationId;
             $dataSecondAdd['gso'] = $data['gso'];
 
             $idSecondAdd = $this->addToSQL($dataSecondAdd);
@@ -102,6 +105,7 @@ class Gso extends Model
         if ($type == 'gsoReceive') {
             $idLibraryReactive = $this->getByID('idLibraryReactive', $data['gso_receive']['id_gso']);
             $data['gso_receive']['id_library_reactive'] = $idLibraryReactive;
+            $data['gso_receive']['organization_id'] = $organizationId;
             $dataFirstAdd['gso_receive'] = $data['gso_receive'];
             $idFirstAdd = $this->addToSQL($dataFirstAdd);
             if (!$idFirstAdd) {

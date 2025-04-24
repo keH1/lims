@@ -28,6 +28,11 @@ class NkController extends Controller
 
         $graduation = $nkModel->getGraduation($id);
 
+        if (empty($graduation)) {
+            $this->showErrorMessage("Градуировочной зависимости с ИД {$id} не существует");
+            $this->redirect('/nk/graduationList/');
+        }
+
         if (isset($_SESSION['graduation_post'])) {
             $this->data['id'] = (int)$_SESSION['graduation_post']['id'];
             $this->data['object'] = $_SESSION['graduation_post']['form']['object'] ?? '';

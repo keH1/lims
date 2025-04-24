@@ -10,13 +10,15 @@ class Transport extends Model {
      */
     public function create(array $data, string $table): int
     {
-        foreach ($data as $key => $item) {
-            if (is_string($item)) {
-                $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
-            }
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+            return 0;
         }
 
-        $result = $this->DB->Insert($table, $data);
+        $data['organization_id'] = App::getOrganizationId();
+
+        $sqlData = $this->prepearTableData($table, $data);
+
+        $result = $this->DB->Insert($table, $sqlData);
 
         return intval($result);
     }
@@ -28,24 +30,23 @@ class Transport extends Model {
      */
     public function update(array $data, string $table, int $id)
     {
-        foreach ($data as $key => $item) {
-            if (is_string($item)) {
-                $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
-            }
-        }
+        $organizationId = App::getOrganizationId();
 
-        $where = "WHERE ID = {$id}";
-        return $this->DB->Update($table, $data, $where);
+        $sqlData = $this->prepearTableData($table, $data);
+
+        $where = "WHERE ID = {$id} AND organization_id = {$organizationId}";
+        return $this->DB->Update($table, $sqlData, $where);
     }
 
     public function getTransportList()
     {
         $response = [];
+        $organizationId = App::getOrganizationId();
 
         $result = $this->DB->Query("
             SELECT v.*, f_t.title, f_t.price FROM transport AS v
             LEFT JOIN fuel_types AS f_t ON v.fuel_id = f_t.id 
-            WHERE v.del != 1
+            WHERE v.del != 1 AND v.organization_id = {$organizationId}
         ");
 
         while ($row = $result->fetch()) {
@@ -57,10 +58,12 @@ class Transport extends Model {
 
     public function getTransportById($id)
     {
+        $organizationId = App::getOrganizationId();
+
         $result = $this->DB->Query("
             SELECT v.*, f_t.title, f_t.price FROM transport AS v
             LEFT JOIN fuel_types AS f_t ON v.fuel_id = f_t.id 
-            WHERE v.id = {$id}
+            WHERE v.id = {$id} AND v.organization_id = {$organizationId}
         ");
 
         return $result->fetch();
@@ -69,10 +72,9 @@ class Transport extends Model {
     public function getFuelTypes()
     {
         $response = [];
+        $organizationId = App::getOrganizationId();
 
-        $result = $this->DB->Query("
-            SELECT * FROM fuel_types
-        ");
+        $result = $this->DB->Query("SELECT * FROM fuel_types WHERE organization_id = {$organizationId}");
 
         while ($row = $result->fetch()) {
             $response[] = $row;
@@ -84,6 +86,7 @@ class Transport extends Model {
     public function getTransportListToJournal($filter)
     {
         global $DB;
+        $organizationId = App::getOrganizationId();
 
         $where = "del != 1 AND ";
         $limit = "";
@@ -154,7 +157,7 @@ class Transport extends Model {
             }
         }
 
-        $where .= "1 ";
+        $where .= "v.organization_id = {$organizationId}";
 
         $result = [];
 
@@ -167,7 +170,7 @@ class Transport extends Model {
 
         $dataTotal = $this->DB->Query("
             SELECT v.id AS val FROM transport AS v
-            LEFT JOIN fuel_types AS f_t ON v.fuel_id = f_t.id WHERE del != 1"
+            LEFT JOIN fuel_types AS f_t ON v.fuel_id = f_t.id WHERE del != 1 AND v.organization_id = {$organizationId}"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
@@ -189,6 +192,7 @@ class Transport extends Model {
     public function getFuelListToJournal($filter)
     {
         global $DB;
+        $organizationId = App::getOrganizationId();
 
         $where = "";
         $limit = "";
@@ -231,7 +235,7 @@ class Transport extends Model {
             }
         }
 
-        $where .= "1 ";
+        $where .= "organization_id = {$organizationId}";
 
         $result = [];
 
@@ -241,14 +245,10 @@ class Transport extends Model {
             ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
-        $dataTotal = $this->DB->Query("
-            SELECT * FROM fuel_types"
-        )->SelectedRowsCount();
+        $dataTotal = $this->DB->Query(
+            "SELECT * FROM fuel_types WHERE organization_id = {$organizationId}")->SelectedRowsCount();
 
-        $dataFiltered = $this->DB->Query(
-            "SELECT * FROM fuel_types
-             WHERE {$where}"
-        )->SelectedRowsCount();
+        $dataFiltered = $this->DB->Query("SELECT * FROM fuel_types WHERE {$where}")->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
             $result[] = $row;
@@ -302,6 +302,7 @@ class Transport extends Model {
     public function getReposrtListToJournal($filter)
     {
         global $DB;
+        $organizationId = App::getOrganizationId();
 
         $where = "t_r.del != 1 AND ";
         $limit = "";
@@ -412,7 +413,7 @@ class Transport extends Model {
                    CONCAT(b_u.LAST_NAME, ' ', UPPER(SUBSTRING(b_u.NAME,1,1)), '.') AS fio,
                    t.model AS transport_model, t.number AS transport_number
             FROM transport_report AS t_r
-            LEFT JOIN transport AS t ON t.id = t_r.transport_id 
+            LEFT JOIN transport AS t ON t.id = t_r.transport_id AND t.organization_id = {$organizationId}
             LEFT JOIN b_user AS b_u ON b_u.ID = t_r.user_id 
             WHERE {$where}
             ORDER BY {$order['by']} {$order['dir']} {$limit}"
@@ -492,6 +493,7 @@ class Transport extends Model {
     public function getDataByReportId($id)
     {
         global $DB;
+        $organizationId = App::getOrganizationId();
 
         $result = [];
 
@@ -499,7 +501,7 @@ class Transport extends Model {
             SELECT t_r.id, t_r.user_id, t_r.transport_id, t.model, t.number, t.consumption_rate, 
                    CONCAT(b_u.LAST_NAME, ' ', UPPER(SUBSTRING(b_u.NAME,1,1)), '.') AS fio 
             FROM transport_report AS t_r 
-            LEFT JOIN transport AS t ON t.id = t_r.transport_id 
+            LEFT JOIN transport AS t ON t.id = t_r.transport_id AND t.organization_id = {$organizationId}
             LEFT JOIN b_user AS b_u ON b_u.ID = t_r.user_id 
             WHERE t_r.id = {$id}"
         );

@@ -98,7 +98,7 @@ Class OrderController extends Controller
 
 
     /**
-     * @desc Получает данные для журнала договоров
+     * @desc Получает данные для журнала сверки
      */
     public function getReviseDataJournalAjax()
     {
@@ -170,6 +170,11 @@ Class OrderController extends Controller
         $this->data['title'] = "Карточка договора";
 
         $contract = $order->getContractById($contractID);
+        if (empty($contract)) {
+            $this->showErrorMessage("Договора с ИД {$contractID} не существует");
+            $this->redirect('/order/list');
+        }
+
         $requisite = $company->getRequisiteByCompanyId($contract['CLIENT_ID']);
         $company = $company->getById($contract['CLIENT_ID']);
         $requestByOrder = $order->getDealToContractByContractId($contractID);
