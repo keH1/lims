@@ -338,7 +338,6 @@ $(function ($) {
                 },
                 complete: function () {
                     journalDataTableUsers.ajax.reload()
-                    journalDataTableUsers.draw()
                 }
             })
         }
