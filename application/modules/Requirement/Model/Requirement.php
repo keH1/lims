@@ -2668,6 +2668,11 @@ class Requirement extends Model
     public function getWorkProtocolFiles(int $dealId): array
     {
         $result = [];
+        // Максимальная длина имени файла для отображения
+        $maxFilenameDisplayLength = 35;
+        // Максимальная длина имени файла для отображения в таблице
+        $maxDisplayNameLength = 32;
+        $ellipsisLength = 4;
 
         $sql = $this->DB->Query(
             "SELECT gw.id, gw.name
@@ -2705,11 +2710,19 @@ class Requirement extends Model
                     
                     $lastDotIndex = strrpos($filename, '.');
                     $nameWithoutExt = ($lastDotIndex !== false) ? substr($filename, 0, $lastDotIndex) : $filename;
+
+                    $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
+                    $filenameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+                    $result[$inc]['display_extension'] = $fileExtension;
                     
-                    if (mb_strlen($filename) > 35) {
-                        $result[$inc]['display_name'] = mb_substr($filename, 0, 32) . '...';
+                    if (mb_strlen($filename) > $maxFilenameDisplayLength) {
+                        $maxFilenameLength = $maxDisplayNameLength - mb_strlen($fileExtension) - $ellipsisLength;
+                        $trimmedFilename = mb_substr($filenameWithoutExt, 0, $maxFilenameLength) . '...';
+                        
+                        $result[$inc]['display_name'] = $trimmedFilename;
+
                     } else {
-                        $result[$inc]['display_name'] = $filename;
+                        $result[$inc]['display_name'] = $filenameWithoutExt;
                     }
                 }
             }

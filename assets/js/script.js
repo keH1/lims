@@ -353,6 +353,8 @@ $(function ($) {
         midClick: true,
         callbacks: {
             open: function() {
+                this.popupId = $(this.st.el).attr('href')
+
                 $('.mfp-content').css({
                     'max-height': '90vh',
                     'overflow-y': 'auto'
@@ -374,6 +376,14 @@ $(function ($) {
             },
             afterClose: function() {
                 $('#add-certificate-modal-form')[0]?.reset()
+                $('#add-work-modal-form')[0]?.reset()
+                // $(this.popupId)[0]?.reset()
+                
+                if (this.popupId) {
+                    $(this.popupId).find('select.select2').each(function() {
+                        $(this).val('').trigger('change')
+                    })
+                }
             }
         }
     })
