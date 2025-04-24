@@ -19,7 +19,10 @@ class Nk extends Model {
             return $response;
         }
 
-        $result = $this->DB->Query("SELECT * FROM ulab_graduation WHERE id = {$id}")->Fetch();
+        $organizationId = App::getOrganizationId();
+
+        $result = $this->DB->Query(
+            "SELECT * FROM `ulab_graduation` WHERE id = {$id} AND `organization_id` = {$organizationId}")->Fetch();
 
         if (!empty($result)) {
             $result['data_json'] = $result['data'];
@@ -38,7 +41,9 @@ class Nk extends Model {
     {
         $response = [];
 
-        $result = $this->DB->Query("SELECT * FROM ulab_graduation");
+        $organizationId = App::getOrganizationId();
+
+        $result = $this->DB->Query("SELECT * FROM ulab_graduation WHERE organization_id = {$organizationId}");
 
         while ($row = $result->Fetch()) {
             $row['data_json'] = $row['data'];
@@ -57,6 +62,7 @@ class Nk extends Model {
      */
     public function addGraduation($data)
     {
+        $data['organization_id'] = App::getOrganizationId();
         $data['data'] = json_encode($data, JSON_UNESCAPED_UNICODE);
         $data['date'] = $data['date'] ?: date('Y-m-d');
 
@@ -73,12 +79,13 @@ class Nk extends Model {
      */
     public function updateGraduation($id, $data)
     {
+        $organizationId = App::getOrganizationId();
         $data['data'] = json_encode($data, JSON_UNESCAPED_UNICODE);
         $data['date'] = $data['date'] ?: date('Y-m-d');
 
         $sqlData = $this->prepearTableData('ulab_graduation', $data);
 
-        $where = "WHERE id = {$id}";
+        $where = "WHERE id = {$id} AND organization_id = {$organizationId}";
         return $this->DB->Update('ulab_graduation', $sqlData, $where);
     }
 
@@ -91,6 +98,8 @@ class Nk extends Model {
     {
         /** @var Permission $permissionModel */
         $permissionModel = new Permission;
+
+        $organizationId = App::getOrganizationId();
 
         $where = "";
         $limit = "";
@@ -159,7 +168,7 @@ class Nk extends Model {
             }
         }
 
-        $where .= "1 ";
+        $where .= "ug.organization_id = {$organizationId}";
 
         $result = [];
 
@@ -172,7 +181,7 @@ class Nk extends Model {
 
         $dataTotal = $this->DB->Query(
             "SELECT *
-                    FROM ulab_graduation ug"
+                    FROM ulab_graduation ug WHERE ug.organization_id = {$organizationId}"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
             "SELECT distinct *

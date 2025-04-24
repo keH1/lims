@@ -19,6 +19,8 @@ class Material extends Model
      */
     public function getList($isActive = true): array
     {
+        $organizationId = App::getOrganizationId();
+
         $str = '';
         if ( $isActive ) {
             $str = "and is_active = 1";
@@ -26,7 +28,7 @@ class Material extends Model
         $result = [];
         $materials = $this->DB->Query(
             "SELECT * FROM `MATERIALS` 
-            WHERE `NAME` <> '' {$str}
+            WHERE `NAME` <> '' {$str} AND `organization_id` = {$organizationId} 
             group by `NAME`, `GROUPS`
             ORDER BY `NAME` ASC"
         );
@@ -40,13 +42,14 @@ class Material extends Model
         return $result;
     }
 
-
     /**
-     * @param $id
+     * @param int $id
      */
-    public function changeActiveMaterial($id)
+    public function changeActiveMaterial(int $id): void
     {
-        $this->DB->Query("update `MATERIALS` set `is_active` = ! `is_active` where ID = {$id}");
+        $organizationId = App::getOrganizationId();
+
+        $this->DB->Query("update `MATERIALS` set `is_active` = ! `is_active` where ID = {$id} AND `organization_id` = {$organizationId}");
     }
 
 
@@ -56,7 +59,10 @@ class Material extends Model
      */
     public function getById(int $materialId)
     {
-        $material = $this->DB->Query("SELECT * FROM `MATERIALS` WHERE ID = {$materialId}");
+        $organizationId = App::getOrganizationId();
+
+        $material = $this->DB->Query(
+            "SELECT * FROM `MATERIALS` WHERE ID = {$materialId} AND `organization_id` = {$organizationId}");
 
         return $material->Fetch();
     }
@@ -76,7 +82,8 @@ class Material extends Model
      */
     public function deleteMaterial($id)
     {
-        $this->DB->Query("delete FROM `MATERIALS` WHERE ID = {$id}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("delete FROM `MATERIALS` WHERE ID = {$id} AND `organization_id` = {$organizationId}");
     }
 
 
@@ -126,6 +133,8 @@ class Material extends Model
      */
     public function getGroupMaterialByNormDoc($normDocId, $materialsGroupsId = 0 )
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         if ( !empty($materialsGroupsId) ) {
             $where = "and mgtu.materials_groups_id = {$materialsGroupsId}";
@@ -136,8 +145,8 @@ class Material extends Model
                         m.NAME as material_name, m.ID as material_id, mg.id as group_id, mg.name as group_name, mgtu.* 
                     from materials_groups as mg
                     inner join materials_groups_tu as mgtu on mg.id = mgtu.materials_groups_id
-                    inner join MATERIALS as m on m.ID = mg.material_id
-                    where mgtu.norm_doc_method_id = {$normDocId} {$where}
+                    inner join MATERIALS as m on m.ID = mg.material_id 
+                    where mgtu.norm_doc_method_id = {$normDocId} AND m.organization_id = {$organizationId} {$where}
                     order by m.ID, mg.id"
         );
 
@@ -158,13 +167,14 @@ class Material extends Model
      */
     public function getGroupMaterialList()
     {
+        $organizationId = App::getOrganizationId();
 
         $sql = $this->DB->Query(
             "select 
                         m.NAME as material_name, m.ID as material_id, mg.id as group_id, mg.name as group_name 
                     from materials_groups as mg
                     inner join MATERIALS as m on m.ID = mg.material_id
-                    where 1
+                    where m.organization_id = {$organizationId} 
                     order by m.ID, mg.id"
         );
 
@@ -542,7 +552,11 @@ class Material extends Model
             return $sql['ID'];
         }
 
-        $sqlData = $this->prepearTableData('MATERIALS', ['NAME' => $name]);
+        $data = [
+            'NAME' => $name,
+            'organization_id' => App::getOrganizationId()
+        ];
+        $sqlData = $this->prepearTableData('MATERIALS', $data);
 
         return $this->DB->Insert('MATERIALS', $sqlData);
     }
@@ -837,6 +851,8 @@ class Material extends Model
      */
     public function getDatatoJournalMaterial(array $filter = [])
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -880,7 +896,7 @@ class Material extends Model
             }
         }
 
-        $where .= "1 ";
+        $where .= "m.organization_id = {$organizationId}";
 
         $data = $this->DB->Query(
             "SELECT * 
@@ -892,8 +908,7 @@ class Material extends Model
         $dataTotal = $this->DB->Query(
             "SELECT m.ID, m.NAME 
                     FROM MATERIALS m 
-                    where `NAME` <> '' and `NAME` is not null
-                    "
+                    where `NAME` <> '' and `NAME` is not null AND m.organization_id = {$organizationId}"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
             "SELECT m.ID, m.NAME 
@@ -1017,9 +1032,18 @@ class Material extends Model
         return $result;
     }
 
-    public function setName($id_material, $name)
+    /**
+     * @param int $id_material
+     * @param string $name
+     * @return bool
+     */
+    public function setName(int $id_material, string $name): bool
     {
-        $this->DB->Query("UPDATE MATERIALS SET NAME = '{$name}' WHERE ID = '{$id_material}'");
+        $organizationId = App::getOrganizationId();
+        $sqlData = $this->prepearTableData('MATERIALS', ['NAME' => $name]);
+
+        $where = "WHERE ID = {$id_material} AND organization_id = {$organizationId}";
+        return (bool)$this->DB->Update('MATERIALS', $sqlData, $where);
     }
 
     /**
@@ -1027,8 +1051,10 @@ class Material extends Model
      */
     public function getMaterialsKeyValue(): array
     {
+        $organizationId = App::getOrganizationId();
+
         $materials = [];
-        $res = $this->DB->Query("SELECT `ID`, `NAME` FROM `MATERIALS`");
+        $res = $this->DB->Query("SELECT `ID`, `NAME` FROM `MATERIALS` WHERE `organization_id` = {$organizationId}");
 
         while ($row = $res->Fetch()) {
             $materials[$row['ID']] = $row['NAME'];
