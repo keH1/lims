@@ -3029,11 +3029,9 @@ class DocumentGenerator extends Model
 
 
         $res = $this->DB->Query("SELECT bo.id, bo.NAME, bo.IDENT, FACTORY_NUMBER, REG_NUM, OBJECT, TYPE_OBORUD, place_of_installation_or_storage as lab_id, 
-										ID_ASSIGN1, bl.short_name,concat(u.LAST_NAME, ' ', left(u.NAME, 1), '.', left(u.SECOND_NAME, 1)) as assigna, u.WORK_POSITION 
+										ID_ASSIGN1, bl.short_name
        									from ba_oborud as bo
 										left join ba_laba as bl on bo.place_of_installation_or_storage = bl.ID
-										left join b_uts_iblock_5_section as lab on lab.VALUE_ID = bl.id_dep
-										left join b_user as u on lab.UF_HEAD = u.ID
 										where `IDENT` IN ('SI','VO','IO') and (SPISANIE is null or SPISANIE = '') and
 										LONG_STORAGE = 0 and bo.place_of_installation_or_storage != '' {$in_oa} 
 										and bo.is_vagon = 0
@@ -3041,8 +3039,8 @@ class DocumentGenerator extends Model
         $i = 1;
         while ($row = $res->fetch()) {
             $result[$row['lab_id']]['lab_name'] = $row['short_name'];
-            $result[$row['lab_id']]['boss_name'] = $row['assigna'];
-            $result[$row['lab_id']]['boss_position'] = $row['WORK_POSITION'];
+//            $result[$row['lab_id']]['boss_name'] = $row['assigna'];
+//            $result[$row['lab_id']]['boss_position'] = $row['WORK_POSITION'];
             $result[$row['lab_id']][] = $row;
         }
 

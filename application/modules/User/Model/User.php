@@ -495,27 +495,45 @@ class User extends Model
      * @param $dep
      * @return array
      */
-    public function checkHeader($dep)
+    public function checkHeader($dep) :array
     {
-        $res = $this->DB->Query("SELECT *  FROM `b_uts_iblock_5_section` lab, `b_user` u 
-						WHERE lab.`VALUE_ID` = {$dep} AND 
-						lab.`UF_HEAD` = u.`ID`")->Fetch();
+        $entity = \Bitrix\Iblock\Model\Section::compileEntityByIblock('Departments');
 
-        if ( empty($res) ) { return []; }
+        $arrSection = $entity::getRow([
+            'filter' => ['ACTIVE' => 'Y','!USER.ID'=>false,'=ID'=>$dep],
+            'select' => [
+                'ID',
+                'NAME',
+                'UF_HEAD',
+                'USER_NAME'=>'USER.NAME',
+                'USER_LAST_NAME'=>'USER.LAST_NAME',
+                'USER_SECOND_NAME'=>'USER.SECOND_NAME',
+                'USER_WORK_POSITION'=>'USER.WORK_POSITION',
+            ],
+            'runtime' => [
+                new \Bitrix\Main\Entity\ReferenceField('USER', \Bitrix\Main\UserTable::class, ['=this.UF_HEAD' => 'ref.ID']),
+            ]
+        ]);
 
-        $name = trim($res['NAME']);
-        $lastName = trim($res['LAST_NAME']);
-        $secondName = trim($res['SECOND_NAME']);
-        $shortName = StringHelper::getInitials($name).' '. StringHelper::getInitials($secondName).' '.$lastName;
-        $work_position =  trim($res['WORK_POSITION']);
+        if (!$arrSection) {
+            return [];
+        }
+
+        $arrSection = array_map('trim',$arrSection);
+
+        $shortName = sprintf("%s %s %s",
+            StringHelper::getInitials($arrSection['USER_NAME']),
+            StringHelper::getInitials($arrSection['USER_SECOND_NAME']),
+            $arrSection['USER_LAST_NAME']
+        );
 
         $result = [
-            'user_id'       => $res['ID'],
-            'name'          => trim($res['NAME']),
-            'last_name'     => trim($res['LAST_NAME']),
-            'user_name'     => "{$name} {$lastName}",
+            'user_id'       => $arrSection['UF_HEAD'],
+            'name'          => $arrSection['USER_NAME'],
+            'last_name'     => $arrSection['USER_LAST_NAME'],
+            'user_name'     => "{$arrSection['USER_NAME']} {$arrSection['USER_LAST_NAME']}",
             'short_name'    => $shortName,
-            'work_position' => $work_position
+            'work_position' => $arrSection['USER_WORK_POSITION']
         ];
 
         return $result;
