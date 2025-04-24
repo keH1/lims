@@ -14,26 +14,7 @@
 </header>
 
 <div class="filters mb-3">
-    <div class="row">
-<!--        <div class="col-auto">-->
-<!--            <button type="button" name="add_entry" id="transportModalBtn" data-js-update=""-->
-<!--                    class="btn btn-primary popup-with-form btn-add-entry w-100 mw-100 mt-0">-->
-<!--                Добавить запись-->
-<!--            </button>-->
-<!--        </div>-->
-
-<!--        <div class="col col-md-2">-->
-<!--            <input type="date" id="inputDateStart" class="form-control filter filter-date-start"-->
-<!--                   value="" placeholder="Введите дату начала:">-->
-<!--        </div>-->
-<!---->
-<!--        <div class="col col-md-2">-->
-<!--            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"-->
-<!--                   value="" placeholder="Введите дату окончания:">-->
-<!--        </div>-->
-    </div>
-
-
+    <div class="row"></div>
 </div>
 
 <div>

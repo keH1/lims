@@ -18,33 +18,8 @@
                 Провести реактив
             </button>
         </div>
-<!--        <div class="col-auto">-->
-<!--            <select id="selectReactiveUpdate" class="form-control h-auto select-reactive reactive-update" data-placeholder="Выберите реактив">-->
-<!--                --><?php
-//                foreach ($this->data['reactive_receive'] as $val): ?>
-<!--                    <option value="" selected disabled></option>-->
-<!--                    <option value="--><?//= $val['id'] ?><!--"-->
-<!--                            data-idreceive="--><?//= $val['id_receive'] ?><!--">-->
-<!--                        --><?//= $val['name'] ?><!--</option>-->
-<!--                --><?php
-//                endforeach; ?>
-<!--            </select>-->
-<!--        </div>-->
-<!--        <div class="col-auto">-->
-<!--            <button id="reactiveUpdate" type="button" name="add_entry"-->
-<!--                    class="btn btn-primary popup-second btn-add-entry w-100 mw-100 mt-0 btn-update" disabled>-->
-<!--                Ред. реактив-->
-<!--            </button>-->
-<!--        </div>-->
-<!--        <div class="col-auto">-->
-<!--            <button id="receiveUpdate" type="button" name="add_entry"-->
-<!--                    class="btn btn-primary popup-third btn-add-entry w-100 mw-100 mt-0 btn-update" disabled>-->
-<!--                Ред. проводку-->
-<!--            </button>-->
-<!--        </div>-->
     </div>
 </div>
-<!--./filters-->
 <div class="filters mb-4">
     <div class="row">
         <div class="col">

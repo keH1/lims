@@ -97,7 +97,7 @@
     </div>
     <div class="row mb-3">
         <div class="col">
-            <label class="form-label" ">Назначение списания</label>
+            <label class="form-label">Назначение списания</label>
             <input type="text" name="toSQL[reactive_consume][type]"
                    class="form-control">
         </div>

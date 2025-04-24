@@ -15,11 +15,11 @@
     <div class="row">
         <div class="col">
             <input type="date" id="inputDateStart" class="form-control filter filter-date-start bg-transparent"
-                   value="<?= $this->data['date_start'] ?>" placeholder="Введите дату начала:">
+                   value="" placeholder="Введите дату начала:">
         </div>
         <div class="col">
             <input type="date" id="inputDateEnd" class="form-control filter filter-date-end bg-transparent"
-                   value="<?= $this->data['date_end'] ?>" placeholder="Введите дату окончания:">
+                   value="" placeholder="Введите дату окончания:">
         </div>
 
         <div class="col-auto">

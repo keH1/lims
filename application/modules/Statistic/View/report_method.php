@@ -1,11 +1,11 @@
 <div class="filters mb-4">
     <div class="row">
         <div class="col">
-            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="2023-01-01">
+            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="">
         </div>
 
         <div class="col">
-            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="2024-01-01">
+            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="">
         </div>
 
         <div class="col">
