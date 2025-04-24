@@ -911,6 +911,7 @@
         <div class="line-dashed-small"></div>
 
         <input name="deal_id" value="<?=$this->data['deal_id']?>" type="hidden">
+        <input name="selected_protocol_id" value="<?=$this->data['selected_protocol']?>" type="hidden">
 
         <div class="gost_room_container">
 

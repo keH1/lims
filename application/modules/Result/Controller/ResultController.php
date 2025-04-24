@@ -1771,7 +1771,9 @@ class ResultController extends Controller
 
         $this->showSuccessMessage("Данные записаны");
 
-        $this->redirect("/result/card_oati/" . (int)$_POST['deal_id']);
+        $selectedProtocol = empty($_POST['selected_protocol_id'])? '' : "?protocol_id={$_POST['selected_protocol_id']}";
+
+        $this->redirect("/result/card_oati/" . (int)$_POST['deal_id'] . $selectedProtocol);
     }
 
 
@@ -2464,6 +2466,12 @@ class ResultController extends Controller
             $tz = !empty($dealId) ? $requirementModel->getTzByDealId($dealId) : [];
             $umtr = $resultModel->getMaterialToRequestByProtocolId($protocolId);
             $deal = $requestModel->getDealById($dealId);
+
+            // если у протокола уже сохранена дата начала/конца испытаний - используем её
+            $response['dates_trials'] = array_merge($response['dates_trials'], array_filter([
+                'date_begin' => $response['protocol']['DATE_BEGIN'] ?? null,
+                'date_end' => $response['protocol']['DATE_END'] ?? null
+            ]));
 
             // Если checkbox "Изменить условия испытаний" не отмечен и тип заявки не НК, то берём данные из "Журнала условий"
             if ( empty($response['protocol']['CHANGE_TRIALS_CONDITIONS']) && $deal['TYPE_ID'] != TYPE_DEAL_NK) {

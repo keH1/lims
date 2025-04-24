@@ -788,7 +788,6 @@ $(function ($) {
             success: function () {
                 journalDataTable.on('draw', function () {
                     $button.html(btnHtml)
-                    $button.removeClass('disabled')
                 })
 
                 journalDataTable.ajax.reload()
