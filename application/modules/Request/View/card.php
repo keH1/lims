@@ -877,12 +877,12 @@
 
     <div class="mb-3">
         <label class="form-label">Номер акта</label>
-        <input type="number" name="actNumber" step="1" class="form-control" value="<?=$this->data['act_vr']['NUMBER'] ?? ''?>">
+        <input type="number" name="actNumber" step="1" class="form-control" value="<?=$this->data['act_vr']['NUMBER'] ?? ''?>" required>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Дата акта</label>
-        <input type="date" name="actDate" class="form-control" value="<?=$this->data['act_vr']['DATE'] ?? ''?>">
+        <input type="date" name="actDate" class="form-control" value="<?=$this->data['act_vr']['DATE'] ?? ''?>" required>
     </div>
 
     <div class="mb-3">
