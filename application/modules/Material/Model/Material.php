@@ -1054,7 +1054,7 @@ class Material extends Model
         $organizationId = App::getOrganizationId();
 
         $materials = [];
-        $res = $this->DB->Query("SELECT `ID`, `NAME` FROM `MATERIALS` AND `organization_id` = {$organizationId}");
+        $res = $this->DB->Query("SELECT `ID`, `NAME` FROM `MATERIALS` WHERE `organization_id` = {$organizationId}");
 
         while ($row = $res->Fetch()) {
             $materials[$row['ID']] = $row['NAME'];
