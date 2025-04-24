@@ -331,8 +331,6 @@ $(function ($) {
         const statusId = data.status_id
         const replaceId = data.replacement_user_id
 
-        console.log(data)
-
         $.magnificPopup.open({
             items: {
                 src: '#popup_form_users_edit',
