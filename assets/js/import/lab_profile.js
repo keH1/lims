@@ -164,10 +164,10 @@ $(function ($) {
     })
 
     $body.on('click', '.popup-with-form[href="#popup_form_users_edit"]', function() {
-        const userId = $(this).data('user-id'),
-              positionId = $(this).data('position-id'),
-              statusId = $(this).data('status-id'),
-              replaceId = $(this).data('replace-id') ?? ''
+        const userId = $(this).data('user-id')
+        const positionId = $(this).data('position-id')
+        const statusId = $(this).data('status-id')
+        const replaceId = $(this).data('replace-id') ?? ''
 
         $.magnificPopup.open({
             items: {
@@ -197,12 +197,12 @@ $(function ($) {
      * @desc Инициализирует обработчики выбора пользователя, должности, статуса и заменяемого пользователя
      */
     function initUserPositionInteraction(isEdit = false) {
-        const $userSelect = $('#form_entity_user_id'),
-              $positionSelect = $('#form_entity_position'),
-              $statusSelect = $('#form_entity_status'),
-              $replaceSelect = $('#form_entity_replace'),
-              originalPositionsHTML = $positionSelect.html(),
-              originalUsersHTML = $userSelect.html()
+        const $userSelect = $('#form_entity_user_id')
+        const $positionSelect = $('#form_entity_position')
+        const $statusSelect = $('#form_entity_status')
+        const $replaceSelect = $('#form_entity_replace')
+        const originalPositionsHTML = $positionSelect.html()
+        const originalUsersHTML = $userSelect.html()
         
         if (!isEdit) {
             $userSelect.val('')
@@ -253,18 +253,18 @@ $(function ($) {
             $positionSelect.on('change', function() {
                 if ($(this).prop('disabled')) return
                 
-                const position = $(this).val(),
-                      currentUserId = $userSelect.val(),
-                      $temp = $('<div>').html(originalUsersHTML)
+                const position = $(this).val()
+                const currentUserId = $userSelect.val()
+                const $temp = $('<div>').html(originalUsersHTML)
 
                 let hasCurrentUser = false
                 
                 $userSelect.empty().append('<option value="">Не выбран</option>')
                 
                 $temp.find('option').each(function() {
-                    const $option = $(this),
-                          value = $option.val(),
-                          userPosition = $option.data('position')
+                    const $option = $(this)
+                    const value = $option.val()
+                    const userPosition = $option.data('position')
                     
                     if (!value) return true
                     
