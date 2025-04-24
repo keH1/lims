@@ -148,11 +148,10 @@ class Reactiveconsumption extends Model
              ";
             } elseif ($typeName == 'reactive') {
                 $request = "
-                SELECT id_id                     AS id
+                SELECT id_id AS id
                      , CONCAT(number, ' ', reactives.name) AS name
                      , unit_of_quantity.name     AS unit
-                FROM (SELECT CONCAT('ГСО-', gso.number,
-                                    '-', gso_receive.number) AS number
+                FROM (SELECT CONCAT('ГСО-', gso.number,'-', gso_receive.number) AS number
                            , is_precursor
                            , CONCAT(gso.name, ' ', gso_receive_specification.concentration, ' ',
                                   unit_of_concentration.name) AS name
@@ -166,7 +165,7 @@ class Reactiveconsumption extends Model
                                         ON gso_receive_specification.id_gso_receive = gso_receive.id
                              INNER JOIN unit_of_concentration ON unit_of_concentration.id =
                                                                  gso_receive_specification.id_unit_of_concentration
-              
+                            WHERE gso.organization_id = {$organizationId}
                       UNION
                       SELECT CONCAT('CТ-', standart_titr.number,
                                     '-', standart_titr_receive.number) AS number
@@ -179,6 +178,7 @@ class Reactiveconsumption extends Model
                                JOIN standart_titr_receive
                                     ON standart_titr_receive.id_library_reactive =
                                        standart_titr.id_library_reactive
+                      WHERE standart_titr.organization_id = {$organizationId}
                       UNION
                       SELECT CONCAT(reactive.number,
                                     '-', reactive_receive.number) AS number
@@ -195,10 +195,12 @@ class Reactiveconsumption extends Model
                                JOIN reactive_model
                                     ON reactive.id_reactive_model = reactive_model.id
                                JOIN reactive_pure
-                                    ON reactive.id_pure = reactive_pure.id) AS reactives
+                                    ON reactive.id_pure = reactive_pure.id
+                      WHERE reactive.organization_id = {$organizationId}
+                      ) AS reactives
                          LEFT JOIN unit_of_quantity
                                    ON unit_of_quantity.id = reactives.id_unit_of_quantity
-                      WHERE reactive.organization_id = {$organizationId}
+                      
              ";
             } else {
                 throw new InvalidArgumentException("Неизвестный аргумент {$this->selectInList[$typeName][0]} в константе selectInList");
