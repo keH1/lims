@@ -123,8 +123,8 @@ class Electric extends Model
             } elseif ($this->selectInList[$typeName][0] == 0) {
                 if ($typeName == 'room') {
                     $request = "
-                SELECT id AS id,
-                CONCAT(number,' - ', name) AS name
+                SELECT r.ID AS id,
+                CONCAT(r.number,' - ', r.name) AS name
                 FROM ROOMS as r
                 JOIN ba_laba as lab ON r.LAB_ID = lab.ID
                 WHERE lab.organization_id = {$organizationId}        
