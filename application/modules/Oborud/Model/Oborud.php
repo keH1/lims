@@ -448,7 +448,7 @@ class Oborud extends Model {
         $where .= "b.organization_id = '{$organizationId}'";
 
         $data = $this->DB->Query(
-            "SELECT *, 
+            "SELECT *, b.ID,  
                         CASE
                             WHEN TRIM(CONCAT_WS(' ', ur.NAME, ur.LAST_NAME)) = '' THEN '--'
                             ELSE TRIM(CONCAT_WS(' ', ur.NAME, ur.LAST_NAME))
@@ -466,7 +466,7 @@ class Oborud extends Model {
         );
 
         $dataTotal = $this->DB->Query(
-            "SELECT b.id
+            "SELECT b.ID
                     FROM ba_oborud b
                     LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID 
                     LEFT JOIN b_user AS ur ON ur.ID = m.responsible_user_id 
@@ -475,7 +475,7 @@ class Oborud extends Model {
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT b.id
+            "SELECT b.ID
                     FROM ba_oborud b
                     LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID 
                     LEFT JOIN b_user ur ON ur.ID = m.responsible_user_id 
