@@ -1112,9 +1112,10 @@ class Methods extends Model
                     $where .= "m.is_extended_field = '%{$filter['search']['is_extended_field']}%' AND ";
                 }
 
-                // Лаба Комната
-                if ( isset($filter['search']['lab']) ) {
+                // Лаборатория
+                if (isset($filter['search']['lab'])) {
                     $labId = $filter['search']['lab'];
+                    $where .= "l.lab_id = '{$labId}' AND ";
                 }
 
                 // Статус
@@ -1137,7 +1138,6 @@ class Methods extends Model
                 } else {
                     $where .= "m.is_actual = 1 AND ";
                 }
-
             }
         }
 
@@ -1187,30 +1187,39 @@ class Methods extends Model
         $result = [];
 
         $data = $this->DB->Query(
-            "SELECT distinct 
-                        m.*, m.id method_id,
-                        g.*, g.id gost_id,
-                        p.fsa_id mp_fsa_id, p.name mp_name
-                    FROM ulab_gost g
-                    LEFT JOIN ulab_methods as m ON g.id = m.gost_id 
-                    LEFT JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id  
-                    WHERE {$where}
-                    ORDER BY  {$order['by']} {$order['dir']} {$limit}"
-        );
+           "SELECT DISTINCT 
+                    m.*, m.id method_id,
+                    g.*, g.id gost_id,
+                    p.fsa_id mp_fsa_id, p.name mp_name
+            FROM ulab_gost g
+
+            LEFT JOIN ulab_methods AS m
+            ON g.id = m.gost_id
+
+            LEFT JOIN ulab_measured_properties AS p
+            ON p.id = m.measured_properties_id
+            
+            LEFT JOIN ulab_methods_lab AS l 
+            ON l.method_id = m.id
+
+            WHERE {$where}
+            ORDER BY {$order['by']} {$order['dir']} {$limit}
+        ");
 
         $dataTotal = $this->DB->Query(
-            "SELECT distinct *
+            "SELECT DISTINCT *
                     FROM ulab_gost g
                     LEFT JOIN ulab_methods m ON g.id = m.gost_id 
-                    LEFT JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id 
+                    LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id 
                     WHERE g.organization_id = {$organizationId}"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT distinct *
+            "SELECT DISTINCT *
                     FROM ulab_gost g
                     LEFT JOIN ulab_methods m ON g.id = m.gost_id 
-                    LEFT JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id 
+                    LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id 
+                    LEFT JOIN ulab_methods_lab AS l ON l.method_id = m.id
                     WHERE {$where}"
         )->SelectedRowsCount();
 
