@@ -639,7 +639,6 @@ button.dt-button.buttons-print:focus {
 }
 
 /*journal filters*/
-
 #journal_requests_filter {
     display: none;
 }
