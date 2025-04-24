@@ -457,7 +457,7 @@
         <form action="<?=URI?>/request/addComment/<?=$this->data['deal_id']?>" method="post">
             <div class="row">
                 <div class="col-10">
-                    <textarea style="min-width: 100%" name="comment" class="form-control" placeholder="Комментарий" required><?=$this->data['comment']?></textarea>
+                    <textarea style="min-width: 100%" name="comment" class="form-control" placeholder="Комментарий"><?=$this->data['comment']?></textarea>
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-primary m-0" type="submit" id="button-addon2">Добавить</button>
