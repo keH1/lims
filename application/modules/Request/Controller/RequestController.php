@@ -355,7 +355,8 @@ class RequestController extends Controller
         $type = $request->getTypeRequest($_POST['REQ_TYPE']);
 
         $arrAssigned['VALUE'] = [];
-        for ( $i = 1; $i < count($_POST['id_assign']); $i++ ) {
+        $countAssigned = count((array)$_POST['id_assign']);
+        for ( $i = 1; $i < $countAssigned; $i++ ) {
             if (!empty($_POST['id_assign'][$i])) {
                 $arrAssigned['VALUE'][] = $_POST['id_assign'][$i];
             }
