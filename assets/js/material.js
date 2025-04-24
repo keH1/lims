@@ -70,7 +70,7 @@ $(function ($) {
         let tr = `<tr>
                     <td><a href="/ulab/gost/method/${gostId}" >${gost}</a><input type="hidden" value="${gostId}" name="arrGost[]"></td>
                     <td>${spec}</td>
-                    <td><button type="button" class="btn btn-outline-danger del-gost btn-square-new"><i class="fa-solid fa-minus icon-fix"></i></button></td>
+                    <td><button type="button" class="btn btn-danger del-gost btn-square-new"><i class="fa-solid fa-minus icon-fix"></i></button></td>
                 </tr>`
 
         if ($('#table-gost tbody tr').length !== 0) {

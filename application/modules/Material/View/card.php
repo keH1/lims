@@ -91,7 +91,7 @@
                                 </td>
                                 <td><?= $arrGost['name'] ?></td>
                                 <td>
-                                    <button type="button" class="btn btn-outline-danger del-gost btn-square-new">
+                                    <button type="button" class="btn btn-danger del-gost btn-square-new">
                                         <i class="fa-solid fa-minus icon-fix"></i>
                                     </button>
                                 </td>
