@@ -56,7 +56,7 @@ services:
       - web_data:/var/www/bitrix/ulab
       - web_server_bitrix_logs:/var/log/nginx
     ports:
-      - "${EXPOSE_NGINX_PORT:-80}:80"
+      - "${INTERFACE:-127.0.0.1}:${EXPOSE_NGINX_PORT:-80}:80"
     environment:
       TZ: ${TZ}
     networks:
@@ -67,7 +67,7 @@ services:
     container_name: memcached
     image: memcached:1.6.24-alpine
     ports:
-      - "${INTERFACE:-0.0.0.0}:${EXPOSE_MEMCACHED_PORT:-11211}:11211"
+      - "${INTERFACE:-127.0.0.1}:${EXPOSE_MEMCACHED_PORT:-11211}:11211"
     environment:
       TZ: ${TZ}
     networks:
@@ -97,35 +97,35 @@ services:
     volumes:
       - mysql:/var/lib/mysql
     ports:
-      - "${INTERFACE:-0.0.0.0}:${EXPOSE_MYSQL_PORT:-3306}:3306"
+      - "${INTERFACE:-127.0.0.1}:${EXPOSE_MYSQL_PORT:-3306}:3306"
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       TZ: ${TZ}
-    command: mariadbd
+    command: mysqld --user=root --sql-mode=""     
     restart: unless-stopped
     networks:
       - lims-ulab
 
-  bitrix:
-    container_name: bitrix
-    image: ${IMAGE_TAG_BITRIX:-reg.gitlab.itnap.ru/loki/infra:main}
-    volumes:
-      - bitrix_data:/target
-    command: sh -c "cp -r /app/* /target/ && echo 'Data copied to volume'"  
-    networks:
-      - lims-ulab
+  bitrix:  
+    container_name: bitrix  
+    image: ${IMAGE_TAG_BITRIX:-reg.gitlab.itnap.ru/loki/infra:main}  
+    volumes:  
+      - bitrix_data:/target  
+    command: sh -c "cp -r /app/. /target/ && chown -R 1000:33 /target"  
+    networks:  
+      - lims-ulab  
 
-  lims-ulab:
-    container_name: lims_ulab
-    image: ${IMAGE_TAG:-reg.gitlab.itnap.ru/loki/lims:dev}
-    volumes:
+  lims-ulab:  
+    container_name: lims_ulab  
+    image: ${IMAGE_TAG:-reg.gitlab.itnap.ru/loki/lims:dev}  
+    volumes:  
       - web_data:/target
-    command: sh -c "cp -r /app/* /target/ && echo 'Data copied to volume'"  
-    networks:
-      - lims-ulab
+    command: sh -c "cp -r /app/. /target/ && chown -R 1000:33 /target"      
+    networks:  
+      - lims-ulab  
 
 networks:
   lims-ulab:
