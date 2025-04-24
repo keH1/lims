@@ -232,10 +232,14 @@
 				<td></td>
 				<td></td>
 			</tr>
-            <tr>
+            <tr class="<?=$this->data['protocol_modal_check'] ? 'table-green' : ''?>" data-protocol>
                 <td><strong>Протокол</strong></td>
                 <td>
-                    Не сформирован
+                    <?php if ($this->data['protocol_modal_check']): ?>
+                        Сформирован
+                    <?php else: ?>
+                        Не сформирован
+                    <?php endif; ?>
                 </td>
                 <td>--</td>
                 <td>
@@ -636,7 +640,7 @@
                         <?php if (!empty($protocol['protocol_file_path']) && $protocol['protocol_file_path']): ?>
                             <span><?= $protocol['display_name'] ?></span>
                             <span class="<?= $protocol['extension_class'] ?>">
-                                <?= "." . $protocol['type_file'] ?>
+                                .<?= $protocol['display_extension'] ?>
                             </span>
                         <?php else: ?>
                             <span>Нет файла протокола</span>
@@ -650,6 +654,7 @@
 
     <form id="create-protocols-archive-form" action="/ulab/request/createProtocolsArchive" method="POST">
         <input type="hidden" name="title" value="<?= $this->data['deal_title'] ?>">
+        <input type="hidden" name="dealId" value="<?= $this->data['deal_id'] ?>">
     </form>
 
     <div class="line-dashed-small"></div>

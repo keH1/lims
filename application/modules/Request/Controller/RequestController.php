@@ -1817,6 +1817,7 @@ class RequestController extends Controller
         }
 
         $this->data['protocol_modal'] = $requirement->getWorkProtocolFiles($requestData['ID_Z']);
+
         $this->data['empty_protocol_files'] = false;
         foreach ($this->data['protocol_modal'] as $protocol) {
             if (!empty($protocol['protocol_file_path'])) {
@@ -1824,6 +1825,8 @@ class RequestController extends Controller
                 break;
             }
         }
+
+        $this->data['protocol_modal_check'] = !empty($requestData['PROTOCOL_SEND_DATE']);
     }
     
     /**
@@ -2149,5 +2152,19 @@ class RequestController extends Controller
                 'message' => 'Не удалось обновить статус сделки'
             ]);
         }
+    }
+
+    /**
+     * Обновляет статус протокола
+     */
+    function updateProtocolStatusAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+        
+        /** @var Request $requestModel */
+        $requestModel = $this->model('Request');
+
+        $requestModel->updateProtocolStatus($_POST['deal_id']);
     }
 }

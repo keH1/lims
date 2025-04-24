@@ -536,7 +536,7 @@ class NormDocGost extends Model
                 from `ulab_norm_doc_methods` as m
                 left join `ulab_dimension` as d on d.id = m.unit_id
                 inner join `ulab_norm_doc_gost` as g on g.id = m.gost_id 
-                where `organization_id` = {$organizationId}"
+                where g.`organization_id` = {$organizationId}"
         );
 
         $result = [];

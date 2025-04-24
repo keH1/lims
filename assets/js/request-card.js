@@ -262,7 +262,9 @@ $(function ($) {
 
     $body.on('click', '.download-selected-protocols', function(e) {
         const selectedProtocols = $('.protocol-checkbox:checked')
-        
+        const $protocolRow = $('tr[data-protocol]')
+        const dealId = $('input[name="deal_id"]').val()
+
         if (selectedProtocols.length === 1) {
             const filePath = selectedProtocols.first().data('file-path')
             const fileType = selectedProtocols.first().data('file-type')
@@ -298,6 +300,18 @@ $(function ($) {
             
             $form.submit()
         }
+
+        $.ajax({
+            url: '/ulab/request/updateProtocolStatusAjax',
+            type: 'POST',
+            data: {
+                deal_id: dealId
+            },
+            success: function() {
+                $protocolRow.addClass('table-green')
+                $protocolRow.find('td:nth-child(2)').text('Сформирован')
+            }
+        })
     })
 })
 
