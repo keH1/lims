@@ -1031,8 +1031,6 @@ class Protocol extends Model
     {
         $sqlData = $this->prepearTableData('PROTOCOLS', $data);
 
-        $this->pre($sqlData);
-
         $where = "WHERE ID = {$protocolId}";
         return $this->DB->Update('PROTOCOLS', $sqlData, $where);
     }
