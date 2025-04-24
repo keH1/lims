@@ -1945,3 +1945,20 @@ h2 .stage-block {
     font-size: 0.875rem;
     margin-bottom: 5px;
 }
+
+/********************
+ Стили для кнопок схем материала
+********************/
+.btn.btn-outline-secondary.nav-link {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    text-align: center;
+}
+
+.btn.btn-outline-secondary.nav-link.mw-100 {
+    max-width: 100%;
+    width: 100%;
+}

@@ -288,7 +288,8 @@
                                 id="v-pills-<?= $item['id'] ?>-tab" data-bs-toggle="pill"
                                 data-bs-target="#v-pills-<?= $item['id'] ?>" type="button" role="tab"
                                 aria-controls="v-pills-<?= $item['id'] ?>"
-                                aria-selected="true"><?= $item['name'] ?></button>
+                                aria-selected="true" title="<?= $item['name'] ?>"
+                        ><?= $item['name'] ?></button>
                     <?php endforeach; ?>
                     <button class="btn btn-primary mw-100 mt-0" type="button" id="v-pills-<?= $item['id'] ?>-tab"
                             data-bs-toggle="pill"
