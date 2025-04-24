@@ -1556,7 +1556,7 @@ class RequestController extends Controller
         
         $this->data['is_good_company'] = $companyData[COMPANY_GOOD] == 1;
         
-        $assignedsList = $user->getAssignedByDealId($dealId);
+        $assignedsList = $user->getAssignedByDealId($dealId, true);
         
         $assignedNames = [];
         foreach ($assignedsList as $assigned) {
@@ -1564,7 +1564,7 @@ class RequestController extends Controller
         }
         $this->data['assigned'] = implode(', ', $assignedNames);
         $this->data['main_assigned'] = $assignedsList[0]['short_name'];
-        
+
         $mailList = $requestData['addMail'] ?? [];
         $this->data['mail_list'] = $mailList;
         $this->data['acc_email'] = $requestData['acc_email'];
