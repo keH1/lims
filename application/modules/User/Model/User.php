@@ -190,6 +190,9 @@ class User extends Model
 
         $isFirst = true;
         foreach ($dataList as $item) {
+            if (empty($item)) {
+                continue;
+            }
             $data = [
                 'deal_id' => $dealId,
                 'user_id' => $item,

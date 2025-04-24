@@ -356,7 +356,9 @@ class RequestController extends Controller
 
         $arrAssigned['VALUE'] = [];
         for ( $i = 1; $i < count($_POST['id_assign']); $i++ ) {
-            $arrAssigned['VALUE'][] = $_POST['id_assign'][$i];
+            if (!empty($_POST['id_assign'][$i])) {
+                $arrAssigned['VALUE'][] = $_POST['id_assign'][$i];
+            }
         }
 
         $dataRequest = [
@@ -390,6 +392,7 @@ class RequestController extends Controller
             'organization_id'=>App::getOrganizationId()
 
         ];
+
 
         if ( !empty($_POST['id']) ) { // редактирование
             $dealId = $dataRequest['ID'] = (int)$_POST['id'];
@@ -1257,8 +1260,10 @@ class RequestController extends Controller
                 $_SESSION['request_post']['assign'][$k]['user_name'] = $ass;
             }
         }
+
         if (isset($post['id_assign'])) {
             foreach ($post['id_assign'] as $k => $ass) {
+                if (empty($ass)) { continue; }
                 $_SESSION['request_post']['assign'][$k]['user_id'] = $ass;
             }
         }
