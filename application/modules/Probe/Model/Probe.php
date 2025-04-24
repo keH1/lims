@@ -86,8 +86,7 @@ class Probe extends Model
             'cipher' => $this->quoteStr($sourceProbe['cipher']),
             'name_for_protocol' => $this->quoteStr($sourceProbe['name_for_protocol']),
             'place' => $this->quoteStr($sourceProbe['place']),
-            'date_probe' => $this->quoteStr($sourceProbe['date_probe']),
-            'quarry_id' => $sourceProbe['quarry_id'],
+            'date_probe' => $this->quoteStr($sourceProbe['date_probe'])
         ];
 
         $this->DB->Update('ulab_material_to_request', $data, "where id = {$probeId}");
