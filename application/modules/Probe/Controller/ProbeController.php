@@ -183,14 +183,12 @@ class ProbeController extends Controller
 		/** @var Material $materialModel */
 		$materialModel = $this->model('Material');
 
-
 		$this->data['title'] = "Карточка пробы";
 
 		$this->data['material_probe'] = $materialModel->getMaterialProbeToRequest($dealId);
         $this->data['probe_in_act'] = $probeModel->getProbeInAct($dealId);
 
 		$currUser = $user->getCurrentUser();
-
 
 		$tzId = $requirement->getTzIdByDealId($dealId);
 		$tzData = $requirement->getTzByTzId((int)$tzId);
@@ -215,9 +213,6 @@ class ProbeController extends Controller
 		$this->data['probe'] = $probe;
 		$this->data['test'] = $probe;
 
-		$this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-
-		$this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
 		$this->addJs('/assets/js/probe-card.js');
 
 		$this->view('card');
