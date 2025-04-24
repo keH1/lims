@@ -42,7 +42,7 @@
 				<input type="text" class="form-control" name="NUMBER"
 					   value="<?= $this->data['order']['number'] ?>" <?= $this->data['order']['client_number'] == 1 ? '' : 'readonly' ?>>
 				<span class="input-group-text">от</span>
-				<input type="date" class="form-control bg-white" name="DATE"
+				<input type="date" class="form-control" name="DATE"
 					   value="<?= $this->data['order']['date'] ?>" <?= $this->data['order']['client_number'] == 1 ? '' : 'readonly' ?>>
 			</div>
 
