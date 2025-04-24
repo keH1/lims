@@ -284,7 +284,7 @@
                 <div class="nav flex-column nav-pills me-3" style="width: 10%;" id="v-pills-tab" role="tablist"
                      aria-orientation="vertical">
                     <?php foreach ($this->data['scheme'] as $item): ?>
-                        <button class="btn btn-outline-secondary nav-link mw-100 mt-0 mb-1"
+                        <button class="btn btn-outline-secondary nav-link text-truncate mw-100 mt-0 mb-1"
                                 id="v-pills-<?= $item['id'] ?>-tab" data-bs-toggle="pill"
                                 data-bs-target="#v-pills-<?= $item['id'] ?>" type="button" role="tab"
                                 aria-controls="v-pills-<?= $item['id'] ?>"
