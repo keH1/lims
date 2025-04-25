@@ -811,6 +811,34 @@ function showSuccessMessage(msg) {
     )
 }
 
+/**
+ * Показать ошибку под элементом
+ * @param {jQuery} $element — jQuery-обёртка (input, select и т.д.)
+ * @param {string} message — текст ошибки
+ */
+function showElementError($element, message) {
+    const $errorContainer = $element.next('.invalid-feedback')
+
+    if (!$errorContainer.length) {
+        $element.after('<div class="invalid-feedback"></div>')
+    }
+
+    $element.addClass('is-invalid')
+    $element.next('.invalid-feedback').text(message).show()
+}
+
+/**
+ * Скрыть/очистить ошибку у элемента
+ * @param {jQuery} $element — jQuery-обёртка (input, select и т.д.)
+ */
+function clearElementError($element) {
+    $element.removeClass('is-invalid')
+    const $errorContainer = $element.next('.invalid-feedback')
+    if ($errorContainer.length) {
+        $errorContainer.text('').hide()
+    }
+}
+
 function bufferToBase64(buf) {
     let binstr = Array.prototype.map.call(buf, function (ch) {
         return String.fromCharCode(ch);
