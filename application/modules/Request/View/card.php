@@ -940,7 +940,7 @@
 
 <form id="email-check" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/mail.php" method="get">
     <div class="title mb-3 h-2">
-        Выберите адрес электронной почты для отправки
+        Выберите адрес электронной почты для отправкиы
     </div>
 
     <div class="line-dashed-small"></div>
