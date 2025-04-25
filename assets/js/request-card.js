@@ -96,8 +96,9 @@ $(function ($) {
 
     // Завершение заявки в карточке Гос. работ
     $body.on('click', '#close_app', function() {
-        let tzId = $(this).data('tz-id')
-        let stage = $(this).data('stage')
+        const $btn = $(this)
+        const tzId = $btn.data('tz-id')
+        const stage = $btn.data('stage')
 
         $.ajax({
             method: 'POST',
