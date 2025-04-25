@@ -28,11 +28,11 @@
             </button>
         </div>
 
-		<div class="col-auto">
-			<a class="nav-link auto-fill " href="#" title="Автозаполнение" style="color: black;">
-				<i class="fa-solid fa-gauge-high icon-big"></i>
-			</a>
-		</div>
+<!--		<div class="col-auto">-->
+<!--			<a class="nav-link auto-fill " href="#" title="Автозаполнение" style="color: black;">-->
+<!--				<i class="fa-solid fa-gauge-high icon-big"></i>-->
+<!--			</a>-->
+<!--		</div>-->
     </div>
 </div>
 
