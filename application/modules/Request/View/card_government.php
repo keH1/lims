@@ -97,7 +97,6 @@
                 <th scope="col" style="width: 25%">Тип документа</th>
                 <th scope="col">Номер</th>
                 <th scope="col">Дата</th>
-                <th scope="col">Дата отправки</th>
                 <th scope="col" colspan="4">Операции</th>
             </tr>
             </thead>
@@ -113,9 +112,6 @@
                 </td>
                 <td>
                     <?=$this->data['tz']['date']?>
-                </td>
-                <td>
-                    <?=$this->data['tz']['date_send']?>
                 </td>
                 <td class="w30">
                     <?php if ( $this->data['tz']['check'] ): ?>
@@ -174,9 +170,6 @@
                     <?=$this->data['sample']['date']?>
                 </td>
                 <td>
-                    <?=$this->data['sample']['date_send']?>
-                </td>
-                <td>
                     <form class="pdf-upload-form" action="/ulab/request/uploadFileAjax/<?=$this->data['deal_id']?>"
                                 method="post" enctype="multipart/form-data"
                         >
@@ -212,7 +205,6 @@
 				<td>
 					<?=$this->data['results']['date']?>
 				</td>
-				<td>--</td>
 				<td>
                     <?php if (!$this->data['results']['is_disabled']) :?>
                         <a class="no-decoration me-1" href="<?=URI.'/result/card_oati/'.$this->data['deal_id']?>" title="Внести результаты">
@@ -242,9 +234,6 @@
                     <?php endif; ?>
                 </td>
                 <td>--</td>
-                <td>
-                    Не отправлен
-                </td>
                 <td>
                     <a class="no-decoration me-1 popup-with-form" href="#protocol-modal-form" title="Сформировать">
                         <svg class="icon" width="35" height="35">
@@ -355,7 +344,6 @@
                 <td><strong>Завершение испытаний</strong></td>
                 <td><?=$this->data['is_end_test']? 'Завершено' : 'Не завершено'?></td>
                 <td><?=$this->data['complete']['date']?></td>
-                <td>--</td>
                 <td>
                     <?php if ($this->data['is_end_test']): ?>
                         <?php if ($this->data['complete']['may_return']): ?>
@@ -407,24 +395,21 @@
                     <?=$this->data['act_complete']['date']?>
                 </td>
                 <td>
-                    <?=$this->data['act_complete']['date_send']?>
-                </td>
-                <td>
-				<?php if($this->data['act_complete']['is_disable_form']):?>
-                    <span title="Заполнить данные акта возможно только на стадии 'Испытания завершины'(Работы в лаборатории завершены)">
-                        <a class="no-decoration me-1 popup-with-form disabled" href="#act-work-modal-form">
+                    <?php if($this->data['act_complete']['is_disable_form']):?>
+                        <span title="Заполнить данные акта возможно только на стадии 'Испытания завершины'(Работы в лаборатории завершены)">
+                            <a class="no-decoration me-1 popup-with-form disabled" href="#act-work-modal-form">
+                                <svg class="icon" width="35" height="35">
+                                    <use xlink:href="<?=URI?>/assets/images/icons.svg#edit"/>
+                                </svg>
+                            </a>
+                        </span>
+                    <?php else:?>
+                        <a class="no-decoration me-1 popup-with-form" href="#act-work-modal-form" title="Заполнить данные акта">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#edit"/>
                             </svg>
                         </a>
-                    </span>
-				<?php else:?>
-					<a class="no-decoration me-1 popup-with-form" href="#act-work-modal-form" title="Заполнить данные акта">
-						<svg class="icon" width="35" height="35">
-							<use xlink:href="<?=URI?>/assets/images/icons.svg#edit"/>
-						</svg>
-					</a>
-				<?php endif;?>
+				    <?php endif;?>
                 </td>
                 <td>
                     <?php if ($this->data['act_complete']['is_disable_mail']): ?>
