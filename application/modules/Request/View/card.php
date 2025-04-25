@@ -103,7 +103,7 @@
             </thead>
             <tbody>
             <tr class="<?=$this->data['tz']['check']? 'table-green' : ''?>">
-                    <td><strong>Техническое задание</strong></td>
+                <td><strong>Техническое задание</strong></td>
                 <td>
                     <?php if ( $this->data['tz']['check'] ): ?>
                         <a href="<?=$this->data['tz']['tz_link']?>"><?=$this->data['tz']['number']?></a>
