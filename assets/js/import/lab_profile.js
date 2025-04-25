@@ -91,16 +91,20 @@ $(function ($) {
             },
             {
                 data: 'control',
-                width: '150px',
+                width: '110px',
+                className: 'text-center',
                 orderable: false,
                 render: function (data, type, item) {
-                    return `
-                        <a href="#" class="unbound_btn">Отвязать</a>
-                        <a href="#popup_form_users_edit" class="popup-with-form" 
-                           data-user-id="${item.ID}" 
-                           data-position-id="${item.WORK_POSITION}"
-                           data-status-id="${item.status_id}"
-                           data-replace-id="${item.replacement_user_id}">Редактировать</a>`
+                    return `<a href="#" class="unbound_btn">Отвязать</a>`
+                }
+            },
+            {
+                data: 'control2',
+                width: '110px',
+                className: 'text-center',
+                orderable: false,
+                render: function (data, type, item) {
+                    return `<a href="#" class="edit_user">Редактировать</a>`
                 }
             },
         ],
@@ -163,46 +167,17 @@ $(function ($) {
         return false
     })
 
-    $body.on('click', '.popup-with-form[href="#popup_form_users_edit"]', function() {
-        const userId = $(this).data('user-id'),
-              positionId = $(this).data('position-id'),
-              statusId = $(this).data('status-id'),
-              replaceId = $(this).data('replace-id') ?? ''
-
-        $.magnificPopup.open({
-            items: {
-                src: '#popup_form_users_edit',
-            },
-            type: 'inline',
-            closeBtnInside: true,
-            closeOnBgClick: false,
-            fixedContentPos: false,
-            callbacks: {
-                open: function() {
-                    initUserPositionInteraction(true)
-                },
-                beforeOpen: function() {
-                    $('#popup_form_users_edit select[name="user_id"]').val(userId).trigger('change')
-                    $('#popup_form_users_edit select[name="position"]').val(positionId).trigger('change')
-                    $('#popup_form_users_edit select[name="status"]').val(statusId).trigger('change')
-                    $('#popup_form_users_edit select[name="replace"]').val(replaceId).trigger('change')
-                }
-            }
-        })
-
-        return false
-    })
 
     /**
      * @desc Инициализирует обработчики выбора пользователя, должности, статуса и заменяемого пользователя
      */
     function initUserPositionInteraction(isEdit = false) {
-        const $userSelect = $('#form_entity_user_id'),
-              $positionSelect = $('#form_entity_position'),
-              $statusSelect = $('#form_entity_status'),
-              $replaceSelect = $('#form_entity_replace'),
-              originalPositionsHTML = $positionSelect.html(),
-              originalUsersHTML = $userSelect.html()
+        const $userSelect = $('#form_entity_user_id')
+        const $positionSelect = $('#form_entity_position')
+        const $statusSelect = $('#form_entity_status')
+        const $replaceSelect = $('#form_entity_replace')
+        const originalPositionsHTML = $positionSelect.html()
+        const originalUsersHTML = $userSelect.html()
         
         if (!isEdit) {
             $userSelect.val('')
@@ -225,7 +200,7 @@ $(function ($) {
             } else {
                 $replaceSelect.val('').prop('disabled', true)
             }
-            
+
             $replaceSelect.select2('destroy').select2({
                 theme: 'bootstrap-5'
             })
@@ -247,24 +222,24 @@ $(function ($) {
                 
                 $positionSelect.select2('destroy').select2({
                     theme: 'bootstrap-5'
-                })
+                }).trigger('change')
             })
             
             $positionSelect.on('change', function() {
                 if ($(this).prop('disabled')) return
                 
-                const position = $(this).val(),
-                      currentUserId = $userSelect.val(),
-                      $temp = $('<div>').html(originalUsersHTML)
+                const position = $(this).val()
+                const currentUserId = $userSelect.val()
+                const $temp = $('<div>').html(originalUsersHTML)
 
                 let hasCurrentUser = false
                 
                 $userSelect.empty().append('<option value="">Не выбран</option>')
                 
                 $temp.find('option').each(function() {
-                    const $option = $(this),
-                          value = $option.val(),
-                          userPosition = $option.data('position')
+                    const $option = $(this)
+                    const value = $option.val()
+                    const userPosition = $option.data('position')
                     
                     if (!value) return true
                     
@@ -282,14 +257,16 @@ $(function ($) {
                     theme: 'bootstrap-5'
                 })
             })
+
+            $userSelect.add($positionSelect).add($statusSelect).add($replaceSelect).select2({
+                theme: 'bootstrap-5'
+            })
         }
-        
-        $userSelect.add($positionSelect).add($statusSelect).add($replaceSelect).select2({
-            theme: 'bootstrap-5'
-        })
-        
+
         if (isEdit) {
-            $statusSelect.trigger('change')
+            $statusSelect.select2({
+                theme: 'bootstrap-5'
+            }).trigger('change')
         }
     }
 
@@ -338,10 +315,44 @@ $(function ($) {
                 },
                 complete: function () {
                     journalDataTableUsers.ajax.reload()
-                    journalDataTableUsers.draw()
                 }
             })
         }
+
+        return false
+    })
+
+    journalDataTableUsers.on('click', '.edit_user', function () {
+        let $form = $('#popup_form_users_edit')
+        let data = journalDataTableUsers.row($(this).closest('tr')).data()
+
+        const userId = data.user_id
+        const positionId = data.WORK_POSITION
+        const statusId = data.status_id
+        const replaceId = data.replacement_user_id
+
+        $.magnificPopup.open({
+            items: {
+                src: '#popup_form_users_edit',
+            },
+            type: 'inline',
+            closeBtnInside: true,
+            closeOnBgClick: false,
+            fixedContentPos: false,
+            callbacks: {
+                open: function() {
+                    initUserPositionInteraction(true)
+                },
+                beforeOpen: function() {
+                    $form.find('#form_edit_user_id').val(userId)
+                    $form.find('#form_edit_user_name').val(data.LAST_NAME + ' ' + data.NAME)
+                    $form.find('#form_edit_position').val(positionId)
+                    $form.find('#form_edit_position_name').val(positionId)
+                    $form.find('select[name="status"]').val(statusId).trigger('change')
+                    $form.find('select[name="replace"]').val(replaceId).trigger('change')
+                }
+            }
+        })
 
         return false
     })

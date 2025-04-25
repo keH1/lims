@@ -547,7 +547,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Телефон <span class="redStars">*</span></label>
                 <div class="col-sm-8">
-                    <input type="text" name="PHONE" class="form-control clearable" data-conditionally-required="true" value="<?=$this->data['request']['PHONE'] ?? ''?>">
+                    <input type="text" name="PHONE" class="form-control clearable" maxlength="20" data-conditionally-required="true" value="<?=$this->data['request']['PHONE'] ?? ''?>">
                 </div>
                 <div class="col-sm-2"></div>
             </div>

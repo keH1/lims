@@ -70,7 +70,7 @@ $(function ($) {
         let tr = `<tr>
                     <td><a href="/ulab/gost/method/${gostId}" >${gost}</a><input type="hidden" value="${gostId}" name="arrGost[]"></td>
                     <td>${spec}</td>
-                    <td><button type="button" class="btn btn-outline-danger del-gost btn-square-new"><i class="fa-solid fa-minus icon-fix"></i></button></td>
+                    <td><button type="button" class="btn btn-danger del-gost btn-square-new"><i class="fa-solid fa-minus icon-fix"></i></button></td>
                 </tr>`
 
         if ($('#table-gost tbody tr').length !== 0) {
@@ -245,8 +245,6 @@ $(function ($) {
             form.prepend(msg)
             return false
         }
-
-        console.log(scheme_param)
 
         $.ajax({
             method: 'POST',
@@ -455,8 +453,26 @@ $(function ($) {
             tableSearch()
         }
     })
-})
 
+    body.on('click', '.pill-add', function() {
+        const $buttonPill = $(this)
+        const isDisabledPill = $buttonPill.prop('disabled')
+        
+        if (!isDisabledPill) {
+            console.log('disabled')
+            $buttonPill.prop('disabled', true)
+        }
+    })
+
+    body.on('click', '.nav-pills .nav-link', function() {
+        const $buttonAddPill = $('.pill-add')
+        const isDisabledAddPill = $buttonAddPill.prop('disabled')
+        
+        if (isDisabledAddPill) {
+            $buttonAddPill.prop('disabled', false)
+        }
+    })
+})
 function tableSearch() {
     let phrase = document.getElementById('search-text'),
         table = document.getElementById('table-gost'),

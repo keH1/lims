@@ -3168,6 +3168,7 @@ class Result extends Model
         return $response;
     }
 
+
     /**
      * Прикрепляем пробы к протоколу
      * @param int $dealId
@@ -3177,13 +3178,11 @@ class Result extends Model
      */
     public function attachProbe(int $dealId, int $protocolId, array $data): array
     {
-        $requirementModel = new Requirement;
         $protocolModel = new Protocol;
 
-        $sampleChecked = [];
-        $probe = [];
         $response = ['success' => true];
-        $mtrData = ['protocol_id' => $protocolId];
+
+        $isNewProbe = false;
 
         if (empty($dealId) || empty($protocolId) || (empty($data['probe_checkbox']) && empty($data['gost_check']))) {
             return [
@@ -3192,59 +3191,27 @@ class Result extends Model
             ];
         }
 
-        $tz = $requirementModel->getTzByDealId($dealId);
-
-        $dateProbe = $data['DATE_PROBE'] ?: null;
-        $dateProbeRu = !empty($dateProbe) ? date("d.m.Y", strtotime($data['DATE_PROBE'])) : '-';
-        $placeProbe = !empty($data['PLACE_PROBE']) ? $data['PLACE_PROBE'] : '-';
-
-        foreach ($data['probe_checkbox'] as $umtrId => $val) {
-            $umtrId = (int)$umtrId;
-            $umtr = $this->materialToRequestData($umtrId);
-
-            if (!empty($umtr['protocol_id']) && (int)$umtr['protocol_id'] !== $protocolId) {
-                continue;
-            }
-
-            $result = $this->updateMaterialToRequest($umtrId, $mtrData);
-
-            if ($result !== 1) {
-                $response = [
-                    'success' => false,
-                    'errors' => "Не все пробы удалось прикрепить к протоколу"
-                ];
-            }
-
-            //TODO: (Выбор проб) Временные массивы данных, сохраняет сериализованные данные, для работы остальных скриптов до их рефакторинга
-            $numberProbe[$umtr['probe_number'] - 1] = $tz['PROBE'][$umtr['material_number']]['number_probe'][$umtr['probe_number'] - 1] ?: [];
-            $shNumber[$umtr['probe_number'] - 1] = $tz['PROBE'][$umtr['material_number']]['sh_number'][$umtr['probe_number'] - 1] ?: [];
-            $probe[$umtr['material_number']] = $tz['PROBE'][$umtr['material_number']];
-            $probe[$umtr['material_number']]['number_probe'] = $numberProbe;
-            $probe[$umtr['material_number']]['sh_number'] = $shNumber;
-            $probe[$umtr['material_number']]['mesto_data'] = $placeProbe . '; ' . $dateProbeRu;
-
-            $sampleChecked[$umtr['material_number'] - 1][0][$umtr['probe_number']][0] = $val;
-        }
-
         foreach ($data['gost_check'] as $ugtpId => $val) {
             $ugtpId = (int)$ugtpId;
-            $ugtp = $this->DB->Query("select * from ulab_gost_to_probe where id = {$ugtpId}")->Fetch();
+            $ugtp = $this->DB->Query("select `protocol_id` from ulab_gost_to_probe where id = {$ugtpId}")->Fetch();
 
             if ( !empty($ugtp['protocol_id']) ) {
                 continue;
             }
 
+            $isNewProbe = true;
+
             $this->DB->Update('ulab_gost_to_probe', ['protocol_id' => $protocolId], "where id = {$ugtpId}");
         }
 
-        $data = [
-            'SAMPLE_CHECKED' => serialize($sampleChecked),
-            'PROBE' => serialize($probe)
-        ];
-        $protocolModel->update($protocolId, $data);
+        // если была добавлена пробы - обнуляем сохраненные даты у протокола, чтобы взять их из даты начала/конца испытаний
+        if ( $isNewProbe ) {
+            $protocolModel->update($protocolId, ['DATE_BEGIN' => '', 'DATE_END' => '']);
+        }
 
         return $response;
     }
+
 
     /**
      * @param $protocolId

@@ -28,7 +28,7 @@ class NkController extends Controller
 
         $graduation = $nkModel->getGraduation($id);
 
-        if (empty($graduation)) {
+        if (!empty($id) && empty($graduation)) {
             $this->showErrorMessage("Градуировочной зависимости с ИД {$id} не существует");
             $this->redirect('/nk/graduationList/');
         }
