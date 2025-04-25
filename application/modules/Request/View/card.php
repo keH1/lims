@@ -939,7 +939,13 @@
 </form>
 
 <form id="email-check" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/mail.php" method="get">
-	<input name="ID" id="ID" value="" type="hidden">
+    <div class="title mb-3 h-2">
+        Выберите адрес электронной почты для отправки
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <input name="ID" id="ID" value="" type="hidden">
 	<input name="TZ_ID" value="<?=$this->data['tz_id']?>" type="hidden">
 	<input name="TYPE" id="TYPE" value="" type="hidden">
 	<div class="mb-3">
