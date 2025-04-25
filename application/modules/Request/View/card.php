@@ -454,7 +454,11 @@
                         </a>
                     <?php endif;?>
 				</td>
-				<td></td>
+				<td>
+                    <a href="#view-result-modal-form" class="popup-with-form no-decoration me-1 text-black" title="Просмотр результатов испытаний">
+                        <i class="fa-regular fa-eye fa-2xl"></i>
+                    </a>
+                </td>
 				<td></td>
 				<td></td>
 			</tr>
@@ -1029,4 +1033,44 @@
     <div>
         <button data-stage="13" style="min-width: 100%" class="akt-finish btn btn-primary">Участие в тендере</button>
     </div>
+</div>
+
+
+<div id="view-result-modal-form" class="bg-light mfp-hide col-md-6 m-auto p-3 position-relative">
+    <div class="title mb-3 h-2">
+        Просмотр результатов испытаний
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <table class="table table-striped journal">
+        <thead>
+        <tr class="table-light">
+            <th>Метод испытания</th>
+            <th class="text-center">Результат</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php $mater = 0; ?>
+            <?php foreach ($this->data['method_list'] as $method): ?>
+
+                <?php if ($method['material_id'] != $mater): ?>
+                    <tr>
+                        <td colspan="2">
+                            <strong><?=$method['material_name']?></strong>
+                        </td>
+                    </tr>
+                <?php $mater = $method['material_id']; ?>
+                <?php endif; ?>
+                <tr>
+                    <td>
+                        <?=$method['view_gost']?>
+                    </td>
+                    <td class="text-center">
+                        <?=$method['actual_value']?>
+                    </td>
+                </tr>
+            <?php endforeach;?>
+        </tbody>
+    </table>
 </div>

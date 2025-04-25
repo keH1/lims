@@ -638,6 +638,8 @@ class RequestController extends Controller
         $this->data['tz_doc'] = $tzDoc;
         $this->data['first_protocol'] = $protocolData[0] ?? [];
         $this->data['date_tz_create'] = date('d.m.Y', strtotime($deal['DATE_CREATE']));
+
+        $this->data['method_list'] = $resultModel->getMaterialsGostsByDelaId($dealId);
         
         if ($config['blocks']['tz']) {
             $this->prepareTzData($request, $requestData, $tzId, $userFields, $isExistTz);
@@ -683,8 +685,6 @@ class RequestController extends Controller
             $this->prepareFilesData($request, $protocolData, $requestData, $dealId, $tzId, $dogovorData, $actVr, $proposalData, $invoiceData);
         }
 
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
         $this->addCSS("/assets/plugins/dropzone/css/basic.css");
         $this->addCSS("/assets/plugins/dropzone/dropzone3.css");
         $this->addJS("/assets/plugins/dropzone/dropzone3.js");
