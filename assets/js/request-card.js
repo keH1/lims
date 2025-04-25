@@ -94,6 +94,27 @@ $(function ($) {
         })
     })
 
+    // Завершение заявки в карточке Гос. работ
+    $body.on('click', '#close_app', function() {
+        let tzId = $(this).data('tz-id')
+        let stage = $(this).data('stage')
+
+        $.ajax({
+            method: 'POST',
+            url: '/ulab/request/updateApplicationStageAjax',
+            data: {
+                stage_id: stage,
+                tz_id: tzId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    location.reload()
+                }
+            }
+        })
+    })
+
     let $checkMail = $('.check-mail')
     let $btnSend = $('.btnOverall')
 
