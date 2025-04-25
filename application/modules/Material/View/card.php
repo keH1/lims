@@ -291,7 +291,7 @@
                                 aria-selected="true" title="<?= $item['name'] ?>"
                         ><?= $item['name'] ?></button>
                     <?php endforeach; ?>
-                    <button class="btn btn-primary mw-100 mt-0" type="button" id="v-pills-<?= $item['id'] ?>-tab"
+                    <button class="btn btn-primary mw-100 mt-0 pill-add" type="button" id="v-pills-<?= $item['id'] ?>-tab"
                             data-bs-toggle="pill"
                             data-bs-target="#v-pills-new" role="tab"
                             aria-controls="v-pills-new"

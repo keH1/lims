@@ -246,8 +246,6 @@ $(function ($) {
             return false
         }
 
-        console.log(scheme_param)
-
         $.ajax({
             method: 'POST',
             url: '/ulab/material/setSchemeAjax',
@@ -455,8 +453,26 @@ $(function ($) {
             tableSearch()
         }
     })
-})
 
+    body.on('click', '.pill-add', function() {
+        const $buttonPill = $(this)
+        const isDisabledPill = $buttonPill.prop('disabled')
+        
+        if (!isDisabledPill) {
+            console.log('disabled')
+            $buttonPill.prop('disabled', true)
+        }
+    })
+
+    body.on('click', '.nav-pills .nav-link', function() {
+        const $buttonAddPill = $('.pill-add')
+        const isDisabledAddPill = $buttonAddPill.prop('disabled')
+        
+        if (isDisabledAddPill) {
+            $buttonAddPill.prop('disabled', false)
+        }
+    })
+})
 function tableSearch() {
     let phrase = document.getElementById('search-text'),
         table = document.getElementById('table-gost'),
