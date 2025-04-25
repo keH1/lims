@@ -354,13 +354,10 @@ class RequestController extends Controller
 
         $type = $request->getTypeRequest($_POST['REQ_TYPE']);
 
-        $arrAssigned['VALUE'] = [];
-        $countAssigned = count((array)$_POST['id_assign']);
-        for ( $i = 1; $i < $countAssigned; $i++ ) {
-            if (!empty($_POST['id_assign'][$i])) {
-                $arrAssigned['VALUE'][] = $_POST['id_assign'][$i];
-            }
-        }
+        $arrAssigned['VALUE'] = array_filter(
+            array_slice($_POST['id_assign'], 1),
+            fn($value) => !empty($value)
+        );
 
         $dataRequest = [
             'company_id' => $companyId,
