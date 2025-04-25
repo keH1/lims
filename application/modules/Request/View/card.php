@@ -455,7 +455,7 @@
                     <?php endif;?>
 				</td>
 				<td>
-                    <a href="#view-result-modal-form" class="popup-with-form no-decoration me-1 text-black" title="Просмотр результатов испытаний">
+                    <a href="#view-result-modal-form" class="popup-with-form no-decoration me-1 text-black <?=empty($this->data['method_list'])? 'disabled' : ''?>" title="Просмотр результатов испытаний">
                         <i class="fa-regular fa-eye fa-2xl"></i>
                     </a>
                 </td>
