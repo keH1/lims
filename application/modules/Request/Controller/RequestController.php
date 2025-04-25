@@ -354,10 +354,10 @@ class RequestController extends Controller
 
         $type = $request->getTypeRequest($_POST['REQ_TYPE']);
 
-        $arrAssigned['VALUE'] = [];
-        for ( $i = 1; $i < count($_POST['id_assign']); $i++ ) {
-            $arrAssigned['VALUE'][] = $_POST['id_assign'][$i];
-        }
+        $arrAssigned['VALUE'] = array_filter(
+            array_slice($_POST['id_assign'], 1),
+            fn($value) => !empty($value)
+        );
 
         $dataRequest = [
             'company_id' => $companyId,
@@ -390,6 +390,7 @@ class RequestController extends Controller
             'organization_id'=>App::getOrganizationId()
 
         ];
+
 
         if ( !empty($_POST['id']) ) { // редактирование
             $dealId = $dataRequest['ID'] = (int)$_POST['id'];
@@ -1257,8 +1258,10 @@ class RequestController extends Controller
                 $_SESSION['request_post']['assign'][$k]['user_name'] = $ass;
             }
         }
+
         if (isset($post['id_assign'])) {
             foreach ($post['id_assign'] as $k => $ass) {
+                if (empty($ass)) { continue; }
                 $_SESSION['request_post']['assign'][$k]['user_id'] = $ass;
             }
         }
@@ -1556,7 +1559,7 @@ class RequestController extends Controller
         
         $this->data['is_good_company'] = $companyData[COMPANY_GOOD] == 1;
         
-        $assignedsList = $user->getAssignedByDealId($dealId);
+        $assignedsList = $user->getAssignedByDealId($dealId, true);
         
         $assignedNames = [];
         foreach ($assignedsList as $assigned) {
@@ -1564,7 +1567,7 @@ class RequestController extends Controller
         }
         $this->data['assigned'] = implode(', ', $assignedNames);
         $this->data['main_assigned'] = $assignedsList[0]['short_name'];
-        
+
         $mailList = $requestData['addMail'] ?? [];
         $this->data['mail_list'] = $mailList;
         $this->data['acc_email'] = $requestData['acc_email'];

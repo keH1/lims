@@ -457,7 +457,7 @@
         <form action="<?=URI?>/request/addComment/<?=$this->data['deal_id']?>" method="post">
             <div class="row">
                 <div class="col-10">
-                    <textarea style="min-width: 100%" name="comment" class="form-control" placeholder="Комментарий" required><?=$this->data['comment']?></textarea>
+                    <textarea style="min-width: 100%" name="comment" class="form-control" placeholder="Комментарий"><?=$this->data['comment']?></textarea>
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-primary m-0" type="submit" id="button-addon2">Добавить</button>
@@ -673,12 +673,12 @@
 
     <div class="mb-3">
         <label class="form-label">Номер акта</label>
-        <input type="number" name="actNumber" step="1" class="form-control" value="<?=$this->data['act_vr']['NUMBER'] ?? ''?>">
+        <input type="number" name="actNumber" step="1" class="form-control" value="<?=$this->data['act_vr']['NUMBER'] ?? ''?>" required>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Дата акта</label>
-        <input type="date" name="actDate" class="form-control" value="<?=$this->data['act_vr']['DATE'] ?? ''?>">
+        <input type="date" name="actDate" class="form-control" value="<?=$this->data['act_vr']['DATE'] ?? ''?>" required>
     </div>
 
     <div class="mb-3">
@@ -746,14 +746,18 @@
     <input name="tz_id" value="<?=$this->data['tz_id']?>" type="hidden">
 
     <div class="row mb-1">
-        <div class="col"><button data-stage="4" style="min-width: 100%" class="akt-finish btn btn-primary">Акты отправлены</button></div>
-        <div class="col">
-            <a href="#finish-modal-form-2" style="min-width: 91.4%" class="deal-lost btn btn-primary popup-with-form">Сделка проиграна</a>
+        <div class="col-6">
+            <button data-stage="4" class="akt-finish btn btn-primary w-100">Акты отправлены</button>
+        </div>
+        <div class="col-6">
+            <a href="#finish-modal-form-2" class="deal-lost btn btn-primary popup-with-form w-100">Сделка проиграна</a>
         </div>
     </div>
 
-    <div>
-        <button data-stage="WON" style="min-width: 100%" class="akt-finish btn btn-primary">Акты получены, сделка завершена</button>
+    <div class="row">
+        <div class="col-12">
+            <button data-stage="WON" class="akt-finish btn btn-primary w-100">Акты получены, сделка завершена</button>
+        </div>
     </div>
 </div>
 

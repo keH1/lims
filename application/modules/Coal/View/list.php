@@ -20,27 +20,6 @@
 				Добавить измерения с загруженным БДБ-13
 			</button>
 		</div>
-
-<!--        <div class="col">-->
-<!--            <select name="" class="form-control h-auto select-scale filter">-->
-<!--                <option value="">Все</option>-->
-<!--                --><?php //foreach ($this->data['scale'] as $val): ?>
-<!--                    <option value="--><?//= $val['id']?><!--">--><?//= $val['name']?><!--</option>-->
-<!--                --><?php //endforeach; ?>
-<!--            </select>-->
-<!--        </div>-->
-
-<!--        <div class="col-auto">-->
-<!--            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="--><?//= $this->data['min_date'] ?><!--" title="Введите дату начала">-->
-<!--        </div>-->
-<!---->
-<!--        <div class="col-auto">-->
-<!--            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="--><?//= $this->data['max_date'] ?><!--" title="Введите дату окончания">-->
-<!--        </div>-->
-
-<!--        <div class="col-auto">-->
-<!--            <button type="button" class="btn btn-outline-secondary filter-btn-reset" title="Сбросить фильтр">Сбросить</button>-->
-<!--        </div>-->
     </div>
 </div>
 

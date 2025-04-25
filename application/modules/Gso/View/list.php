@@ -336,7 +336,7 @@
     </div>
     <div class="row mb-3">
         <div class="col">
-            <label class="form-label" ">Закупочная документация №</label>
+            <label class="form-label">Закупочная документация №</label>
             <input type="text" name="receive[doc_receive_name]"
                    class="form-control">
         </div>

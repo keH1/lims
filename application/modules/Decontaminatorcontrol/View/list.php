@@ -28,13 +28,13 @@
         <div class="col-auto">
             <input type="date" id="inputDateStart"
                    class="form-control filter filter-date-start"
-                   value="<?= date("Y") . '-01-01' ?>" title="Введите дату начала">
+                   value="" title="Введите дату начала">
         </div>
 
         <div class="col-auto">
             <input type="date" id="inputDateEnd"
                    class="form-control filter filter-date-end"
-                   value="<?= date("Y-m-d") ?>"
+                   value=""
                    title="Введите дату окончания">
         </div>
 

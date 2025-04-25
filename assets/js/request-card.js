@@ -42,16 +42,45 @@ $(function ($) {
         $('.act-manual-block').toggleClass('visually-hidden')
     })
 
-    $('#act-work-modal-form').submit(function () {
-        let actNumber     = $(this).find('input[name=actNumber]').val(),
-            actDate       = $(this).find('input[name=actDate]').val(),
-            lead          = $(this).find('select[name=lead] option:selected').val(),
-            dealId        = $(this).find('input[name=deal_id]').val(),
-            tzId          = $(this).find('input[name=tz_id]').val(),
-            accountEmail  = $(this).find('input[name=Email]').val()
+    $('#act-work-modal-form').on('submit', function(e) {
+        const $form = $(this);
 
-        window.open(`/protocol_generator/akt_vr.php?ID=${dealId}&TZ_ID=${tzId}&NUM=${actNumber}&DATE=${actDate}&LEAD=${lead}&ACCMAIL=${accountEmail}`, '_blank');
-    })
+        const fieldsToValidate = [
+            { $el: $form.find('[name=actNumber]'), message: 'Номер акта обязателен' },
+            { $el: $form.find('[name=actDate]'), message: 'Дата акта обязательна' },
+            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' }
+        ];
+
+        let hasErrors = false;
+
+        // Сброс предыдущих ошибок
+        fieldsToValidate.forEach(({ $el }) => clearElementError($el));
+
+        // Проверка на пустоту
+        fieldsToValidate.forEach(({ $el, message }) => {
+            if ($.trim($el.val()) === '') {
+                showElementError($el, message);
+                hasErrors = true;
+            }
+        });
+
+        if (hasErrors) {
+            e.preventDefault();
+            return;
+        }
+
+        const params = new URLSearchParams({
+            ID:      $.trim($form.find('[name=deal_id]').val()),
+            TZ_ID:   $.trim($form.find('[name=tz_id]').val()),
+            NUM:     $.trim($form.find('[name=actNumber]').val()),
+            DATE:    $.trim($form.find('[name=actDate]').val()),
+            LEAD:    $.trim($form.find('[name=lead]').val()),
+            ACCMAIL: $.trim($form.find('[name=Email]').val())
+        });
+
+        window.open(`/protocol_generator/akt_vr.php?${params.toString()}`, '_blank');
+    });
+
 
     $('.akt-finish').click(function() {
         let tzId = $('#finish-modal-form').find('input[name=tz_id]').val()

@@ -135,8 +135,8 @@
                        value="" placeholder="Введите дату начала:">
             </div>
             <div class="col">
-                <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"
-                       value="<?= $this->data['date_end'] ?>" placeholder="Введите дату окончания:">
+                <input type="date" id="inputDateEnd" class="form-control filter filter-date-end bg-transparent"
+                       value="" placeholder="Введите дату окончания:">
             </div>
             <div class="col">
                 <select name="select_room" id="selectRoom" class="form-control filter-room filter">
@@ -145,7 +145,7 @@
                         <?php if ($item['id'] < 100): ?>
                             <option class="font-bold" value="<?= $item['id'] ?>" disabled><?= $item['name'] ?></option>
                         <?php else: ?>
-                            <option value="<?= $item['id'] ?>" <?//= $item['id'] === $this->data['room'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>">
                                 -- <?= $item['name'] ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>

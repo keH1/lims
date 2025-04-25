@@ -91,7 +91,7 @@
                                 </td>
                                 <td><?= $arrGost['name'] ?></td>
                                 <td>
-                                    <button type="button" class="btn btn-outline-danger del-gost btn-square-new">
+                                    <button type="button" class="btn btn-danger del-gost btn-square-new">
                                         <i class="fa-solid fa-minus icon-fix"></i>
                                     </button>
                                 </td>
@@ -284,13 +284,14 @@
                 <div class="nav flex-column nav-pills me-3" style="width: 10%;" id="v-pills-tab" role="tablist"
                      aria-orientation="vertical">
                     <?php foreach ($this->data['scheme'] as $item): ?>
-                        <button class="btn btn-outline-secondary nav-link mw-100 mt-0 mb-1"
+                        <button class="btn btn-outline-secondary nav-link text-truncate mw-100 mt-0 mb-1"
                                 id="v-pills-<?= $item['id'] ?>-tab" data-bs-toggle="pill"
                                 data-bs-target="#v-pills-<?= $item['id'] ?>" type="button" role="tab"
                                 aria-controls="v-pills-<?= $item['id'] ?>"
-                                aria-selected="true"><?= $item['name'] ?></button>
+                                aria-selected="true" title="<?= $item['name'] ?>"
+                        ><?= $item['name'] ?></button>
                     <?php endforeach; ?>
-                    <button class="btn btn-primary mw-100 mt-0" type="button" id="v-pills-<?= $item['id'] ?>-tab"
+                    <button class="btn btn-primary mw-100 mt-0 pill-add" type="button" id="v-pills-<?= $item['id'] ?>-tab"
                             data-bs-toggle="pill"
                             data-bs-target="#v-pills-new" role="tab"
                             aria-controls="v-pills-new"

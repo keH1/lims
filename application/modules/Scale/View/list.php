@@ -17,22 +17,16 @@
         </div>
 
         <div class="col-auto">
-            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="<?= $this->data['min_date'] ?>" title="Введите дату начала">
+            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="" title="Введите дату начала">
         </div>
 
         <div class="col-auto">
-            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="<?= $this->data['max_date'] ?>" title="Введите дату окончания">
+            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="" title="Введите дату окончания">
         </div>
 
         <div class="col-auto">
             <button type="button" class="btn btn-outline-secondary filter-btn-reset" title="Сбросить фильтр">Сбросить</button>
         </div>
-
-		<!-- <div class="col-auto">
-			<a class="nav-link auto-fill " href="#" title="Автозаполнение" style="color: black;">
-				<i class="fa-solid fa-gauge-high icon-big"></i>
-			</a>
-		</div> -->
     </div>
 </div>
 
@@ -40,7 +34,6 @@
     <thead>
     <tr class="table-light">
         <th scope="col" class="text-nowrap"></th>
-		<!-- <th scope="col" class="text-nowrap">№ п/п</th> -->
         <th scope="col" class="text-nowrap">Дата</th>
         <th scope="col">Наименование оборудования, зав. номер</th>
         <th scope="col">Используемая для калибровки гиря, класс, зав. номер</th>
@@ -52,7 +45,6 @@
     </tr>
     <tr class="header-search">
         <th scope="col"></th>
-		<!-- <th scope="col"></th> -->
         <th scope="col">
             <input type="text" class="form-control search">
         </th>

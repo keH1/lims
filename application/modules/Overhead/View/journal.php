@@ -21,12 +21,12 @@
 
         <div class="col">
             <input type="date" id="date_start" class="form-control filter filter-date-start"
-                   value="<?= $_GET["date_start"] ?? '' ?>" placeholder="Введите дату начала:">
+                   value="" placeholder="Введите дату начала:">
         </div>
 
         <div class="col">
             <input type="date" id="date_end" class="form-control filter filter-date-end"
-                   value="<?= $_GET["date_end"] ?? '' ?>" placeholder="Введите дату окончания:">
+                   value="" placeholder="Введите дату окончания:">
         </div>
 
         <div class="col-auto">

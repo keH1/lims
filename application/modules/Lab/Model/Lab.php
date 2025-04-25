@@ -57,11 +57,15 @@ class Lab extends Model
 
         $where = "organization_id = {$organizationId}";
 
-        if ( $labId > 0 ) {
-            $where = " AND l.id = {$labId}";
+        if ($labId > 0) {
+            $where .= " AND l.id = {$labId}";
         }
 
-        $sql = $this->DB->Query("select l.* from ba_laba as l where {$where}");
+        $sql = $this->DB->Query(
+           "SELECT l.*
+            FROM ba_laba AS l
+            WHERE {$where}
+        ");
 
         $result = [];
         while ($row = $sql->Fetch()) {
