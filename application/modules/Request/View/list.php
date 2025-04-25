@@ -13,11 +13,11 @@
 <div class="filters mb-4">
     <div class="row">
         <div class="col view-comm" style="<?=$this->data['type_request'] == 'gov'? 'display: none': ''?>">
-            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="<?= $this->data['date_start'] ?? '' ?>" placeholder="Введите дату начала:">
+            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="" placeholder="Введите дату начала:">
         </div>
 
         <div class="col view-comm" style="<?=$this->data['type_request'] == 'gov'? 'display: none': ''?>">
-            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="<?= date('Y-m-d') ?>" placeholder="Введите дату окончания:">
+            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="" placeholder="Введите дату окончания:">
         </div>
 
         <div class="col view-comm" style="<?=$this->data['type_request'] == 'gov'? 'display: none': ''?>">

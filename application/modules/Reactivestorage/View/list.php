@@ -91,12 +91,12 @@
         <div class="col">
             <label class="form-label">Дата</label>
             <input name="toSQL[reactive_consume][date]" type="date" class="form-control filter filter-date-start"
-                   value="<?= $this->data['current_date'] ?>">
+                   value="">
         </div>
     </div>
     <div class="row mb-3">
         <div class="col">
-            <label class="form-label" ">Назначение списания</label>
+            <label class="form-label">Назначение списания</label>
             <input type="text" name="toSQL[reactive_consume][type]" class="form-control">
         </div>
     </div>

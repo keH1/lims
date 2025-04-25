@@ -2,11 +2,11 @@
 <div class="filters mb-4">
 	<div class="row">
 		<div class="col-3">
-			<input type="date" id="inputDateStart" class="form-control filter filter-date-start date" value="<?= date('Y-m-01') ?>" placeholder="Введите дату начала:">
+			<input type="date" id="inputDateStart" class="form-control filter filter-date-start date" value="" placeholder="Введите дату начала:">
 		</div>
 
 		<div class="col-3">
-			<input type="date" id="inputDateEnd" class="form-control filter filter-date-end date" value="<?= date('Y-m-d') ?>" placeholder="Введите дату окончания:">
+			<input type="date" id="inputDateEnd" class="form-control filter filter-date-end date" value="" placeholder="Введите дату окончания:">
 		</div>
 
 		<div class="col-auto">

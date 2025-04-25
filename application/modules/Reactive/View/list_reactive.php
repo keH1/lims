@@ -19,15 +19,10 @@
 						class="btn btn-primary popup-first btn-add-entry w-100 mw-100 mt-0 btn-reactive">
 					Добавить реактив
 				</button>
-<!--				<button type="button" name="add_entry"-->
-<!--						class="btn btn-primary popup-second btn-add-entry w-100 mw-100 mt-0 btn-reactive">-->
-<!--					Провести реактив-->
-<!--				</button>-->
 			</div>
 		</div>
 	</div>
 </div>
-<!--./filters-->
 
 <table id="reactive_journal" class="table table-striped text-center  ">
 	<thead>
