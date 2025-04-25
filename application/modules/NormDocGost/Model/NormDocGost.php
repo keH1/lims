@@ -305,7 +305,7 @@ class NormDocGost extends Model
             $methodList = $this->getListMethodByGostId($id);
 
             foreach ($methodList as $method) {
-                $dataSource = $this->getMethod($id);
+                $dataSource = $this->getMethod($method['id']);
 
                 $dataSource['gost_id'] = $newId;
 
@@ -497,12 +497,12 @@ class NormDocGost extends Model
 
         $sql = $this->DB->Query(
             "select m.*,
-                        d.id unit_id, d.unit_rus, d.name unit_name
-                    from `ulab_methods` as m
-                    inner join ulab_gost as g on g.id = m.gost_id 
-                    left join `ulab_dimension` as d on d.id = m.unit_id
-                    where m.`gost_id` = {$gostId} AND g.organization_id = {$organizationId} 
-                    order by m.id desc"
+                    d.id unit_id, d.unit_rus, d.name unit_name
+            from `ulab_norm_doc_methods` as m
+            inner join ulab_norm_doc_gost as g on g.id = m.gost_id 
+            left join `ulab_dimension` as d on d.id = m.unit_id
+            where m.`gost_id` = {$gostId} AND g.organization_id = {$organizationId} 
+            order by m.id desc"
         );
 
         $result = [];
