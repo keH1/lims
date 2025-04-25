@@ -237,28 +237,28 @@ class Controller
     }
 
     /**
-     * @param $assigneds
+     * @param array $rawAssignedUsers
      * @return array
      */
-    protected function validateAssigned(array $assigneds): array
+    protected function sanitizeAssignedUsers(array $rawAssignedUsers): array
     {
-        $filteredAssigneds = array_filter($assigneds, function($value) {
-            return trim($value) !== '';
+        $trimmed = array_map(fn($item) => trim((string)$item), $rawAssignedUsers);
+
+        $filtered = array_filter($trimmed, function(string $item): bool {
+            return $item !== '' && $item !== '0' && ctype_digit($item);
         });
 
-        $inputArray = array_count_values($filteredAssigneds);
+        $uniqueList = array_values(array_unique($filtered));
 
-        foreach ($inputArray as $value) {
-            if ($value > 1) {
-                return $this->response(
-                    false,
-                    [],
-                    "В поле Ответственный не могут быть два одинаковых ответственных. Заявка не сохранена"
-                );
-            }
+        if (empty($uniqueList)) {
+            return $this->response(
+                false,
+                [],
+                'Пожалуйста, укажите хотя бы одного ответственного'
+            );
         }
 
-        return $this->response(true);
+        return $this->response(true, $uniqueList);
     }
 
 

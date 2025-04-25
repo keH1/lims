@@ -1266,11 +1266,12 @@ class RequestController extends Controller
             }
         }
 
-        $valid = $this->validateAssigned($post['ASSIGNED'] ?? []);
-        if (!$valid['success']) {
-            $this->showErrorMessage($valid['error']);
+        $resultIds = $this->sanitizeAssignedUsers($post['id_assign'] ?? []);
+        if (!$resultIds['success']) {
+            $this->showErrorMessage($resultIds['error']);
             $this->redirect($location);
         }
+        $_POST['id_assign'] = $resultIds['data'];
     }
 
     /**
