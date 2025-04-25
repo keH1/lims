@@ -459,10 +459,6 @@ class Model
                 $transformedFilter['having'] = $having;
             }
             if ($typeTransform == "havingDateId") {
-
-                $transformedFilter['dateStart'] = "'{$filter['dateStart']}-01' ";
-                $transformedFilter['dateEnd'] = "LAST_DAY('{$filter['dateEnd']}-01') ";
-
                 if ($filter['idWhichFilter'] == -1) {
                     $transformedFilter['idWhichFilter'] = '>0';
                 } elseif ($filter['idWhichFilter'] > -1) {
