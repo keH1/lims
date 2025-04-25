@@ -242,16 +242,20 @@ class Controller
      */
     protected function validateAssigned(array $assigneds): array
     {
-        $inputArray = array_count_values($assigneds);
+        $filteredAssigneds = array_filter($assigneds, function($value) {
+            return trim($value) !== '';
+        });
+
+        $inputArray = array_count_values($filteredAssigneds);
 
         foreach ($inputArray as $value) {
-            if (trim($value) > 1) {
-                $duplicateValues = true;
-                break;
+            if ($value > 1) {
+                return $this->response(
+                    false,
+                    [],
+                    "В поле Ответственный не могут быть два одинаковых ответственных. Заявка не сохранена"
+                );
             }
-        }
-        if (@$duplicateValues) {
-            return $this->response(false, [], "В поле Ответственный не могут быть два одинаковых ответственных. Заявка не сохранена");
         }
 
         return $this->response(true);
