@@ -795,7 +795,11 @@ $(function ($) {
             method: "POST",
             success: function (json) {
                 if ( !json.success ) {
-                    showErrorMessage(json.error)
+                    showErrorMessage(json.error, '#error-message')
+
+                    $button.removeClass('disabled')
+
+                    $.magnificPopup.close()
                 }
 
                 if ( json.type === 'delete' ) {
