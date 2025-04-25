@@ -32,7 +32,12 @@ class History extends Model
                     $where .= "h.REQUEST LIKE '%{$filter['search']['REQUEST']}%' AND ";
                 }
 				if (isset($filter['search']['PROT_NUM'])) {
-                    $where .= "h.PROT_NUM = '{$filter['search']['PROT_NUM']}' AND ";
+                    $protocolNumber = $filter['search']['PROT_NUM'];
+                    if (ctype_digit($protocolNumber)) {
+                        $where .= "h.PROT_NUM = '{$protocolNumber}' AND ";
+                    } else {
+                        $where .= "(1=0) AND ";
+                    }
                 }
 				if (isset($filter['search']['TZ_ID'])) {
                     $where .= "h.TZ_ID = '{$filter['search']['TZ_ID']}' AND ";
