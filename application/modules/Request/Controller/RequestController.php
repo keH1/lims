@@ -277,6 +277,8 @@ class RequestController extends Controller
             $companyId = (int)$_POST['company_id'];
         }
 
+        $dogovorNum = $_POST['REQ_TYPE'] === '9' ? $_POST['NUM_DOGOVOR_TEXT'] : $_POST['NUM_DOGOVOR'];
+
         if ($_POST['REQ_TYPE'] === 'SALE') {
             $this->validationSale($_POST, $location);
 
@@ -367,8 +369,8 @@ class RequestController extends Controller
             'arrAssigned' => $arrAssigned,
         ];
 
-        if ( !empty($_POST['NUM_DOGOVOR']) ) {
-            $contract = $order->getContractById((int)$_POST['NUM_DOGOVOR']);
+        if ( !empty($dogovorNum) && $_POST['REQ_TYPE'] !== '9' ) {
+            $contract = $order->getContractById((int)$dogovorNum);
             if (!empty($contract)) {
                 $orderName = $contract['cont'];
             }
@@ -380,7 +382,7 @@ class RequestController extends Controller
             'TYPE_ID' => $_POST['REQ_TYPE'],
             'CHECK_IP' => isset($_POST['check_ip'])? '1' : '0',
             'SAVE_MAIL' => $saveMail,
-            'DOGOVOR_NUM' => $_POST['NUM_DOGOVOR'],
+            'DOGOVOR_NUM' => $dogovorNum,
             'DOGOVOR_TABLE' => $orderName,
             'POSIT_LEADS' => $_POST['PositionGenitive'],
             'order_type' => (int)$_POST['order_type'],

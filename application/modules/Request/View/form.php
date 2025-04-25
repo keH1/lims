@@ -79,7 +79,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Основание для проведения испытаний:</label>
                 <div class="col-sm-8">
-                    <select class="form-control" name="NUM_DOGOVOR">
+                    <select class="form-control" name="NUM_DOGOVOR" id="contract-select">
                         <option value="">Новый договор</option>
                         <?php foreach ($this->data['contracts'] as $contract): ?>
                             <option value="<?=$contract['ID']?>" <?=$this->data['request']['DOGOVOR_NUM'] == $contract['ID']? 'selected' : '' ?>>
@@ -87,6 +87,10 @@
                             </option>
                         <?php endforeach; ?>
                     </select>
+                    <input type="text" class="form-control visually-hidden"
+                           name="NUM_DOGOVOR_TEXT" id="contract-input" 
+                           value="<?=isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] === '9' ? htmlspecialchars($this->data['request']['DOGOVOR_NUM']) : ''?>"
+                    >
                 </div>
                 <div class="col-sm-2"></div>
             </div>
