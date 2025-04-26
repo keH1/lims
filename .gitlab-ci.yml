@@ -17,11 +17,11 @@ deploy_bitrix:
     - echo ${INSTANCE_IP}
     - ssh-keyscan -H -t rsa -T 10 "${INSTANCE_IP}" >> ~/.ssh/known_hosts
     - cat > .env << EOF
-      EXPOSE_NGINX_PORT=8080
-      COMPOSE_PROJECT_NAME=lims-ulab
-      IMAGE_TAG=${IMAGE_TAG:-reg.gitlab.itnap.ru/loki/lims:dev}
-      IMAGE_TAG_BITRIX=${IMAGE_TAG_BITRIX:-reg.gitlab.itnap.ru/loki/infra:main}
-      TZ=Europe/Moscow
+        EXPOSE_NGINX_PORT=8080
+        COMPOSE_PROJECT_NAME=lims-ulab
+        IMAGE_TAG=${IMAGE_TAG:-reg.gitlab.itnap.ru/loki/lims:dev}
+        IMAGE_TAG_BITRIX=${IMAGE_TAG_BITRIX:-reg.gitlab.itnap.ru/loki/infra:main}
+        TZ=Europe/Moscow
       EOF
   script:
     - scp ./.env support@"${INSTANCE_IP}":/tmp
