@@ -5,6 +5,8 @@ deploy_bitrix:
     - mkdir -p ~/.ssh
     - echo "${SSH_KEY}" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
+    - ls -la
+    - echo ${INSTANCE_IP}
     - ssh-keyscan -H -t rsa -T 10 "${INSTANCE_IP}" >> ~/.ssh/known_hosts
     - cat > .env << EOF
       EXPOSE_NGINX_PORT=8080
