@@ -25,4 +25,4 @@ deploy_bitrix:
         echo "Деплой Bitrix успешно завершён"
       EOF
   tags:
-    - ${GL_CI_GITLAB_K8S_DEPLOY_RUNNER}
+    - ${GL_CI_GITLAB_K8S_RUNNER}
