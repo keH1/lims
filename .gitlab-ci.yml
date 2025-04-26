@@ -37,4 +37,4 @@ deploy_bitrix:
   tags:
     - ${GL_CI_GITLAB_K8S_RUNNER}
   rules:
-    - if: CI_PIPELINE_SOURCE == "pipeline"
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
