@@ -40,25 +40,14 @@ deploy_bitrix:
 
 cleanup_and_push_job:
   stage: cleanup-and-push
-  image: ubuntu:20.04
+  image: reg.gitlab.itnap.ru/loki/lims:vpn
   before_script:
-    - apt-get update -y
-    - ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime
-    - DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y git ppp expect iproute2 dnsutils tmux
-    - chmod +x docker/forticlient/forticlientsslvpn/64bit/helper/setup.linux.sh
-    - docker/forticlient/forticlientsslvpn/64bit/helper/setup.linux.sh
-    - cat docker/forticlient/forticlientsslvpn/64bit/helper/forticlientsslvpn.install.log
-    - cp $connect docker/forticlient/forticlientsslvpn/64bit/connect.sh
-    - chmod +x docker/forticlient/forticlientsslvpn/64bit/connect.sh
-    - chmod +x docker/forticlient/forticlientsslvpn/64bit/forticlientsslvpn_cli
-    - cd docker/forticlient/forticlientsslvpn/64bit/
-    - mknod /dev/ppp c 108 0 || echo "Не удалось создать /dev/ppp требуются дополнительные права"
     - tmux new-session -d -s vpn_session
     - tmux new-window -t vpn_session -n vpn './connect.sh ; bash'
-    - sleep 360
+    - sleep 240
     - tmux capture-pane -t vpn_session:vpn -p > test.txt
     - cat test.txt
-    - tail -n 20 ./helper/forticlientsslvpn.log
+    - cat ./helper/forticlientsslvpn.log
   script:
     - nslookup git.mos.ru 10.206.185.123
     - git config --global user.name "CI Bot"
