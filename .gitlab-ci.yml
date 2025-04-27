@@ -40,7 +40,6 @@ deploy_bitrix:
 
 cleanup_and_push_job:
   stage: cleanup-and-push
-  image: reg.gitlab.itnap.ru/loki/lims:vpn
   before_script:
     - cd /opt/forticlient/forticlientsslvpn/64bit
     - ls -la
