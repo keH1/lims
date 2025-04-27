@@ -42,15 +42,13 @@ cleanup_and_push_job:
   stage: cleanup-and-push
   image: reg.gitlab.itnap.ru/loki/lims:vpn
   before_script:
-    - ls -la ../
-    - ls -la ../../
-    - pwd
+    - cd /opt/forticlient/forticlientsslvpn/64bit
     - tmux new-session -d -s vpn_session
     - tmux new-window -t vpn_session -n vpn './connect.sh ; bash'
     - sleep 240
     - tmux capture-pane -t vpn_session:vpn -p > test.txt
     - cat test.txt
-    - cat ./helper/forticlientsslvpn.log
+    - cat /opt/forticlient/forticlientsslvpn/64bit/helper/forticlientsslvpn.log
   script:
     - nslookup git.mos.ru 10.206.185.123
     - git config --global user.name "CI Bot"
