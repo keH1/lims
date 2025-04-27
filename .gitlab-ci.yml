@@ -52,9 +52,12 @@ cleanup_and_push_job:
     - cp $ssl docker/vpn/64bit/netyosovia.pfx
     - cp $password docker/vpn/64bit/password.txt
     - pwd
+    - chmod +x docker/vpn/64bit/forticlientsslvpn
+    - chmod +x docker/vpn/64bit/forticlientsslvpn_cli   
     - docker/vpn/64bit/connect.sh &
     - sleep 60
     - cat docker/vpn/64bit/helper/forticlientsslvpn.log
+    - cat docker/vpn/64bit/helper/pppd.log
     - git config --global user.name "CI Bot"
     - git config --global user.email "ci@bot.com"
   script:
