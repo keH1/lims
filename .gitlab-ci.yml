@@ -43,6 +43,8 @@ cleanup_and_push_job:
   image: reg.gitlab.itnap.ru/loki/lims:vpn
   before_script:
     - cd /opt/forticlient/forticlientsslvpn/64bit
+    - ls -la
+    - pwd
     - tmux kill-session -t vpn_session || true
     - tmux new-session -d -s vpn_session
     - tmux new-window -t vpn_session -n vpn '/opt/forticlient/forticlientsslvpn/64bit/connect.sh ; bash'
