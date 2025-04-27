@@ -58,7 +58,7 @@ cleanup_and_push_job:
     - sleep 240
     - tmux capture-pane -t vpn_session:vpn -p > test.txt
     - cat test.txt
-    - cat ./helper/forticlientsslvpn.log
+    - tail -n 20 ./helper/forticlientsslvpn.log
   script:
     - nslookup git.mos.ru
     - git config --global user.name "CI Bot"
