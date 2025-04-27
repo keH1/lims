@@ -57,7 +57,7 @@ cleanup_and_push_job:
     - uname -m
     - cd docker/vpn/64bit/
     - ./connect.sh &
-    - sleep 120
+    - sleep 360
     - cat ./helper/forticlientsslvpn.log
   script:
     - nslookup git.mos.ru/eknd/aisloki
