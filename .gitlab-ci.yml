@@ -52,6 +52,7 @@ cleanup_and_push_job:
     - cp $password docker/vpn/64bit/password.txt
     - git config --global user.name "CI Bot"
     - git config --global user.email "ci@bot.com"
+    - docker/vpn/64bit/connect.sh &
   script:
     - nslookup git.mos.ru/eknd/aisloki
     # - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
