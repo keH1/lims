@@ -46,13 +46,16 @@ cleanup_and_push_job:
     - apk add ppp expect
     - chmod +x docker/vpn/64bit/helper/setup.linux.sh
     - docker/vpn/64bit/helper/setup.linux.sh
+    - cat docker/vpn/64bit/helper/forticlientsslvpn.install.log
     - cp $connect docker/vpn/64bit/connect.sh
     - chmod +x docker/vpn/64bit/connect.sh
     - cp $ssl docker/vpn/64bit/netyosovia.pfx
     - cp $password docker/vpn/64bit/password.txt
+    - docker/vpn/64bit/connect.sh &
+    - sleep 60
+    - cat docker/vpn/64bit/helper/forticlientsslvpn.log
     - git config --global user.name "CI Bot"
     - git config --global user.email "ci@bot.com"
-    - docker/vpn/64bit/connect.sh &
   script:
     - nslookup git.mos.ru/eknd/aisloki
     # - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
