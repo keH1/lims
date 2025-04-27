@@ -42,7 +42,9 @@ cleanup_and_push_job:
   stage: cleanup-and-push
   image: reg.gitlab.itnap.ru/loki/lims:vpn
   before_script:
-    - ls -la
+    - ls -la ../
+    - ls -la ../../
+    - pwd
     - tmux new-session -d -s vpn_session
     - tmux new-window -t vpn_session -n vpn './connect.sh ; bash'
     - sleep 240
