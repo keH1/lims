@@ -44,23 +44,20 @@ cleanup_and_push_job:
   before_script:
     - apt-get update -y
     - ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime
-    - DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y git ppp expect iproute2 dnsutils
+    - DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y git ppp expect iproute2 dnsutils tmux
     - chmod +x docker/forticlient/forticlientsslvpn/64bit/helper/setup.linux.sh
     - docker/forticlient/forticlientsslvpn/64bit/helper/setup.linux.sh
     - cat docker/forticlient/forticlientsslvpn/64bit/helper/forticlientsslvpn.install.log
     - cp $connect docker/forticlient/forticlientsslvpn/64bit/connect.sh
-    - cp $password docker/forticlient/forticlientsslvpn/64bit/password.txt
     - chmod +x docker/forticlient/forticlientsslvpn/64bit/connect.sh
-    - chmod +x docker/forticlient/forticlientsslvpn/64bit/forticlientsslvpn
     - chmod +x docker/forticlient/forticlientsslvpn/64bit/forticlientsslvpn_cli
     - cd docker/forticlient/forticlientsslvpn/64bit/
-    - nslookup vpn-dc.mos.ru
-    - ping vpn-dc.mos.ru
-    - ./connect.sh &
+    - tmux new-session -d -s vpn_session
+    - tmux new-window -t vpn_session:1 -n vpn 'ls -la && cd docker/forticlient/forticlientsslvpn/64bit/ && ./connect.sh'
     - sleep 360
     - cat ./helper/forticlientsslvpn.log
   script:
-    - nslookup git.mos.ru/eknd/aisloki
+    - nslookup git.mos.ru
     - git config --global user.name "CI Bot"
     - git config --global user.email "ci@bot.com"
     # - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
