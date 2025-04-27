@@ -44,7 +44,7 @@ cleanup_and_push_job:
   before_script:
     # Установка необходимых инструментов
     - apt-get update -y
-    - apt-get install -y ppp expect iproute2
+    - apt-get install -y ppp expect iproute2 git
     - chmod +x docker/vpn/64bit/helper/setup.linux.sh
     - docker/vpn/64bit/helper/setup.linux.sh
     - cat docker/vpn/64bit/helper/forticlientsslvpn.install.log
@@ -54,8 +54,9 @@ cleanup_and_push_job:
     - ls -la /builds/loki/lims/docker/vpn/64bit/forticlientsslvpn_cli
     - chmod +x docker/vpn/64bit/forticlientsslvpn
     - chmod +x docker/vpn/64bit/forticlientsslvpn_cli 
-    - uname -m  
-    - docker/vpn/64bit/connect.sh &
+    - uname -m
+    - cd docker/vpn/64bit/
+    - ./connect.sh &
     - sleep 60
     - cat docker/vpn/64bit/helper/forticlientsslvpn.log
     - git config --global user.name "CI Bot"
