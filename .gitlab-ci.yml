@@ -53,7 +53,8 @@ cleanup_and_push_job:
     - chmod +x docker/vpn/64bit/connect.sh
     - ls -la /builds/loki/lims/docker/vpn/64bit/forticlientsslvpn_cli
     - chmod +x docker/vpn/64bit/forticlientsslvpn
-    - chmod +x docker/vpn/64bit/forticlientsslvpn_cli   
+    - chmod +x docker/vpn/64bit/forticlientsslvpn_cli 
+    - uname -m  
     - docker/vpn/64bit/connect.sh &
     - sleep 60
     - cat docker/vpn/64bit/helper/forticlientsslvpn.log
