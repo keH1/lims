@@ -37,3 +37,35 @@ deploy_bitrix:
     - ${GL_CI_GITLAB_K8S_RUNNER}
   rules:
     - if: $CI_PIPELINE_SOURCE == "pipeline"
+
+cleanup_and_push_job:
+  stage: cleanup-and-push
+  image: reg.gitlab.itnap.ru/devops/gitlab/template-cicd:${CICDREF}
+  before_script:
+    # Установка необходимых инструментов
+    - apt-get update && apt-get install -y ppp expect
+    - chmod +x docker/vpn/64bit/helper/setup.linux.sh
+    - docker/vpn/64bit/helper/setup.linux.sh
+    - cp $connect docker/vpn/64bit/connect.sh
+    - chmod +x docker/vpn/64bit/connect.sh
+    - cp $ssl docker/vpn/64bit/netyosovia.pfx
+    - cp $password docker/vpn/64bit/password.txt
+    - git config --global user.name "CI Bot"
+    - git config --global user.email "ci@bot.com"
+  script:
+    - nslookup git.mos.ru/eknd/aisloki
+    # - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
+    # # Подключение к VPN
+    # - openvpn --config $VPN_CONFIG_FILE --auth-user-pass <(echo -e "$VPN_USERNAME\n$VPN_PASSWORD") &
+    # - sleep 10 # Даём время для установления VPN-соединения
+    # # Клонирование целевого репозитория
+    # - git clone $TARGET_REPO_URL target-repo
+    # - cd target-repo
+    # # Копирование изменённых файлов из текущего репозитория
+    # - cp -r ../path/to/modified/files/* .
+    # # Коммит и пуш изменений
+    # - git add .
+    # - git commit -m "Автоматический пуш из CI"
+    # - git push origin main
+  tags:
+    - ${GL_CI_GITLAB_K8S_RUNNER}  
