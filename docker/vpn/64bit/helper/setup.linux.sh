@@ -10,14 +10,6 @@ sys=`uname -s`
 
 WAITPPP="waitppp.sh"
 
-# Проверка на параметр -y для автоматического принятия лицензии
-if [ "$1" = "-y" ]; then
-    auto_accept="yes"
-    shift
-else
-    auto_accept="no"
-fi
-
 if [ "$1" = "1" ]; then
     echo "run myself in xterm..." >> "$inlog"
     xterm -e "$0" 2
@@ -26,13 +18,8 @@ if [ "$1" = "1" ]; then
 fi
 
 if [ "$usr" != "0" ]; then
-    # we are running in xterm now.
-    rm -rf "$base/.nolicense"
     echo "Need root privilege to continue the setup, trying sodu..."
     sudo "$0" 3
-    if [ -f "$base/.nolicense" ]; then
-        exit 0
-    fi
     if [ ! -u "$subproc" ]; then
         echo "sudo failed, use su instead..." >> "$inlog"
         echo "it seems that 'sudo' does not work here, try to use 'su'"
@@ -43,28 +30,6 @@ if [ "$usr" != "0" ]; then
         exit -1
     fi
     exit 0
-fi
-
-if [ "$1" != "2" ]; then
-    echo "begin setup at $base..." >> "$inlog"
-    if [ "$auto_accept" = "yes" ]; then
-        ans="Yes"
-    else
-        more "$base/License.txt"
-        echo -n "Do you agree with this license ?[Yes/No]"
-        read ans
-    fi
-    yn=`echo $ans|sed '
-    s/y/Y/
-    s/e/E/
-    s/s/S/
-    '`
-    if [ "$yn" != "YES" -a "$yn" != "Y" ]; then
-        touch "$base/.nolicense"
-        chmod a+w "$base/.nolicense"
-        echo "Do not agree with this license, aborting..."
-        exit 0
-    fi
 fi
 
 if [ "$sys" = "Linux" ]; then
