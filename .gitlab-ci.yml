@@ -49,7 +49,6 @@ cleanup_and_push_job:
     - docker/vpn/64bit/helper/setup.linux.sh
     - cat docker/vpn/64bit/helper/forticlientsslvpn.install.log
     - cp $connect docker/vpn/64bit/connect.sh
-    - cp $ssl docker/vpn/64bit/netyosovia.pfx
     - cp $password docker/vpn/64bit/password.txt
     - chmod +x docker/vpn/64bit/connect.sh
     - ls -la /builds/loki/lims/docker/vpn/64bit/forticlientsslvpn_cli
