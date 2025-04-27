@@ -52,7 +52,7 @@ cleanup_and_push_job:
     - cp $password docker/forticlientsslvpn/64bit/password.txt
     - chmod +x docker/forticlientsslvpn/64bit/connect.sh
     - ls -la /builds/loki/lims/docker/forticlientsslvpn/64bit/forticlientsslvpn_cli
-    - chmod +x docker/forticlientsslvpn64bit/forticlientsslvpn
+    - chmod +x docker/forticlientsslvpn/64bit/forticlientsslvpn
     - chmod +x docker/forticlientsslvpn/64bit/forticlientsslvpn_cli
     - cd docker/forticlientsslvpn/64bit/
     - ./connect.sh &
