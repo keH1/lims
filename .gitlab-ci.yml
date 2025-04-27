@@ -58,10 +58,10 @@ cleanup_and_push_job:
     - ./connect.sh &
     - sleep 120
     - cat ./helper/forticlientsslvpn.log
-    - git config --global user.name "CI Bot"
-    - git config --global user.email "ci@bot.com"
   script:
     - nslookup git.mos.ru/eknd/aisloki
+    - git config --global user.name "CI Bot"
+    - git config --global user.email "ci@bot.com"
     # - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
     # # Подключение к VPN
     # - openvpn --config $VPN_CONFIG_FILE --auth-user-pass <(echo -e "$VPN_USERNAME\n$VPN_PASSWORD") &
