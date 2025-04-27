@@ -53,9 +53,9 @@ cleanup_and_push_job:
     - chmod +x docker/forticlient/forticlientsslvpn/64bit/forticlientsslvpn_cli
     - cd docker/forticlient/forticlientsslvpn/64bit/
     - tmux new-session -d -s vpn_session
-    - tmux new-window -t vpn_session:1 -n vpn 'ls -la && cd docker/forticlient/forticlientsslvpn/64bit/ && ./connect.sh'
+    - tmux new-window -t vpn_session -n vpn 'ls -la && cd docker/forticlient/forticlientsslvpn/64bit/ && ./connect.sh'
     - sleep 30
-    - tmux capture-pane -t vpn_session:1 -p > test.txt
+    - tmux capture-pane -t vpn_session:vpn -p > test.txt
     - cat test.txt
     - cat forticlient/forticlientsslvpn/64bit/forticlientsslvpn.log
   script:
