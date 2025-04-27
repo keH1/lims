@@ -58,7 +58,7 @@ cleanup_and_push_job:
     - cd docker/vpn/64bit/
     - ./connect.sh &
     - sleep 60
-    - cat docker/vpn/64bit/helper/forticlientsslvpn.log
+    - cat ./helper/forticlientsslvpn.log
     - git config --global user.name "CI Bot"
     - git config --global user.email "ci@bot.com"
   script:
