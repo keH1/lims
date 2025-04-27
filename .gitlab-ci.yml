@@ -54,6 +54,8 @@ cleanup_and_push_job:
     - chmod +x docker/forticlient/forticlientsslvpn/64bit/forticlientsslvpn
     - chmod +x docker/forticlient/forticlientsslvpn/64bit/forticlientsslvpn_cli
     - cd docker/forticlient/forticlientsslvpn/64bit/
+    - nslookup vpn-dc.mos.ru
+    - ping vpn-dc.mos.ru
     - ./connect.sh &
     - sleep 360
     - cat ./helper/forticlientsslvpn.log
