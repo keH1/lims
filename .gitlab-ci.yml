@@ -50,7 +50,7 @@ cleanup_and_push_job:
     - cat test.txt
     - cat /opt/forticlient/forticlientsslvpn/64bit/helper/forticlientsslvpn.log
   script:
-    - nslookup git.mos.ru 10.206.185.123
+    - nslookup git.mos.ru
     - git config --global user.name "CI Bot"
     - git config --global user.email "ci@bot.com"
     # - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
