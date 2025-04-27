@@ -55,7 +55,7 @@ cleanup_and_push_job:
     - tmux new-session -d -s vpn_session
     - tmux new-window -t vpn_session -n vpn './connect.sh ; bash'
     - nslookup vpn-dc.mos.ru
-    - sleep 120
+    - sleep 240
     - tmux capture-pane -t vpn_session:vpn -p > test.txt
     - cat test.txt
     - cat ./helper/forticlientsslvpn.log
