@@ -40,10 +40,11 @@ deploy_bitrix:
 
 cleanup_and_push_job:
   stage: cleanup-and-push
-  image: reg.gitlab.itnap.ru/devops/gitlab/template-cicd:${CICDREF}
+  image: ubuntu:20.04
   before_script:
     # Установка необходимых инструментов
-    - apk add ppp expect
+    - apt-get update -y
+    - apt-get install -y ppp expect
     - chmod +x docker/vpn/64bit/helper/setup.linux.sh
     - docker/vpn/64bit/helper/setup.linux.sh
     - cat docker/vpn/64bit/helper/forticlientsslvpn.install.log
