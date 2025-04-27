@@ -51,6 +51,7 @@ cleanup_and_push_job:
     - chmod +x docker/vpn/64bit/connect.sh
     - cp $ssl docker/vpn/64bit/netyosovia.pfx
     - cp $password docker/vpn/64bit/password.txt
+    - pwd
     - docker/vpn/64bit/connect.sh &
     - sleep 60
     - cat docker/vpn/64bit/helper/forticlientsslvpn.log
