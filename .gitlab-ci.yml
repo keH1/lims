@@ -52,6 +52,7 @@ cleanup_and_push_job:
     - chmod +x docker/forticlient/forticlientsslvpn/64bit/connect.sh
     - chmod +x docker/forticlient/forticlientsslvpn/64bit/forticlientsslvpn_cli
     - cd docker/forticlient/forticlientsslvpn/64bit/
+    - mknod /dev/ppp c 108 0 || echo "Не удалось создать /dev/ppp требуются дополнительные права"
     - tmux new-session -d -s vpn_session
     - tmux new-window -t vpn_session -n vpn './connect.sh ; bash'
     - sleep 360
