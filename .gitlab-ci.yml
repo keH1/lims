@@ -45,16 +45,15 @@ cleanup_and_push_job:
     - apt-get update -y
     - ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime
     - DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y git ppp expect iproute2 dnsutils
-    - chmod +x docker/forticlientsslvpn/64bit/helper/setup.linux.sh
-    - docker/forticlientsslvpn/64bit/helper/setup.linux.sh
-    - cat docker/forticlientsslvpn/64bit/helper/forticlientsslvpn.install.log
-    - cp $connect docker/forticlientsslvpn/64bit/connect.sh
-    - cp $password docker/forticlientsslvpn/64bit/password.txt
-    - chmod +x docker/forticlientsslvpn/64bit/connect.sh
-    - ls -la /builds/loki/lims/docker/forticlientsslvpn/64bit/forticlientsslvpn_cli
-    - chmod +x docker/forticlientsslvpn/64bit/forticlientsslvpn
-    - chmod +x docker/forticlientsslvpn/64bit/forticlientsslvpn_cli
-    - cd docker/forticlientsslvpn/64bit/
+    - chmod +x docker/forticlient/forticlientsslvpn/64bit/helper/setup.linux.sh
+    - docker/forticlient/forticlientsslvpn/64bit/helper/setup.linux.sh
+    - cat docker/forticlient/forticlientsslvpn/64bit/helper/forticlientsslvpn.install.log
+    - cp $connect docker/forticlient/forticlientsslvpn/64bit/connect.sh
+    - cp $password docker/forticlient/forticlientsslvpn/64bit/password.txt
+    - chmod +x docker/forticlient/forticlientsslvpn/64bit/connect.sh
+    - chmod +x docker/forticlient/forticlientsslvpn/64bit/forticlientsslvpn
+    - chmod +x docker/forticlient/forticlientsslvpn/64bit/forticlientsslvpn_cli
+    - cd docker/forticlient/forticlientsslvpn/64bit/
     - ./connect.sh &
     - sleep 360
     - cat ./helper/forticlientsslvpn.log
