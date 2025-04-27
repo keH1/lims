@@ -44,7 +44,7 @@ cleanup_and_push_job:
   before_script:
     # Установка необходимых инструментов
     - apt-get update -y
-    - apt-get install -y ppp expect iproutes
+    - apt-get install -y ppp expect iproute2
     - chmod +x docker/vpn/64bit/helper/setup.linux.sh
     - docker/vpn/64bit/helper/setup.linux.sh
     - cat docker/vpn/64bit/helper/forticlientsslvpn.install.log
