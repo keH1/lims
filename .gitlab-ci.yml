@@ -54,8 +54,10 @@ cleanup_and_push_job:
     - cd docker/forticlient/forticlientsslvpn/64bit/
     - tmux new-session -d -s vpn_session
     - tmux new-window -t vpn_session:1 -n vpn 'ls -la && cd docker/forticlient/forticlientsslvpn/64bit/ && ./connect.sh'
-    - sleep 360
-    - cat ./helper/forticlientsslvpn.log
+    - sleep 30
+    - tmux capture-pane -t vpn_session:1 -p > test.txt
+    - cat test.txt
+    - cat forticlient/forticlientsslvpn/64bit/forticlientsslvpn.log
   script:
     - nslookup git.mos.ru
     - git config --global user.name "CI Bot"
