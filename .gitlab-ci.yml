@@ -43,7 +43,7 @@ cleanup_and_push_job:
   image: reg.gitlab.itnap.ru/devops/gitlab/template-cicd:${CICDREF}
   before_script:
     # Установка необходимых инструментов
-    - apk add -y ppp expect
+    - apk add ppp expect
     - chmod +x docker/vpn/64bit/helper/setup.linux.sh
     - docker/vpn/64bit/helper/setup.linux.sh
     - cp $connect docker/vpn/64bit/connect.sh
