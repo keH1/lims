@@ -21,14 +21,9 @@ class Electric extends Model
         $result['recordsTotal'] = count($this->getFromSQL('getList', $filtersForGetList));
         //всю допфильтрацию вставлять после $result['recordsTotal'] = ... до $result['recordsFiltered'] = ...
 
-        if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
-            $filter['order']['by'] = "LEFT(TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)), 1)";
-        }
-
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
         //Дальше допфильтрацию не вставлять
         $result['recordsFiltered'] = count($this->getFromSQL('getList', $filtersForGetList));
-
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'orderLimit'));
 
         return array_merge($result, $this->getFromSQL('getList', $filtersForGetList));
@@ -72,6 +67,7 @@ class Electric extends Model
     private function getFromSQL(string $typeName, array $filters = null): array
     {
         $organizationId = App::getOrganizationId();
+
         if ($typeName == 'getList') {
             $request = "
             SELECT DATE_FORMAT(electric_control.date, '%d.%m.%Y') AS date_dateformat, 
@@ -105,12 +101,12 @@ class Electric extends Model
             JOIN ROOMS ON ROOMS.id = electric_control.id_room
             JOIN b_user ON b_user.id = electric_control.global_assigned
             WHERE electric_control.organization_id = {$organizationId}
-                AND id_room {$filters['idWhichFilter']}
-                AND date BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']} 
+                AND id_room {$filters['idWhichFilter']} 
+                AND date BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']}
+            HAVING  {$filters['having']}
             ORDER BY {$filters['order']}
                 {$filters['limit']}
             ";
-
         } elseif ($typeName == 'lastElectricNorm') {
             $request = "SELECT *, MAX(electric_norm.global_entry_date) AS max
                 FROM electric_norm WHERE electric_norm.organization_id = {$organizationId}           
