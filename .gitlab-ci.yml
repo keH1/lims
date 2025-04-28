@@ -60,7 +60,7 @@ cleanup_and_push_job:
     - cd target-repo
     - git add .
     - git commit -m "Автоматический пуш из CI"
-    - git push origin main
+    - git push -f origin main
     - tmux kill-session -t vpn_session || true
   tags:
     - vpn
