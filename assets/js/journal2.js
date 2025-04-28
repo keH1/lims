@@ -173,6 +173,7 @@ $(function ($) {
             render: function (data, type, item) {
                 let i = 0;
                 let dataProtocol = `<div class="d-flex flex-column">`
+
                 if (item['PROTOCOLS'].length > 0) {
                     for (const val of item['PROTOCOLS']) {
                         if ( i === 3 ) { break; }

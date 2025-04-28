@@ -1137,6 +1137,13 @@ class Request extends Model
                     HAVING {$having} "
         )->SelectedRowsCount();
 
+        // Генерация возможных путей файлов протокола
+        $filePatterns = [
+            "/protocol_generator/archive/%s%s/%s/%s.pdf",
+            "/protocol_generator/archive/%s%s/%s/%s.docx",
+            "/pdf/%s/%s.pdf",
+        ];
+
         while ($row = $data->Fetch()) {
             $row['start_new_area'] = DEAL_START_NEW_AREA;
             $isExistTz = $requirementModel->isExistTz($row['ID_Z']);
@@ -1210,15 +1217,22 @@ class Request extends Model
 
             foreach ($protocols as $key => $value) {
                 if ( !empty($value['NUMBER_AND_YEAR']) ) {
-                    if ( is_file($_SERVER['DOCUMENT_ROOT'] . "/protocol_generator/archive/{$row['b_id']}{$value['YEAR']}/{$value['ID']}/{$value['ACTUAL_VERSION']}.pdf") ) {
-                        $protocolsData[$key]['FILES'] = "/protocol_generator/archive/{$row['b_id']}{$value['YEAR']}/{$value['ID']}/{$value['ACTUAL_VERSION']}.pdf";
-                        $protocolsData[$key]['number'] = $value['NUMBER_AND_YEAR'];
-                    } else if ( is_file($_SERVER['DOCUMENT_ROOT'] . "/protocol_generator/archive/{$row['b_id']}{$value['YEAR']}/{$value['ID']}/{$value['ACTUAL_VERSION']}.docx") ) {
-                        $protocolsData[$key]['FILES'] = "/protocol_generator/archive/{$row['b_id']}{$value['YEAR']}/{$value['ID']}/{$value['ACTUAL_VERSION']}.docx";
-                        $protocolsData[$key]['number'] = $value['NUMBER_AND_YEAR'];
-                    } else if ( is_file($_SERVER['DOCUMENT_ROOT'] . "/pdf/{$value['ID']}/{$value['ACTUAL_VERSION']}.pdf") ) {
-                        $protocolsData[$key]['FILES'] = "/pdf/{$value['ID']}/{$value['ACTUAL_VERSION']}.pdf";
-                        $protocolsData[$key]['number'] = $value['NUMBER_AND_YEAR'];
+                    // Параметры для подстановки в пути
+                    $pathParams = [
+                        [$row['b_id'], $value['YEAR'], $value['ID'], $value['ACTUAL_VERSION']],
+                        [$row['b_id'], $value['YEAR'], $value['ID'], $value['ACTUAL_VERSION']],
+                        [$value['ID'], $value['ACTUAL_VERSION']],
+                    ];
+
+                    foreach ($filePatterns as $index => $pattern) {
+                        $relativePath = vsprintf($pattern, $pathParams[$index]);
+                        $fullPath = $_SERVER['DOCUMENT_ROOT'] . $relativePath;
+
+                        if (is_file($fullPath)) {
+                            $protocolsData[$key]['FILES'] = $relativePath;
+                            $protocolsData[$key]['number'] = $value['NUMBER_AND_YEAR'];
+                            break;
+                        }
                     }
                 }
             }
