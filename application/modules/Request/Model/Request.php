@@ -209,9 +209,11 @@ class Request extends Model
             $probe = unserialize($row['PROBE']);
             $row['PROBE'] = $probe;
 
-            $regx = "/(\d+)$/";
-            preg_match($regx, $row['DOGOVOR_NUM'], $match);
-            $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            if ($row['TYPE_ID'] != 9) {
+                $regx = "/(\d+)$/";
+                preg_match($regx, $row['DOGOVOR_NUM'], $match);
+                $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            }
 
 			$row['price_ru'] = StringHelper::priceFormatRus($row['price_discount']);
             $row['act_information'] = json_decode($row['act_information'], true);
@@ -370,6 +372,10 @@ class Request extends Model
      */
     public function updateTz($dealId, $data)
     {
+        if ($data['STAGE_ID'] == "PREPARATION") {
+            $data['dateEnd'] = 'NULL';
+        }
+
         $sqlData = $this->prepearTableData('ba_tz', $data);
 
         $where = "WHERE ID_Z = {$dealId}";
@@ -509,6 +515,7 @@ class Request extends Model
             'STAGE_ID' => $stage,
             'STAGE_NUMBER' => $stageNumber
         ];
+
         $this->updateTz($dealId, $data);
 
         if ($stage == 2) {

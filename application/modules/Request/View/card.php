@@ -133,7 +133,7 @@
                     <?php endif; ?>
                 </td>
                 <td class="w30">
-                    <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>"  data-type="<?=$this->data['deal_id']?>" data-type="1" data-title="<?=$this->data['deal_title']?>"
+                    <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>"  data-id="<?=$this->data['deal_id']?>" data-type="1" data-title="<?=$this->data['deal_title']?>"
 					   href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TYPE=1&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}" : "#email-check"?>"
 					   title="Отправить клиенту бланк заявки">
                         <svg class="icon" width="35" height="35">
@@ -454,7 +454,11 @@
                         </a>
                     <?php endif;?>
 				</td>
-				<td></td>
+				<td>
+                    <a href="#view-result-modal-form" class="popup-with-form no-decoration me-1 text-black <?=empty($this->data['method_list'])? 'disabled' : ''?>" title="Просмотр результатов испытаний">
+                        <i class="fa-regular fa-eye fa-2xl"></i>
+                    </a>
+                </td>
 				<td></td>
 				<td></td>
 			</tr>
@@ -939,7 +943,13 @@
 </form>
 
 <form id="email-check" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative" action="/mail.php" method="get">
-	<input name="ID" id="ID" value="" type="hidden">
+    <div class="title mb-3 h-2">
+        Выберите адрес электронной почты для отправкиы
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <input name="ID" id="ID" value="" type="hidden">
 	<input name="TZ_ID" value="<?=$this->data['tz_id']?>" type="hidden">
 	<input name="TYPE" id="TYPE" value="" type="hidden">
 	<div class="mb-3">
@@ -1029,4 +1039,44 @@
     <div>
         <button data-stage="13" style="min-width: 100%" class="akt-finish btn btn-primary">Участие в тендере</button>
     </div>
+</div>
+
+
+<div id="view-result-modal-form" class="bg-light mfp-hide col-md-6 m-auto p-3 position-relative">
+    <div class="title mb-3 h-2">
+        Просмотр результатов испытаний
+    </div>
+
+    <div class="line-dashed-small"></div>
+
+    <table class="table table-striped journal">
+        <thead>
+        <tr class="table-light">
+            <th>Метод испытания</th>
+            <th class="text-center">Результат</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php $mater = 0; ?>
+            <?php foreach ($this->data['method_list'] as $method): ?>
+
+                <?php if ($method['material_id'] != $mater): ?>
+                    <tr>
+                        <td colspan="2">
+                            <strong><?=$method['material_name']?></strong>
+                        </td>
+                    </tr>
+                <?php $mater = $method['material_id']; ?>
+                <?php endif; ?>
+                <tr>
+                    <td>
+                        <?=$method['view_gost']?>
+                    </td>
+                    <td class="text-center">
+                        <?=$method['actual_value']?>
+                    </td>
+                </tr>
+            <?php endforeach;?>
+        </tbody>
+    </table>
 </div>

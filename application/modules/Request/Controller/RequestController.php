@@ -277,6 +277,8 @@ class RequestController extends Controller
             $companyId = (int)$_POST['company_id'];
         }
 
+        $dogovorNum = $_POST['REQ_TYPE'] === '9' ? $_POST['NUM_DOGOVOR_TEXT'] : $_POST['NUM_DOGOVOR'];
+
         if ($_POST['REQ_TYPE'] === 'SALE') {
             $this->validationSale($_POST, $location);
 
@@ -367,8 +369,8 @@ class RequestController extends Controller
             'arrAssigned' => $arrAssigned,
         ];
 
-        if ( !empty($_POST['NUM_DOGOVOR']) ) {
-            $contract = $order->getContractById((int)$_POST['NUM_DOGOVOR']);
+        if ( !empty($dogovorNum) && $_POST['REQ_TYPE'] !== '9' ) {
+            $contract = $order->getContractById((int)$dogovorNum);
             if (!empty($contract)) {
                 $orderName = $contract['cont'];
             }
@@ -380,7 +382,7 @@ class RequestController extends Controller
             'TYPE_ID' => $_POST['REQ_TYPE'],
             'CHECK_IP' => isset($_POST['check_ip'])? '1' : '0',
             'SAVE_MAIL' => $saveMail,
-            'DOGOVOR_NUM' => $_POST['NUM_DOGOVOR'],
+            'DOGOVOR_NUM' => $dogovorNum,
             'DOGOVOR_TABLE' => $orderName,
             'POSIT_LEADS' => $_POST['PositionGenitive'],
             'order_type' => (int)$_POST['order_type'],
@@ -638,6 +640,8 @@ class RequestController extends Controller
         $this->data['tz_doc'] = $tzDoc;
         $this->data['first_protocol'] = $protocolData[0] ?? [];
         $this->data['date_tz_create'] = date('d.m.Y', strtotime($deal['DATE_CREATE']));
+
+        $this->data['method_list'] = $resultModel->getMaterialsGostsByDelaId($dealId);
         
         if ($config['blocks']['tz']) {
             $this->prepareTzData($request, $requestData, $tzId, $userFields, $isExistTz);
@@ -683,8 +687,6 @@ class RequestController extends Controller
             $this->prepareFilesData($request, $protocolData, $requestData, $dealId, $tzId, $dogovorData, $actVr, $proposalData, $invoiceData);
         }
 
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
         $this->addCSS("/assets/plugins/dropzone/css/basic.css");
         $this->addCSS("/assets/plugins/dropzone/dropzone3.css");
         $this->addJS("/assets/plugins/dropzone/dropzone3.js");
@@ -1266,11 +1268,12 @@ class RequestController extends Controller
             }
         }
 
-        $valid = $this->validateAssigned($post['ASSIGNED'] ?? []);
-        if (!$valid['success']) {
-            $this->showErrorMessage($valid['error']);
+        $resultIds = $this->sanitizeAssignedUsers($post['id_assign'] ?? []);
+        if (!$resultIds['success']) {
+            $this->showErrorMessage($resultIds['error']);
             $this->redirect($location);
         }
+        $_POST['id_assign'] = $resultIds['data'];
     }
 
     /**

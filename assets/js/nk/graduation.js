@@ -1109,4 +1109,6 @@ $(function ($) {
         destroyChart();
         $('#chart').attr("src", '');
     });
+
+    initTableScrollNavigation('.table-scroll-wrapper', '.table-scroll')
 });
