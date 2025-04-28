@@ -53,7 +53,7 @@ cleanup_and_push_job:
     - cd $CI_PROJECT_DIR
     - git config --global user.name "CI Bot"
     - git config --global user.email "ci@bot.com"
-    - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
+    - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile .git
     - cd ../
     - rm -rf ./target-repo
     - git clone $TARGET_REPO_URL target-repo
@@ -62,7 +62,6 @@ cleanup_and_push_job:
     - git checkout -b mirror
     - git add .
     - git commit -m "Автоматический пуш из CI"
-    - git remote add dit git.mos.ru/eknd/aisloki/source/lims.git
     - git push dit mirror
     - tmux kill-session -t vpn_session || true
   tags:
