@@ -2730,6 +2730,14 @@ class ImportController extends Controller
         /** @var Import $importModel */
         $importModel = $this->model('Import');
 
+        $GLOBALS['APPLICATION']->RestartBuffer();
+        header("Content-Description: File Transfer");
+        header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        header("Content-Disposition: attachment; filename=\"Форма №6.docx\"");
+        header("Expires: 0");
+        header("Cache-Control: must-revalidate");
+        header("Pragma: public");
         $importModel->getForm($labId, $_GET['type']);
+        exit();
     }
 }

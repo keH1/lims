@@ -447,16 +447,6 @@ class Import extends Model
 
         // $outputPath = "Form6_output.docx";
         // $document->saveAs($outputPath);
-        $GLOBALS['APPLICATION']->RestartBuffer();
-        header("Content-Description: File Transfer");
-        header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        header("Content-Disposition: attachment; filename=\"Форма №6.docx\"");
-        header("Expires: 0");
-        header("Cache-Control: must-revalidate");
-        header("Pragma: public");
-
         $document->saveAs('php://output');
-
-        exit();
     }
 }
