@@ -55,12 +55,14 @@ cleanup_and_push_job:
     - git config --global user.email "ci@bot.com"
     - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
     - cd ../
+    - rm -rf /home/gitlab-runner/builds/7Ks1AX9mc/0/loki/target-repo
     - git clone $TARGET_REPO_URL target-repo
     - cp -r lims/. ./target-repo
     - cd target-repo
+    - git checkout -b mirror
     - git add .
     - git commit -m "Автоматический пуш из CI"
-    - git push origin main
+    - git push origin mirror
     - tmux kill-session -t vpn_session || true
   tags:
     - vpn

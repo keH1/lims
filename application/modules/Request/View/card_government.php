@@ -586,7 +586,7 @@
     <div class="line-dashed-small"></div>
 
     <div class="mt-3">
-        <button type="button" class="btn btn-primary download-selected-protocols" disabled>Сформировать</button>
+        <button type="button" class="btn btn-primary download-selected-protocols" disabled>Скачать</button>
     </div>
 </div>
 

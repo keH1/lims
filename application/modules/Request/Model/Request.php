@@ -2173,10 +2173,11 @@ class Request extends Model
             return;
         }
 
+        $archiveName = rawurlencode($zipFileName);
         if (file_exists($zipPath)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/zip');
-            header('Content-Disposition: attachment; filename=' . $zipFileName);
+            header('Content-Disposition: attachment; filename="' . $archiveName . '"; filename*=UTF-8\'\'' . $archiveName);
             header('Content-Transfer-Encoding: binary');
             header('Expires: 0');
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');

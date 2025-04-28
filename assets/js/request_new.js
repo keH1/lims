@@ -6,6 +6,12 @@ $(function ($) {
     let currentEditCell = null
     window.labsList = window.labsList || []
 
+    const redStar = '<span class="redStars">*</span>'
+    const labelCompanyType = {
+        "labelGovernment": "Организация",
+        "labelCommercial": "Клиент"
+    }
+
     initForm()
     initGovDeadlineValidation()
 
@@ -21,6 +27,7 @@ $(function ($) {
     function toggleRequestType() {
         const reqType = $('#req-type-select').val()
         const hasId = $('input[name="id"]').length > 0
+        const $labelCompany = $('.label-company')
 
         // Сначала скрываем все специфичные для типов блоки
         $('.type-specific-block').addClass('visually-hidden')
@@ -44,6 +51,8 @@ $(function ($) {
             // Активация полей и required для отображаемых блоков
             $('.type-gov-block input, .type-gov-block select').prop('disabled', false)
             $('.type-gov-block [data-conditionally-required="true"]').prop('required', true)
+
+            $labelCompany.html(labelCompanyType.labelGovernment + ' ' + redStar)
             
             // Работа с таблицей гос. работ
             initializeResponsibleSelects()
@@ -72,6 +81,8 @@ $(function ($) {
             // Активация полей и required для отображаемых блоков
             $('.type-sale-block').not('#sale-materials-block').find('input, select').prop('disabled', false)
             $('.type-sale-block').not('#sale-materials-block').find('[data-conditionally-required="true"]').prop('required', true)
+
+            $labelCompany.html(labelCompanyType.labelCommercial + ' ' + redStar)
         }
     }
     

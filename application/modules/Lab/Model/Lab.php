@@ -1473,11 +1473,11 @@ class Lab extends Model
                 }
                 // Местонахождение
                 if ( isset($filter['search']['PLACEMENT']) ) {
-                    $where .= "r.PLACEMENT = '%{$filter['search']['PLACEMENT']}%' AND ";
+                    $where .= "r.PLACEMENT LIKE '%{$filter['search']['PLACEMENT']}%' AND ";
                 }
                 // Примечание
                 if ( isset($filter['search']['COMMENT']) ) {
-                    $where .= "r.COMMENT = '%{$filter['search']['COMMENT']}%' AND ";
+                    $where .= "r.COMMENT LIKE '%{$filter['search']['COMMENT']}%' AND ";
                 }
 
                 $where .= "1 ";

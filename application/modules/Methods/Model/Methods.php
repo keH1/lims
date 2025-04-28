@@ -531,11 +531,11 @@ class Methods extends Model
                 }
                 // В области аккредитации?
                 if ( isset($filter['search']['in_field']) ) {
-                    $where .= "m.in_field = '%{$filter['search']['in_field']}%' AND ";
+                    $where .= "m.in_field = '{$filter['search']['in_field']}' AND ";
                 }
                 // Расширенная область?
                 if ( isset($filter['search']['is_extended_field']) ) {
-                    $where .= "m.is_extended_field = '%{$filter['search']['is_extended_field']}%' AND ";
+                    $where .= "m.is_extended_field = '{$filter['search']['is_extended_field']}' AND ";
                 }
                 // Цена
                 if ( isset($filter['search']['price']) && is_numeric($filter['search']['price']) ) {
