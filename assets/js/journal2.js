@@ -213,11 +213,6 @@ $(function ($) {
             },
         },
         {
-            data: 'MANUFACTURER_TITLE',
-            class: 'text-nowrap',
-            render: $.fn.dataTable.render.ellipsis(25, true)
-        },
-        {
             data: 'DEADLINE_TABLE',
             width: 100,
             render: function (data, type, item) {
@@ -246,7 +241,6 @@ $(function ($) {
         <th scope="col" class="text-nowrap">Дата опл</th>
         <th scope="col" class="text-nowrap">Рез-ты исп</th>
         <th scope="col" class="text-nowrap">Протокол</th>
-        <th scope="col" class="text-nowrap">Фото исп</th>
         <th scope="col" class="text-nowrap">Cрок до</th>
     </tr>
     <tr class="header-search">
@@ -290,9 +284,6 @@ $(function ($) {
         </th>
         <th scope="col">
             <input type="text" class="form-control search" disabled>
-        </th>
-        <th scope="col">
-            <input type="text" class="form-control search">
         </th>
         <th scope="col">
             <input type="text" class="form-control search">
