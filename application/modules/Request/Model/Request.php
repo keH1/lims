@@ -444,7 +444,7 @@ class Request extends Model
             "COMPANY_ID" => $data['company_id'],
             "TYPE_ID" => $data['type'],
             "ASSIGNED_BY_ID" => $data['assigned'],
-            'UF_CRM_1745839051' => $organizationId
+            self::DEAL_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId
         ];
 
         $result = $newDeal->Add($arFields);

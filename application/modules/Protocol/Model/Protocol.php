@@ -589,7 +589,7 @@ class Protocol extends Model
     {
         $organizationId = App::getOrganizationId();
 
-        return $this->DB->Query(
+        $result = $this->DB->Query(
            "SELECT max(`NUMBER`) as `count_protocols`
             FROM `PROTOCOLS` 
             WHERE YEAR(`DATE`) = YEAR(CURDATE())
@@ -597,6 +597,8 @@ class Protocol extends Model
             AND `NUMBER` > 0
             AND `organization_id` = {$organizationId}
         ")->Fetch();
+
+        return $result;
     }
 
 
