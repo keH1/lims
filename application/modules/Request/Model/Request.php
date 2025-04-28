@@ -209,9 +209,11 @@ class Request extends Model
             $probe = unserialize($row['PROBE']);
             $row['PROBE'] = $probe;
 
-            $regx = "/(\d+)$/";
-            preg_match($regx, $row['DOGOVOR_NUM'], $match);
-            $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            if ($row['TYPE_ID'] != 9) {
+                $regx = "/(\d+)$/";
+                preg_match($regx, $row['DOGOVOR_NUM'], $match);
+                $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            }
 
 			$row['price_ru'] = StringHelper::priceFormatRus($row['price_discount']);
             $row['act_information'] = json_decode($row['act_information'], true);
