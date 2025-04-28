@@ -115,14 +115,14 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Дата замера</label>
-            <input name="toSQL[electric_control][date]" type="date" class="form-control"
+            <input name="electric_control[date]" type="date" class="form-control"
                    value="<?= $this->data['current_date'] ?>" placeholder="Дата замера" required>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Помещение</label>
-            <select name="toSQL[electric_control][id_room]" class="form-control bg-white" required>
+            <select name="electric_control[id_room]" class="form-control bg-white" required>
                 <option value="" selected disabled></option>
                 <?php foreach ($this->data['room'] as $val): ?>
                     <option value="<?= $val['id'] ?? '' ?>"><?= $val['name'] ?></option>
@@ -134,7 +134,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Напряжение сети (UA), В </label>
-            <input type="number" name="toSQL[electric_control][voltage_UA]" step="0.1" min="0" max="10000"
+            <input type="number" name="electric_control[voltage_UA]" step="0.1" min="0" max="10000"
                    class="form-control bg-white"
                    value="220" required>
         </div>
@@ -142,7 +142,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Напряжение сети (UB), В </label>
-            <input type="number" name="toSQL[electric_control][voltage_UB]" step="0.1" min="0" max="10000"
+            <input type="number" name="electric_control[voltage_UB]" step="0.1" min="0" max="10000"
                    class="form-control bg-white"
                    value="220" required>
         </div>
@@ -150,7 +150,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Напряжение сети (UC), В </label>
-            <input type="number" name="toSQL[electric_control][voltage_UC]" step="0.1" min="0" max="10000"
+            <input type="number" name="electric_control[voltage_UC]" step="0.1" min="0" max="10000"
                    class="form-control bg-white"
                    value="220" required>
         </div>
@@ -158,7 +158,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Частота тока, Гц</label>
-            <input type="number" name="toSQL[electric_control][frequency]" step="0.1" min="0" max="10000"
+            <input type="number" name="electric_control[frequency]" step="0.1" min="0" max="10000"
                    class="form-control bg-white"
                    value="50" required>
         </div>

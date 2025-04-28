@@ -124,7 +124,7 @@
     <div class="row mb-3">
         <label class="form-label">Дата анализа</label>
         <div class="col">
-            <input name="toSQL[water][date_check]" type="date" class="form-control"
+            <input name="water[date_check]" type="date" class="form-control"
                    value="<?= $this->data['current_date'] ?>" required>
         </div>
         <div class="col">
@@ -142,7 +142,7 @@
         <div class="col">
             <label class="form-label">pH, ед</label>
             <div class="input-group">
-                <input type="number" name="toSQL[water][ph]" step="0.001" min="0" max="10"
+                <input type="number" name="water[ph]" step="0.001" min="0" max="10"
                        class="form-control bg-white" value="7" required>
                 <span class="input-group-text">ед. pH</span>
             </div>
@@ -150,7 +150,7 @@
         <div class="col">
             <label class="form-label">УЭП</label>
             <div class="input-group">
-                <input type="number" name="toSQL[water][uep]" step="0.001" min="0" max="10"
+                <input type="number" name="water[uep]" step="0.001" min="0" max="10"
                        class="form-control bg-white" value="0.1" required>
                 <span class="input-group-text">мкСм/см</span>
             </div>
@@ -165,7 +165,7 @@
             <div class="col">
                 <label class="form-label">Ионы аммония</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][nh4]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[nh4]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -173,7 +173,7 @@
             <div class="col">
                 <label class="form-label">Нитрат-ионы</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][no3]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[no3]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -181,7 +181,7 @@
             <div class="col">
                 <label class="form-label">Сульфат-ионы</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][so4]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[so4]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -191,7 +191,7 @@
             <div class="col">
                 <label class="form-label">Хлорид-ионы</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][cl]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[cl]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -199,7 +199,7 @@
             <div class="col">
                 <label class="form-label">Алюминий</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][al]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[al]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -207,7 +207,7 @@
             <div class="col">
                 <label class="form-label">Железо</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][fe]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[fe]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -217,7 +217,7 @@
             <div class="col">
                 <label class="form-label">Кальций</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][ca]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[ca]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -225,7 +225,7 @@
             <div class="col">
                 <label class="form-label">Медь</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][cu]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[cu]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -233,7 +233,7 @@
             <div class="col">
                 <label class="form-label">Свинец</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][pb]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[pb]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -243,7 +243,7 @@
             <div class="col">
                 <label class="form-label">Цинк</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][zn]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[zn]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>
@@ -251,7 +251,7 @@
             <div class="col">
                 <label class="form-label">Вещества, восстанавливающих KMnO₄</label>
                 <div class="input-group">
-                    <input type="number" name="toSQL[water][kmno4]" step="0.01" min="0" max="10000"
+                    <input type="number" name="water[kmno4]" step="0.01" min="0" max="10000"
                            class="form-control bg-white" value="">
                     <span class="input-group-text">мг/л</span>
                 </div>

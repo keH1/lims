@@ -501,7 +501,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Производитель</label>
-            <input type="text" name="toSQL[gso_manufacturer][name]"
+            <input type="text" name="gso_manufacturer[name]"
                    class="form-control" required>
         </div>
     </div>

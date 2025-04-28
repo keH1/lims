@@ -249,14 +249,14 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Название реактива</label>
-            <input type="text" name="toSQL[reactive_lab][name]" class="form-control name-recipe"
+            <input type="text" name="reactive_lab[name]" class="form-control name-recipe"
                    value="" required>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Рецепт</label>
-            <select name="toSQL[reactive_lab][id_recipe_model]" class="form-control select2" data-placeholder="Выберете рецепт" required>
+            <select name="reactive_lab[id_recipe_model]" class="form-control select2" data-placeholder="Выберете рецепт" required>
                 <option value="" selected disabled></option>
                 <?php
                 foreach ($this->data['recipe'] as $val): ?>

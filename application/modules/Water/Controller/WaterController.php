@@ -60,7 +60,9 @@ class WaterController extends Controller
         $unsuccessfulMsg = 'Не удалось добавить анализ';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'water' => $_POST['water']
+        ];
 
         foreach ($newAdd['water'] as $key => $item) {
             if (empty($item)) {

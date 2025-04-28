@@ -59,7 +59,7 @@
     <div class="row mb-3">
         <label class="form-label">Тип холодильника</label>
         <div class="col">
-            <select name="toSQL[fridge][id_unit_fridge]" class="form-control " required>
+            <select name="fridge[id_unit_fridge]" class="form-control " required>
                 <option value="" selected disabled></option>
                 <?php
                 foreach ($this->data['type_fridge'] as $val): ?>
@@ -74,7 +74,7 @@
     <div class="row mb-3">
         <label class="form-label">Оборудование</label>
         <div class="col">
-            <select name="toSQL[fridge][id_ba_oborud]"" class="form-control select-oborud" required>
+            <select name="fridge[id_ba_oborud]"" class="form-control select-oborud" required>
             <option value="" selected disabled></option>
             <?php
             foreach ($this->data['oborud'] as $val): ?>
@@ -89,7 +89,7 @@
         <div class="col">
             <label class="form-label">Начальная температура</label>
             <div class="input-group">
-                <input type="number" name="toSQL[fridge][first_range]" step="0.1" min="-40" max="100"
+                <input type="number" name="fridge[first_range]" step="0.1" min="-40" max="100"
                        class="form-control bg-white" required>
                 <span class="input-group-text">°C</span>
             </div>
@@ -97,7 +97,7 @@
         <div class="col">
             <label class="form-label">Конечная температура</label>
             <div class="input-group">
-                <input type="number" name="toSQL[fridge][last_range]" step="0.1" min="-40" max="100"
+                <input type="number" name="fridge[last_range]" step="0.1" min="-40" max="100"
                        class="form-control bg-white" required>
                 <span class="input-group-text">°C</span>
             </div>

@@ -59,7 +59,7 @@
     <div class="row mb-3">
         <label class="form-label">Тип обеззараживателя</label>
         <div class="col">
-            <select name="toSQL[decontaminator][id_decontaminator_type]" class="form-control " required>
+            <select name="decontaminator[id_decontaminator_type]" class="form-control " required>
                 <option value="" selected disabled></option>
                 <?php
                 foreach ($this->data['decontaminator_type'] as $val): ?>
@@ -74,7 +74,7 @@
     <div class="row mb-3">
         <label class="form-label">Оборудование</label>
         <div class="col">
-            <select name="toSQL[decontaminator][id_ba_oborud]"" class="form-control select-oborud" required>
+            <select name="decontaminator[id_ba_oborud]"" class="form-control select-oborud" required>
             <option value="" selected disabled></option>
             <?php
             foreach ($this->data['oborud'] as $val): ?>
@@ -89,7 +89,7 @@
         <div class="col">
             <label class="form-label">Количество ламп</label>
             <div class="input-group">
-                <input type="number" name="toSQL[decontaminator][lamp_quantity]" step="1" min="1" max="10"
+                <input type="number" name="decontaminator[lamp_quantity]" step="1" min="1" max="10"
                        class="form-control bg-white" value="2" required>
                 <span class="input-group-text">шт.</span>
             </div>
@@ -109,7 +109,7 @@
     <div class="row mb-3">
         <label class="form-label">Обезараживатель</label>
         <div class="col">
-            <select name="toSQL[fridge][id_ba_oborud]"" class="form-control select-oborud" required>
+            <select name="fridge[id_ba_oborud]"" class="form-control select-oborud" required>
             <option value="" selected disabled></option>
             <?php
             foreach ($this->data['decontaminator'] as $val): ?>
@@ -122,7 +122,7 @@
 
     <div class="row mb-3">
         <div class="col">
-            <select name="toSQL[fridge][id_ba_oborud]"" class="form-control select-lamp" required>
+            <select name="fridge[id_ba_oborud]"" class="form-control select-lamp" required>
             <option value="" selected disabled></option>
             <?php
             foreach ($this->data['decontaminator'] as $val): ?>
@@ -132,7 +132,7 @@
             </select>
         </div>
         <div class="col">
-            <select name="toSQL[fridge][id_ba_oborud]"" class="form-control select-lamp" required>
+            <select name="fridge[id_ba_oborud]"" class="form-control select-lamp" required>
             <option value="" selected disabled></option>
             <?php
             foreach ($this->data['decontaminator'] as $val): ?>

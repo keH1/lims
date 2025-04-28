@@ -56,14 +56,14 @@
     <div class="row mb-3">
         <label class="form-label">Дата проведения работ</label>
         <div class="col">
-            <input type="date" name="toSQL[disinfection_conditioners][date]" value="<?= date('Y-m-d') ?>" required>
+            <input type="date" name="disinfection_conditioners[date]" value="<?= date('Y-m-d') ?>" required>
         </div>
     </div>
 
     <div class="row mb-3">
         <label class="form-label">Расположение оборудования, № помещения <span class="redStars">*</span></label>
         <div class="col">
-            <select name="toSQL[disinfection_conditioners][room_id]" class="form-control select-room" required>
+            <select name="disinfection_conditioners[room_id]" class="form-control select-room" required>
                 <option value=""></option>
                 <?php foreach ($this->data['rooms'] as $room): ?>
                     <option value="<?= $room['ID'] ?>"><?= $room['NAME'] . " " .  $room['NUMBER'] ?></option>
@@ -75,7 +75,7 @@
     <div class="row mb-3">
         <label class="form-label">Номер и марка кондиционера <span class="redStars">*</span></label>
         <div class="col">
-            <input type="text" name="toSQL[disinfection_conditioners][conditioner]"
+            <input type="text" name="disinfection_conditioners[conditioner]"
                    class="form-control bg-white conditioner" maxlength="256" required>
         </div>
     </div>
@@ -83,14 +83,14 @@
     <div class="row mb-3">
         <label class="form-label">Дезинфицирующее средство, концентрация <span class="redStars">*</span></label>
         <div class="col">
-            <input type="text" name="toSQL[disinfection_conditioners][disinfectant]" class="form-control bg-white"
+            <input type="text" name="disinfection_conditioners[disinfectant]" class="form-control bg-white"
                    maxlength="256" required>
         </div>
     </div>
     <div class="row mb-3">
         <label class="form-label">Дата приготовления раствора</label>
         <div class="col">
-            <input type="date" name="toSQL[disinfection_conditioners][date_sol]" value="<?= date('Y-m-d') ?>" required>
+            <input type="date" name="disinfection_conditioners[date_sol]" value="<?= date('Y-m-d') ?>" required>
         </div>
     </div>
     <button type="submit" class="btn btn-primary">Отправить</button>

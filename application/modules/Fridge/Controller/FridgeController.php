@@ -88,7 +88,9 @@ class FridgeController extends Controller
         $unsuccessfulMsg = 'Не удалось добавить холодильник';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'fridge' => $_POST['fridge']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd);
 

@@ -92,7 +92,9 @@ class ReactiveconsumptionController extends Controller
         $unsuccessfulMsg = 'Не удалось провести реактив';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'reactive_consume' => $_POST['reactive_consume']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd, 'reactiveConsume');
 

@@ -90,7 +90,7 @@ class StandarttitrController extends Controller
         $unsuccessfulMsg = 'Не удалось сохранить производителя';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd['standart_titr_manufacturer']= $_POST['standart_titr_manufacturer'];
         $newAdd['standart_titr_manufacturer']['organization_id'] = App::getOrganizationId();
 
         $isAdd = $usedModel->addToSQL($newAdd);
