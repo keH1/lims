@@ -216,6 +216,21 @@
             </select>
         </div>
 
+        <div class="mb-3 select_lab_block">
+            <label class="form-label mb-1" for="select_lab">Отдел <span class="redStars">*</span></label>
+            <?php if ( !empty($this->data['labs']) ): ?>
+                <select class="form-control" id="select_lab" name="form_room[LAB_ID]" required>
+                    <option value="" style="color: #878787">Выберите отдел</option>
+                    <?php foreach ($this->data['labs'] as $lab): ?>
+                        <option value="<?= $lab['ID'] ?>" <?= $this->data['lab_id'] == $lab['ID'] ? 'selected' : '' ?>><?= $lab['NAME'] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            <?php else: ?>
+                <div>Отсутствуют отделы, создайте отдел для привязки помещений к отделам</div>
+            <?php endif; ?>
+        </div>
+
+
         <div class="mb-3">
             <label class="form-label mb-1">Назначение <span class="redStars">*</span></label>
             <textarea name="form_room[PURPOSE]" class="form-control" id="purpose" placeholder="Назначение помещения"
