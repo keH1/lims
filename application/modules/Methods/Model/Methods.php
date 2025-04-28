@@ -636,13 +636,12 @@ class Methods extends Model
             }
         }
 
-        $where .= "g.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "g.organization_id = {$organizationId}";
 
         $result = [];
 
         $data = $this->DB->Query(
-            "SELECT distinct 
+            "SELECT 
                         m.*, m.id method_id,
                         g.*, g.id gost_id,  
                         tm.name test_method, 
@@ -656,11 +655,12 @@ class Methods extends Model
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
                     WHERE {$where}
+                    group by m.id
                     ORDER BY {$order['by']} {$order['dir']} {$limit}
         ");
 
         $dataTotal = $this->DB->Query(
-            "SELECT distinct *
+            "SELECT m.id
                     FROM ulab_gost g
                     LEFT JOIN ulab_methods m ON g.id = m.gost_id 
                     LEFT JOIN ulab_dimension d ON d.id = m.unit_id 
@@ -668,11 +668,12 @@ class Methods extends Model
                     LEFT JOIN ulab_test_method tm ON tm.id = m.test_method_id 
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
-                    WHERE g.organization_id = {$organizationId}"
+                    WHERE g.organization_id = {$organizationId}
+                    group by m.id"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT distinct *
+            "SELECT distinct m.id
                     FROM ulab_gost g
                     LEFT JOIN ulab_methods m ON g.id = m.gost_id 
                     LEFT JOIN ulab_dimension d ON d.id = m.unit_id
@@ -680,7 +681,8 @@ class Methods extends Model
                     LEFT JOIN ulab_test_method tm ON tm.id = m.test_method_id 
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
-                    WHERE {$where}"
+                    WHERE {$where}
+                    group by m.id"
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
