@@ -176,7 +176,7 @@ $(function ($) {
     })
 
     body.on('click', '.popup-with-form', function () {
-        let labId = $('#labs').val()
+        const labId = parseInt($('#labs').val())
 
         $.magnificPopup.open({
             items: {
@@ -255,7 +255,7 @@ $(function ($) {
      */
     body.on('click', '.room-edit', function () {
         let roomId = $(this).data('roomId');
-        let labId = $('#labs').val()
+        const labId = parseInt($('#labs').val())
 
         let editButton = $(this);
         editButton.find('i').addClass('fa-spinner');
