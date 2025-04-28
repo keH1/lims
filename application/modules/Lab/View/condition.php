@@ -135,7 +135,7 @@
                        value="" placeholder="Введите дату начала:">
             </div>
             <div class="col">
-                <input type="date" id="inputDateEnd" class="form-control filter filter-date-end bg-transparent"
+                <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"
                        value="" placeholder="Введите дату окончания:">
             </div>
             <div class="col">
