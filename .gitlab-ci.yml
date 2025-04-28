@@ -41,6 +41,7 @@ deploy_bitrix:
 cleanup_and_push_job:
   stage: cleanup-and-push
   before_script:
+    - pwd
     - cd /opt/forticlient/forticlientsslvpn/64bit
     - tmux kill-session -t vpn_session || true
     - tmux new-session -d -s vpn_session
