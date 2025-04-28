@@ -16,8 +16,8 @@ class Model
         'limit' => "",
         'order' => "id DESC", // Запрос к БД ORDER BY 'order' Задается значение по умолчанию
         'idWhichFilter' => '>0',
-        'dateStart' => "'0000-00-00'",
-        'dateEnd' => "'  2222-12-12'"
+        'dateStart' => "0001-01-01",
+        'dateEnd' => "9999-12-31"
     ];
 
 
@@ -459,9 +459,8 @@ class Model
                 $transformedFilter['having'] = $having;
             }
             if ($typeTransform == "havingDateId") {
-
-                $transformedFilter['dateStart'] = "'{$filter['dateStart']}-01' ";
-                $transformedFilter['dateEnd'] = "LAST_DAY('{$filter['dateEnd']}-01') ";
+                $transformedFilter['dateStart'] = !empty($filter['dateStart']) ? "'{$filter['dateStart']}'" : "'{$this->filtersForGetListDefault['dateStart']}'";
+                $transformedFilter['dateEnd'] = !empty($filter['dateEnd']) ? "'{$filter['dateEnd']}'" : "'{$this->filtersForGetListDefault['dateEnd']}'";
 
                 if ($filter['idWhichFilter'] == -1) {
                     $transformedFilter['idWhichFilter'] = '>0';
@@ -484,6 +483,7 @@ class Model
         } else {
             throw new InvalidArgumentException("Неизвестный аргумент $typeTransform в функции transformFilter");
         }
+
         return $transformedFilter;
     }
 
