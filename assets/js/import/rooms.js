@@ -176,6 +176,8 @@ $(function ($) {
     })
 
     body.on('click', '.popup-with-form', function () {
+        const labId = parseInt($('#labs').val())
+
         $.magnificPopup.open({
             items: {
                 src: '#room-modal-form',
@@ -189,6 +191,15 @@ $(function ($) {
                     const roomModalForm = $('#room-modal-form');
                     roomModalForm.find('.form-button').text('Добавить помещение');
                     roomModalForm.find('#title-type').text('Добавить помещение');
+
+                    if ( labId > 0 ) {
+                        roomModalForm.find('#labId').val(labId)
+                        roomModalForm.find('.select_lab_block').hide()
+                        roomModalForm.find('#select_lab').prop('disabled', true)
+                    } else {
+                        roomModalForm.find('.select_lab_block').show()
+                        roomModalForm.find('#select_lab').prop('disabled', false)
+                    }
 
                     if (roomModalForm.find('#roomId').val() != '')
                     {
@@ -244,6 +255,7 @@ $(function ($) {
      */
     body.on('click', '.room-edit', function () {
         let roomId = $(this).data('roomId');
+        const labId = parseInt($('#labs').val())
 
         let editButton = $(this);
         editButton.find('i').addClass('fa-spinner');
@@ -266,6 +278,15 @@ $(function ($) {
 
                     roomModalForm.find('.form-button').text('Сохранить помещение');
                     roomModalForm.find('#title-type').text('Редактировать помещение');
+
+                    if ( labId > 0 ) {
+                        roomModalForm.find('#labId').val(labId)
+                        roomModalForm.find('.select_lab_block').hide()
+                        roomModalForm.find('#select_lab').prop('disabled', true)
+                    } else {
+                        roomModalForm.find('.select_lab_block').show()
+                        roomModalForm.find('#select_lab').prop('disabled', false)
+                    }
 
                     roomModalForm.find('#roomId').val(roomId);
                     //roomModalForm.find('#labId').val(data['LAB_ID']);

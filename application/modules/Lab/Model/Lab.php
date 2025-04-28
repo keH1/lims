@@ -1363,7 +1363,9 @@ class Lab extends Model
     }
 
     public function assignRoomToLab($roomId, $deptId) {
-        return $this->DB->Query("INSERT INTO rooms_to_labs (id_lab, id_room) VALUES ($deptId, $roomId);");
+        $sqlData = $this->prepearTableData('rooms_to_labs', ['id_lab' => $deptId, 'id_room' => $roomId]);
+
+        return $this->DB->Insert('rooms_to_labs', $sqlData);
     }
 
     /**
