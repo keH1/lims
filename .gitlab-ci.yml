@@ -41,7 +41,6 @@ deploy_bitrix:
 cleanup_and_push_job:
   stage: cleanup-and-push
   before_script:
-    - cd /opt/forticlient/forticlientsslvpn/64bit
     - tmux kill-session -t vpn_session || true
     - tmux new-session -d -s vpn_session
     - tmux new-window -t vpn_session -n vpn '/opt/forticlient/forticlientsslvpn/64bit/connect.sh ; bash'
@@ -50,7 +49,6 @@ cleanup_and_push_job:
     - cat /tmp/test.txt
   script:
     - nslookup git.mos.ru
-    - cd /home/gitlab-runner/builds/7Ks1AX9mc/0/loki/lims 
     - git config --global user.name "CI Bot"
     - git config --global user.email "ci@bot.com"
     - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
