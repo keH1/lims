@@ -133,7 +133,7 @@
                     <?php endif; ?>
                 </td>
                 <td class="w30">
-                    <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>"  data-type="<?=$this->data['deal_id']?>" data-type="1" data-title="<?=$this->data['deal_title']?>"
+                    <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>"  data-id="<?=$this->data['deal_id']?>" data-type="1" data-title="<?=$this->data['deal_title']?>"
 					   href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TYPE=1&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}" : "#email-check"?>"
 					   title="Отправить клиенту бланк заявки">
                         <svg class="icon" width="35" height="35">
