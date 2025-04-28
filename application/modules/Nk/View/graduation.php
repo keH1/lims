@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 align-items-end">
                 <div class="form-group col">
                     <label for="concreteClass">Класс бетона</label>
                     <div class="input-group">
@@ -87,108 +87,112 @@
                             </span>
                             </div>
                             <div class="panel-body">
-                                <div class="row">
+                                <div class="row mb-3">
                                     <div class="col">
-                                        <table class="table text-center align-middle table-bordered">
-                                            <thead>
-                                            <tr class="align-middle">
-                                                <th rowspan="3">Наименование, место расположение и дата бетонирования конструкции</th>
-                                                <th colspan="4">Показания СИ</th>
-                                                <th rowspan="3">Прочность бетона по градуировочной зависимости, МПа</th>
-                                                <th rowspan="3">Условие отбраковки единичных результатов испытаний |RiH-Riф|/S</th>
-                                                <th rowspan="3">+/-</th>
-                                            </tr>
-                                            <tr class="align-middle">
-                                                <th colspan="3">Прочность бетона, определенная ударным импульсом (ИПС/УКС), Мпа ( м/с -если УКС)</th>
-                                                <th rowspan="2">Прочность бетона на участке методом отрыва со скалыванием, МПа</th>
-                                            </tr>
-                                            <tr class="align-middle">
-                                                <th colspan="2">Единичные значения</th>
-                                                <th>Среднее значение на участке</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody class="construction-wrapper">
-                                            <tr class="construction-row">
-                                                <td>
-                                                    <input type="text" class="form-control bg-white" name="form[name][]"
-                                                           value="<?= $this->data['measuring']['name'][0] ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="number" class="form-control bg-white single-value-1" name="form[single_value_1][]"
-                                                           step="any" value="<?= $this->data['measuring']['single_value_1'][0] ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="number" class="form-control single-value-2 <?= $this->data['measuring_device'] === 'ИПС' ? 'bg-light-secondary' : 'bg-white' ?>"
-                                                           name="form[single_value_2][]" step="any"
-                                                           value="<?= $this->data['measuring']['single_value_2'][0] ?>"
-                                                        <?= $this->data['measuring_device'] === 'ИПС' ? 'disabled' : '' ?>>
-                                                </td>
-                                                <td>
-                                                    <input type="number" class="form-control bg-light-secondary mean" name="form[mean][]"
-                                                           step="any" value="<?= $this->data['measuring']['mean'][0] ?>" readonly>
-                                                </td>
-                                                <td>
-                                                    <input type="number" class="form-control bg-white shear-strength" name="form[shear_strength][]"
-                                                           step="any" value="<?= $this->data['measuring']['shear_strength'][0] ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="number" class="form-control bg-light-secondary gradation-strength" name="form[gradation_strength][]"
-                                                           step="any" value="<?= $this->data['measuring']['gradation_strength'][0] ?>" readonly>
-                                                </td>
-                                                <td>
-                                                    <input type="number" class="form-control condition <?= $this->data['measuring']['condition'][0] > 2 ? 'bg-danger' : 'bg-light-secondary' ?>" name="form[condition][]"
-                                                           step="any" value="<?= $this->data['measuring']['condition'][0] ?>" readonly>
-                                                </td>
-                                                <td>
-                                                    <button class="btn mt-0 btn-square add-construction btn-primary" type="button">
-                                                        <i class="fa-solid fa-plus icon-fix"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <?php if ( isset($this->data['measuring']['mean']) && count($this->data['measuring']['mean']) > 1 ): ?>
-                                                <?php for ($i = 1; $i < count($this->data['measuring']['mean']); $i++): ?>
-                                                    <tr class="construction-row">
-                                                        <td>
-                                                            <input type="text" class="form-control bg-white" name="form[name][]"
-                                                                   value="<?= $this->data['measuring']['name'][$i] ?>">
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control single-value-1 bg-white"
-                                                                   name="form[single_value_1][]" step="any"
-                                                                   value="<?= $this->data['measuring']['single_value_1'][$i] ?>">
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control single-value-2 <?= $this->data['measuring_device'] === 'ИПС' ? 'bg-light-secondary' : 'bg-white' ?>"
-                                                                   name="form[single_value_2][]" step="any"
-                                                                   value="<?= $this->data['measuring']['single_value_2'][$i] ?>"
-                                                                <?= $this->data['measuring_device'] === 'ИПС' ? 'disabled' : '' ?>>
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control bg-light-secondary mean" name="form[mean][]"
-                                                                   step="any" value="<?= $this->data['measuring']['mean'][$i] ?>" readonly>
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control bg-white shear-strength" name="form[shear_strength][]"
-                                                                   step="any" value="<?= $this->data['measuring']['shear_strength'][$i] ?>">
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control bg-light-secondary gradation-strength" name="form[gradation_strength][]"
-                                                                   step="any" value="<?= $this->data['measuring']['gradation_strength'][$i] ?>" readonly>
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control condition <?= $this->data['measuring']['condition'][$i] > 2 ? 'bg-danger' : 'bg-light-secondary' ?>" name="form[condition][]"
-                                                                   step="any" value="<?= $this->data['measuring']['condition'][$i] ?>" readonly>
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-square del-construction mt-0 btn-danger">
-                                                                <i class="fa-solid fa-minus icon-fix"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                <?php endfor; ?>
-                                            <?php endif; ?>
-                                            </tbody>
-                                        </table>
+                                        <div class="position-relative table-scroll-wrapper">
+                                            <div class="table-responsive table-scroll">
+                                                <table class="table text-center align-middle table-bordered">
+                                                <thead>
+                                                <tr class="align-middle">
+                                                    <th rowspan="3">Наименование, место расположение и дата бетонирования конструкции</th>
+                                                    <th colspan="4">Показания СИ</th>
+                                                    <th rowspan="3">Прочность бетона по градуировочной зависимости, МПа</th>
+                                                    <th rowspan="3">Условие отбраковки единичных результатов испытаний |RiH-Riф|/S</th>
+                                                    <th rowspan="3">+/-</th>
+                                                </tr>
+                                                <tr class="align-middle">
+                                                    <th colspan="3">Прочность бетона, определенная ударным импульсом (ИПС/УКС), Мпа ( м/с -если УКС)</th>
+                                                    <th rowspan="2">Прочность бетона на участке методом отрыва со скалыванием, МПа</th>
+                                                </tr>
+                                                <tr class="align-middle">
+                                                    <th colspan="2">Единичные значения</th>
+                                                    <th>Среднее значение на участке</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="construction-wrapper">
+                                                <tr class="construction-row">
+                                                    <td>
+                                                        <input type="text" class="form-control bg-white" name="form[name][]"
+                                                               value="<?= $this->data['measuring']['name'][0] ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control bg-white single-value-1" name="form[single_value_1][]"
+                                                               step="any" value="<?= $this->data['measuring']['single_value_1'][0] ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control single-value-2 <?= $this->data['measuring_device'] === 'ИПС' ? 'bg-light-secondary' : 'bg-white' ?>"
+                                                               name="form[single_value_2][]" step="any"
+                                                               value="<?= $this->data['measuring']['single_value_2'][0] ?>"
+                                                            <?= $this->data['measuring_device'] === 'ИПС' ? 'disabled' : '' ?>>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control bg-light-secondary mean" name="form[mean][]"
+                                                               step="any" value="<?= $this->data['measuring']['mean'][0] ?>" readonly>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control bg-white shear-strength" name="form[shear_strength][]"
+                                                               step="any" value="<?= $this->data['measuring']['shear_strength'][0] ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control bg-light-secondary gradation-strength" name="form[gradation_strength][]"
+                                                               step="any" value="<?= $this->data['measuring']['gradation_strength'][0] ?>" readonly>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control condition <?= $this->data['measuring']['condition'][0] > 2 ? 'bg-danger' : 'bg-light-secondary' ?>" name="form[condition][]"
+                                                               step="any" value="<?= $this->data['measuring']['condition'][0] ?>" readonly>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn mt-0 btn-square add-construction btn-primary" type="button">
+                                                            <i class="fa-solid fa-plus icon-fix"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <?php if ( isset($this->data['measuring']['mean']) && count($this->data['measuring']['mean']) > 1 ): ?>
+                                                    <?php for ($i = 1; $i < count($this->data['measuring']['mean']); $i++): ?>
+                                                        <tr class="construction-row">
+                                                            <td>
+                                                                <input type="text" class="form-control bg-white" name="form[name][]"
+                                                                       value="<?= $this->data['measuring']['name'][$i] ?>">
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control single-value-1 bg-white"
+                                                                       name="form[single_value_1][]" step="any"
+                                                                       value="<?= $this->data['measuring']['single_value_1'][$i] ?>">
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control single-value-2 <?= $this->data['measuring_device'] === 'ИПС' ? 'bg-light-secondary' : 'bg-white' ?>"
+                                                                       name="form[single_value_2][]" step="any"
+                                                                       value="<?= $this->data['measuring']['single_value_2'][$i] ?>"
+                                                                    <?= $this->data['measuring_device'] === 'ИПС' ? 'disabled' : '' ?>>
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control bg-light-secondary mean" name="form[mean][]"
+                                                                       step="any" value="<?= $this->data['measuring']['mean'][$i] ?>" readonly>
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control bg-white shear-strength" name="form[shear_strength][]"
+                                                                       step="any" value="<?= $this->data['measuring']['shear_strength'][$i] ?>">
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control bg-light-secondary gradation-strength" name="form[gradation_strength][]"
+                                                                       step="any" value="<?= $this->data['measuring']['gradation_strength'][$i] ?>" readonly>
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control condition <?= $this->data['measuring']['condition'][$i] > 2 ? 'bg-danger' : 'bg-light-secondary' ?>" name="form[condition][]"
+                                                                       step="any" value="<?= $this->data['measuring']['condition'][$i] ?>" readonly>
+                                                            </td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-square del-construction mt-0 btn-danger">
+                                                                    <i class="fa-solid fa-minus icon-fix"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endfor; ?>
+                                                <?php endif; ?>
+                                                </tbody>
+                                            </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
