@@ -242,10 +242,8 @@ class Controller
      */
     protected function sanitizeAssignedUsers(array $rawAssignedUsers): array
     {
-        $trimmed = array_map(fn($item) => trim((string)$item), $rawAssignedUsers);
-
-        $filtered = array_filter($trimmed, function(string $item): bool {
-            return $item !== '' && $item !== '0' && ctype_digit($item);
+        $filtered = array_filter($rawAssignedUsers, function(string $item): bool {
+            return $item !== '' && $item !== '0' && !is_null($item);
         });
 
         $uniqueList = array_values(array_unique($filtered));
