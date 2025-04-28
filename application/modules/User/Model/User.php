@@ -71,6 +71,7 @@ class User extends Model
     public function getUserList($order = ['LAST_NAME' => 'asc'], $bitrixFilter = [], $bitrixParams = [], $customFilter = []): array
     {
         $tmp = [];
+
         $users = CUser::GetList($order, $tmp, $bitrixFilter, $bitrixParams);
 
         $result = [];
@@ -102,6 +103,8 @@ class User extends Model
     public function getAssignedUserList($isMain = false): array
     {
         $filter['ACTIVE'] = 'Y';
+        
+        $filter['UF_ORG_ID'] = App::getOrganizationId();
 
 //        if ($isMain) {
 //            $filter['GROUPS_ID'] = [25, 23];

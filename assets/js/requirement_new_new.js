@@ -1,6 +1,5 @@
 let methodList = null
 let conditionList = null
-let quarryList = null
 let normDocList = null
 
 let $strTotal = null
@@ -22,15 +21,6 @@ $.ajax({
     dataType: 'json',
     success: function (data) {
         conditionList = data
-    }
-})
-
-$.ajax({
-    method: 'POST',
-    url: '/ulab/requirement/getQuarryAjax',
-    dataType: 'json',
-    success: function (data) {
-        quarryList = data
     }
 })
 

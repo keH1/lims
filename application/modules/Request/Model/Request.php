@@ -12,6 +12,8 @@ class Request extends Model
     //ID Сделки с которого начинается рефакторинг Результатов испытания (TODO: Для новых лабораторий удалить или добавить если производится рефакторинг результатов испытаний, так же убрать из карточки card.php, tz_show.php, probe.php)
     const RESULT_REFACTORING_START_ID = 8846;
 
+    // Кастомное поле в сделке, содержит ID организации
+    const DEAL_CUSTOM_FIELD_ORGANIZATION_ID = "UF_CRM_1745839051";
 
     /**
      * получает текст типа заявки по ид типа.
@@ -382,7 +384,7 @@ class Request extends Model
         return $this->DB->Update('ba_tz', $sqlData, $where);
     }
 
-    public function getCountDeal($type = '')
+    public function getCountDeal($type = '', $organizationId)
     {
         $curYear = date("Y");
         
@@ -391,27 +393,28 @@ class Request extends Model
                 ['DATE_CREATE' => 'DESC'], 
                 [
                     '>DATE_CREATE' => "01.01.{$curYear} 00:00:00",
-                    'TYPE_ID' => "'9'"
+                    'TYPE_ID' => 9,
+                    self::DEAL_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId
                 ]
             );
+            
             return $deals->SelectedRowsCount();
         }
         
-        $filter = ['>DATE_CREATE' => "01.01.{$curYear} 00:00:00"];
+        $filter = [
+            '>DATE_CREATE' => "01.01.{$curYear} 00:00:00",
+            self::DEAL_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId
+        ];
         
         if (!empty($type)) {
-            $filter['TYPE_ID'] = "'{$type}'";
+            $filter['TYPE_ID'] = $type;
         } else {
             $filter['!TYPE_ID'] = [1, 9];
         }
         
         $deals = CCrmDeal::GetList(['DATE_CREATE' => 'DESC'], $filter);
 
-        // TODO: разобраться
         $count = $deals->SelectedRowsCount();
-        if ($curYear == 2022) {
-            $count += 22;
-        }
 
         return $count;
     }
@@ -427,30 +430,21 @@ class Request extends Model
      */
     public function create($data)
     {
+        $organizationId = App::getOrganizationId();
         $year = $this->getCurrentY();
-        $countDeal = $this->getCountDeal($data['type']) + 1;
+        $countDeal = $this->getCountDeal($data['type'], $organizationId) + 1;
 
         $newDeal = new CCrmDeal;
 
-        // TODO: убрать костыль
-        while (1) {
-            $typeRus = $this->DB->ForSql(trim(strip_tags($data['type_rus'])));
-            $title = "{$typeRus} №{$countDeal}/{$year}";
-
-            $tmp = $this->DB->Query("SELECT ID FROM `b_crm_deal` WHERE `TITLE` = '{$title}'")->Fetch();
-
-            if (empty($tmp)) {
-                break;
-            } else {
-                $countDeal++;
-            }
-        }
+        $typeRus = $this->DB->ForSql(trim(strip_tags($data['type_rus'])));
+        $title = "{$typeRus} №{$countDeal}/{$year}";
 
         $arFields = [
             "TITLE" => $title,
             "COMPANY_ID" => $data['company_id'],
             "TYPE_ID" => $data['type'],
             "ASSIGNED_BY_ID" => $data['assigned'],
+            'UF_CRM_1745839051' => $organizationId
         ];
 
         $result = $newDeal->Add($arFields);

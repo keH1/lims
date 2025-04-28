@@ -587,8 +587,16 @@ class Protocol extends Model
      */
     public function getProtocolsCount()
     {
-        return $this->DB->Query("SELECT max(`NUMBER`) as `count_protocols` FROM `PROTOCOLS` 
-            WHERE YEAR(`DATE`) = YEAR(CURDATE()) AND `NUMBER` IS NOT NULL AND `NUMBER` > 0")->Fetch();
+        $organizationId = App::getOrganizationId();
+
+        return $this->DB->Query(
+           "SELECT max(`NUMBER`) as `count_protocols`
+            FROM `PROTOCOLS` 
+            WHERE YEAR(`DATE`) = YEAR(CURDATE())
+            AND `NUMBER` IS NOT NULL
+            AND `NUMBER` > 0
+            AND `organization_id` = {$organizationId}
+        ")->Fetch();
     }
 
 

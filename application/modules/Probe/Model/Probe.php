@@ -477,6 +477,8 @@ class Probe extends Model
 		$requestModel = new Request();
 		$requirementModel = new Requirement();
 
+        $organizationId = App::getOrganizationId();
+
         $dealId = (int)$data['deal_id'];
 
 		$tzId = $requirementModel->getTzIdByDealId($dealId);
@@ -497,6 +499,7 @@ class Probe extends Model
 		if ( !empty($data['act_id']) ) { // обновление
 		    $actId = (int)$data['act_id'];
 			$historyType = "Обновление АКТа приемки проб";
+
 			$sqlData = $this->prepearTableData('ACT_BASE', $actData);
 			$this->DB->Update('ACT_BASE', $sqlData, "where ID = {$actId}");
 
@@ -507,6 +510,7 @@ class Probe extends Model
                 "SELECT ACT_NUM 
                     FROM ACT_BASE
                     WHERE ACT_NUM = {$data['ACT_NUM']}
+                    AND ORGANIZATION_ID = {$organizationId}
             ")->Fetch();
 
             if ($actNumber) {
@@ -514,6 +518,8 @@ class Probe extends Model
             }
 
 			$sqlData = $this->prepearTableData('ACT_BASE', $actData);
+
+            $sqlData['ORGANIZATION_ID'] = $organizationId;
 
 			$this->DB->Insert('ACT_BASE', $sqlData);
 
@@ -556,15 +562,18 @@ class Probe extends Model
 		$historyModel->addHistory($history);
 	}
 
-    public function getNewActNumber() {
-
+    public function getNewActNumber() 
+    {
 		$curYear = date("Y");
+        $organizationId = App::getOrganizationId();
 
 		$maxNumAct = $this->DB->Query(
-			"select max(CONVERT(ACT_NUM, UNSIGNED INTEGER )) as max 
-                FROM `ACT_BASE` 
-                WHERE `act_type` = 1 AND `ACT_DATE` > '{$curYear}-01-01'"
-		)->Fetch();
+		   "SELECT MAX(CONVERT(ACT_NUM, UNSIGNED INTEGER )) AS max 
+            FROM `ACT_BASE` 
+            WHERE `act_type` = 1
+            AND `ACT_DATE` > '{$curYear}-01-01'
+            AND `ORGANIZATION_ID` = {$organizationId}
+        ")->Fetch();
 
 		$num = $maxNumAct['max'] + 1;
 

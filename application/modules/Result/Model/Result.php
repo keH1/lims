@@ -261,6 +261,7 @@ class Result extends Model
     public function getProtocolById(?int $protocolId): array
     {
         $response = [];
+        $organizationId = App::getOrganizationId();
 
         if (empty($protocolId) || $protocolId < 0) {
             return $response;
@@ -270,7 +271,9 @@ class Result extends Model
             (select COUNT(*) from ulab_material_to_request where protocol_id = p.ID) probe_count 
             FROM PROTOCOLS p 
             LEFT JOIN ulab_protocol_invalid upi ON upi.protocol_id = p.ID 
-            where p.ID = {$protocolId}")->Fetch();
+            where p.ID = {$protocolId}
+            AND p.ORGANIZATION_ID = {$organizationId}
+        ")->Fetch();
 
         if (!empty($result)) {
             $result['view_number'] = (int)$result['NUMBER'] ?: 'Номер не присвоен';
@@ -412,13 +415,9 @@ class Result extends Model
      */
     public function addProtocols(array $data): int
     {
-        foreach ($data as $key => $item) {
-            if (is_string($item)) {
-                $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
-            }
-        }
+        $sqlData = $this->prepearTableData('PROTOCOLS', $data);
 
-        $result = $this->DB->Insert('PROTOCOLS', $data);
+        $result = $this->DB->Insert('PROTOCOLS', $sqlData);
 
         return intval($result);
     }
