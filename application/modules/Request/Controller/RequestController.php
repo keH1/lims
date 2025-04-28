@@ -1613,9 +1613,10 @@ class RequestController extends Controller
     {
         // ТЗ
         $this->data['tz']['tz_link'] = URI."/requirement/card_new/{$requestData['ID']}";
-        $this->data['tz']['check'] = !empty($requestData['ID']) && (!empty($requestData['TZ']) || $isExistTz);
+        $this->data['tz']['check'] = !empty($requestData['ID']) && $isExistTz;
         $this->data['tz']['number'] = $requestData['ID'] ?? '';
-        $this->data['tz']['date'] = !empty($requestData['DATE_SOZD'])? StringHelper::dateRu($requestData['DATE_SOZD']) : '--';
+        $this->data['tz']['date'] = !empty($requestData['DATE_SOZD']) && $this->data['tz']['check'] ?
+            StringHelper::dateRu($requestData['DATE_SOZD']) : '--';
         $this->data['tz']['date_send'] = $userFields['UF_CRM_1579541506559']['VALUE'] ? StringHelper::dateRu($userFields['UF_CRM_1579541506559']['VALUE']) : "Не отправлено";
     }
     
