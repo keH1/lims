@@ -103,8 +103,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      TZ: ${TZ}
-    command: mysqld --user=root --sql-mode=""     
+      TZ: ${TZ} 
     restart: unless-stopped
     networks:
       - lims-ulab
