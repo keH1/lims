@@ -35,6 +35,10 @@ $(function ($) {
         
         // Гос. работы
         if (reqType === '9') {
+            // Для гос. работ показываем текстовое поле и скрываем селект
+            $('#contract-select').addClass('visually-hidden').prop('disabled', true)
+            $('#contract-input').removeClass('visually-hidden').prop('disabled', false)
+            
             $('.type-gov-block').removeClass('visually-hidden')
             
             // Активация полей и required для отображаемых блоков
@@ -51,6 +55,10 @@ $(function ($) {
             //     addGovWorkRow()
             // }
         } else if (reqType === 'SALE') {
+            // Для коммерческих заявок показываем селект и скрываем текстовое поле
+            $('#contract-select').removeClass('visually-hidden').prop('disabled', false)
+            $('#contract-input').addClass('visually-hidden').prop('disabled', true)
+            
             $('.type-sale-block').not('#sale-materials-block').removeClass('visually-hidden')
             
             if (!hasId) {
@@ -75,7 +83,6 @@ $(function ($) {
 
         if (isNewRequest) {
             if (reqType) {
-                // При ошибке валидации
                 toggleRequestType()
             } else {
                 // Скрываем все блоки для новой заявки
@@ -634,7 +641,7 @@ $(function ($) {
         $('.editable-cell[data-required="true"]').each(function() {
             const cell = $(this),
             //   input = cell.find('.cell-input'),
-                  display = cell.find('.cell-display')
+                display = cell.find('.cell-display')
             
             // if (!input.val()) {
             //     display.addClass('empty-required')
