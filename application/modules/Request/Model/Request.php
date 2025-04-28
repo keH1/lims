@@ -573,7 +573,7 @@ class Request extends Model
     {
         $result = [];
 
-        $protocols = $this->DB->Query("SELECT * FROM `PROTOCOLS` WHERE `ID_TZ` = {$tzId}");
+        $protocols = $this->DB->Query("SELECT *, year(`DATE`) as `YEAR` FROM `PROTOCOLS` WHERE `ID_TZ` = {$tzId}");
 
         while ($row = $protocols->Fetch()) {
             $result[] = $row;
@@ -1137,6 +1137,13 @@ class Request extends Model
                     HAVING {$having} "
         )->SelectedRowsCount();
 
+        // Генерация возможных путей файлов протокола
+        $filePatterns = [
+            "/protocol_generator/archive/%s%s/%s/%s.pdf",
+            "/protocol_generator/archive/%s%s/%s/%s.docx",
+            "/pdf/%s/%s.pdf",
+        ];
+
         while ($row = $data->Fetch()) {
             $row['start_new_area'] = DEAL_START_NEW_AREA;
             $isExistTz = $requirementModel->isExistTz($row['ID_Z']);
@@ -1148,7 +1155,6 @@ class Request extends Model
             $row['REQUEST_TITLE'] = $crmDeal['TITLE'];
 
             $protocolsData = [];
-            $firstProtocol = [];
             $mangoClass = '';
             $greenClass = '';
 
@@ -1209,30 +1215,27 @@ class Request extends Model
 
             $row['linkName'] = $row['b_id'] && $row['ACT_NUM'] ? 'Открыть' : '';
 
-            if (count($protocols) > 0) {
-                $firstProtocol = current($protocols);
-                foreach ($protocols as $key => $value) {
-                    $numberAndYear = !empty($value['NUMBER_AND_YEAR']) ? $value['NUMBER_AND_YEAR'] : '';
-                    $protocolsData[$key] = [
-                        'ID' => $value['ID'],
-                        'NUMBER_AND_YEAR' => $numberAndYear,
-                        'ACTUAL_VERSION' => unserialize($value['ACTUAL_VERSION']),
-                        'PDF' => $value['PDF'],
-                        'PROTOCOL_OUTSIDE_LIS' => $value['PROTOCOL_OUTSIDE_LIS'],
-                        'YEAR' => !empty($value['DATE']) ? date('Y', strtotime($value['DATE'])) : ''
+            foreach ($protocols as $key => $value) {
+                if ( !empty($value['NUMBER_AND_YEAR']) ) {
+                    // Параметры для подстановки в пути
+                    $pathParams = [
+                        [$row['b_id'], $value['YEAR'], $value['ID'], $value['ACTUAL_VERSION']],
+                        [$row['b_id'], $value['YEAR'], $value['ID'], $value['ACTUAL_VERSION']],
+                        [$value['ID'], $value['ACTUAL_VERSION']],
                     ];
 
-                    if (empty($value['PDF'])) {
-                        $files = scandir($_SERVER['DOCUMENT_ROOT'] . '/protocol_generator/archive/' . $row['b_id'] . $protocolsData[$key]['YEAR'] . '/' . $protocolsData[$key]['ID'] . '/');
+                    foreach ($filePatterns as $index => $pattern) {
+                        $relativePath = vsprintf($pattern, $pathParams[$index]);
+                        $fullPath = $_SERVER['DOCUMENT_ROOT'] . $relativePath;
 
-                        $protocolsData[$key]['FILES'] = !empty($files) ? $files : [];
-                    } else {
-                        $protocolsData[$key]['FILES'] = [];
+                        if (is_file($fullPath)) {
+                            $protocolsData[$key]['FILES'] = $relativePath;
+                            $protocolsData[$key]['number'] = $value['NUMBER_AND_YEAR'];
+                            break;
+                        }
                     }
                 }
             }
-
-            $row['firstProtocolId'] = $firstProtocol['ID'] ?? null;
 
             $row['PROTOCOLS'] = $protocolsData;
 

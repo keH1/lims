@@ -174,39 +174,17 @@ $(function ($) {
                 let i = 0;
                 let dataProtocol = `<div class="d-flex flex-column">`
 
-                if (item['PROTOCOLS']) {
+                if (item['PROTOCOLS'].length > 0) {
                     for (const val of item['PROTOCOLS']) {
                         if ( i === 3 ) { break; }
                         i++
 
-                        for (const file of val['FILES']) {
-                            if (file.indexOf('.pdf') !== -1) {
-                                dataProtocol += `<a class="protocol-link" 
-                                                        href="/protocol_generator/archive/${item['b_id']}${val['YEAR']}/${val['ID']}/${file}"
-                                                        >
-                                                        ${val['NUMBER_AND_YEAR']}
-                                                    </a>`
-                            }
-                        }
-
-                        if (val['PROTOCOL_OUTSIDE_LIS'] && val['PDF']) {
-                            dataProtocol += `<a class="protocol-link" href="/pdf/${val['ID']}/${val['PDF']}" 
-                                                    >
-                                                    ${val['NUMBER_AND_YEAR']}
-                                                </a>`
-                        }
-                    }
-                } else {
-                    if(item['NO_BITRIX']) {
-                        dataProtocol += `<a class="protocol-link" href="/pdf/${item['PDF']}" >
-                                                ${item['PDF'] && item['NUM_P_TABLE'] ? item['NUM_P_TABLE'] : ''}
-                                            </a>`
-                    } else if (item['b_actual_ver']) {
-                        dataProtocol += `<a class="protocol-link" href="/protocol_generator/archive/${item['b_id']}${item['YEAR_ACT']}/${item['b_actual_ver']}.docx?1&1" >
-                                                ${item['RESULTS'] && item['NUM_P_TABLE'] ? item['NUM_P_TABLE'] : ''}
-                                            </a>`
+                        dataProtocol += `<a class="protocol-link" href="${val['FILES']}" >
+                                            ${val['number']}
+                                        </a>`
                     }
                 }
+
                 dataProtocol += `</div>`
 
                 return dataProtocol
