@@ -50,12 +50,12 @@ cleanup_and_push_job:
     - cat /tmp/test.txt
   script:
     - nslookup git.mos.ru
-    - cd /home/gitlab-runner/builds/kyKTSLrCF/0/loki/lims
+    - cd $CI_PROJECT_DIR
     - git config --global user.name "CI Bot"
     - git config --global user.email "ci@bot.com"
     - rm -rf docker-compose.yml Makefile .gitlab-ci.yml ./docker .env Dockerfile
     - cd ../
-    - rm -rf /home/gitlab-runner/builds/kyKTSLrCF/0/loki/target-repo
+    - rm -rf ./target-repo
     - git clone $TARGET_REPO_URL target-repo
     - cp -r lims/. ./target-repo
     - cd target-repo
