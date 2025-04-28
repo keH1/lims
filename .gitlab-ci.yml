@@ -44,7 +44,7 @@ cleanup_and_push_job:
     - cd /opt/forticlient/forticlientsslvpn/64bit
     - tmux kill-session -t vpn_session || true
     - tmux new-session -d -s vpn_session
-    - tmux new-window -t vpn_session -n vpn '/opt/forticlient/forticlientsslvpn/64bit/connect.sh ; bash'
+    - tmux new-window -t vpn_session -n vpn './connect.sh ; bash'
     - sleep 240
     - tmux capture-pane -t vpn_session:vpn -p > /tmp/test.txt
     - cat /tmp/test.txt
