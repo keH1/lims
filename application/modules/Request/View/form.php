@@ -55,7 +55,10 @@
             </div>
             
             <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Клиент/Организация <span class="redStars">*</span></label>
+                <label class="col-sm-2 col-form-label label-company">
+                    <?= isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] === '9' ? 'Организация' : 'Клиент' ?>
+                    <span class="redStars">*</span>
+                </label>
                 <div class="col-sm-8">
                     <input id="company" class="form-control company-field"
                            list="company_list" type="text" name="company"
