@@ -62,7 +62,8 @@ cleanup_and_push_job:
     - git checkout -b mirror
     - git add .
     - git commit -m "Автоматический пуш из CI"
-    - git push origin mirror
+    - git remote add dit git.mos.ru/eknd/aisloki/source/lims.git
+    - git push dit mirror
     - tmux kill-session -t vpn_session || true
   tags:
     - vpn
