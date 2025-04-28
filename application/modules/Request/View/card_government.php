@@ -598,17 +598,17 @@
     <div class="line-dashed-small"></div>
 
     <div class="mb-3">
-        <label class="form-label">Номер акта</label>
+        <label class="form-label">Номер акта <span class="redStars">*</span></label>
         <input type="number" name="actNumber" step="1" class="form-control" value="<?=$this->data['act_vr']['NUMBER'] ?? ''?>" required>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Дата акта</label>
+        <label class="form-label">Дата акта <span class="redStars">*</span></label>
         <input type="date" name="actDate" class="form-control" value="<?=$this->data['act_vr']['DATE'] ?? ''?>" required>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Руководитель</label>
+        <label class="form-label">Руководитель <span class="redStars">*</span></label>
         <select name="lead" class="form-control" required>
             <option value="" <?=$this->data['act_vr']['LEAD'] == '' ? 'selected' : ''?> disabled>Выберите руководителя</option>
             <?php foreach ($this->data['act_complete']['assigned_users'] as $user): ?>

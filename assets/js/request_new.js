@@ -277,20 +277,6 @@ $(function ($) {
         return true
     }
 
-    function validateEmailField($emailField) {
-        clearElementError($emailField)
-
-        let emailVal = $emailField.val()?.toString().trim() || ''
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
-
-        if (emailVal && !emailPattern.test(emailVal)) {
-            showElementError($emailField, 'Введите корректный e-mail (например: user@example.com)')
-            return false
-        }
-
-        return true
-    }
-
     $body.on('input change', 'input[name="EMAIL"], input[name="POST_MAIL"], input[name="addEmail[]"]', function() {
         validateEmailField($(this))
     })

@@ -846,6 +846,20 @@ function bufferToBase64(buf) {
     return btoa(binstr);
 }
 
+function validateEmailField($emailField) {
+    clearElementError($emailField)
+
+    let emailVal = $emailField.val()?.toString().trim() || ''
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
+
+    if (emailVal && !emailPattern.test(emailVal)) {
+        showElementError($emailField, 'Введите корректный e-mail (например: user@example.com)')
+        return false
+    }
+
+    return true
+}
+
 async function addImgToPdf(filePath, imgUrl, imgParams) {
     const { PDFDocument, StandardFonts, grayscale, rgb, degrees } = PDFLib;
     const existingPdfBytes = await fetch(filePath).then(res => res.arrayBuffer());
