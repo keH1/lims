@@ -337,6 +337,10 @@ $(function ($) {
         $strTotal.text(discountPrice.toFixed(2) + ' руб.')
     })
 
+    $('#form_requirement').on('submit', function () {
+        $('.discount-apply').trigger('click')
+    })
+
     $body.on('click', '.popup-edit-probe-form', function (e) {
         let data = journalDataTable.row(e.target.closest('tr')).data()
 
