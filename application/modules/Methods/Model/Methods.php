@@ -636,7 +636,7 @@ class Methods extends Model
             }
         }
 
-        $where .= "g.organization_id = {$organizationId}";
+        $where .= "g.organization_id = {$organizationId} ";
 
         $result = [];
 
@@ -673,7 +673,7 @@ class Methods extends Model
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT distinct m.id
+            "SELECT m.id
                     FROM ulab_gost g
                     LEFT JOIN ulab_methods m ON g.id = m.gost_id 
                     LEFT JOIN ulab_dimension d ON d.id = m.unit_id
