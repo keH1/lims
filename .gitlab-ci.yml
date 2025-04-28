@@ -42,6 +42,7 @@ cleanup_and_push_job:
   stage: cleanup-and-push
   needs:
     - job: deploy:dev
+      optional: true
   before_script:
     - cd /opt/forticlient/forticlientsslvpn/64bit
     - tmux kill-session -t vpn_session || true
