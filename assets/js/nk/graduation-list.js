@@ -24,12 +24,12 @@ $(function () {
         },
         columns: [
             {
-                data: 'id',
+                data: 'number',
                 render: function (data, type, item) {
                     // if (item.is_can_edit) {
                         return `<a class="request-link"
                                href="/ulab/nk/graduation/${item.id}">
-                               ${item.id}
+                               ${item.number}
                             </a>`
                     // } else {
                     //     return `<span>${item.id}</span>`;
