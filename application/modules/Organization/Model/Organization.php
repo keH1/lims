@@ -511,6 +511,8 @@ class Organization extends Model
             $data['id_dep'] = $idDep;
         }
 
+        $data['organization_id'] = App::getOrganizationId();
+
         $sqlData = $this->prepearTableData('ba_laba', $data);
 
         $this->DB->Insert("ba_laba", $sqlData);

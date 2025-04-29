@@ -1209,11 +1209,14 @@ class Oborud extends Model {
      */
     public function getList()
     {
+        $organizationId = App::getOrganizationId();
+
         $result = [];
 
         $stmt = $this->DB->Query("
             SELECT *
             FROM ba_oborud
+            where organization_id = {$organizationId}
             order by is_decommissioned asc, LONG_STORAGE asc, OBJECT asc
         ");
 

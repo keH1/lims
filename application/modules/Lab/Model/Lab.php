@@ -215,7 +215,7 @@ class Lab extends Model
         $organizationId = App::getOrganizationId();
 
         $smtp = $this->DB->Query("
-            SELECT * FROM `ROOMS` as r
+            SELECT r.* FROM `ROOMS` as r
             INNER JOIN ba_laba AS l
              ON r.LAB_ID = l.ID
             WHERE l.organization_id = {$organizationId}
@@ -1406,12 +1406,15 @@ class Lab extends Model
         return $deleteDone;
     }
 
+
     /**
      * @param array $filter
      * @return array
      */
     public function getRoomsListForLab($filter = [])
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -1419,73 +1422,70 @@ class Lab extends Model
             'dir' => 'DESC'
         ];
 
-        if (!empty($filter)) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
 
-            // работа с фильтрами
-            if (!empty($filter['search'])) {
-                // Лаборатория
-                if ( isset($filter['search']['laboratory']) ) {
-                    $where .= "r.LAB_ID = '{$filter['search']['laboratory']}' AND ";
-                }
-                // Номер
-                if ( isset($filter['search']['NUMBER']) ) {
-                    $where .= "r.NUMBER = '{$filter['search']['NUMBER']}' AND ";
-                }
-                // Наименование
-                if ( isset($filter['search']['NAME']) ) {
-                    $where .= "r.NAME LIKE '%{$filter['search']['NAME']}%' AND ";
-                }
-                // Тип
-                if ( isset($filter['search']['SPEC']) ) {
-                    $searchValue = mb_strtolower($filter['search']['SPEC']);
-                    
-                    if (mb_strpos('специальное', $searchValue) !== false) {
-                        $where .= "r.SPEC = 0 AND ";
-                    } else if (mb_strpos('приспособленное', $searchValue) !== false) {
-                        $where .= "r.SPEC = 1 AND ";
-                    } else {
-                        $where .= "1=0 AND ";
-                    }
-                }
-                // Назначение
-                if ( isset($filter['search']['PURPOSE']) ) {
-                    $where .= "r.PURPOSE LIKE '%{$filter['search']['PURPOSE']}%' AND ";
-                }
-                // Площадь
-                if ( isset($filter['search']['AREA']) ) {
-                    $where .= "r.AREA LIKE '%{$filter['search']['AREA']}%' AND ";
-                }
-                // Контролируемые параметры
-                if ( isset($filter['search']['PARAMS']) ) {
-                    $where .= "r.PARAMS LIKE '%{$filter['search']['PARAMS']}%' AND ";
-                }
-                // Специальное оборудование
-                if ( isset($filter['search']['SPEC_EQUIP']) ) {
-                    $where .= "r.SPEC_EQUIP LIKE '%{$filter['search']['SPEC_EQUIP']}%' AND ";
-                }
-                // Право собственности
-                if ( isset($filter['search']['DOCS']) ) {
-                    $where .= "r.DOCS LIKE '%{$filter['search']['DOCS']}%' AND ";
-                }
-                // Местонахождение
-                if ( isset($filter['search']['PLACEMENT']) ) {
-                    $where .= "r.PLACEMENT LIKE '%{$filter['search']['PLACEMENT']}%' AND ";
-                }
-                // Примечание
-                if ( isset($filter['search']['COMMENT']) ) {
-                    $where .= "r.COMMENT LIKE '%{$filter['search']['COMMENT']}%' AND ";
-                }
+        // из $filter собирать строку $where тут
+        // формат такой: $where .= "что-то = чему-то AND ";
+        // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
+        // слева без пробела, справа всегда AND пробел
 
-                $where .= "1 ";
-            } 
-            else {
-                $where .= "1=0 ";
+        // работа с фильтрами
+        if (!empty($filter['search'])) {
+            // Лаборатория
+            if ( isset($filter['search']['laboratory']) ) {
+                $where .= "r.LAB_ID = '{$filter['search']['laboratory']}' AND ";
+            }
+            // Номер
+            if ( isset($filter['search']['NUMBER']) ) {
+                $where .= "r.NUMBER = '{$filter['search']['NUMBER']}' AND ";
+            }
+            // Наименование
+            if ( isset($filter['search']['NAME']) ) {
+                $where .= "r.NAME LIKE '%{$filter['search']['NAME']}%' AND ";
+            }
+            // Тип
+            if ( isset($filter['search']['SPEC']) ) {
+                $searchValue = mb_strtolower($filter['search']['SPEC']);
+
+                if (mb_strpos('специальное', $searchValue) !== false) {
+                    $where .= "r.SPEC = 0 AND ";
+                } else if (mb_strpos('приспособленное', $searchValue) !== false) {
+                    $where .= "r.SPEC = 1 AND ";
+                } else {
+                    $where .= "0 AND ";
+                }
+            }
+            // Назначение
+            if ( isset($filter['search']['PURPOSE']) ) {
+                $where .= "r.PURPOSE LIKE '%{$filter['search']['PURPOSE']}%' AND ";
+            }
+            // Площадь
+            if ( isset($filter['search']['AREA']) ) {
+                $where .= "r.AREA LIKE '%{$filter['search']['AREA']}%' AND ";
+            }
+            // Контролируемые параметры
+            if ( isset($filter['search']['PARAMS']) ) {
+                $where .= "r.PARAMS LIKE '%{$filter['search']['PARAMS']}%' AND ";
+            }
+            // Специальное оборудование
+            if ( isset($filter['search']['SPEC_EQUIP']) ) {
+                $where .= "r.SPEC_EQUIP LIKE '%{$filter['search']['SPEC_EQUIP']}%' AND ";
+            }
+            // Право собственности
+            if ( isset($filter['search']['DOCS']) ) {
+                $where .= "r.DOCS LIKE '%{$filter['search']['DOCS']}%' AND ";
+            }
+            // Местонахождение
+            if ( isset($filter['search']['PLACEMENT']) ) {
+                $where .= "r.PLACEMENT LIKE '%{$filter['search']['PLACEMENT']}%' AND ";
+            }
+            // Примечание
+            if ( isset($filter['search']['COMMENT']) ) {
+                $where .= "r.COMMENT LIKE '%{$filter['search']['COMMENT']}%' AND ";
             }
         }
+
+        $where .= "lab.organization_id = {$organizationId} ";
+
         // работа с сортировкой
         if (!empty($filter['order'])) {
             if ($filter['order']['dir'] === 'asc') {
@@ -1537,20 +1537,24 @@ class Lab extends Model
         $result = [];
 
         $data = $this->DB->Query(
-            "SELECT * 
+            "SELECT r.* 
              FROM ROOMS AS r
+             join ba_laba as lab on lab.ID = r.LAB_ID
              WHERE {$where}
              ORDER BY {$order['by']} {$order['dir']} {$limit}
         ");
 
         $dataTotal = $this->DB->Query(
-            "SELECT * 
-             FROM ROOMS AS r
+            "SELECT r.ID 
+            FROM ROOMS AS r
+            join ba_laba as lab on lab.ID = r.LAB_ID
+            where lab.organization_id = {$organizationId}
         ")->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT * 
+            "SELECT r.ID 
              FROM ROOMS AS r
+             join ba_laba as lab on lab.ID = r.LAB_ID
              WHERE {$where}
         ")->SelectedRowsCount();
 

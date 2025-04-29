@@ -317,13 +317,14 @@ class Model
 
         if ($userID) {
             $dataAdd['global_assigned'] = (int)$userID;
+            $dataAdd['user_id'] = (int)$userID;
         } else {
             $dataAdd['global_assigned'] = App::getUserId();
+            $dataAdd['user_id'] = App::getUserId();
         }
         $dataAdd['organization_id'] = App::getOrganizationId();
 
         $dataAdd['global_entry_date'] = date("Y-m-d H:i:s");
-        $this->checkAndAddGlobal($nameTable, $dataAdd);
 
         $dataAdd = $this->prepearTableData($nameTable, $dataAdd);
         return $this->DB->Insert($nameTable, $dataAdd);

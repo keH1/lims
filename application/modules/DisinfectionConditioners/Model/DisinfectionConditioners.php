@@ -91,7 +91,6 @@ class DisinfectionConditioners extends Model
 
     public function addToSQL(array $data, string $type = null): int
     {
-        $organizationId = App::getOrganizationId();
         $namesTable = [
             'disinfection_conditioners'
         ];
@@ -103,8 +102,6 @@ class DisinfectionConditioners extends Model
             }
             $dataAdd = $data[$name];
         }
-
-        $dataAdd[] = $organizationId;
 
         return $this->insertToSQL($dataAdd, $name, App::getUserId());
     }
@@ -130,15 +127,13 @@ class DisinfectionConditioners extends Model
                        DATE_FORMAT(dc.date_sol,'%d.%m.%Y') AS date_sol_dateformat, 
                        dc.date_sol,
                        dc.user_id, 
-                       r.NUMBER, 
+                       concat(r.NAME, ' ', r.NUMBER) as NUMBER, 
                        TRIM(CONCAT_WS(' ', bu.NAME, bu.LAST_NAME)) as global_assigned_name 
                 FROM disinfection_conditioners AS dc
                     
-                LEFT JOIN ROOMS r
-                ON dc.room_id = r.ID
+                LEFT JOIN ROOMS as r ON dc.room_id = r.ID
  
-                LEFT JOIN b_user as bu
-                ON dc.global_assigned = bu.ID
+                LEFT JOIN b_user as bu ON dc.global_assigned = bu.ID
                 WHERE dc.organization_id = {$organizationId}
                 HAVING {$filters['having']}
                 ORDER BY {$filters['order']}

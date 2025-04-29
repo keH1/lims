@@ -72,6 +72,7 @@ class Statistic extends Model
             ],
             'date_filter' => "DATE_FORMAT(ba_tz.DATE_CREATE_TIMESTAMP, '%Y-%m-%d') >= '{dateStart}' AND DATE_FORMAT(ba_tz.DATE_CREATE_TIMESTAMP, '%Y-%m-%d') <= '{dateEnd}'",
             'order' => 'ba_tz.id',
+            'where' => 'ba_tz.organization_id = {organizationId}',
             'chart' => [
                 'donut' => [
                     [
@@ -93,7 +94,7 @@ class Statistic extends Model
                               sum(case when ba_tz.STAGE_ID not IN ('5', '6', '7', '8', '9', 'LOSE') then ba_tz.price_discount else 0 end) value_2
                             FROM ba_tz
                             inner join ba_tz_type on ba_tz_type.type_id = ba_tz.TYPE_ID
-                            where ba_tz.TYPE_ID = '{id}' AND YEAR(ba_tz.DATE_CREATE_TIMESTAMP) = YEAR(CURDATE()) and organization_id = {organizationId}
+                            where ba_tz.TYPE_ID = '{id}' AND YEAR(ba_tz.DATE_CREATE_TIMESTAMP) = YEAR(CURDATE()) and ba_tz.organization_id = {organizationId}
                             group by MONTH(ba_tz.DATE_CREATE_TIMESTAMP)",
                     'days_sql' => "SELECT ba_tz_type.name as label, DAY(ba_tz.DATE_CREATE_TIMESTAMP) day, DATE(ba_tz.DATE_CREATE_TIMESTAMP) date,
                               count(ba_tz.ID) as value,
@@ -101,7 +102,7 @@ class Statistic extends Model
                             FROM ba_tz
                             inner join ba_tz_type on ba_tz_type.type_id = ba_tz.TYPE_ID
                             where ba_tz.TYPE_ID = '{id}' AND MONTH(ba_tz.DATE_CREATE_TIMESTAMP) = '{month}' AND YEAR(ba_tz.DATE_CREATE_TIMESTAMP) = '{year}'
-                            AND organization_id = {organizationId}
+                            AND ba_tz.organization_id = {organizationId} 
                             group by DAY(ba_tz.DATE_CREATE_TIMESTAMP)"
                 ]
             ],
@@ -495,7 +496,7 @@ class Statistic extends Model
                                     inner join ulab_methods_oborud on ulab_methods_oborud.id_oborud = ba_oborud.ID
                                     inner join ulab_gost_to_probe on ulab_gost_to_probe.new_method_id = ulab_methods_oborud.method_id
                                     inner join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
-                                WHERE ba_oborud.ID = '{id}' AND organization_id = {organizationId} AND YEAR(ulab_start_trials.date) = YEAR(CURDATE())
+                                WHERE ba_oborud.ID = '{id}' AND ba_oborud.organization_id = {organizationId} AND YEAR(ulab_start_trials.date) = YEAR(CURDATE())
                                 AND ulab_methods_oborud.id_oborud <> 0 AND ulab_methods_oborud.method_id <> 0
                                 group by MONTH(ulab_start_trials.date)",
                     'days_sql' => "SELECT
@@ -508,7 +509,7 @@ class Statistic extends Model
                                     inner join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
                                 WHERE ba_oborud.ID = '{id}' AND YEAR(ulab_start_trials.date) = '{year}' AND MONTH(ulab_start_trials.date) = '{month}'
                                 AND ulab_methods_oborud.id_oborud <> 0 AND ulab_methods_oborud.method_id <> 0
-                                AND organization_id = {organizationId}
+                                AND ba_oborud.organization_id = {organizationId}
                                 group by DAY(ulab_start_trials.date)"
                 ]
             ],
@@ -1134,6 +1135,7 @@ class Statistic extends Model
      */
     public function getStatisticConstructorJournal($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -1201,10 +1203,16 @@ class Statistic extends Model
         $groups = [];
         $joins = [];
 
+        if ( !empty($entityData['where']) ) {
+            $entityData['where'] = str_replace('{organizationId}', $organizationId, $entityData['where']);
+            $where .= "{$entityData['where']} AND ";
+        }
+
         foreach ($entityData['columns'] as $key => $column) {
             $fields[] = $entityData['columns'][$key]['select'];
 
             if ( !empty($entityData['columns'][$key]['where']) ) {
+                $entityData['columns'][$key]['where'] = str_replace('{organizationId}', $organizationId, $entityData['columns'][$key]['where']);
                 $where .= "{$entityData['columns'][$key]['where']} AND ";
             }
 
