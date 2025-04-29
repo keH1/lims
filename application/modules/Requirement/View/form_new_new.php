@@ -172,15 +172,13 @@
                             <label class="form-label mb-1">Основание для проведения испытаний</label>
                             <div>
                                 <strong>
-                                <?php if ($this->data['tz']['TYPE_ID'] == '9'): ?>
-                                    <?php if ( !empty($this->data['contract_number']) ): ?>
-                                        <?= $this->data['contract_type'] ?> №<?= $this->data['contract_number'] ?> от <?= $this->data['contract_date'] ?>
+                                    <?php if ($this->data['tz']['TYPE_ID'] == '9'): ?>
+                                        <?php if ( !empty($this->data['contract_number']) ): ?>
+                                            <?= $this->data['contract_number'] ?>
+                                        <?php endif; ?>
                                     <?php else: ?>
-                                        Договор еще не составлен
+                                        Экспертное задание
                                     <?php endif; ?>
-                                <?php else: ?>
-                                    Экспертное задание
-                                <?php endif; ?>
                                 </strong>
                             </div>
                         </div>
