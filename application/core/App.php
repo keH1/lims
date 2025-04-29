@@ -59,7 +59,6 @@ class App
 
             call_user_func([$this->controller, $this->method], $this->id);
         }
-		call_user_func([$this->controller, $this->method], $this->id);
     }
 
     protected function parseUrl()
