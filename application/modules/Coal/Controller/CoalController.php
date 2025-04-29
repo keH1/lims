@@ -123,7 +123,9 @@ class CoalController extends Controller
 		/** @var Coal $usedModel*/
 		$usedModel = $this->model($this->nameModel);
 
-		$newAdd = $_POST['toSQL'];
+		$newAdd = [
+            "coal_regeneration" => $_POST['coal_regeneration']
+        ];
 		$isAdd = $usedModel->addToSQL($newAdd);
 
 		if (!$isAdd) {
@@ -146,7 +148,9 @@ class CoalController extends Controller
 		/** @var Coal $usedModel*/
 		$usedModel = $this->model($this->nameModel);
 
-		$newAdd = $_POST['toSQL'];
+        $newAdd = [
+            "empty_bdb" => $_POST['empty_bdb']
+        ];
 		$isAdd = $usedModel->addToSQL($newAdd);
 
 		if (!$isAdd) {
@@ -169,7 +173,9 @@ class CoalController extends Controller
 		/** @var Coal $usedModel*/
 		$usedModel = $this->model($this->nameModel);
 
-		$newAdd = $_POST['toSQL'];
+        $newAdd = [
+            "full_bdb" => $_POST['full_bdb']
+        ];
 		$isAdd = $usedModel->addToSQL($newAdd);
 
 		if (!$isAdd) {

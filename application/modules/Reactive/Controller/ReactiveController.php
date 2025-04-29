@@ -69,9 +69,9 @@ class ReactiveController extends Controller
         $unsuccessfulMsg = 'Не удалось сохранить реактив';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd['reactive'] = $_POST['reactive'];
-
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'reactive' => $_POST['reactive']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd, 'addReactive');
 
@@ -92,7 +92,9 @@ class ReactiveController extends Controller
 
         $organizationId = App::getOrganizationId();
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'reactive_receive' => $_POST['reactive_receive'],
+        ];
         $newAdd['reactive_receive']['organization_id'] = $organizationId;
 
         $isAdd = $usedModel->addToSQL($newAdd);
@@ -112,7 +114,9 @@ class ReactiveController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'reactive_model' => $_POST['reactive_model']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd, 'addReactiveModelNoUnitMeasurement');
 
@@ -128,7 +132,10 @@ class ReactiveController extends Controller
         $unsuccessfulMsg = 'Не удалось провести реактив';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'reactive_receive' => $_POST['reactive_receive']
+        ];
+
         $isAdd = $usedModel->addToSQL($newAdd);
 
         $this->checkAndShowSuccessOrErrorMessage($isAdd, $successMsg, $unsuccessfulMsg);
@@ -158,6 +165,7 @@ class ReactiveController extends Controller
     {
         $successMsg = 'Реактив успешно изменен';
         $unsuccessfulMsg = 'Не удалось изменить реактив';
+
         $usedModel = $this->model($this->nameModel);
 
         $newAdd = $_POST['toSQL'];
@@ -176,6 +184,7 @@ class ReactiveController extends Controller
     {
         $successMsg = 'Реактив успешно проведен';
         $unsuccessfulMsg = 'Не удалось провести реактив';
+
         $usedModel = $this->model($this->nameModel);
 
         $newAdd = $_POST['toSQL'];

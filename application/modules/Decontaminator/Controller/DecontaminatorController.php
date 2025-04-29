@@ -87,7 +87,19 @@ class DecontaminatorController extends Controller
         $unsuccessfulMsg = 'Не удалось добавить холодильник';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [];
+
+        if ($_POST['decontaminator']){
+            $newAdd = [
+                'decontaminator'=>$_POST['decontaminator'],
+            ];
+        }
+        
+        if ($_POST['fridge']){
+            $newAdd = [
+                'fridge'=>$_POST['fridge'],
+            ];
+        }
 
         $isAdd = $usedModel->addToSQL($newAdd);
 

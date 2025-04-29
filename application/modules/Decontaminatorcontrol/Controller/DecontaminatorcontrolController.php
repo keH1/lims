@@ -83,7 +83,6 @@ class DecontaminatorcontrolController extends Controller
     public function addSwitch()
     {
         $usedModel = $this->model($this->nameModel);
-        $newAdd = $_POST['toSQL'];
         $type = $_POST['type'];
         if ($type == 'on') {
             $successMsg = 'Бактерицидная установка успешно включена';
@@ -93,7 +92,12 @@ class DecontaminatorcontrolController extends Controller
             $unsuccessfulMsg = 'Бактерицидная установка успешно  не выключена';
         }
 
-        $isAdd = $usedModel->addToSQL($newAdd);
+        if ($_POST['dcon_on']){
+            $isAdd = $usedModel->addToSQL($_POST['dcon_on'],"dcon_on");
+        }
+        if ($_POST['dcon_off']){
+            $isAdd = $usedModel->addToSQL($_POST['dcon_off'],"dcon_off");
+        }
 
         $this->checkAndShowSuccessOrErrorMessage($isAdd, $successMsg, $unsuccessfulMsg);
 

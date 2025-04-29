@@ -92,7 +92,10 @@ class GraduationphmetrController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'ph_metr_graduation' => $_POST['ph_metr_graduation'],
+            'measurements' => $_POST['measurements']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd, 'addMeasurement');
 
