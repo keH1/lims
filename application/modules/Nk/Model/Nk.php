@@ -62,9 +62,18 @@ class Nk extends Model {
      */
     public function addGraduation($data)
     {
-        $data['organization_id'] = App::getOrganizationId();
+        $orgId = App::getOrganizationId();
+        $data['organization_id'] = $orgId;
         $data['data'] = json_encode($data, JSON_UNESCAPED_UNICODE);
         $data['date'] = $data['date'] ?: date('Y-m-d');
+
+        $nextNumber = (int)$this->DB->Query(
+            "SELECT COALESCE(MAX(`number`), 0) + 1 AS next_num
+                FROM ulab_graduation
+                WHERE organization_id = {$orgId}"
+        )->Fetch()['next_num'];
+
+        $data['number'] = $nextNumber;
 
         $sqlData = $this->prepearTableData('ulab_graduation', $data);
 
@@ -104,15 +113,15 @@ class Nk extends Model {
         $where = "";
         $limit = "";
         $order = [
-            'by' => 'ug.id',
+            'by' => 'ug.number',
             'dir' => 'DESC'
         ];
 
         if (!empty($filter)) {
             if (!empty($filter['search'])) {
                 // Номер
-                if (isset($filter['search']['id'])) {
-                    $where .= "ug.id LIKE '%{$filter['search']['id']}%' AND ";
+                if (isset($filter['search']['number'])) {
+                    $where .= "ug.number LIKE '%{$filter['search']['number']}%' AND ";
                 }
                 // дата
                 if (isset($filter['search']['date'])) {
@@ -142,8 +151,8 @@ class Nk extends Model {
             }
 
             switch ($filter['order']['by']) {
-                case 'id':
-                    $order['by'] = 'ug.id';
+                case 'number':
+                    $order['by'] = 'ug.number';
                     break;
                 case 'date':
                     $order['by'] = 'ug.date';
