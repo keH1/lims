@@ -76,14 +76,12 @@ class ImportController extends Controller
      * @desc Перенаправляет пользователя на страницу «Профиль организации»
      * @param $id - ид организации
      */
-    public function organization($id)
+    public function organization()
     {
-        if ( empty($id) ) {
-            $this->redirect('/request/list/');
-        }
-
         $orgModel = new Organization();
         $userModel = new User();
+
+        $id = App::getOrganizationId();
 
         if ( !App::isAdmin()) {
             $data = $orgModel->getAffiliationUserInfo(App::getUserId());
