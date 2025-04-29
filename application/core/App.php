@@ -173,7 +173,7 @@ class App
             "SELECT p.* 
                     FROM `ulab_permission` as p  
                     LEFT JOIN `ulab_user_permission` as u ON p.id = u.permission_id
-                    WHERE u.user_id = {$userId} OR p.id = 1",
+                    WHERE u.user_id = {$userId} OR p.id = 1 order by id desc",
         )->Fetch();
 
         $row['permission'] = json_decode($row['permission'], true);
@@ -186,7 +186,7 @@ class App
 
 		$_SESSION['SESS_AUTH']['ROLE'] = $row['id'];
 
-//		return isset($row['permission'][$controller][$method]);
-		return true;
+		return isset($row['permission'][$controller][$method]);
+//		return true;
     }
 }
