@@ -41,24 +41,24 @@ class App
 
         // если нет доступа
         $homePage = '';
-//        if ( !$this->checkPermission($_SESSION['SESS_AUTH']['USER_ID'], $controllerName, $this->method, $homePage) ) {
-//            $_SESSION['message_danger'] = "Недостаточно прав для просмотра или действия";
-//            //TODO: перенаправление
-//            if (isset($_SESSION['last_uri'])) {
-//                $lastUri = $_SESSION['last_uri'];
-//                unset($_SESSION['last_uri']);
-//
-////                header("Location: {$lastUri}");
-//                header("Location: " . URI . $homePage);
-//            } else {
-//                header("Location: " . URI . $homePage);
-//            }
-//        } else {
-//            // сохраняем текущую страницу
-//            $_SESSION['last_uri'] = $_SERVER['REQUEST_URI'];
-//
-//            call_user_func([$this->controller, $this->method], $this->id);
-//        }
+        if ( !$this->checkPermission($_SESSION['SESS_AUTH']['USER_ID'], $controllerName, $this->method, $homePage) ) {
+            $_SESSION['message_danger'] = "Недостаточно прав для просмотра или действия";
+            //TODO: перенаправление
+            if (isset($_SESSION['last_uri'])) {
+                $lastUri = $_SESSION['last_uri'];
+                unset($_SESSION['last_uri']);
+
+//                header("Location: {$lastUri}");
+                header("Location: " . URI . $homePage);
+            } else {
+                header("Location: " . URI . $homePage);
+            }
+        } else {
+            // сохраняем текущую страницу
+            $_SESSION['last_uri'] = $_SERVER['REQUEST_URI'];
+
+            call_user_func([$this->controller, $this->method], $this->id);
+        }
 		call_user_func([$this->controller, $this->method], $this->id);
     }
 

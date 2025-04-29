@@ -92,19 +92,21 @@ class Grain extends Model
 
     public function getGrainGostList(int $grainListID)
     {
+        $organizationId = App::getOrganizationId();
+
         $result = [];
-        $ba_gost = $this->DB->Query("SELECT bg.ID AS gost_id,
-                                            bg.GOST,
-                                            bg.GOST_PUNKT,
-                                            bg.SPECIFICATION,
-                                            zr.ID AS grain_id
-                                     FROM ba_gost AS bg
+        $ba_gost = $this->DB->Query(
+            "SELECT bg.ID AS gost_id,
+                    bg.GOST,
+                    bg.GOST_PUNKT,
+                    bg.SPECIFICATION,
+                    zr.ID AS grain_id
+             FROM ba_gost AS bg
 
-                                     LEFT JOIN ZERN AS zr
-                                     ON bg.ID = zr.GOST_ID
+             LEFT JOIN ZERN AS zr ON bg.ID = zr.GOST_ID
 
-                                     WHERE bg.NON_ACTUAL != 1
-        ");
+             WHERE bg.NON_ACTUAL != 1 and bg.organization_id = {$organizationId}"
+        );
 
         while ($gost = $ba_gost->Fetch()) {
             $result[] = [
