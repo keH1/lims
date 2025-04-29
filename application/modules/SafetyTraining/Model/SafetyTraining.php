@@ -108,8 +108,6 @@ class SafetyTraining extends Model
             }
         }
 
-        $where .= "1 ";
-
         $result = [];
 
         $data = $this->DB->Query(

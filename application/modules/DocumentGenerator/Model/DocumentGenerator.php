@@ -54,13 +54,15 @@ class DocumentGenerator extends Model
 		$userModel = new User();
 		$gostModel = new Gost();
 
+        $organizationId = App::getOrganizationId();
+
 		$companyInformation = $companyModel->getRequisiteByDealId($dealID);
 
 		$dealInformation = $requestModel->getTzByDealId($dealID);
 
 		$TZ_ID = $dealInformation['ID'];
 
-		$res_kp = $this->DB->Query("SELECT * FROM `KP` WHERE `TZ_ID`=" . $TZ_ID)->Fetch();
+		$res_kp = $this->DB->Query("SELECT * FROM `KP` WHERE `TZ_ID`=" . $TZ_ID . " AND `ORGANIZATION_ID`=" . $organizationId)->Fetch();
 
 		$date = date('Y-m-d H:i:s');
 
@@ -73,7 +75,19 @@ class DocumentGenerator extends Model
 			$this->DB->Query("UPDATE `KP` SET `DATE`= NOW(), `ACTUAL_VER` ='" . $curdate . "' WHERE `TZ_ID`=" . $TZ_ID);
 			$str_type = 'Обновление коммерческого предложения';
 		} else {
-			$this->DB->Query("INSERT INTO `KP` (`DATE`, `TZ_ID`, `ACTUAL_VER`) VALUES (NOW(), " . $TZ_ID . ", '" . $curdate . "')");
+            $countCommercialOffer = $this->DB->Query("SELECT COUNT(*) AS COUNT FROM `KP` WHERE `ORGANIZATION_ID` = " . $organizationId)->Fetch()['COUNT'];
+            $number = $countCommercialOffer + 1;
+
+            $data = [
+                'DATE' => date('Y-m-d H:i:s'),
+                'NUMBER' => $number,
+                'TZ_ID' => $TZ_ID,
+                'ACTUAL_VER' => $curdate,
+                'ORGANIZATION_ID' => $organizationId,
+            ];
+            $sqlData = $this->prepearTableData('KP', $data);
+            $this->DB->Insert('KP', $sqlData);
+
 			$str_type = 'Формирование коммерческого предложения';
 		}
 
@@ -92,7 +106,7 @@ class DocumentGenerator extends Model
 
 		$str_num_request = !empty($dealInformation['REQUEST_TITLE']) ? explode(' ', $dealInformation['REQUEST_TITLE'])[1] : '';
 
-        $res_kp = $this->DB->Query("SELECT * FROM `KP` WHERE `TZ_ID`=" . $TZ_ID)->Fetch();
+        $res_kp = $this->DB->Query("SELECT * FROM `KP` WHERE `TZ_ID`=" . $TZ_ID . " AND `ORGANIZATION_ID`=" . $organizationId)->Fetch();
 
 		$CommInformation = [
 			'id' => $dealID,
@@ -101,7 +115,7 @@ class DocumentGenerator extends Model
 			'curDate' => $curdate,
 			'curDateEn' => $curdateEng,
 			'SUM' => $dealInformation['price_discount'],
-			'NUM_KP' => $res_kp['ID'],
+			'NUM_KP' => $res_kp['NUMBER'],
 			'NUM_DATE' => date('d.m.Y', strtotime($res_kp['DATE'])),
 			'NUM_REQUEST' => !empty($str_num_request) ? 'ПО ЗАЯВКЕ ' . $str_num_request : '',
 			'CLIENT_NAME' => $companyInformation['NAME'],
@@ -162,7 +176,7 @@ class DocumentGenerator extends Model
 
         $historyModel->addHistory($history);
 
-        if($dealInformation['DAY_TO_TEST']){
+        if ($dealInformation['DAY_TO_TEST']) {
             $cur = date('d.m.Y'); //текущая дата
             switch ($dealInformation['type_of_day']) {
                 case 'day':
@@ -178,7 +192,7 @@ class DocumentGenerator extends Model
 
             $day_to_test_text = "Сроки проведения испытаний составляет " . $current_day . " с момента поступления проб (образцов) в ИЦ, подписания договора и оплаты испытаний.";
             $day_to_test_note = 'Сроки являются ориентировочными и могут быть скорректированы по согласованию сторон.';
-        }else{
+        } else{
             $day_to_test_text = '';
             $day_to_test_note = '';
         }
@@ -2584,7 +2598,7 @@ class DocumentGenerator extends Model
 		$phpWord = new \PhpOffice\PhpWord\PhpWord();
 		$template = new \PhpOffice\PhpWord\TemplateProcessor($templateDoc);
 
-		$interimPath = "interim_archive_{$type}/".$info['id']."/".$info['curDateEn'].".docx";
+        $interimPath = "interim_archive_{$type}/".$info['id']."/".$info['curDateEn'].".docx";
 		$interimPathPDF = "interim_archive_{$type}/".$info['id']."/".$info['curDateEn'].".PDF";
 		$outputFile = $info['curDate'].".pdf";
 		$outputPath = "archive_{$type}/".$info['id']."/";

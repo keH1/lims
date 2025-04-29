@@ -153,6 +153,8 @@ class Methods extends Model
     {
         $userMethod = new User();
 
+        $organizationId = App::getOrganizationId();
+
         $methodSql = $this->DB->Query(
             "select 
                     m.*, 
@@ -165,7 +167,7 @@ class Methods extends Model
                 left join `ulab_dimension` as d on d.id = m.unit_id
                 left join ulab_measured_properties as p on p.id = m.measured_properties_id 
                 left join ulab_measurement as ml on ml.id = m.measurement_id 
-                where 1
+                where g.organization_id = {$organizationId}
                 order by m.is_actual desc, m.gost_id asc, m.clause asc"
         );
 
