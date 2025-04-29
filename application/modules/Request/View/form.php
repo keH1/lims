@@ -42,14 +42,25 @@
         </header>
         <div class="panel-body">
             <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Тип заявки <span class="redStars">*</span></label>
+                <label class="col-sm-2 col-form-label">Тип заявки 
+                    <?php if (!isset($this->data['request']['id'])): ?>
+                        <span class="redStars">*</span>
+                    <?php endif; ?>
+                </label>
                 <div class="col-sm-8">
-                    <select class="form-control" name="REQ_TYPE" id="req-type-select" required>
-                        <option value="" selected disabled>Выберите тип заявки</option>
-                        <?php foreach ($this->data['type_list'] as $type): ?>
-                            <option value="<?=$type['type_id']?>" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] === $type['type_id']) ? 'selected': ''?>><?=$type['name']?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <?php if (!isset($this->data['request']['id'])): ?>
+                        <select class="form-control req-type-field" name="REQ_TYPE" id="req-type-select" required>
+                            <option value="" selected disabled>Выберите тип заявки</option>
+                            <?php foreach ($this->data['type_list'] as $type): ?>
+                                <option value="<?=$type['type_id']?>" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] === $type['type_id']) ? 'selected': ''?>><?=$type['name']?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php else: ?>
+                        <span class="form-control-plaintext">
+                            <?= $this->data['request']['REQ_TYPE'] == '9' ? 'Государственная' : 'Коммерческая' ?>
+                        </span>
+                        <input type="hidden" name="REQ_TYPE" class="req-type-field" value="<?=$this->data['request']['REQ_TYPE']?>">
+                    <?php endif; ?>
                 </div>
                 <div class="col-sm-2"></div>
             </div>
