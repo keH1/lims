@@ -85,7 +85,9 @@ class ElectricController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'electric_control' => $_POST['electric_control']
+        ];
 
         $validDate = $this->validateDate($newAdd['electric_control']['date'], 'Дата замера', true);
         if (!$validDate['success']) {

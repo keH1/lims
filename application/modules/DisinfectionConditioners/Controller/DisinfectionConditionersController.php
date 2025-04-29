@@ -71,7 +71,9 @@ class DisinfectionConditionersController extends Controller
 
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'disinfection_conditioners' => $_POST['disinfection_conditioners']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd);
 

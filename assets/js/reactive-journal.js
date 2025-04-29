@@ -189,7 +189,7 @@ $(function ($) {
             success: function (json) {
                 let data = JSON.parse(json)
 
-                $('[name^="toSQL[' + whichSelectID[0] + ']"]').each(function () {
+                $('[name^="reactive[' + whichSelectID[0] + ']"]').each(function () {
                         let name = $(this).attr("name")
                         let type = $(this).prop('tagName')
 

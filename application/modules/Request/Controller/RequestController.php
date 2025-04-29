@@ -1636,7 +1636,7 @@ class RequestController extends Controller
 
         $this->data['proposal']['link'] = "/ulab/generator/CommercialOffer/{$dealId}";
         $this->data['proposal']['check'] = !empty($proposalData['ID']);
-        $this->data['proposal']['number'] = $proposalData['ID'] ?? 'Не сформировано';
+        $this->data['proposal']['number'] = $proposalData['NUMBER'] ?? 'Не сформировано';
         $this->data['proposal']['date'] = !empty($proposalData['DATE'])? StringHelper::dateRu($proposalData['DATE']) : '--';
         $this->data['proposal']['date_send'] = !empty($proposalData['SEND_DATE'])? StringHelper::dateRu($proposalData['SEND_DATE']) : 'Не отправлено';
         $this->data['proposal']['is_disable_form'] = !$isExistTz;

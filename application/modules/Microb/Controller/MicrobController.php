@@ -100,7 +100,16 @@ class MicrobController extends Controller
         $unsuccessfulMsg = 'Не удалось добавить отбор пробы';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'microb_sampling' => $_POST['microb_sampling'],
+            'microb_control_air_in_box' => $_POST['microb_control_air_in_box'],
+            'microb_medium_grow' => $_POST['microb_medium_grow'],
+            'microb_control_air_in_room' => $_POST['microb_control_air_in_room'],
+            'microb_control_surface' => $_POST['microb_control_surface'],
+            'microb_medium_transport' => $_POST['microb_medium_transport'],
+            'microb_control_filter_equipment' => $_POST['microb_control_filter_equipment'],
+            'microb_control_employee' => $_POST['microb_control_employee'],
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd, 'addSamplingMediumControl');
 
@@ -119,7 +128,10 @@ class MicrobController extends Controller
         $unsuccessfulMsg = 'Не удалось добавить посев проб';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'microb_sowing' => $_POST['microb_sowing'],
+            'microb_medium_grow' => $_POST['microb_medium_grow'],
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd, 'addSowing');
 
@@ -138,7 +150,9 @@ class MicrobController extends Controller
         $unsuccessfulMsg = 'Не удалось добавить результаты исследования ';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'microb_result_sowing' => $_POST['microb_result_sowing'],
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd, 'addResultSowing');
 

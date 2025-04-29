@@ -1108,13 +1108,14 @@ class ResultController extends Controller
             $this->redirect('/request/list/');
         }
 
-
         /** @var Result $result */
         $result = $this->model('Result');
         /** @var Requirement $requirement */
         $requirement = $this->model('Requirement');
         /** @var Request $request */
         $request = $this->model('Request');
+
+        $organizationId = App::getOrganizationId();
 
 
         $dealId = (int)$_POST['deal_id'];
@@ -1136,16 +1137,15 @@ class ResultController extends Controller
 
         $tzId = $tz['ID'] ?: null;
 
-
         $protocolData = [
             'ID_TZ' => $tzId,
             'DEAL_ID' => $dealId,
             'DATE' => date('Y-m-d'), //Записывается при присвоении номера TODO: Записывать 2 раза?
-            'DATE_END' => date('Y-m-d')
+            'DATE_END' => date('Y-m-d'),
+            'organization_id' => $organizationId
         ];
 
         $protocolId = $result->addProtocols($protocolData);
-
 
         if (empty($protocolId)) {
             $this->showErrorMessage("Не удалось создать протокол");
@@ -1659,10 +1659,10 @@ class ResultController extends Controller
             $umtr = $result->getMaterialToRequestByProtocolId((int)$_POST['selected_protocol_id']);
         }
         $protocolData = $result->getProtocolById($protocolId);
+
         $currentUserId = $user->getCurrentUserId();
         $currentUser = $user->getCurrentUser();
         $protocolsCount = $protocol->getProtocolsCount();
-
 
         $tzId = $tz['ID'] ?: null;
         $currentDate = date('Y-m-d');

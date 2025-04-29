@@ -354,7 +354,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Производитель</label>
-            <input type="text" name="toSQL[standart_titr_manufacturer][name]"
+            <input type="text" name="standart_titr_manufacturer[name]"
                    class="form-control" required>
         </div>
     </div>

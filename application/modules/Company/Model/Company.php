@@ -8,17 +8,20 @@ use Bitrix\Socialservices;
 
 class Company extends Model
 {
+    // Кастомное поле в компании, содержит ID организации
+    const COMPANY_CUSTOM_FIELD_ORGANIZATION_ID = "UF_CRM_1745830382";
+
     /**
      * @return array
      */
     public function getList(): array
     {
         $result = [];
-
         try {
             if ( Loader::IncludeModule('crm') ) {
                 $arOrder  = ['ID' => 'ASC'];
-                $arFilter = [];
+                $arFilter[self::COMPANY_CUSTOM_FIELD_ORGANIZATION_ID] = App::getOrganizationId();
+                
                 $arSelect = [];
                 $companies = CCrmCompany::GetList( $arOrder, $arFilter, $arSelect );
                 while ( $row = $companies->fetch() ) {
@@ -178,7 +181,12 @@ class Company extends Model
     {
         $newComp = new CCrmCompany;
 
-        $data = ['TITLE' => $name];
+        $organizationId = App::getOrganizationId();
+
+        $data = [
+            'TITLE' => $name,
+            self::COMPANY_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId
+        ];
 
         return $newComp->Add($data);
     }

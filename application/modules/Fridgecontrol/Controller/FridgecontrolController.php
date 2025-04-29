@@ -88,7 +88,9 @@ class FridgecontrolController extends Controller
         $unsuccessfulMsg = 'Не удалось добавить запись';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'fridge_control' => $_POST['fridge_control']
+        ];
         $isAdd = $usedModel->addToSQL($newAdd);
 
         $this->checkAndShowSuccessOrErrorMessage($isAdd, $successMsg, $unsuccessfulMsg);

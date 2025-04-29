@@ -93,7 +93,9 @@ class GsoController extends Controller
         $unsuccessfulMsg = 'Не удалось сохранить производителя';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'gso_manufacturer' => $_POST['gso_manufacturer']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd);
 

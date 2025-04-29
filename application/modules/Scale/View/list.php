@@ -83,7 +83,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Дата измерения</label>
-			<input name="toSQL[scale_calibration][date_calibration]" type="date"
+			<input name="scale_calibration[date_calibration]" type="date"
 				   class="form-control "
 				   value="<?= $this->data['current_date'] ?>"
                    max="<?= date('Y-m-d') ?>"
@@ -94,7 +94,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Выберите весы</label>
-            <select name="toSQL[scale_calibration][id_scale]" class="form-control h-auto scale"
+            <select name="scale_calibration[id_scale]" class="form-control h-auto scale"
                     required>
                 <option value="" selected disabled></option>
                 <?php
@@ -111,7 +111,7 @@
 			<label class="form-label">Погрешность весов во взвешиваемом диапазоне</label>
 			<div class="input-group">
 				<span class="input-group-text">&#177</span>
-				<input type="number" name="toSQL[scale_calibration][scale_error]" step="0.01"
+				<input type="number" name="scale_calibration[scale_error]" step="0.01"
 					   class="form-control bg-white scale_error">
 			</div>
 		</div>
@@ -120,7 +120,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Выберите средство калибровки</label>
-			<select name="toSQL[scale_calibration][id_weight]" class="form-control h-auto weight">
+			<select name="scale_calibration[id_weight]" class="form-control h-auto weight">
 				<option value="" selected disabled></option>
 				<option value="1" >Тестовое средство калибровки</option>
 				<?php
@@ -136,7 +136,7 @@
 		<div class="col">
 			<label class="form-label">Номинальное значение массы гири</label>
 			<div class="input-group">
-				<input type="number" name="toSQL[scale_calibration][mass_weight]" step="0.01"
+				<input type="number" name="scale_calibration[mass_weight]" step="0.01"
 				class="form-control bg-white mass_weight">
 				<span class="input-group-text">г</span>
 			</div>
@@ -147,7 +147,7 @@
         <div class="col">
             <label class="form-label">Результат взвешивания калибровочной гири</label>
             <div class="input-group">
-                <input type="number" name="toSQL[scale_calibration][weight_result]" step="0.0001" min="0"
+                <input type="number" name="scale_calibration[weight_result]" step="0.0001" min="0"
                        class="form-control bg-white" required>
                 <span class="input-group-text">г</span>
             </div>

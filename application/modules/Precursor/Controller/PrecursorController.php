@@ -89,7 +89,9 @@ class PrecursorController extends Controller
         $unsuccessfulMsg = 'Остаток прекурсора  не проведен';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'reactive_remain' => $_POST['reactive_remain']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd, 'addRemain');
 
@@ -107,7 +109,9 @@ class PrecursorController extends Controller
         $unsuccessfulMsg = 'Расход прекурсора  не проведен';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'reactive_consume' => $_POST['reactive_consume']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd);
 
