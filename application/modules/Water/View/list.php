@@ -23,11 +23,12 @@
             <button type="button" class="btn btn-outline-secondary filter-btn-reset" title="Сбросить фильтр">Сбросить</button>
         </div>
 
-		<div class="col-auto">
-			<a class="nav-link auto-fill " href="#" title="Автозаполнение" style="color: black;">
+        <!-- Комментарий не удалять, попросили просто скрыть !!! -->
+		<!-- <div class="col-auto">
+			<a class="nav-link auto-fill" href="#" title="Автозаполнение" style="color: black;">
 				<i class="fa-solid fa-gauge-high icon-big"></i>
 			</a>
-		</div>
+		</div> -->
     </div>
 </div>
 
