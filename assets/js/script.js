@@ -850,9 +850,8 @@ function validateEmailField($emailField) {
     clearElementError($emailField)
 
     let emailVal = $emailField.val()?.toString().trim() || ''
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
 
-    if (emailVal && !emailPattern.test(emailVal)) {
+    if (emailVal && !REGEX.EMAIL_PATTERN.test(emailVal)) {
         showElementError($emailField, 'Введите корректный e-mail (например: user@example.com)')
         return false
     }
