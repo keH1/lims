@@ -72,7 +72,7 @@
                             <div class="col">
                                 <?php if ( !empty($this->data['labs']) ): ?>
                                     <select class="form-select filter filter-lab" id="labs">
-                                        <option value="" style="color: #878787">Выберите отдел</option>
+                                        <option value="--">Выберите отдел</option>
                                         <?php foreach ($this->data['labs'] as $lab): ?>
                                             <option value="<?= $lab['ID'] ?>" <?= $this->data['lab_id'] == $lab['ID'] ? 'selected' : '' ?>><?= $lab['NAME'] ?></option>
                                         <?php endforeach; ?>

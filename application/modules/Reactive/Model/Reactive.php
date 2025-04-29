@@ -162,8 +162,7 @@ class Reactive extends Model
                 SELECT aggregate_state.id,
                         CONCAT (aggregate_state.name,' - ',unit_of_quantity.name) AS name
                         FROM aggregate_state 
-                        JOIN unit_of_quantity ON unit_of_quantity.id=aggregate_state.id 
-                        WHERE aggregate_state.organization_id = {$organizationId}
+                        JOIN unit_of_quantity ON unit_of_quantity.id=aggregate_state.id
              ";
                 } elseif ($typeName == 'reactive_type') {
                     $request = "
@@ -197,7 +196,7 @@ class Reactive extends Model
                     $request = "
                     SELECT reactive_pure.id,
                            CONCAT(reactive_pure.name,' (',reactive_pure.short_name,')') AS name
-                        FROM reactive_pure WHERE reactive_pure.organization_id = {$organizationId}   
+                        FROM reactive_pure   
              ";
                 } elseif ($typeName == 'unit_of_quantity') {
                     $request = "
