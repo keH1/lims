@@ -379,7 +379,7 @@ $(function ($) {
                 $('#add-work-modal-form')[0]?.reset()
                 // $(this.popupId)[0]?.reset()
                 
-                if (this.popupId) {
+                if (this.popupId == "#add-work-modal-form") {
                     $(this.popupId).find('select.select2').each(function() {
                         $(this).val('').trigger('change')
                     })
