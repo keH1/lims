@@ -162,7 +162,88 @@ $(function ($) {
             return false
         }
         
-        if (!validateGovWorksTable()) {
+        // Обязательные поля в работах
+        let hasEmptyRequired = false,
+            emptyFieldName = ''
+        
+        workRows.each(function(rowIndex) {
+            const row = $(this)
+            
+            // Поле названия работы
+            const nameCell = row.find('[data-type="text"][data-required="true"]')
+            if (nameCell.length && !nameCell.find('.cell-input').val()) {
+                hasEmptyRequired = true
+                emptyFieldName = 'Наименование'
+                return false
+            }
+            
+            // Поле материала
+            const materialCell = row.find('[data-type="select"][data-required="true"]').filter(function() {
+                return $(this).find('select[name^="gov_works[material]"]').length > 0
+            })
+            
+            if (materialCell.length) {
+                const materialSelect = materialCell.find('select')
+                if (!materialSelect.val()) {
+                    hasEmptyRequired = true
+                    emptyFieldName = 'Материал'
+                    return false
+                }
+            }
+            
+            // Поле количества
+            const quantityCell = row.find('[data-type="number"][data-required="true"]')
+            if (quantityCell.length && !quantityCell.find('.cell-input').val()) {
+                hasEmptyRequired = true
+                emptyFieldName = 'Количество'
+                return false
+            }
+            
+            // Поле сроки
+            const deadlineCell = row.find('[data-type="date"][data-required="true"]').filter(function() {
+                return $(this).find('input[name^="gov_works[deadline]"]').length > 0
+            })
+            
+            if (deadlineCell.length) {
+                const deadlineInput = deadlineCell.find('input')
+                if (!deadlineInput.val()) {
+                    hasEmptyRequired = true
+                    emptyFieldName = 'Сроки'
+                    return false
+                }
+            }
+            
+            // Поле ответственного
+            const responsibleCell = row.find('[data-type="select"][data-required="true"]').filter(function() {
+                return $(this).find('select[name^="gov_works[assigned_id]"]').length > 0
+            })
+            
+            if (responsibleCell.length) {
+                const responsibleSelect = responsibleCell.find('select')
+                if (!responsibleSelect.val()) {
+                    hasEmptyRequired = true
+                    emptyFieldName = 'Ответственный'
+                    return false
+                }
+            }
+            
+            // Поле лаборатории
+            const labCell = row.find('[data-type="select"][data-required="true"]').filter(function() {
+                return $(this).find('select[name^="gov_works[lab_id]"]').length > 0
+            })
+            
+            if (labCell.length) {
+                const labSelect = labCell.find('select')
+                if (!labSelect.val()) {
+                    hasEmptyRequired = true
+                    emptyFieldName = 'Испытания в лаборатории'
+                    return false
+                }
+            }
+        })
+        
+        if (hasEmptyRequired) {
+            showErrorMessage(`Пожалуйста, заполните обязательное поле "${emptyFieldName}"`, '#error-message')
             return false
         }
         
