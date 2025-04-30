@@ -45,6 +45,9 @@ $(function ($) {
             // Для гос. работ показываем текстовое поле и скрываем селект
             $('#contract-select').addClass('visually-hidden').prop('disabled', true)
             $('#contract-input').removeClass('visually-hidden').prop('disabled', false)
+
+            //Скрываем кнопку добавления пользователей
+            $('.add_assigned').addClass('visually-hidden')
             
             $('.type-gov-block').removeClass('visually-hidden')
             
@@ -67,6 +70,7 @@ $(function ($) {
             // Для коммерческих заявок показываем селект и скрываем текстовое поле
             $('#contract-select').removeClass('visually-hidden').prop('disabled', false)
             $('#contract-input').addClass('visually-hidden').prop('disabled', true)
+            $('.add_assigned').removeClass('visually-hidden')
             
             $('.type-sale-block').not('#sale-materials-block').removeClass('visually-hidden')
             
