@@ -162,8 +162,7 @@ $(function ($) {
         
         // Обязательные поля в работах
         let hasEmptyRequired = false,
-            emptyFieldName = '',
-            emptyFieldRow = null
+            emptyFieldName = ''
         
         workRows.each(function(rowIndex) {
             const row = $(this)
@@ -172,8 +171,7 @@ $(function ($) {
             const nameCell = row.find('[data-type="text"][data-required="true"]')
             if (nameCell.length && !nameCell.find('.cell-input').val()) {
                 hasEmptyRequired = true
-                emptyFieldName = 'Наименование работы'
-                emptyFieldRow = row
+                emptyFieldName = 'Наименование'
                 return false
             }
             
@@ -187,7 +185,6 @@ $(function ($) {
                 if (!materialSelect.val()) {
                     hasEmptyRequired = true
                     emptyFieldName = 'Материал'
-                    emptyFieldRow = row
                     return false
                 }
             }
@@ -197,7 +194,6 @@ $(function ($) {
             if (quantityCell.length && !quantityCell.find('.cell-input').val()) {
                 hasEmptyRequired = true
                 emptyFieldName = 'Количество'
-                emptyFieldRow = row
                 return false
             }
             
@@ -211,7 +207,6 @@ $(function ($) {
                 if (!deadlineInput.val()) {
                     hasEmptyRequired = true
                     emptyFieldName = 'Сроки'
-                    emptyFieldRow = row
                     return false
                 }
             }
@@ -226,7 +221,6 @@ $(function ($) {
                 if (!responsibleSelect.val()) {
                     hasEmptyRequired = true
                     emptyFieldName = 'Ответственный'
-                    emptyFieldRow = row
                     return false
                 }
             }
@@ -241,17 +235,13 @@ $(function ($) {
                 if (!labSelect.val()) {
                     hasEmptyRequired = true
                     emptyFieldName = 'Испытания в лаборатории'
-                    emptyFieldRow = row
                     return false
                 }
             }
         })
         
         if (hasEmptyRequired) {
-            const rowNumber = emptyFieldRow ? $('.gov-works-table tbody tr.gov-work-row').index(emptyFieldRow) + 1 : '',
-                  rowText = rowNumber ? ` в строке ${rowNumber}` : ''
-            
-            showErrorMessage(`Пожалуйста, заполните обязательное поле "${emptyFieldName}"${rowText}`, '#error-message')
+            showErrorMessage(`Пожалуйста, заполните обязательное поле "${emptyFieldName}"`, '#error-message')
             return false
         }
         
