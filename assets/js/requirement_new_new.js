@@ -762,6 +762,7 @@ $(function ($) {
 
                 $button.html(btnHtml)
                 $button.removeClass('disabled')
+                $('.btn-add-methods').addClass('disabled')
 
                 $.magnificPopup.close()
             }
@@ -1341,8 +1342,7 @@ function createChild(row) {
 
 
     // удалить методику
-    $('body').off('click', '.delete-method')
-    $('body').on('click', '.delete-method', function () {
+    journal.on('click', '.delete-method', function () {
         if ( confirm("Подтвердите удаление методики.\nВнимание, методика, у которой есть результат испытания, не удалится.") ) {
             const id = $(this).data('gtp_id')
             const tzId = $('#tz_id').val()
@@ -1370,12 +1370,13 @@ function createChild(row) {
                 }
             })
         }
+
+        return false
     })
 
 
     // редактируем ячейку
-    $('body').off('click', 'td.edit-cell')
-    $('body').on('click', 'td.edit-cell', function (e) {
+    journal.on('click', 'td.edit-cell', function (e) {
 
         const $thisCell = $(this)
 
@@ -1405,8 +1406,7 @@ function createChild(row) {
 
 
     // сохраняем изменения в ячейке
-    $('body').off('change', 'td.save-cell select, td.save-cell input')
-    $('body').on('change', 'td.save-cell select, td.save-cell input', function () {
+    journal.on('change', 'td.save-cell select, td.save-cell input', function () {
         const tzId = $('#tz_id').val()
         let $thisCell = $(this).closest('td')
         let $thisRow = $(this).closest('tr')

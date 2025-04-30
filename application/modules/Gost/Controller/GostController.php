@@ -176,7 +176,7 @@ class GostController extends Controller
         $this->data['uncertainty'] = $methodsModel->getUncertainty($id);
         $this->data['method_oborud_list'] = $methodsModel->getOborud($id);
 
-        $this->data['oborud'] = $oborudModel->getOborutByRooms($this->data['room']);
+        $this->data['oborud'] = $oborudModel->getList();
 
         $this->data['form'] = $methodsModel->get($id);
 
@@ -751,7 +751,7 @@ class GostController extends Controller
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
 
-        $result = $oborudModel->getOborutByRooms($_POST['rooms']);
+        $result = $oborudModel->getList();
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }

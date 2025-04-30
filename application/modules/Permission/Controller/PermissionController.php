@@ -183,7 +183,7 @@ class PermissionController extends Controller
         /** @var  User $user */
         $user = $this->model('User');
 
-        $info = $user->getDEpartmentsList();
+        $info = $user->getDepartmentsList();
 
         echo json_encode($info, JSON_UNESCAPED_UNICODE);
     }

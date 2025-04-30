@@ -134,47 +134,6 @@
                 </tr>
                 </thead>
                 <tbody>
-<!--                --><?php //if ( empty($this->data['methods_list']) ): ?>
-<!--                    <tr><td colspan="8">Методики не добавлены (или методики неактуальны)</td></tr>-->
-<!--                --><?php //endif; ?>
-
-<!--                --><?php //foreach ($this->data['methods_list'] as $methods): ?>
-<!--                    <tr class="align-middle">-->
-<!--                        <td class="text-center align-middle">-->
-<!--                            --><?php //if ( $methods['is_confirm'] ): ?>
-<!--                                <span class="text-green" title="Методика потверждена"><i class="fa-regular fa-circle-check"></i></span>-->
-<!--                            --><?php //else: ?>
-<!--                                <span class="text-red" title="Методика не потверждена"><i class="fa-regular fa-circle-xmark"></i></span>-->
-<!--                            --><?php //endif; ?>
-<!--                        </td>-->
-<!--                        <td>--><?//=$methods['name']?><!--</td>-->
-<!--                        <td>--><?//=$methods['clause']?><!--</td>-->
-<!--                        <td>--><?//=$methods['test_method_name']?><!--</td>-->
-<!--                        <td>--><?//=$methods['unit_rus']?><!--</td>-->
-<!--                        <td>--><?//=$methods['in_field']? 'Да' : 'Нет'?><!--</td>-->
-<!--                        <td>--><?//=$methods['is_extended_field']? 'Да' : 'Нет'?><!--</td>-->
-<!--                        <td>-->
-<!--                            <div class="text-end d-flex justify-content-around">-->
-<!--                                <a-->
-<!--                                        href="--><?//=URI?><!--/gost/method/--><?//=$methods['id']?><!--"-->
-<!--                                        class="btn btn-success btn-square me-1"-->
-<!--                                        title="Редактировать методику">-->
-<!--                                    <i class="fa-solid fa-pencil icon-fix"></i>-->
-<!--                                </a>-->
-<!--                                <form action="--><?//=URI?><!--/gost/copyMethod/" method="post">-->
-<!--                                    <input type="hidden" name="method_id" value="--><?//=$methods['id']?><!--">-->
-<!--                                    <input type="hidden" name="gost_id" value="--><?//=$this->data['id']?><!--">-->
-<!--                                    <button-->
-<!--                                            type="submit"-->
-<!--                                            class="btn btn-primary btn-square"-->
-<!--                                            title="Скопировать методику">-->
-<!--                                        <i class="fa-regular fa-copy icon-fix"></i>-->
-<!--                                    </button>-->
-<!--                                </form>-->
-<!--                            </div>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                --><?php //endforeach; ?>
                 </tbody>
             </table>
         <?php else: ?>

@@ -302,9 +302,6 @@
 
     </div>
 
-
-
-
     <div class="row mb-3">
         <div class="col">
             <label for="object">Объект</label>
