@@ -1850,19 +1850,6 @@ h2 .stage-block {
     color: #f8d7da;
 }
 
-.editable-cell.is-invalid.show-tooltip .invalid-feedback {
-    display: block;
-    position: absolute;
-    top: -40px;
-    left: 0;
-    background-color: #fff;
-    border: 1px solid #f8d7da;
-    border-radius: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    z-index: 5;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
 /********** 
     Стили для таблицы гос. работ
 **********/
