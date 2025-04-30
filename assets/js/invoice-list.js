@@ -14,8 +14,8 @@ $(function ($) {
         ajax: {
             type : 'POST',
             data: function ( d ) {
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";   
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
                 d.lab = $('#selectLab option:selected').val()
                 d.stage = $('#selectStage option:selected').val()
             },

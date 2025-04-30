@@ -3,8 +3,8 @@ $(function ($) {
         ajax: {
             type : 'POST',
             data: function (d) {
-                d.dateStart = $('#inputDateStart:visible').val()
-                d.dateEnd = $('#inputDateEnd:visible').val()
+                d.dateStart = $('#inputDateStart:visible').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd:visible').val() || "9999-12-31";
             },
             url : '/ulab/history/getListProcessingAjax/',
             dataSrc: function (json) {

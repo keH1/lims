@@ -8,8 +8,8 @@ $(function ($) {
             data: function (d) {
                 d.idScale = $('.select-scale option:selected').val()
                 d.month = $('.select-month').val()
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
             },
             url: '/ulab/scale/getListProcessingAjax/',
             dataSrc: function (json) {

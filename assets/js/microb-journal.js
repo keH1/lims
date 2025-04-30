@@ -25,8 +25,8 @@ $(function ($) {
             data: function (d) {
                 d.journalType = $("#selected_journal").val()
                 d.idWhichFilter = $('#inputIdWhichFilter').val()
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01"
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31"
             },
             url: '/ulab/microb/getListProcessingAjax/',
             dataSrc: function (json) {
