@@ -492,8 +492,9 @@ class Lab extends Model
 
 	public function getLabList()
 	{
+        $organizationId = App::getOrganizationId();
 		$result = [];
-		$res = $this->DB->Query("SELECT * FROM ba_laba WHERE ID <> 6");
+		$res = $this->DB->Query("SELECT * FROM ba_laba WHERE organization_id = {$organizationId}");
 
 		while ($row = $res->Fetch()) {
 			$result[] = $row;
