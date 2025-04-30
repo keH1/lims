@@ -4,6 +4,7 @@ class History extends Model
 {
 	public function addHistory($data)
 	{
+        $data['organization_id'] = App::getOrganizationId();
 		$sql = $this->prepearTableData('HISTORY', $data);
 		$this->DB->Insert('HISTORY', $sql);
 	}
@@ -14,6 +15,7 @@ class History extends Model
 	 */
 	public function getDataToJournalHistory(array $filter = []): array
 	{
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -79,7 +81,7 @@ class History extends Model
                 }
             }
         }
-        $where .= "1 ";
+        $where .= "organization_id = {$organizationId}";
 
         $result = [];
 
