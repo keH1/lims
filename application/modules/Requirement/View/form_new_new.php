@@ -11,32 +11,32 @@
                     <i class="fa-solid fa-list"></i>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link link-card" href="#">
-                    <svg class="icon" width="25" height="25">
-                        <use xlink:href="<?=URI?>/assets/images/icons.svg#card"/>
-                    </svg>
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link link-docs" href="#">
-                    <svg class="icon" width="25" height="25">
-                        <use xlink:href="<?=URI?>/assets/images/icons.svg#docs"/>
-                    </svg>
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link link-doc-edit" href="#">
-                    <svg class="icon" width="25" height="25">
-                        <use xlink:href="<?=URI?>/assets/images/icons.svg#doc-edit"/>
-                    </svg>
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Technical_spec_int/Tec_spec_int.html" title="Техническая поддержка">
-                    <i class="fa-solid fa-question"></i>
-                </a>
-            </li>
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link link-card" href="#">-->
+<!--                    <svg class="icon" width="25" height="25">-->
+<!--                        <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#card"/>-->
+<!--                    </svg>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link link-docs" href="#">-->
+<!--                    <svg class="icon" width="25" height="25">-->
+<!--                        <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#docs"/>-->
+<!--                    </svg>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link link-doc-edit" href="#">-->
+<!--                    <svg class="icon" width="25" height="25">-->
+<!--                        <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#doc-edit"/>-->
+<!--                    </svg>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Technical_spec_int/Tec_spec_int.html" title="Техническая поддержка">-->
+<!--                    <i class="fa-solid fa-question"></i>-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
     </nav>
 </header>
