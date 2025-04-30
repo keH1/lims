@@ -44,6 +44,7 @@ $(function ($) {
 
     $('#act-work-modal-form').on('submit', function(e) {
         const $form = $(this);
+        const $email = $form.find('[name=Email]');
 
         const fieldsToValidate = [
             { $el: $form.find('[name=actNumber]'), message: 'Номер акта обязателен' },
@@ -64,7 +65,7 @@ $(function ($) {
             }
         });
 
-        if (hasErrors) {
+        if (!validateEmailField($email) || hasErrors) {
             e.preventDefault();
             return;
         }
@@ -81,6 +82,9 @@ $(function ($) {
         window.open(`/protocol_generator/akt_vr.php?${params.toString()}`, '_blank');
     });
 
+    $body.on('input change', '#act-work-modal-form input[name="Email"]', function() {
+        validateEmailField($(this))
+    })
 
     $('.akt-finish').click(function() {
         let tzId = $('#finish-modal-form').find('input[name=tz_id]').val()
