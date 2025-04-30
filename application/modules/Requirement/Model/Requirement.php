@@ -938,18 +938,15 @@ class Requirement extends Model
 
         $results = $this->DB->Query(
             "select 
-                ugtp.measuring_sheet, ugtp.material_to_request_id, ugtp.gost_number,  ugtp.actual_value as ugtp_actual_value, 
-                utr.actual_value as utr_actual_value, 
+                ugtp.measuring_sheet, ugtp.material_to_request_id, ugtp.gost_number,  ugtp.actual_value as ugtp_actual_value,
                 umtr.deal_id 
             from ulab_gost_to_probe as ugtp
-            inner join ulab_material_to_request as umtr on umtr.id = ugtp.material_to_request_id 
-            left join ulab_trial_results as utr on utr.gost_to_probe_id = ugtp.id 
+            inner join ulab_material_to_request as umtr on umtr.id = ugtp.material_to_request_id
             where ugtp.id = {$ugtpId}"
         )->Fetch();
 
-        $value = json_decode($results['utr_actual_value'], true);
         $sheet = json_decode($results['measuring_sheet'], true);
-        $actualValue = $results['deal_id'] >= DEAL_NEW_RESULT ? $results['ugtp_actual_value'] : $value[0];
+        $actualValue = $results['ugtp_actual_value'];
 
         if ( $actualValue != '' || $sheet ) {
             return [
@@ -969,9 +966,9 @@ class Requirement extends Model
 
         $sql = $this->DB->Query(
             "select id 
-                    from ulab_gost_to_probe 
-                    where material_to_request_id = {$results['material_to_request_id']} and gost_number > {$results['gost_number']} 
-                    order by gost_number asc"
+            from ulab_gost_to_probe 
+            where material_to_request_id = {$results['material_to_request_id']} and gost_number > {$results['gost_number']} 
+            order by gost_number asc"
         );
 
         $i = $results['gost_number'];
@@ -1945,6 +1942,8 @@ class Requirement extends Model
                 $gostNumber = -1;
             }
 
+
+
             foreach ($data as $item) {
                 $sqlData = [
                     'material_to_request_id' => $probeId,
@@ -1959,6 +1958,7 @@ class Requirement extends Model
                 ];
 
                 $sqlData = $this->prepearTableData('ulab_gost_to_probe', $sqlData);
+
                 $this->DB->Insert('ulab_gost_to_probe', $sqlData);
             }
         }

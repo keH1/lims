@@ -669,18 +669,9 @@ class Secondment extends Model
     // Получить список компаний
     public function getCompanyList()
     {
-        $companyList = [];
-        $companyObj = CCrmCompany::GetList();
+        $companyModel = new Company();
 
-        $i = 0;
-
-        while ($row = $companyObj->Fetch()) {
-            $companyList[$i]["id"] = $row["ID"];
-            $companyList[$i]["title"] = $row["TITLE"];
-            $i++;
-        }
-
-        return $companyList;
+        return $companyModel->getList();
     }
 
     public function getOtherFieldsById($secondmentId)

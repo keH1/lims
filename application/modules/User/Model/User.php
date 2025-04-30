@@ -313,6 +313,7 @@ class User extends Model
     }
 
 	/**
+     * @deprecated
 	 * @param $id
 	 * @return string
 	 */

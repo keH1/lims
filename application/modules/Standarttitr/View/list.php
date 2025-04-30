@@ -211,6 +211,7 @@
         <div class="col">
             <label class="form-label">Стандарт-титр</label>
             <select id="selectFormStandartTitrUpdate"
+                    name="receive[id_standart_titr]"
                     class="form-control h-auto select-standarttitr reactive-update">
                 <option value="" selected disabled></option>
                 <?php
@@ -234,8 +235,7 @@
                 <span class="input-group-text number-reactive"></span>
                 <input type="number" name="receive[number]" step="1" min="1"
                        max="100"
-                       class="form-control bg-white number-receive" required
-                       readonly>
+                       class="form-control bg-white number-receive" required>
                 <input type="number" name="receive[id_library_reactive]"
                        class="form-control bg-white idlibraryreactive"
                        hidden="">

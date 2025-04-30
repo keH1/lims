@@ -871,18 +871,14 @@ class Oborud extends Model {
      * @param $roomIdList
      * @return array
      */
-    public function getOborutByRooms($roomIdList)
+    public function getOborutByRooms($roomIdList = [])
     {
-//        if ( empty($roomIdList) ) {
-//            return [];
-//        }
-//
-//        $str = implode(',', $roomIdList);
+        $organizationId = App::getOrganizationId();
 
         $sql = $this->DB->Query(
             "SELECT distinct *
                     FROM ba_oborud
-                    WHERE 1 "); //or `roomnumber` IN ({$str})
+                    WHERE organization_id = {$organizationId}");
 
         $result = [];
 

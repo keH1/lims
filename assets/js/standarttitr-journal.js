@@ -137,7 +137,7 @@ $(function ($) {
 
     $body.on('change', '.reactive-update', function () {
         let number = $('option:selected', this).data('number')
-        let numberReceive = $('option:selected', this).data('numberreceive')
+        let numberReceive = $('option:selected', this).data('number-receive')
         let idLibraryReactive = $(".all-reactive option:selected").data('idlibraryreactive')
         if (number != 'undefined') {
             $('.number-reactive').html(number + " -");
