@@ -61,7 +61,7 @@
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <header class="panel-heading">
-                        Отдел
+                        Лаборатория
                         <span class="tools float-end">
                                 <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
                                 <a href="#" class="fa fa-chevron-up"></a>
@@ -72,7 +72,7 @@
                             <div class="col">
                                 <?php if ( !empty($this->data['labs']) ): ?>
                                     <select class="form-select filter filter-lab" id="labs">
-                                        <option value="--">Выберите отдел</option>
+                                        <option value="--">Выберите лабораторию</option>
                                         <?php foreach ($this->data['labs'] as $lab): ?>
                                             <option value="<?= $lab['ID'] ?>" <?= $this->data['lab_id'] == $lab['ID'] ? 'selected' : '' ?>><?= $lab['NAME'] ?></option>
                                         <?php endforeach; ?>

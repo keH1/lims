@@ -127,7 +127,9 @@ $(function ($) {
         }
         
         if (reqType === '9') {
-            if (!validateGovWorksForm(e)) {
+            const isValid = showInvalidCellsTooltips()
+            
+            if (!isValid || !validateGovWorksForm(e)) {
                 e.preventDefault()
                 return false
             }
@@ -249,6 +251,49 @@ $(function ($) {
     }
 
     /**
+     * @desc Валидация для таблицы гос. работ
+     */
+    function validateGovWorksTable() {
+        let isValid = true
+        
+        $('.gov-works-table tbody tr.gov-work-row').each(function() {
+            const row = $(this)
+            
+            row.find('.editable-cell[data-required="true"]').each(function() {
+                const cell = $(this)
+                const cellType = cell.data('type')
+                const input = cell.find('.cell-input')
+                
+                let value = ''
+                if (cellType === 'select') {
+                    value = input.val()
+                } else {
+                    value = input.val()
+                }
+                
+                if (!value) {
+                    cell.addClass('is-invalid')
+                    
+                    if (cell.find('.invalid-feedback').length === 0) {
+                        cell.append('<div class="invalid-feedback">Обязательное поле</div>')
+                    }
+                    
+                    isValid = false
+                } else {
+                    cell.removeClass('is-invalid')
+                    cell.find('.invalid-feedback').remove()
+                }
+            })
+        })
+        
+        if (!isValid) {
+            scrollToFirstError()
+        }
+        
+        return isValid
+    }
+
+    /**
      * @desc Валидация для коммерческих заявок
      */
     function validationSale() {
@@ -267,9 +312,19 @@ $(function ($) {
         return true
     }
 
-    $body.on('input change', 'input[name="EMAIL"], input[name="POST_MAIL"], input[name="addEmail[]"]', function() {
-        validateEmailField($(this))
-    })
+    function validateEmailField($emailField) {
+        clearElementError($emailField)
+
+        let emailVal = $emailField.val()?.toString().trim() || ''
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
+
+        if (emailVal && !emailPattern.test(emailVal)) {
+            showElementError($emailField, 'Введите корректный e-mail (например: user@example.com)')
+            return false
+        }
+
+        return true
+    }
 
     /**
      * @desc Получает список материалов
@@ -605,6 +660,10 @@ $(function ($) {
             })
         }
     })
+
+    $body.on('input change', 'input[name="EMAIL"], input[name="POST_MAIL"], input[name="addEmail[]"]', function() {
+        validateEmailField($(this))
+    })
     
     /**
      * @desc Уничтожает все подсказки на странице
@@ -619,22 +678,21 @@ $(function ($) {
     }
     
     /**
-     * @desc Инициализации редактируемых ячеек
+     * @desc Инициализация редактируемых ячеек
      */
     function initializeEditableCells() {
         destroyAllTooltips()
         
-        // Выделяем пустые обязательные поля
         $('.editable-cell[data-required="true"]').each(function() {
-            const cell = $(this),
-            //   input = cell.find('.cell-input'),
-                display = cell.find('.cell-display')
+            const cell = $(this)
+            const input = cell.find('.cell-input')
+            const display = cell.find('.cell-display')
             
-            // if (!input.val()) {
-            //     display.addClass('empty-required')
-            // } else {
-            //     display.removeClass('empty-required')
-            // }
+            if (cell.data('required') && !input.val()) {
+                cell.addClass('is-invalid')
+            } else {
+                cell.removeClass('is-invalid')
+            }
             
             // Удаляем data-bs-* атрибуты, если они есть от предыдущих инициализаций
             display.removeAttr('data-bs-original-title')
@@ -808,35 +866,6 @@ $(function ($) {
                 modalInput.val(currentValue)
             }
             
-            /* Запрет выбора ответственных
-            if (cellType === 'select' && inputElement.attr('name').includes('assigned_id')) {
-                const modalInput = $('.modal-input')
-                if (modalInput.length > 0) {
-                    const selectedResponsibles = []
-                    
-                    $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
-                        const select = $(this),
-                              value = select.val()
-                        if (value && select.get(0) !== inputElement.get(0)) {
-                            selectedResponsibles.push(value)
-                        }
-                    })
-                    
-                    modalInput.find('option').each(function() {
-                        const option = $(this),
-                              value = option.val()
-                        if (value && selectedResponsibles.includes(value)) {
-                            option.remove()
-                        }
-                    })
-                    
-                    if (modalInput.find('option').length <= 1) {
-                        modalInput.html('<option value="" disabled>Нет доступных вариантов</option>')
-                    }
-                }
-            }
-            */
-            
             $('.modal-edit-cell').css('display', 'flex').fadeIn(200)
             
             if ($('.modal-input').length > 0) {
@@ -888,9 +917,10 @@ $(function ($) {
                       inputElement = currentEditCell.find('.cell-input'),
                       displayElement = currentEditCell.find('.cell-display'),
                       modalInput = $('.modal-input'),
-                      oldValue = inputElement.val()
+                      oldValue = inputElement.val(),
+                      isRequired = currentEditCell.data('required') === true
                 
-                if (currentEditCell.data('required') && !modalInput.val()) {
+                if (isRequired && !modalInput.val()) {
                     modalInput.addClass('is-invalid')
                     return
                 }
@@ -946,6 +976,12 @@ $(function ($) {
                 
                 displayElement.text(displayValue || '')
                 
+                if (isRequired && !newValue) {
+                    currentEditCell.addClass('is-invalid')
+                } else {
+                    currentEditCell.removeClass('is-invalid')
+                }
+                
                 if (displayValue && displayValue.trim() !== '') {
                     displayElement.removeAttr('title')
                     displayElement.removeAttr('data-bs-original-title')
@@ -972,12 +1008,6 @@ $(function ($) {
                         displayElement.tooltip('dispose')
                     }
                 }
-                
-                // if (currentEditCell.data('required') && !newValue) {
-                //     displayElement.addClass('empty-required')
-                // } else {
-                //     displayElement.removeClass('empty-required')
-                // }
                 
                 closeModal()
             }
@@ -1033,7 +1063,16 @@ $(function ($) {
             
             if (currentEditCell) {
                 const displayElement = currentEditCell.find('.cell-display')
+                const inputElement = currentEditCell.find('.cell-input')
+                const isRequired = currentEditCell.data('required') === true
+                
                 const currentText = displayElement.text().trim()
+                
+                if (isRequired && !inputElement.val()) {
+                    currentEditCell.addClass('is-invalid')
+                } else {
+                    currentEditCell.removeClass('is-invalid')
+                }
                 
                 displayElement.removeAttr('data-bs-original-title')
                 displayElement.removeAttr('data-bs-toggle')
@@ -1264,5 +1303,37 @@ $(function ($) {
                 }
             })
         })
+    }
+
+    /**
+     * @desc Показывает незаполненные обязательные поля
+     */
+    function showInvalidCellsTooltips() {
+        $('.gov-works-table .editable-cell').removeClass('is-invalid')
+        $('.gov-works-table .editable-cell .invalid-feedback').remove()
+        
+        let hasEmptyFields = false
+        
+        $('.gov-works-table tbody tr.gov-work-row').each(function() {
+            const row = $(this)
+            
+            row.find('.editable-cell[data-required="true"]').each(function() {
+                const cell = $(this)
+                const input = cell.find('.cell-input')
+                
+                let value = input.val()
+                
+                if (!value) {
+                    cell.addClass('is-invalid')
+                    hasEmptyFields = true
+                }
+            })
+        })
+        
+        if (hasEmptyFields) {
+            scrollToFirstError()
+        }
+        
+        return !hasEmptyFields
     }
 })
