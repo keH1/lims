@@ -1833,7 +1833,12 @@ class RequestController extends Controller
             }
         }
 
-        $this->data['protocol_modal_check'] = !empty($requestData['PROTOCOL_SEND_DATE']);
+        $this->data['has_protocol_files'] = 
+            !empty(array_filter($requirement->getWorksMaterialRequest($requestData['ID_Z']), function($work) {
+                return !empty($work['file_name_protocol']);
+        }));
+
+        $this->data['protocol_modal_check'] = !empty($requestData['PROTOCOL_SEND_DATE']) || $this->data['has_protocol_files'];
     }
     
     /**
