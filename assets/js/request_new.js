@@ -246,18 +246,6 @@ $(function ($) {
     }
 
     /**
-     * @desc Прокрутка к первой ошибке
-     */
-    function scrollToFirstError() {
-        const $firstError = $('.is-invalid').first()
-        if ($firstError.length) {
-            $('html, body').animate({
-                scrollTop: $firstError.offset().top - 100
-            }, 500)
-        }
-    }
-
-    /**
      * @desc Получает список материалов
      */
     function getMaterialOptions() {
