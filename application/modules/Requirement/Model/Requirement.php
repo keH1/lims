@@ -14,7 +14,11 @@ class Requirement extends Model
         'OSK' => 58
     ];
 
-
+    // Тип заявки для гос. работ
+    const GOVERNMENT_TYPE = 9;
+    // Регулярное выражение для извлечения числа из строки
+    const NUM_REGEX = "/(\d+)$/";
+ 
     /**
      * @param int $dealId
      * @return array
@@ -557,8 +561,7 @@ class Requirement extends Model
 
             $row['add_info'] = json_decode($row['add_info'])?? [];
 
-            $regx = "/(\d+)$/";
-            preg_match($regx, $row['DOGOVOR_NUM'], $match);
+            preg_match(self::NUM_REGEX, $row['DOGOVOR_NUM'], $match);
             $row['DOGOVOR_NUM'] = $match[1] ?? '';
 
             if ( !empty($row['PRICE']) ) {
@@ -603,9 +606,10 @@ class Requirement extends Model
 
             $row['add_info'] = json_decode($row['add_info'])?? [];
 
-            $regx = "/(\d+)$/";
-            preg_match($regx, $row['DOGOVOR_NUM'], $match);
-            $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            if ((string)$row['TYPE_ID'] !== (string)self::GOVERNMENT_TYPE) {
+                preg_match(self::NUM_REGEX, $row['DOGOVOR_NUM'], $match);
+                $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            }
 
             $price = 0;
             if ( !empty($row['PRICE']) ) {

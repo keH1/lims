@@ -25,7 +25,7 @@ $(function ($) {
      * @desc Переключает тип заявки
      */
     function toggleRequestType() {
-        const reqType = $('#req-type-select').val()
+        const reqType = $('.req-type-field').val()
         const hasId = $('input[name="id"]').length > 0
         const $labelCompany = $('.label-company')
 
@@ -90,7 +90,7 @@ $(function ($) {
      * @desc Инициализация при загрузке страницы
      */
     function initForm() {
-        const reqType = $('#req-type-select').val()
+        const reqType = $('.req-type-field').val()
 
         if (isNewRequest) {
             if (reqType) {
@@ -112,13 +112,13 @@ $(function ($) {
         }
     }
     
-    $body.on('change', '#req-type-select', function() {
+    $body.on('change', '.req-type-field', function() {
         toggleRequestType()
     })
     
     // Вероятно надо использовать id для формы
     $body.on('submit', 'form', function(e) {
-        const reqType = $('#req-type-select').val()
+        const reqType = $('.req-type-field').val()
         
         if (!reqType) {
             e.preventDefault()
@@ -271,20 +271,6 @@ $(function ($) {
 
         if (!isValidEmail) {
             scrollToFirstError()
-            return false
-        }
-
-        return true
-    }
-
-    function validateEmailField($emailField) {
-        clearElementError($emailField)
-
-        let emailVal = $emailField.val()?.toString().trim() || ''
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
-
-        if (emailVal && !emailPattern.test(emailVal)) {
-            showElementError($emailField, 'Введите корректный e-mail (например: user@example.com)')
             return false
         }
 

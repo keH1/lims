@@ -296,7 +296,7 @@ class Model
         $files = scandir($dir);
         $skipAll = array_merge($skip, ['.', '..']);
         foreach ($files as $file) {
-            if (!in_array($file, $skipAll)) {
+            if (!in_array($file, $skipAll) && is_file($dir . '/' . $file)) {
                 $result[] = $file;
             }
         }
