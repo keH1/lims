@@ -91,8 +91,6 @@
     </tbody>
 </table>
 
-<div class="line-dashed"></div>
-
 <form id="user-modal-form" class="bg-light mfp-hide col-md-5 m-auto p-3 position-relative"
       action="<?= URI ?>/import/insertUpdateUser/" method="post">
     <div class="title mb-3 h-2">

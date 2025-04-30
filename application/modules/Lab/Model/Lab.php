@@ -130,6 +130,21 @@ class Lab extends Model
     }
 
 
+    /**
+     * получает лабораторию по ид битриксового департамента
+     * @param $bitrixDepartmentId
+     * @return array
+     * @throws Exception
+     */
+    public function getLabByBitrixDepartmentId($bitrixDepartmentId)
+    {
+        $organizationId = App::getOrganizationId();
+        if (empty($bitrixDepartmentId)) { return []; }
+
+        return $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and id_dep = {$bitrixDepartmentId}")->Fetch();
+    }
+
+
 	/**
 	 * @param $idMethod
 	 * @return array

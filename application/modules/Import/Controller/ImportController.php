@@ -1466,6 +1466,8 @@ class ImportController extends Controller
     {
         /** @var User $companyModel */
         $userModel = $this->model('User');
+        /** @var Organization $organizationModel */
+        $organizationModel = $this->model('Organization');
 
         $location = '/user/list/';
         $successMsg = !empty($_POST['user_id']) ? 'Сведения о сотруднике успешно изменены' : 'Сведения о сотруднике успешно сохранены';
@@ -1535,13 +1537,17 @@ class ImportController extends Controller
         if (!empty($_POST['user_id'])) { // редактирование
             $result = $userModel->updateUser((int)$_POST['user_id'], $_POST);
 
-            $_SESSION['user_id'] = $_POST['user_id'];
+            $userId = (int)$_POST['user_id'];
+            $_SESSION['user_id'] = $userId;
         } else { // создание
             $result = $userModel->insertUser($_POST);
-            $_SESSION['user_id'] = $result['data'];
+            $userId = (int)$result['data'];
+            $_SESSION['user_id'] = $userId;
         }
 
-        $userModel->updateUserDepartment((int)$_SESSION['user_id'], (int)$_POST['DEPARTMENT_ID']);
+        $affiliationData = ['bitrix_department_id' => (int)$_POST['DEPARTMENT_ID']];
+        $organizationModel->setAffiliationUserInfo($userId, $affiliationData);
+        $userModel->updateUserDepartment($userId, (int)$_POST['DEPARTMENT_ID']);
 
         if (empty($result['success'])) {
             $this->showErrorMessage($result['error']['message']);
