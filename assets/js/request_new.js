@@ -127,9 +127,7 @@ $(function ($) {
         }
         
         if (reqType === '9') {
-            const isValid = showInvalidCellsTooltips()
-            
-            if (!isValid || !validateGovWorksForm(e)) {
+            if (!validateGovWorksForm(e)) {
                 e.preventDefault()
                 return false
             }
@@ -146,10 +144,10 @@ $(function ($) {
      * @desc Валидация для заявок гос. работа
      */
     function validateGovWorksForm() {
-        const company = $('#company').val(),
-              responsible = $('#assigned0').val(),
-              responsibleHidden = $('#assigned0-hidden').val(),
-              workRows = $('.gov-works-table tbody tr.gov-work-row')
+        const company = $('#company').val()
+        const responsible = $('#assigned0').val()
+        const responsibleHidden = $('#assigned0-hidden').val()
+        const workRows = $('.gov-works-table tbody tr.gov-work-row')
         
         if (!company || (!responsible && !responsibleHidden) || workRows.length === 0) {
             if (!company) {
@@ -163,8 +161,8 @@ $(function ($) {
         }
         
         // Обязательные поля в работах
-        let hasEmptyRequired = false,
-            emptyFieldName = ''
+        let hasEmptyRequired = false
+        let emptyFieldName = ''
         
         workRows.each(function(rowIndex) {
             const row = $(this)
@@ -251,49 +249,6 @@ $(function ($) {
     }
 
     /**
-     * @desc Валидация для таблицы гос. работ
-     */
-    function validateGovWorksTable() {
-        let isValid = true
-        
-        $('.gov-works-table tbody tr.gov-work-row').each(function() {
-            const row = $(this)
-            
-            row.find('.editable-cell[data-required="true"]').each(function() {
-                const cell = $(this)
-                const cellType = cell.data('type')
-                const input = cell.find('.cell-input')
-                
-                let value = ''
-                if (cellType === 'select') {
-                    value = input.val()
-                } else {
-                    value = input.val()
-                }
-                
-                if (!value) {
-                    cell.addClass('is-invalid')
-                    
-                    if (cell.find('.invalid-feedback').length === 0) {
-                        cell.append('<div class="invalid-feedback">Обязательное поле</div>')
-                    }
-                    
-                    isValid = false
-                } else {
-                    cell.removeClass('is-invalid')
-                    cell.find('.invalid-feedback').remove()
-                }
-            })
-        })
-        
-        if (!isValid) {
-            scrollToFirstError()
-        }
-        
-        return isValid
-    }
-
-    /**
      * @desc Валидация для коммерческих заявок
      */
     function validationSale() {
@@ -362,34 +317,16 @@ $(function ($) {
         
         let responsibleOptions = '<option value="">Выберите ответственного</option>'
         
-        /* Запрет выбора ответственных
-        const selectedResponsibles = []
-        $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
+        $('#assigned0 option').each(function() {
             const value = $(this).val()
-            if (value) {
-                selectedResponsibles.push(value)
-            }
-        })
-        
-        $('#assigned0 option').each(function() {
-            const value = $(this).val(),
-                  text = $(this).text()
-            if (value && selectedResponsibles.indexOf(value) === -1) {
-                responsibleOptions += `<option value="${value}">${text}</option>`
-            }
-        })
-        */
-        
-        $('#assigned0 option').each(function() {
-            const value = $(this).val(),
-                  text = $(this).text()
+            const text = $(this).text()
             if (value) {
                 responsibleOptions += `<option value="${value}">${text}</option>`
             }
         })
         
-        const labOptions = getLabOptions(),
-              materialOptions = getMaterialOptions()
+        const labOptions = getLabOptions()
+        const materialOptions = getMaterialOptions()
         
         const newRow = `
             <tr class="gov-work-row">
@@ -600,8 +537,8 @@ $(function ($) {
     })
 
     $body.on('click', '.add_email', function() {
-        let $formGroupContainer = $(this).parents('.form-group'),
-            countAddedEmail = $('.added_mail').length + 1
+        let $formGroupContainer = $(this).parents('.form-group')
+        let countAddedEmail = $('.added_mail').length + 1
 
         if (countAddedEmail > 1) {
             $formGroupContainer = $('.form-horizontal .added_mail').last()
@@ -621,8 +558,8 @@ $(function ($) {
     })
 
     $body.on('change', '.assigned-select', function(e) {
-        let $select = $(e.target),
-            $hiddenInput = $('#' + $select.attr('id') + '-hidden')
+        let $select = $(e.target)
+        let $hiddenInput = $('#' + $select.attr('id') + '-hidden')
 
         $hiddenInput.val($($select).val())
         $(this).parents('.form-group').find('.add_assigned').removeAttr('disabled')
@@ -685,14 +622,7 @@ $(function ($) {
         
         $('.editable-cell[data-required="true"]').each(function() {
             const cell = $(this)
-            const input = cell.find('.cell-input')
             const display = cell.find('.cell-display')
-            
-            if (cell.data('required') && !input.val()) {
-                cell.addClass('is-invalid')
-            } else {
-                cell.removeClass('is-invalid')
-            }
             
             // Удаляем data-bs-* атрибуты, если они есть от предыдущих инициализаций
             display.removeAttr('data-bs-original-title')
@@ -708,8 +638,8 @@ $(function ($) {
         
         // Установка min и step для полей количества
         $('.editable-cell[data-type="number"]').each(function() {
-            const cell = $(this),
-                  input = cell.find('.cell-input')
+            const cell = $(this)
+            const input = cell.find('.cell-input')
             
             if (input.attr('name').includes('quantity')) {
                 input.attr('min', '1')
@@ -766,14 +696,14 @@ $(function ($) {
             const cell = $(this).closest('.editable-cell')
             currentEditCell = cell
             
-            const cellType = cell.data('type'),
-                  inputElement = cell.find('.cell-input'),
-                  currentValue = inputElement.val(),
-                  isRequired = cell.data('required') === true
+            const cellType = cell.data('type')
+            const inputElement = cell.find('.cell-input')
+            const currentValue = inputElement.val()
+            const isRequired = cell.data('required') === true
             
-            let modalTitle = 'Редактирование поля',
-                modalContent = '',
-                modalSelect = null
+            let modalTitle = 'Редактирование поля'
+            let modalContent = ''
+            let modalSelect = null
             
             if (cellType === 'text' || cellType === 'number') {
                 modalContent = `
@@ -807,8 +737,8 @@ $(function ($) {
                     modalTitle = 'Выберите материал'
                     
                     // Сохраняем текущее значение материала перед обновлением опций
-                    const currentMaterialValue = inputElement.val(),
-                          currentMaterialText = currentMaterialValue ? inputElement.find(`option[value="${currentMaterialValue}"]`).text() : ''
+                    const currentMaterialValue = inputElement.val()
+                    const currentMaterialText = currentMaterialValue ? inputElement.find(`option[value="${currentMaterialValue}"]`).text() : ''
                     
                     inputElement.html(getMaterialOptions())
                     
@@ -887,12 +817,12 @@ $(function ($) {
         $body.off('change', '.modal-input').on('change', '.modal-input', function() {
             if (!currentEditCell) return
             
-            const cellType = currentEditCell.data('type'),
-                  inputElement = currentEditCell.find('.cell-input')
+            const cellType = currentEditCell.data('type')
+            const inputElement = currentEditCell.find('.cell-input')
             
             if (cellType === 'select' && inputElement.attr('name').includes('material')) {
-                const modalSelect = $(this),
-                      newValue = modalSelect.val()
+                const modalSelect = $(this)
+                const newValue = modalSelect.val()
                 
                 if (newValue) {
                     inputElement.val(newValue)
@@ -913,20 +843,19 @@ $(function ($) {
         
         $body.off('click', '.modal-edit-save').on('click', '.modal-edit-save', function() {
             if (currentEditCell) {
-                const cellType = currentEditCell.data('type'),
-                      inputElement = currentEditCell.find('.cell-input'),
-                      displayElement = currentEditCell.find('.cell-display'),
-                      modalInput = $('.modal-input'),
-                      oldValue = inputElement.val(),
-                      isRequired = currentEditCell.data('required') === true
+                const cellType = currentEditCell.data('type')
+                const inputElement = currentEditCell.find('.cell-input')
+                const displayElement = currentEditCell.find('.cell-display')
+                const modalInput = $('.modal-input')
+                const oldValue = inputElement.val()
                 
-                if (isRequired && !modalInput.val()) {
+                if (currentEditCell.data('required') && !modalInput.val()) {
                     modalInput.addClass('is-invalid')
                     return
                 }
                 
-                let newValue = modalInput.val(),
-                    displayValue = newValue
+                let newValue = modalInput.val()
+                let displayValue = newValue
                 
                 if (cellType === 'number' && inputElement.attr('name').includes('quantity')) {
                     if (newValue <= 0) {
@@ -975,12 +904,6 @@ $(function ($) {
                 }
                 
                 displayElement.text(displayValue || '')
-                
-                if (isRequired && !newValue) {
-                    currentEditCell.addClass('is-invalid')
-                } else {
-                    currentEditCell.removeClass('is-invalid')
-                }
                 
                 if (displayValue && displayValue.trim() !== '') {
                     displayElement.removeAttr('title')
@@ -1037,8 +960,8 @@ $(function ($) {
      * @desc Закрытие модального окна
      */
     function closeModal() {
-        const currentCell = currentEditCell,
-              currentModalInput = $('.modal-input')
+        const currentCell = currentEditCell
+        const currentModalInput = $('.modal-input')
         
         // Сохраняем текущее значение перед закрытием, чтобы восстановить его при следующем открытии
         if (currentCell && currentCell.data('type') === 'select') {
@@ -1063,16 +986,7 @@ $(function ($) {
             
             if (currentEditCell) {
                 const displayElement = currentEditCell.find('.cell-display')
-                const inputElement = currentEditCell.find('.cell-input')
-                const isRequired = currentEditCell.data('required') === true
-                
                 const currentText = displayElement.text().trim()
-                
-                if (isRequired && !inputElement.val()) {
-                    currentEditCell.addClass('is-invalid')
-                } else {
-                    currentEditCell.removeClass('is-invalid')
-                }
                 
                 displayElement.removeAttr('data-bs-original-title')
                 displayElement.removeAttr('data-bs-toggle')
@@ -1106,17 +1020,17 @@ $(function ($) {
             const row = $(this)
             
             row.find('input, select').each(function() {
-                const input = $(this),
-                      cell = input.parent(),
-                      inputType = input.attr('type') || (input.is('select') ? 'select' : 'text'),
-                      isRequired = input.prop('required')
+                const input = $(this)
+                const cell = input.parent()
+                const inputType = input.attr('type') || (input.is('select') ? 'select' : 'text')
+                const isRequired = input.prop('required')
                 
                 if (cell.hasClass('editable-cell')) {
                     return
                 }
                 
-                let currentValue = input.val(),
-                    displayValue = currentValue
+                let currentValue = input.val()
+                let displayValue = currentValue
                 
                 if (inputType === 'select' || input.is('select')) {
                     displayValue = input.find('option:selected').text()
@@ -1182,8 +1096,8 @@ $(function ($) {
      */
     function updateLabSelects(labOptions) {
         $('select[name$="[lab_id]"]').each(function() {
-            const select = $(this),
-                  currentValue = select.val()
+            const select = $(this)
+            const currentValue = select.val()
             
             select.empty().html(labOptions)
             
@@ -1197,57 +1111,37 @@ $(function ($) {
      * @desc Обновление всех селектов ответственных в таблице гос. работ
      */
     function updateGovWorksResponsibles() {
-        /* Запрет выбора ответственных
-        const selectedResponsibles = []
-        $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
-            const value = $(this).val()
-            if (value) {
-                selectedResponsibles.push(value)
-            }
-        })
-        */
-        
         const allOptions = $('#assigned0 option').clone()
         
         $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
-            const select = $(this),
-                  currentValue = select.val()
+            const select = $(this)
+            const currentValue = select.val()
             
             if (!currentValue) {
                 select.empty()
                 select.append('<option value="">Выберите ответственного</option>')
                 
                 allOptions.each(function() {
-                    const option = $(this).clone(),
-                          optionValue = option.val()
+                    const option = $(this).clone()
+                    const optionValue = option.val()
                     
                     if (!optionValue) {
                         return
                     }
                     
-                    /* Запрет выбора ответственных
-                    if (selectedResponsibles.indexOf(optionValue) === -1) {
-                        select.append(option)
-                    }
-                    */
                     select.append(option)
                 })
             } else {
                 select.empty()
                 
                 allOptions.each(function() {
-                    const option = $(this).clone(),
-                          optionValue = option.val()
+                    const option = $(this).clone()
+                    const optionValue = option.val()
                     
                     if (!optionValue) {
                         return
                     }
                     
-                    /* Запрет выбора ответственных
-                    if (optionValue === currentValue || selectedResponsibles.indexOf(optionValue) === -1) {
-                        select.append(option)
-                    }
-                    */
                     select.append(option)
                 })
                 
@@ -1303,37 +1197,5 @@ $(function ($) {
                 }
             })
         })
-    }
-
-    /**
-     * @desc Показывает незаполненные обязательные поля
-     */
-    function showInvalidCellsTooltips() {
-        $('.gov-works-table .editable-cell').removeClass('is-invalid')
-        $('.gov-works-table .editable-cell .invalid-feedback').remove()
-        
-        let hasEmptyFields = false
-        
-        $('.gov-works-table tbody tr.gov-work-row').each(function() {
-            const row = $(this)
-            
-            row.find('.editable-cell[data-required="true"]').each(function() {
-                const cell = $(this)
-                const input = cell.find('.cell-input')
-                
-                let value = input.val()
-                
-                if (!value) {
-                    cell.addClass('is-invalid')
-                    hasEmptyFields = true
-                }
-            })
-        })
-        
-        if (hasEmptyFields) {
-            scrollToFirstError()
-        }
-        
-        return !hasEmptyFields
     }
 })
