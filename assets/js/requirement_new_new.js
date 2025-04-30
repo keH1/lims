@@ -560,7 +560,7 @@ $(function ($) {
         if ( id > 0 ) {
             $(this).parents('.method-block').find('.tu-link')
                 .removeClass('disabled')
-                .attr('href', `/ulab/normDocGost/edit/${id}`)
+                .attr('href', `/ulab/normDocGost/method/${id}`)
         } else {
             $(this).parents('.method-block').find('.tu-link')
                 .addClass('disabled')
