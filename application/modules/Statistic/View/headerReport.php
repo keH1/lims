@@ -14,7 +14,7 @@
             <a href="#" class="fa fa-chevron-up"></a>
     	</span>
 	</header>
-	<div class="panel-body">
+	<div class="panel-body overflow-auto">
 		<table class="table table-striped table-bordered">
 			<thead>
 				<tr>
@@ -64,7 +64,7 @@
             <a href="#" class="fa fa-chevron-up"></a>
     	</span>
 	</header>
-	<div class="panel-body" style="overflow: auto">
+	<div class="panel-body overflow-auto">
 		<table class="table table-striped table-bordered">
 			<thead>
 				<tr>
@@ -143,7 +143,7 @@
             <a href="#" class="fa fa-chevron-up"></a>
     	</span>
 	</header>
-	<div class="panel-body">
+	<div class="panel-body overflow-auto">
 		<table class="table table-striped table-bordered">
 			<thead>
             <tr>
