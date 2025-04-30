@@ -125,7 +125,7 @@ $(function ($) {
                     if (data.length) {
                         $.each(data, function(key, value) {
                             let ruDate = (new Date(value['date'])).toLocaleDateString('ru-RU');
-                            $('#measurementList').append(`<option value="${value['id']}" data-scheme="${scheme}">№ ${value['id']} - ${value['object']}, от ${ruDate}</option>`);
+                            $('#measurementList').append(`<option value="${value['id']}" data-scheme="${scheme}">№ ${value['number']} - ${value['object']}, от ${ruDate}</option>`);
                         });
                     }
                 },

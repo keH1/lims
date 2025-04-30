@@ -111,12 +111,15 @@ class Order extends Model {
         }
         $where .= "b.organization_id = {$organizationId}";
 
+        $whereBase = "b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND d.NUMBER <> '' AND d.NUMBER IS NOT NULL";
+
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.STAGE_ID, b.ID_Z, b.COMPANY_TITLE, b.DOGOVOR_TABLE, 
                         d.ID d_id, d.NUMBER, d.DATE, d.PDF, d.ACTUAL_VER, d.IS_ACTION, d.CONTRACT_TYPE 
                     FROM ba_tz b
                     INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
+                    WHERE {$whereBase} 
+                    AND {$where}
                     ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
@@ -124,14 +127,16 @@ class Order extends Model {
             "SELECT count(*) val
                     FROM ba_tz b
                     INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}"
+                    WHERE {$whereBase} 
+                    AND b.organization_id = {$organizationId}"
         )->Fetch();
 
         $dataFiltered = $this->DB->Query(
             "SELECT count(*) val
                     FROM ba_tz b
                     INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}"
+                    WHERE {$whereBase} 
+                    AND {$where}"
         )->Fetch();
 
         $result = [];

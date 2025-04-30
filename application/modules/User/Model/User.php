@@ -642,7 +642,7 @@ class User extends Model
             FROM
                 ba_laba bl
             LEFT JOIN b_user bu ON bl.HEAD_ID = bu.ID
-            where bl.id_dep is not null and bl.organization_id = {$organizationId}
+            where bl.organization_id = {$organizationId} AND bl.id_dep is not null 
             GROUP BY
                 bl.id_dep,
                 bl.ID,

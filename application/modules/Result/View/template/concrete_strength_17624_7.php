@@ -34,7 +34,7 @@
                         <?php foreach ($this->data['measuring_property']['graduations'] as $key => $val): ?>
                             <option value="<?= $val['id'] ?>"
                                 <?= $val['id'] === $this->data['measuring']['measurement_id'] ? 'selected' : '' ?>
-                                    data-scheme="<?= $this->data['measuring']['scheme'] ?>">№ <?= $val['id'] ?> - <?= $val['object'] ?>, от <?= $val['ru_date'] ?></option>
+                                    data-scheme="<?= $this->data['measuring']['scheme'] ?>">№ <?= $val['number'] ?> - <?= $val['object'] ?>, от <?= $val['ru_date'] ?></option>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </select>

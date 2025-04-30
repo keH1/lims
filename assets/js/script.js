@@ -379,7 +379,7 @@ $(function ($) {
                 $('#add-work-modal-form')[0]?.reset()
                 // $(this.popupId)[0]?.reset()
                 
-                if (this.popupId) {
+                if (this.popupId == "#add-work-modal-form") {
                     $(this.popupId).find('select.select2').each(function() {
                         $(this).val('').trigger('change')
                     })
@@ -844,6 +844,19 @@ function bufferToBase64(buf) {
         return String.fromCharCode(ch);
     }).join('');
     return btoa(binstr);
+}
+
+function validateEmailField($emailField) {
+    clearElementError($emailField)
+
+    let emailVal = $emailField.val()?.toString().trim() || ''
+
+    if (emailVal && !REGEX.EMAIL_PATTERN.test(emailVal)) {
+        showElementError($emailField, 'Введите корректный e-mail (например: user@example.com)')
+        return false
+    }
+
+    return true
 }
 
 async function addImgToPdf(filePath, imgUrl, imgParams) {

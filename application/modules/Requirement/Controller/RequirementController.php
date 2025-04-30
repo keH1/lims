@@ -356,7 +356,6 @@ class RequirementController extends Controller
             $this->redirect('/request/list/');
         }
 
-
         $contractData = $requirementModel->getContractByDealId($dealId);
         $actData = $requirementModel->getActBase($dealId);
 
@@ -381,7 +380,8 @@ class RequirementController extends Controller
 
         //// общая информация
         // Основание для проведения испытаний (договор)
-        $this->data['contract_number'] = $contractData['NUMBER'] ?? '';
+        // $this->data['contract_number'] = $contractData['NUMBER'] ?? '';
+        $this->data['contract_number'] = $tzData['DOGOVOR_NUM'] ?? '';
         $this->data['contract_date'] = $contractData['DATE'] ?? '';
         $this->data['contract_type'] = $contractData['CONTRACT_TYPE'] ?? 'Договор';
         $this->data['deal_id'] = $dealId;
