@@ -15,11 +15,24 @@ $(function ($) {
     initForm()
     initGovDeadlineValidation()
 
-    $('.assigned-select').select2({
-        theme: 'bootstrap-5',
-        placeholder: $(this).data('placeholder')
-    })
+    function initSelect2($select) {
+        $select.select2({
+            theme: 'bootstrap-5',
+            placeholder: $select.data('placeholder'),
+            width: '100%'
+        })
+    }
 
+    function destroySelect2($select) {
+        if ($select.hasClass('select2-hidden-accessible')) {
+            $select.select2('destroy')
+        }
+    }
+
+    // Инициализируем Select2 для всех ответственных
+    $('.assigned-select').each(function(){
+        initSelect2($(this))
+    })
 
     /**
      * @desc Переключает тип заявки
@@ -451,44 +464,47 @@ $(function ($) {
      */
     function updateAssignedSelects() {
         const $main = $('#assigned0')
-        const optionsHTML = $main.html()
+        const mainOptionsHTML = $main.html()
         const mainVal = $main.val()
 
         $('.added_assigned select.assigned-select').each(function() {
             const $select = $(this)
             const oldVal = $select.val()
 
-            let $temp = $('<select>' + optionsHTML + '</select>')
+            destroySelect2($select)
 
-            let $option = $temp.find('option[value=""][disabled]').filter(function() {
-                return $(this).text().trim() === 'Выберите главного ответственного'
-            });
-            if ($option.length) {
-                $option.text('Выберите ответственного')
-            } else {
-                $temp.find('option').each(function() {
-                    if ($(this).text().trim() === 'Выберите главного ответственного') {
-                        $(this).text('Выберите ответственного')
-                    }
-                });
-            }
-
+            // Временный select на базе главного
+            let $temp = $('<select>' + mainOptionsHTML + '</select>')
+            $temp.find('option[value=""][disabled]').text('Выберите ответственного')
+            // Исключаем из списка опцию, выбранную главным
             if (mainVal) {
-                $temp.find('option[value="' + mainVal + '"]').remove()
+                $temp.find(`option[value="${mainVal}"]`).remove()
             }
 
             $select.html($temp.html())
 
-            // Если ранее выбранное значение все еще присутствует в обновлённом списке, восстанавливаем его
-            if ($select.find('option[value="' + oldVal + '"]').length > 0) {
+            // Восстанавливаем старое значение, если оно не выбрано главным ответственным
+            if (oldVal && oldVal !== mainVal && $select.find(`option[value="${oldVal}"]`).length) {
                 $select.val(oldVal)
+            } else {
+                $select.val(null).trigger('change')
             }
-        });
+
+            initSelect2($select)
+        })
     }
 
     $body.on('change', '#assigned0', function() {
-        updateAssignedSelects();
-        $('.add_assigned').prop('disabled', !$(this).val())
+        const $main = $(this)
+
+        // Сброс и реинициализация Select2 у главного ответственного (чтобы он подхватил новые изменения)
+        destroySelect2($main)
+        initSelect2($main)
+
+        // Обновляем всех дополнительных ответственных
+        updateAssignedSelects()
+
+        $('.add_assigned').prop('disabled', !$main.val())
     })
 
     $body.on('click', '.add_assigned', function() {
@@ -501,21 +517,21 @@ $(function ($) {
         }
 
         const mainVal = $('#assigned0').val()
-        let optionsHTML = $('#assigned0').html()
 
-        let $temp = $('<select>' + optionsHTML + '</select>');
-        $temp.find('option[value="' + mainVal + '"]').remove();
-        optionsHTML = $temp.html();
+        let $temp = $('<select>' + $('#assigned0').html() + '</select>')
+        if (mainVal) {
+            $temp.find(`option[value="${mainVal}"]`).remove()
+        }
+        let optionsHTML = $temp.html()
 
-        const newAssigned = `
+        const newAssigned = $(`
             <div class="form-group row added_assigned">
                 <label class="col-sm-2 col-form-label">Ответственный</label>
                 <div class="col-sm-8">
                     <select class="form-control assigned-select"
                             id="assigned${index}"
                             data-placeholder="Выберите ответственного"
-                            name="ASSIGNED[]"
-                    >
+                            name="ASSIGNED[]">
                     <option value=""></option>
                         ${optionsHTML}
                     </select>
@@ -526,7 +542,8 @@ $(function ($) {
                         <i class="fa-solid fa-minus icon-fix"></i>
                     </button>
                 </div>
-            </div>`
+            </div>
+        `)
 
         if (lastAssigned.length > 0) {
             lastAssigned.after(newAssigned)
@@ -534,11 +551,11 @@ $(function ($) {
             $('#main-responsible-block').after(newAssigned)
         }
 
-        $body.find('.assigned-select').select2({
-            theme: 'bootstrap-5',
-            placeholder: $(this).data('placeholder')
-        })
-    })
+        const $newSelect = newAssigned.find('select.assigned-select');
+        initSelect2($newSelect)
+        // Сбрасываем и показываем placeholder
+        $newSelect.val(null).trigger('change')
+    });
 
     $body.on('click', '.add_email', function() {
         let $formGroupContainer = $(this).parents('.form-group')
@@ -559,14 +576,6 @@ $(function ($) {
                 </div>
             </div>`
         )
-    })
-
-    $body.on('change', '.assigned-select', function(e) {
-        let $select = $(e.target)
-        let $hiddenInput = $('#' + $select.attr('id') + '-hidden')
-
-        $hiddenInput.val($($select).val())
-        $(this).parents('.form-group').find('.add_assigned').removeAttr('disabled')
     })
     
     $body.on('click', '#addGovWork', function() {
