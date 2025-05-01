@@ -544,12 +544,15 @@ class Material extends Model
      */
     public function add($name)
     {
+        $organizationId = App::getOrganizationId();
         $name = StringHelper::removeSpace($name);
         $name = $this->DB->ForSql($name);
-        $sql = $this->DB->Query("select ID from MATERIALS where NAME like '{$name}'")->Fetch();
 
-        if ( !empty($sql['ID']) ) {
-            return $sql['ID'];
+        $sql = $this->DB->Query("select ID from MATERIALS 
+            where organization_id = {$organizationId} and NAME like '{$name}'")->Fetch();
+
+        if (!empty($sql['ID'])) {
+            return intval($sql['ID']);
         }
 
         $data = [
@@ -558,7 +561,9 @@ class Material extends Model
         ];
         $sqlData = $this->prepearTableData('MATERIALS', $data);
 
-        return $this->DB->Insert('MATERIALS', $sqlData);
+        $result = $this->DB->Insert('MATERIALS', $sqlData);
+
+        return intval($result);
     }
 
 
