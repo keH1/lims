@@ -97,19 +97,20 @@ class Electric extends Model
                                 AND electric_control.frequency >= electric_norm.frequency_min, 
                              0, 1) AS frequency_conclusion
                   FROM electric_control
-                  JOIN electric_norm ON electric_control.id_electric_norm = electric_norm.id) AS electric_control
+                  JOIN electric_norm ON electric_control.id_electric_norm = electric_norm.id
+                  WHERE electric_control.organization_id = {$organizationId}
+                  ) AS electric_control
             JOIN ROOMS ON ROOMS.id = electric_control.id_room
             JOIN b_user ON b_user.id = electric_control.global_assigned
-            WHERE electric_control.organization_id = {$organizationId}
                 AND id_room {$filters['idWhichFilter']} 
                 AND date BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']}
             HAVING  {$filters['having']}
             ORDER BY {$filters['order']}
                 {$filters['limit']}
             ";
+
         } elseif ($typeName == 'lastElectricNorm') {
-            $request = "SELECT *, MAX(electric_norm.global_entry_date) AS max
-                FROM electric_norm WHERE electric_norm.organization_id = {$organizationId}           
+            $request = "SELECT *, MAX(electric_norm.global_entry_date) AS max FROM electric_norm         
             ";
         } elseif (array_key_exists($typeName, $this->selectInList)) {
             if ($this->selectInList[$typeName][0] == 1) {
