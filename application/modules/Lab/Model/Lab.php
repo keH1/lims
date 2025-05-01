@@ -141,7 +141,13 @@ class Lab extends Model
         $organizationId = App::getOrganizationId();
         if (empty($bitrixDepartmentId)) { return []; }
 
-        return $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and id_dep = {$bitrixDepartmentId}")->Fetch();
+        $sqlLab = $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and id_dep = {$bitrixDepartmentId}")->Fetch();
+
+        if ( empty($sqlLab) ) {
+            return [];
+        }
+
+        return $sqlLab;
     }
 
 
