@@ -135,18 +135,17 @@ class Standarttitr extends Model
                                         $this->dayInYear DAY) < CURDATE(), 1,
                       0)                               AS is_expired
             FROM standart_titr
-                     JOIN standart_titr_receive
+                     left JOIN standart_titr_receive
                           ON standart_titr_receive.id_standart_titr = standart_titr.id
                      left JOIN standart_titr_manufacturer
                           ON standart_titr_receive.id_standart_titr_manufacturer =
                              standart_titr_manufacturer.id
                      LEFT JOIN b_user ON standart_titr_receive.global_assigned = b_user.id
-            WHERE standart_titr.organization_id = {$organizationId}
+           WHERE standart_titr.organization_id = 4
             HAVING  id {$filters['idWhichFilter']}             
                      AND                   {$filters['having']}
                     ORDER BY date_receive IS NULL DESC, {$filters['order']}
-                    
-                    {$filters['limit']} ";
+                    {$filters['limit']}";
         } elseif ($typeName == 'data_for_update') {
             $request = "
                 SELECT *                   
@@ -172,7 +171,7 @@ class Standarttitr extends Model
 
             $whereOrganization = '1';
             if ( !!$sql->Fetch() ) {
-                $whereOrganization = "organization_id = {$organizationId}";
+                //$whereOrganization = "organization_id = {$organizationId}";
             }
 
             if ($this->selectInList[$typeName][0] == 1) {
