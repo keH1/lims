@@ -53,6 +53,14 @@ class Organization extends Model
             return false;
         }
 
+        if ( !empty($data['bitrix_department_id']) ) {
+            $labModel = new Lab();
+            $labInfo = $labModel->getLabByBitrixDepartmentId($data['bitrix_department_id']);
+            if ( !empty($labInfo['ID']) ) {
+                $data['lab_id'] = $labInfo['ID'];
+            }
+        }
+
         if (!empty($data['lab_id'])) {
             $data['dep_id'] = $this->getDepIdByLab($data['lab_id']);
             $data['branch_id'] = $this->getBranchIdByDep($data['dep_id']);
@@ -525,18 +533,24 @@ class Organization extends Model
      */
     public function getNotAffiliationUser()
     {
-        $sql = $this->DB->Query(
-            "SELECT ID, `NAME`, `LAST_NAME`, `SECOND_NAME`, `WORK_POSITION` 
-             FROM b_user
-             WHERE ID NOT IN
-              (SELECT user_id FROM ulab_user_affiliation) AND ACTIVE = 'Y' AND BLOCKED = 'N'
-             ORDER BY `NAME`, `LAST_NAME`
-        ");
+        $userModel = new User();
+
+        $allUsers = $userModel->getUsers();
+        $sql = $this->DB->Query("SELECT user_id FROM ulab_user_affiliation");
 
         $result = [];
 
+        $userIdList = [];
         while ($row = $sql->Fetch()) {
-            $result[] = $row;
+            $userIdList[] = $row['user_id'];
+        }
+
+        foreach ($allUsers as $user) {
+            if ( in_array($user['ID'], $userIdList) ) {
+                continue;
+            }
+
+            $result[] = $user;
         }
 
         return $result;
