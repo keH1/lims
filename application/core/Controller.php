@@ -277,7 +277,6 @@ class Controller
         ];
     }
 
-
     /**
      * @param $path
      */
@@ -293,7 +292,6 @@ class Controller
 	{
 		$this->addedCDN[] = $this->addHashToPath($path);
 	}
-
 
     /**
      * @param $path
@@ -329,7 +327,6 @@ class Controller
             'icon_class' => $iconClass,
         ];
     }
-
 
     /**
      * @return array
