@@ -141,7 +141,7 @@ class Standarttitr extends Model
                           ON standart_titr_receive.id_standart_titr_manufacturer =
                              standart_titr_manufacturer.id
                      LEFT JOIN b_user ON standart_titr_receive.global_assigned = b_user.id
-           WHERE standart_titr.organization_id = 4
+           WHERE standart_titr.organization_id = {$organizationId}
             HAVING  id {$filters['idWhichFilter']}             
                      AND                   {$filters['having']}
                     ORDER BY date_receive IS NULL DESC, {$filters['order']}
