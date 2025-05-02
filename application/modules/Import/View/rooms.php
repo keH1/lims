@@ -78,7 +78,7 @@
                                         <?php endforeach; ?>
                                     </select>
                                 <?php else: ?>
-                                    <div>Отсутствуют отделы, создайте отдел для привязки помещений к отделам</div>
+                                    <div>Отсутствуют лаборатории, создайте лаборатори. для привязки помещений к лабораториям</div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -217,16 +217,16 @@
         </div>
 
         <div class="mb-3 select_lab_block">
-            <label class="form-label mb-1" for="select_lab">Отдел <span class="redStars">*</span></label>
+            <label class="form-label mb-1" for="select_lab">Лаборатория <span class="redStars">*</span></label>
             <?php if ( !empty($this->data['labs']) ): ?>
                 <select class="form-control" id="select_lab" name="form_room[LAB_ID]" required>
-                    <option value="">Выберите отдел</option>
+                    <option value="">Выберите лабораторию</option>
                     <?php foreach ($this->data['labs'] as $lab): ?>
                         <option value="<?= $lab['ID'] ?>" <?= $this->data['lab_id'] == $lab['ID'] ? 'selected' : '' ?>><?= $lab['NAME'] ?></option>
                     <?php endforeach; ?>
                 </select>
             <?php else: ?>
-                <div>Отсутствуют отделы, создайте отдел для привязки помещений к отделам</div>
+                <div>Отсутствуют лаборатории, создайте лабораторию для привязки помещений к лабораториям</div>
             <?php endif; ?>
         </div>
 
