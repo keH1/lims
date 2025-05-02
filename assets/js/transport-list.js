@@ -154,27 +154,41 @@ $(function ($) {
 
     })
 
-    $("#add-entry-modal-btn").click(function (e) {
-
+    $('#add-entry-modal-form').on('submit', function(e) {
+        const $form = $(this);
         let check = true;
 
-        $("[data-js]").each(function (index) {
-            if ($(this).val() == "") {
-                $(this).css("background", "#F08080")
+        const fieldsToValidate = [
+            { $el: $form.find('#model'), message: 'Модель обязательна' },
+            { $el: $form.find('#number'), message: 'Номер обязателен' },
+            { $el: $form.find('#owner'), message: 'Владелец обязателен' },
+            { $el: $form.find('#fuel'), message: 'Топливо обязательно' },
+            { $el: $form.find('#consumption_rate'), message: 'Расход обязателен' },
+        ];
+
+        // Сброс предыдущих ошибок
+        fieldsToValidate.forEach(({ $el }) => clearElementError($el));
+
+        // Проверка на пустоту
+        fieldsToValidate.forEach(({ $el, message }) => {
+            if ($.trim($el.val()) === '') {
+                showElementError($el, message);
                 check = false;
-            } else {
-                $(this).css("background", "#FFF")
             }
-        })
+        });
+
+        if (!check) {
+            e.preventDefault();
+            return;
+        }
 
         if (check) {
             $.ajax({
                 url: '/ulab/transport/addTransportAjax/',
-                data: $("#add-entry-modal-form").serialize(),
+                data: $form.serialize(),
                 method: 'POST',
                 dataType: 'json',
                 success: function (data) {
-                    console.log(data)
                     if (data) {
                         transportJournal.ajax.reload()
                         $('.mfp-close').click();
