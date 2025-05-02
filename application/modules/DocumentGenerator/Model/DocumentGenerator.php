@@ -2618,13 +2618,16 @@ class DocumentGenerator extends Model
 
 		$template->saveAs($file);
 
-		if ($type === 'kp') {
-		    $name_file = 'КП';
-        } elseif ($type === 'tz') {
-            $name_file = 'ТЗ';
-        } elseif ($type === 'dog') {
-            $name_file = 'CO';
-        }
+        $fileMap = [
+            'kp' => ['name_file' => 'КП', 'number_file' => 'NUM_KP'],
+            'tz' => ['name_file' => 'ТЗ', 'number_file' => 'id'],
+            'dog' => ['name_file' => 'CO', 'number_file' => 'id'],
+            'fallback' => ['name_file' => 'Документ', 'number_file' => ''],
+        ];
+
+        $config = $fileMap[$type] ?? $fileMap['fallback'];
+        $name_file = $config['name_file'];
+        $number_file = $info[$config['number_file']] ?? '';
 
         $newDirectory = $_SERVER['DOCUMENT_ROOT'] ."/protocol_generator/archive_{$type}/" . $info['id'];
 
@@ -2645,7 +2648,7 @@ class DocumentGenerator extends Model
         }
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-		header('Content-Disposition: attachment; filename="' . $name_file . ' №' . $info['id'] . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
+		header('Content-Disposition: attachment; filename="' . $name_file . ' №' . $number_file . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
 		readfile($file);
 	}
 
