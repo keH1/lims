@@ -2626,8 +2626,8 @@ class DocumentGenerator extends Model
         ];
 
         $config = $fileMap[$type] ?? $fileMap['fallback'];
-        $name_file = $config['name_file'];
-        $number_file = $info[$config['number_file']] ?? '';
+        $nameFile = $config['name_file'];
+        $numberFile = $info[$config['number_file']] ?? '';
 
         $newDirectory = $_SERVER['DOCUMENT_ROOT'] ."/protocol_generator/archive_{$type}/" . $info['id'];
 
@@ -2648,7 +2648,7 @@ class DocumentGenerator extends Model
         }
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-		header('Content-Disposition: attachment; filename="' . $name_file . ' №' . $number_file . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
+		header('Content-Disposition: attachment; filename="' . $nameFile . ' №' . $numberFile . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
 		readfile($file);
 	}
 
