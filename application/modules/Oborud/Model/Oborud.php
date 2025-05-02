@@ -97,7 +97,7 @@ class Oborud extends Model {
                 if ( isset($filter['search']['stage']) ) {
                     $stage = [
                         // Все статусы
-                        'all' => "b.LONG_STORAGE = 0 AND b.`is_decommissioned` = 0 AND ",
+                        'all' => " ",
                         // Нет замечаний
                         'norm' => "b.CHECKED = 1 and b.LONG_STORAGE = 0 and (b.NO_METR_CONTROL = 1 or (c.is_actual = 1 and (c.date_end - interval 90 day) > '{$currentDate}')) and b.is_decommissioned = 0 and ",
                         // Не заполнено
