@@ -277,13 +277,12 @@ class Controller
         ];
     }
 
-
     /**
      * @param $path
      */
     protected function addJS($path)
     {
-        $this->addedJS[] = $path;
+        $this->addedJS[] = $this->addHashToPath($path);
     }
 
 	/**
@@ -291,18 +290,29 @@ class Controller
 	 */
 	protected function addCDN($path)
 	{
-		$this->addedCDN[] = $path;
+		$this->addedCDN[] = $this->addHashToPath($path);
 	}
-
 
     /**
      * @param $path
      */
     protected function addCSS($path)
     {
-        $this->addedCSS[] = $path;
+        $this->addedCSS[] = $this->addHashToPath($path);
     }
 
+    protected function addHashToPath($path)
+    {
+        $parsedUrl = parse_url($path);
+        $queryParams = [];
+        if (isset($parsedUrl['query'])) {
+            parse_str($parsedUrl['query'], $queryParams);
+        }
+        $queryParams['hash'] = rand();
+        $newPath = $parsedUrl['path'];
+        $newPath .= '?' . http_build_query($queryParams);
+        return $newPath;
+    }
 
     /**
      * @param $href
@@ -317,7 +327,6 @@ class Controller
             'icon_class' => $iconClass,
         ];
     }
-
 
     /**
      * @return array
