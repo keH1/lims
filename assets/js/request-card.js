@@ -80,6 +80,8 @@ $(function ($) {
         });
 
         window.open(`/protocol_generator/akt_vr.php?${params.toString()}`, '_blank');
+
+        setTimeout( function() {location.reload()}, 1500);
     });
 
     $body.on('input change', '#act-work-modal-form input[name="Email"]', function() {
