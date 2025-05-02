@@ -186,7 +186,7 @@ $(function ($) {
 					}
 
 					let $type = '%'
-					if ( item.discount_type !== "rub" ) {
+					if ( item.discount_type === "rub" ) {
 						$type = 'р'
 					}
 
