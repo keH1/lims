@@ -135,18 +135,17 @@ class Standarttitr extends Model
                                         $this->dayInYear DAY) < CURDATE(), 1,
                       0)                               AS is_expired
             FROM standart_titr
-                     JOIN standart_titr_receive
+                     left JOIN standart_titr_receive
                           ON standart_titr_receive.id_standart_titr = standart_titr.id
                      left JOIN standart_titr_manufacturer
                           ON standart_titr_receive.id_standart_titr_manufacturer =
                              standart_titr_manufacturer.id
                      LEFT JOIN b_user ON standart_titr_receive.global_assigned = b_user.id
-            WHERE standart_titr.organization_id = {$organizationId}
+           WHERE standart_titr.organization_id = {$organizationId}
             HAVING  id {$filters['idWhichFilter']}             
                      AND                   {$filters['having']}
                     ORDER BY date_receive IS NULL DESC, {$filters['order']}
-                    
-                    {$filters['limit']} ";
+                    {$filters['limit']}";
         } elseif ($typeName == 'data_for_update') {
             $request = "
                 SELECT *                   
@@ -163,22 +162,8 @@ class Standarttitr extends Model
                 WHERE standart_titr_receive.id = {$filters['id']} AND standart_titr_receive.organization_id = {$organizationId}                  
                              ";
         } elseif (array_key_exists($typeName, $this->selectInList)) {
-            $sql = $this->DB->Query(
-                "SELECT column_name 
-                FROM information_schema.columns 
-                WHERE table_name = '{$typeName}' 
-                AND column_name = 'organization_id'"
-            );
-
-            $whereOrganization = '1';
-            if ( !!$sql->Fetch() ) {
-                $whereOrganization = "organization_id = {$organizationId}";
-            }
-
             if ($this->selectInList[$typeName][0] == 1) {
-                $request = "
-                SELECT * FROM {$typeName} where {$whereOrganization}
-             ";
+                $request = "SELECT * FROM {$typeName}";
             } elseif ($this->selectInList[$typeName][0] == 0) {
                 if ($typeName == 'standart_titr_full_name') {
                     $request = "
@@ -219,8 +204,7 @@ class Standarttitr extends Model
         return $this->requestFromSQL($request);
     }
 
-    public
-    function getByID(string $name, $ID): string
+    public function getByID(string $name, $ID): string
     {
         $getFrom = [
             'reactiveName' => 'IDReactiveName'
