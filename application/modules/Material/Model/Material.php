@@ -540,7 +540,7 @@ class Material extends Model
 
     /**
      * @param $name
-     * @return false|mixed|string
+     * @return int
      */
     public function add($name)
     {
