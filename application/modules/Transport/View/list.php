@@ -114,7 +114,7 @@
         <div class="col-auto">
             <div class="form-check">
                 <label class="form-check-label">Личный транспорт</label>
-                <input class="form-check-input" id="personal" type="checkbox" name="personal" value="1" required>
+                <input class="form-check-input" id="personal" type="checkbox" name="personal" value="1">
             </div>
         </div>
     </div>

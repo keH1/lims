@@ -155,6 +155,8 @@ $(function ($) {
     })
 
     $('#add-entry-modal-form').on('submit', function(e) {
+        e.preventDefault();
+
         const $form = $(this);
         let check = true;
 
@@ -176,11 +178,6 @@ $(function ($) {
                 check = false;
             }
         });
-
-        if (!check) {
-            e.preventDefault();
-            return;
-        }
 
         if (check) {
             $.ajax({
