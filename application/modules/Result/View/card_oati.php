@@ -252,7 +252,7 @@
                                                                     <use xlink:href="<?= URI ?>/assets/images/icons.svg#upload"/>
                                                                 </svg>
                                                                 <input class="d-none" id="uploadPdf" type="file"
-                                                                       name="upload_pdf" onchange="form.submit()">
+                                                                       name="upload_pdf" accept=".pdf, application/pdf" onchange="form.submit()">
                                                             </label>
                                                         </form>
                                                     <?php endif; ?>
