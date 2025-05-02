@@ -1143,6 +1143,7 @@ class Statistic extends Model
             'by' => '',
             'dir' => 'DESC'
         ];
+        $fieldWhereOrgId = "";
 
         $entityData = $this->entities[$filter['entity']['key']];
 
@@ -1246,21 +1247,44 @@ class Statistic extends Model
             $groupBy = "group by {$strGroup}";
         }
 
-        if ($filter['entity']['key'] == 'users') {
-            $users = \Bitrix\Main\UserTable::getList([
-                'filter' => [
-                    '=UF_ORG_ID' => $organizationId,
-                    '!UF_ORG_ID' => false,
-                ],
-                'select' => [
-                    'ID'
-                ]
-            ])->fetchAll();
+        if ($filter['entity']['key'] == 'users' ||
+            $filter['entity']['key'] == 'users_total' || 
+            $filter['entity']['key'] == 'company' ||
+            $filter['entity']['key'] == 'company_use') {
 
-            $organizationUsers = array_column($users, 'ID');
-            $organizationUsersStr = implode(",", $organizationUsers);
+                if ($filter['entity']['key'] == 'users' ||
+                    $filter['entity']['key'] == 'users_total') {
+                        $users = \Bitrix\Main\UserTable::getList([
+                            'filter' => [
+                                '=UF_ORG_ID' => $organizationId,
+                                '!UF_ORG_ID' => false,
+                            ],
+                            'select' => [
+                                'ID'
+                            ]
+                        ])->fetchAll();
+            
+                        $organizationUsers = array_column($users, 'ID');
+                        $organizationUsersStr = implode(",", $organizationUsers);
+            
+                        $whereOrgId = " AND b_user.ID IN ({$organizationUsersStr})";
+                }
 
-            $whereOrgId = " AND b_user.ID IN ({$organizationUsersStr})";
+                $fieldWhereOrgId = "";
+        } else {
+            if ($filter['entity']['key'] == 'request') {
+                $alias = "ba_tz";
+            } else if ($filter['entity']['key'] == 'oborud' ||
+                       $filter['entity']['key'] == 'oborud_total' ||
+                       $filter['entity']['key'] == 'oborud_use') {
+                            $alias = "ba_oborud";
+            } else if ($filter['entity']['key'] == 'methods') {
+                $alias = "ulab_gost";
+            } else if ($filter['entity']['key'] == 'lab') {
+                $alias = "ba_laba";
+            }
+
+            $fieldWhereOrgId = "AND {$alias}.organization_id = {$organizationId}";
         }
 
         $data = $this->DB->Query(
@@ -1278,7 +1302,7 @@ class Statistic extends Model
                 {$select}
             FROM {$from}
             {$join} 
-            WHERE {$where} {$whereOrgId}
+            WHERE 1 {$whereOrgId} {$fieldWhereOrgId}
             {$groupBy}"
         )->SelectedRowsCount();
 
