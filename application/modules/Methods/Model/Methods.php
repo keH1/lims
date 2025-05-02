@@ -1216,10 +1216,7 @@ class Methods extends Model
                 LEFT JOIN ulab_methods m ON g.id = m.gost_id 
                 LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id
                 LEFT JOIN ulab_methods_lab AS l ON l.method_id = m.id
-                WHERE m.in_field = 1
-                    AND m.is_extended_field = 0
-                    AND m.is_actual = 1
-                    AND g.organization_id = {$organizationId}
+                WHERE g.organization_id = {$organizationId}
         ")->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
