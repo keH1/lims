@@ -202,7 +202,7 @@
                 </td>
                 <td>--</td>
                 <td>
-                    <a class="no-decoration me-1 popup-with-form" href="#protocol-modal-form" title="Сформировать">
+                    <a class="no-decoration me-1 popup-with-form" href="#protocol-modal-form" title="Скачать">
                         <svg class="icon" width="35" height="35">
                             <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
                         </svg>
