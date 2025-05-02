@@ -73,8 +73,10 @@ class Lab extends Model
                 "select utsu.VALUE_ID 
                         from b_uts_user as utsu
                         inner join b_user as u on u.ID = utsu.VALUE_ID
-                        where utsu.UF_DEPARTMENT like '%:{$row['id_dep']};%' and u.ACTIVE = 'Y'"
-            );
+                        where utsu.UF_DEPARTMENT like '%:{$row['id_dep']};%' and u.ACTIVE = 'Y'
+                        and utsu.UF_ORG_ID = {$organizationId}
+            ");
+
             $result[$row['id_dep']]['short_name'] = $row['short_name'];
             $result[$row['id_dep']]['lab_id'] = $row['ID'];
 
@@ -94,7 +96,6 @@ class Lab extends Model
                 }
             }
         }
-
         return $result;
     }
 

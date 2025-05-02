@@ -25,7 +25,7 @@ class Secondment extends Model
     {
         global $DB;
         $organizationId = App::getOrganizationId();
-        $where = "s.del = 0 AND s.organization_id = $organizationId AND ";
+        $where = "s.del = 0 OR s.del IS NULL AND s.organization_id = $organizationId AND ";
         $limit = "";
         $order = [
             'by' => 's_id',
@@ -205,7 +205,7 @@ class Secondment extends Model
              LEFT JOIN secondment_oborud AS s_o ON s_o.secondment_id = s.id 
              LEFT JOIN full_settlements AS f_s ON d_o.CITY_ID = f_s.id 
              LEFT JOIN ba_oborud AS b_o ON b_o.ID = s_o.oborud_id 
-             WHERE {$where} 
+             WHERE {$where}
              GROUP BY s.id"
         )->SelectedRowsCount();
 

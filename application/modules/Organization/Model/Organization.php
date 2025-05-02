@@ -637,7 +637,7 @@ class Organization extends Model
      * @param $filter
      * @return array
      */
-    public function getLabJournal(int $depId, $filter)
+    public function getLabJournal(int $depId, $filter = [])
     {
         $where = "";
         $limit = "";
@@ -921,19 +921,20 @@ class Organization extends Model
      * @param $orgId
      * @return array
      */
-    public function getAllLeaders($orgId)
+    public function getAllLeaders()
     {
         $userModel = new User();
 
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         $sql = $this->DB->Query(
             "select org.head_user_id as org_uid, brnch.head_user_id as brn_uid, dep.head_user_id as dep_uid, lab.HEAD_ID as lab_uid
             from ulab_organization as org
-            join ulab_branch as brnch on org.id = brnch.organization_id
-            join ulab_department as dep on brnch.id = dep.branch_id
-            join ba_laba as lab on lab.dep_id = dep.id
-            where org.id = {$orgId}"
+            left join ulab_branch as brnch on org.id = brnch.organization_id
+            left join ulab_department as dep on brnch.id = dep.branch_id
+            left join ba_laba as lab on lab.dep_id = dep.id
+            where org.id = {$organizationId}"
         );
 
         $columns = ['org_uid', 'brn_uid', 'dep_uid', 'lab_uid'];

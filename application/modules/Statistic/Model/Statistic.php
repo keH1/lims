@@ -117,7 +117,7 @@ class Statistic extends Model
                     'select' => "ba_oborud.OBJECT as oborud",
                     'order' => "ba_oborud.OBJECT",
                     'filter' => "ba_oborud.OBJECT like '%{dataFilter}%'",
-                    'where' => false,
+                    'where' => "ba_oborud.organization_id = {organizationId}",
                     'group' => false,
                 ],
                 'reg_num' => [
@@ -206,7 +206,7 @@ class Statistic extends Model
                     'select' => 'count(DISTINCT ba_oborud.ID) as count_total',
                     'order' => 'count(DISTINCT ba_oborud.ID)',
                     'filter' => false,
-                    'where' => false,
+                    'where' => "ba_oborud.organization_id = {organizationId}",
                     'group' => false,
                 ],
                 // "В наличии" - отмечен checkbox
@@ -215,7 +215,7 @@ class Statistic extends Model
                     'select' => 'COUNT(DISTINCT(case when ba_oborud.IN_STOCK = 1 then ba_oborud.ID end)) as in_stock',
                     'order' => 'count(DISTINCT ba_oborud.ID)',
                     'filter' => false,
-                    'where' => false,
+                    'where' => "ba_oborud.organization_id = {organizationId}",
                     'group' => false,
                 ],
                 'not_in_stock' => [
@@ -838,7 +838,7 @@ class Statistic extends Model
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end)",
                     'filter' => false,
                     'default_order' => 'desc',
-                    'where' => "ba_laba.id_dep IS NOT NULL",
+                    'where' => "ba_laba.id_dep IS NOT NULL AND ba_laba.organization_id = {organizationId}",
                     'group' => 'ba_laba.ID',
                 ],
                 'count_probe' => [
@@ -855,7 +855,7 @@ class Statistic extends Model
                     'select' => "sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end) as methods_price",
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end)",
                     'filter' => false,
-                    'where' => "ba_laba.id_dep IS NOT NULL",
+                    'where' => "ba_laba.id_dep IS NOT NULL AND ba_laba.organization_id = {organizationId}",
                     'group' => 'ba_laba.ID',
                 ],
                 'count_protocols' => [
@@ -1260,7 +1260,7 @@ class Statistic extends Model
                 {$select}
             FROM {$from}
             {$join} 
-            WHERE 1
+            WHERE {$where}
             {$groupBy}"
         )->SelectedRowsCount();
 
