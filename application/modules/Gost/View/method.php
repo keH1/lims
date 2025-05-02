@@ -742,7 +742,7 @@
                         <button
                                 type="button"
                                 class="btn btn-danger btn-square remove_uncertainty"
-                                title="Удалить Неопределенность">
+                                title="Удалить неопределенность">
                             <i class="fa-solid fa-minus icon-fix"></i>
                         </button>
                     </div>
@@ -828,7 +828,7 @@
                         <button
                                 type="button"
                                 class="btn btn-danger btn-square remove_oborud"
-                                title="Удалить оборутование">
+                                title="Удалить оборудование">
                             <i class="fa-solid fa-minus icon-fix"></i>
                         </button>
                     </td>
