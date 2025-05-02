@@ -240,7 +240,7 @@ $(function ($) {
         </th>
         <th scope="col">
             <select class="form-control search">
-                <option value=""></option>
+                <option value="">Все</option>
                 <option value="n">Не подписано</option>
                 <option value="y">Подписано</option>
             </select>
@@ -307,7 +307,7 @@ $(function ($) {
         </th>
         <th scope="col">
             <select class="form-control search">
-                <option value=""></option>
+                <option value="">Все</option>
                 <option value="n">Не подписано</option>
                 <option value="y">Подписано</option>
             </select>
