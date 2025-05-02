@@ -482,7 +482,16 @@ class Requirement extends Model
 
     public function getActBase($dealId)
     {
-        $result = $this->DB->Query("SELECT * FROM `ACT_BASE` WHERE `ID_Z` = {$dealId}")->Fetch();
+        $organizationId = App::getOrganizationId();
+
+        $result = $this->DB->Query("
+            SELECT 
+                   act.* 
+                FROM ACT_BASE AS act 
+                INNER JOIN ba_tz AS b ON act.ID_Z = b.ID_Z 
+                WHERE act.`ID_Z` = {$dealId} AND b.organization_id = {$organizationId}
+        ")->Fetch();
+
         $date = strtotime($result['ACT_DATE']);
         $result['date_ru'] = StringHelper::dateRu($result['ACT_DATE']);
         $result['year'] = (int)date("Y", $date)%10 ? substr(date("Y", $date), -2) : date("Y", $date);
