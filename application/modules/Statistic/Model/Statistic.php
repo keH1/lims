@@ -1137,6 +1137,7 @@ class Statistic extends Model
     {
         $organizationId = App::getOrganizationId();
         $where = "";
+        $whereOrgId = "";
         $limit = "";
         $order = [
             'by' => '',
@@ -1245,12 +1246,29 @@ class Statistic extends Model
             $groupBy = "group by {$strGroup}";
         }
 
+        if ($filter['entity']['key'] == 'users') {
+            $users = \Bitrix\Main\UserTable::getList([
+                'filter' => [
+                    '=UF_ORG_ID' => $organizationId,
+                    '!UF_ORG_ID' => false,
+                ],
+                'select' => [
+                    'ID'
+                ]
+            ])->fetchAll();
+
+            $organizationUsers = array_column($users, 'ID');
+            $organizationUsersStr = implode(",", $organizationUsers);
+
+            $whereOrgId = " AND b_user.ID IN ({$organizationUsersStr})";
+        }
+
         $data = $this->DB->Query(
             "SELECT 
                 {$select}
             FROM {$from}
             {$join}
-            WHERE {$where}
+            WHERE {$where} {$whereOrgId}
             {$groupBy}
             ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
@@ -1260,7 +1278,7 @@ class Statistic extends Model
                 {$select}
             FROM {$from}
             {$join} 
-            WHERE {$where}
+            WHERE {$where} {$whereOrgId}
             {$groupBy}"
         )->SelectedRowsCount();
 
@@ -1269,7 +1287,7 @@ class Statistic extends Model
                 {$select}
             FROM {$from} 
             {$join}
-            WHERE {$where}
+            WHERE {$where} {$whereOrgId}
             {$groupBy}"
         )->SelectedRowsCount();
 
