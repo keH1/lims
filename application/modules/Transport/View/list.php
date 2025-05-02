@@ -63,7 +63,7 @@
             <label for="model" class="col-form-label">Модель</label>
         </div>
         <div class="col-9">
-            <input type="text" id="model" name="model" class="form-control" aria-describedby="model" data-js>
+            <input type="text" id="model" name="model" class="form-control" aria-describedby="model" data-js required>
         </div>
     </div>
     <div class="row g-3 mt-1 align-items-center justify-content-between">
@@ -71,7 +71,7 @@
             <label for="number" class="col-form-label">Номер</label>
         </div>
         <div class="col-9">
-            <input type="text" id="number" name="number" class="form-control" aria-describedby="number" data-js>
+            <input type="text" id="number" name="number" class="form-control" aria-describedby="number" data-js required>
         </div>
     </div>
     <div class="row g-3 mt-1 align-items-center justify-content-between">
@@ -79,7 +79,7 @@
             <label for="owner" class="col-form-label">Владелец</label>
         </div>
         <div class="col-9">
-            <input type="text" id="owner" name="owner_name" class="form-control" aria-describedby="owner" data-js>
+            <input type="text" id="owner" name="owner_name" class="form-control" aria-describedby="owner" data-js required>
         </div>
     </div>
 
@@ -88,7 +88,7 @@
             <label for="fuel" class="col-form-label">Топливо</label>
         </div>
         <div class="col-9">
-            <select class="form-control" name="fuel_id" id="fuel" data-js>
+            <select class="form-control" name="fuel_id" id="fuel" data-js required>
                 <option value=""></option>
                 <option value="1">ДТ</option>
                 <option value="2">АИ-92</option>
@@ -106,7 +106,7 @@
             <label for="consumption_rate" class="col-form-label">Расход</label>
         </div>
         <div class="col-9">
-            <input type="text" id="consumption_rate" name="consumption_rate" class="form-control" aria-describedby="consumption_rate" data-js>
+            <input type="text" id="consumption_rate" name="consumption_rate" class="form-control" aria-describedby="consumption_rate" data-js required>
         </div>
     </div>
 
@@ -121,12 +121,7 @@
 
     <div class="line-dashed-small"></div>
 
-    <button type="button"
-            class="btn btn-primary"
-            name="stage"
-            data-stage="Отменена"
-            id="add-entry-modal-btn"
-    >
+    <button type="submit" class="btn btn-primary" name="stage" data-stage="Отменена" id="add-entry-modal-btn">
         Отправить
     </button>
 </form>
