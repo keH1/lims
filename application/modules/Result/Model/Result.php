@@ -1977,6 +1977,15 @@ class Result extends Model
             ];
         }
 
+        if (empty($stateLastAction['state'])) {
+            $errors = ["Испытание для методики {$anchor} не было начато"];
+            return [
+                'success' => false,
+                'errors' => $errors,
+                'data' => '',
+            ];
+        }
+
         $data = [
             'ugtp_id' => $ugtpId,
             'state' => "'complete'",
