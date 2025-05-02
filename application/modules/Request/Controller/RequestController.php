@@ -692,12 +692,8 @@ class RequestController extends Controller
         $this->addJS("/assets/plugins/dropzone/dropzone3.js");
         $r = rand();
         $this->addJs("/assets/js/request-card.js?v={$r}");
-        
-        if (!empty($requestData['TAKEN_ID_DEAL'])) {
-            $this->view('card_taken');
-        } else {
-            $this->view($config['template']);
-        }
+
+        $this->view($config['template']);
     }
 
 
