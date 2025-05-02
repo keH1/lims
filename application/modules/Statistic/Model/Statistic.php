@@ -1,5 +1,5 @@
 <?php
-
+use Bitrix\Main\Loader;
 /**
  * Модель для работы с ГОСТами
  * Class Statistic
@@ -1635,6 +1635,12 @@ class Statistic extends Model
     }
 
 
+    /**
+     * финансовый отчет за месяц
+     * @param $dataReport
+     * @return array
+     * @throws Exception
+     */
     public function getFinReport($dataReport)
     {
         $organizationId = App::getOrganizationId();
@@ -1785,6 +1791,47 @@ class Statistic extends Model
 
             $result[$row['assigned_id']] = $row;
         }
+
+        return $result;
+    }
+
+
+    public function getMfcReport($dataReport)
+    {
+        $companyMethod = new Company();
+        $organizationId = App::getOrganizationId();
+        $month = date('m', strtotime($dataReport));
+        $year = date('Y', strtotime($dataReport));
+
+        $newCompanyCount = 0;
+        if ( Loader::IncludeModule('crm') ) {
+            $arOrder  = ['ID' => 'ASC'];
+            $arFilter = [
+                $companyMethod::COMPANY_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId,
+                '>=DATE_CREATE' => "01.{$month}.2000 00:00:00",
+                '<=DATE_CREATE' => date("d.m.Y 23:59:59", strtotime("{$year}-{$month}-01")),
+            ];
+
+            $arSelect = [];
+            $companies = CCrmCompany::GetList( $arOrder, $arFilter, $arSelect );
+            $newCompanyCount = $companies->SelectedRowsCount();
+        }
+
+        $result = [];
+
+        $requestSql = $this->DB->Query(
+            "select 
+                count(*) as count_total_request, 
+                sum(STAGE_ID = 'WON') as count_won,
+                sum(STAGE_ID IN ('5', '6', '7', '8', '9', 'LOSE')) as count_lose
+            from ba_tz 
+            where 
+                organization_id = {$organizationId} 
+                and DATE_CREATE_TIMESTAMP >= '{$year}-{$month}-01' 
+                and DATE_CREATE_TIMESTAMP < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        )->Fetch();
+
+        $this->pre($requestSql);
 
         return $result;
     }

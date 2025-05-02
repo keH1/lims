@@ -31,6 +31,7 @@ class Company extends Model
             }
         } catch (Exception $e) {
             // замалчивание...
+            return [];
         }
 
         return $result;

@@ -150,6 +150,8 @@ class StatisticController extends Controller
 
         $this->data['fin_report'] = $statisticModel->getFinReport($monthReport);
 
+        $this->data['mfc_report'] = $statisticModel->getMfcReport($monthReport);
+
         $this->data['field_report_protocol'] = [
             'Протоколы',
             'count' => 'Общее количество протоколов, шт',
@@ -183,9 +185,9 @@ class StatisticController extends Controller
 
         $this->data['mfc_report_rows'] = [
             'Заявка',
-            'a' => 'Общее количество заявок, шт',
-            'b' => 'Успешные, шт',
-            'c' => 'Неуспешные, шт',
+            'count_total_request' => 'Общее количество заявок, шт',
+            'count_won' => 'Успешные, шт',
+            'count_lose' => 'Неуспешные, шт',
             'd' => 'Уникальные (одна лаб.), шт',
             'e' => 'Совместные (несколько лаб.), шт',
             'Клиент',
