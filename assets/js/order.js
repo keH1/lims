@@ -180,11 +180,17 @@ $(function ($) {
 			{
 				data: 'DISCOUNT',
 				render: function (data, type, item) {
+
 					if ( !item['DISCOUNT'] ) {
 						return `-`
 					}
 
-					return `${item['DISCOUNT']} %`
+					let $type = '%'
+					if ( item.discount_type === "rub" ) {
+						$type = 'р'
+					}
+
+					return `${item['DISCOUNT']} ${$type}`
 				}
 			},
 			{
