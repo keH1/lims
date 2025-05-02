@@ -162,22 +162,8 @@ class Standarttitr extends Model
                 WHERE standart_titr_receive.id = {$filters['id']} AND standart_titr_receive.organization_id = {$organizationId}                  
                              ";
         } elseif (array_key_exists($typeName, $this->selectInList)) {
-            $sql = $this->DB->Query(
-                "SELECT column_name 
-                FROM information_schema.columns 
-                WHERE table_name = '{$typeName}' 
-                AND column_name = 'organization_id'"
-            );
-
-            $whereOrganization = '1';
-            if ( !!$sql->Fetch() ) {
-                //$whereOrganization = "organization_id = {$organizationId}";
-            }
-
             if ($this->selectInList[$typeName][0] == 1) {
-                $request = "
-                SELECT * FROM {$typeName} where {$whereOrganization}
-             ";
+                $request = "SELECT * FROM {$typeName}";
             } elseif ($this->selectInList[$typeName][0] == 0) {
                 if ($typeName == 'standart_titr_full_name') {
                     $request = "
@@ -218,8 +204,7 @@ class Standarttitr extends Model
         return $this->requestFromSQL($request);
     }
 
-    public
-    function getByID(string $name, $ID): string
+    public function getByID(string $name, $ID): string
     {
         $getFrom = [
             'reactiveName' => 'IDReactiveName'
