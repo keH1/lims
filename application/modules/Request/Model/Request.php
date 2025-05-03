@@ -941,7 +941,7 @@ class Request extends Model
                             $where .= "b.STAGE_ID IN ('NEW', 'PREPARATION', 'PREPAYMENT_INVOICE', 'EXECUTING', 'FINAL_INVOICE') AND IF(b.ACT_NUM, TRUE, FALSE) = TRUE AND ";
                             break;
                         case 3: // Проводятся испытания
-                            $where .= "b.STAGE_ID = 1 AND ";
+                            $where .= "b.STAGE_ID IN (1, 'FINAL_INVOICE') and ";
                             break;
                         case 4: // Испытания завершены
                             $where .= "b.STAGE_ID IN ('2', '3', '4') AND ";

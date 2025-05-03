@@ -248,13 +248,9 @@ class Secondment extends Model
      */
     public function create(array $data, string $table): int
     {
-        foreach ($data as $key => $item) {
-            if (is_string($item)) {
-                $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
-            }
-        }
+        $sqlData = $this->prepearTableData($table, $data);
 
-        $result = $this->DB->Insert($table, $data);
+        $result = $this->DB->Insert($table, $sqlData);
 
         return intval($result);
     }
@@ -268,14 +264,10 @@ class Secondment extends Model
      */
     public function update(array $data, string $table, int $id)
     {
-        foreach ($data as $key => $item) {
-            if (is_string($item)) {
-                $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
-            }
-        }
+        $sqlData = $this->prepearTableData($table, $data);
 
         $where = "WHERE ID = {$id}";
-        return $this->DB->Update($table, $data, $where);
+        return $this->DB->Update($table, $sqlData, $where);
     }
 
     public function delete($table, $where)

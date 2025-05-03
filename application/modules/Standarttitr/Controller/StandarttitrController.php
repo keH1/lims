@@ -13,7 +13,7 @@ class StandarttitrController extends Controller
      */
     public function list()
     {
-        $this->data['title'] = 'Стандарт-титры';
+        $this->data['title'] = 'Журнал стандарт-титры';
 
         /** @var  Recipe $usedModel */
         $usedModel = $this->model($this->nameModel);

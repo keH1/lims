@@ -71,7 +71,7 @@ class Precursor extends Model
             $dataAdd = $data;
         } elseif ($typeName == 'addRemain') {
             $dataFirstAdd['reactive_remain'] = $data['reactive_remain'];
-            $dataFirstAdd['reactive_remain']['date'] = $data['reactive_remain']['date'] . '-01';
+            $dataFirstAdd['reactive_remain']['date'] = $data['reactive_remain']['date'];
             /*$lastReactiveRemain = $this->getFromSQL("lastDate", ['idWhichFilter' => $dataFirstAdd['reactive_remain']['id_library_reactive']]);
             $dataFirstAdd['reactive_remain']['id_reactive_remain'] = $lastReactiveRemain[0]['id'];*/
 

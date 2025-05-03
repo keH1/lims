@@ -657,7 +657,7 @@ class Methods extends Model
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
                     WHERE {$where}
-                    group by m.id
+                    group by m.id, g.id 
                     ORDER BY {$order['by']} {$order['dir']} {$limit}
         ");
 
@@ -671,7 +671,7 @@ class Methods extends Model
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
                     WHERE g.organization_id = {$organizationId}
-                    group by m.id"
+                    group by m.id, g.id"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
@@ -684,7 +684,7 @@ class Methods extends Model
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
                     WHERE {$where}
-                    group by m.id"
+                    group by m.id, g.id"
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
