@@ -49,7 +49,8 @@ $(function ($) {
         const fieldsToValidate = [
             { $el: $form.find('[name=actNumber]'), message: 'Номер акта обязателен' },
             { $el: $form.find('[name=actDate]'), message: 'Дата акта обязательна' },
-            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' }
+            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' },
+            { $el: $form.find('[name=Email]'), message: 'Email обязателен' },
         ];
 
         let hasErrors = false;
@@ -80,8 +81,6 @@ $(function ($) {
         });
 
         window.open(`/protocol_generator/akt_vr.php?${params.toString()}`, '_blank');
-
-        setTimeout( function() {location.reload()}, 1500);
     });
 
     $body.on('input change', '#act-work-modal-form input[name="Email"]', function() {
