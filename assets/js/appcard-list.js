@@ -9,8 +9,8 @@ $(function ($) {
             type: 'POST',
             data: function (d) {
                 d.url = window.location.href.split('?')[0];
-                d.dateStart = $('#inputDateStart').val();
-                d.dateEnd = $('#inputDateEnd').val();
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
                 d.stage = $('#selectStage option:selected').val();
                 d.lab = $('#selectLab option:selected').val();
                 d.everywhere = $('#filter_everywhere').val();
