@@ -1011,9 +1011,9 @@ class Oborud extends Model {
             INNER JOIN ulab_methods_oborud mo ON mo.method_id = ugtp.method_id 
             INNER JOIN ba_oborud b_o ON b_o.ID = mo.id_oborud
             left join ba_oborud_certificate boc on b_o.ID = boc.oborud_id and boc.is_actual = 1     
-            INNER JOIN ulab_methods m ON m.id = mo.method_id 
+            INNER JOIN ulab_methods m ON m.id = mo.method_id
             WHERE ugtp.protocol_id = {$protocolId}
-                AND (b_o.IDENT IS NULL OR b_o.IDENT NOT IN ('VO', 'TS', 'REACT')) 
+                AND (b_o.IDENT IS NULL OR b_o.IDENT NOT IN ('KO', 'SO', 'TS', 'REACT')) 
                 AND b_o.is_decommissioned = 0 AND (b_o.LONG_STORAGE = 0 OR b_o.LONG_STORAGE IS NULL)
                 AND b_o.organization_id = {$organizationId}
             ORDER BY b_o.OBJECT");
@@ -1125,14 +1125,15 @@ class Oborud extends Model {
 
         $result = $this->DB->Query(
             "SELECT 
-                        toc.ID as toc_id, boc.date_end as POVER,
-                        b_o.ID as b_o_id, b_o.*
-                    FROM TZ_OB_CONNECT toc 
-                    INNER JOIN ba_oborud b_o ON b_o.ID = toc.ID_OB
-					left join ba_oborud_certificate boc on b_o.ID = boc.oborud_id and boc.is_actual = 1 
-                    WHERE PROTOCOL_ID = {$protocolId}
-                    AND b_o.organization_id = {$organizationId}
-                    ");
+                toc.ID as toc_id, boc.date_end as POVER,
+                b_o.ID as b_o_id, b_o.*
+            FROM TZ_OB_CONNECT toc 
+            INNER JOIN ba_oborud b_o ON b_o.ID = toc.ID_OB
+            left join ba_oborud_certificate boc on b_o.ID = boc.oborud_id and boc.is_actual = 1
+            WHERE PROTOCOL_ID = {$protocolId}
+            AND b_o.IDENT NOT IN ('KO', 'SO', 'TS', 'REACT')
+            AND b_o.organization_id = {$organizationId}
+        ");
 
         while ($row = $result->Fetch()) {
 
@@ -1265,7 +1266,7 @@ class Oborud extends Model {
         $sql = $this->DB->Query(
             "SELECT mo.method_id, o.id o_id, o.IDENT, o.REG_NUM, o.OBJECT, o.TYPE_OBORUD, m.clause, g.id g_id, g.reg_doc   
                 FROM ba_oborud o, ulab_methods_oborud mo, ulab_methods m, ulab_gost g 
-                WHERE o.IDENT NOT IN ('VO', 'TS', 'REACT') AND o.ID = mo.id_oborud AND mo.method_id = m.id 
+                WHERE o.IDENT NOT IN ('KO', 'SO', 'TS', 'REACT') AND o.ID = mo.id_oborud AND mo.method_id = m.id 
                 AND m.gost_id = g.id AND o.organization_id = {$organizationId} ORDER BY o.OBJECT"
         );
 
