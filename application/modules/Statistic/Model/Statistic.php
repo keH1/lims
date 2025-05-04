@@ -1838,6 +1838,12 @@ class Statistic extends Model
     }
 
 
+    /**
+     * отчет по мфц
+     * @param $dataReport
+     * @return int[]
+     * @throws Exception
+     */
     public function getMfcReport($dataReport)
     {
         $companyMethod = new Company();
@@ -1845,21 +1851,23 @@ class Statistic extends Model
         $month = date('m', strtotime($dataReport));
         $year = date('Y', strtotime($dataReport));
 
-        $newCompanyCount = 0;
+        $result = [
+            'new_company_count' => 0,
+        ];
+
         if ( Loader::IncludeModule('crm') ) {
             $arOrder  = ['ID' => 'ASC'];
             $arFilter = [
                 $companyMethod::COMPANY_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId,
-                '>=DATE_CREATE' => "01.{$month}.2000 00:00:00",
-                '<=DATE_CREATE' => date("d.m.Y 23:59:59", strtotime("{$year}-{$month}-01")),
+                '>=DATE_CREATE' => "01.{$month}.{$year} 00:00:00",
+                '<DATE_CREATE' => "01.{$month}.{$year} 00:00:00 + INTERVAL 1 MONTH",
             ];
 
             $arSelect = [];
             $companies = CCrmCompany::GetList( $arOrder, $arFilter, $arSelect );
-            $newCompanyCount = $companies->SelectedRowsCount();
-        }
 
-        $result = [];
+            $result['new_company_count'] = $companies->SelectedRowsCount();
+        }
 
         $requestSql = $this->DB->Query(
             "select 
@@ -1873,7 +1881,48 @@ class Statistic extends Model
                 and DATE_CREATE_TIMESTAMP < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
         )->Fetch();
 
-        $this->pre($requestSql);
+        $result['count_total_request'] = $requestSql['count_total_request'];
+        $result['count_won'] = $requestSql['count_won'];
+        $result['count_lose'] = $requestSql['count_lose'];
+
+        return $result;
+    }
+
+
+    /**
+     * отчет годовой
+     * @param $dataReport
+     * @return int[]
+     */
+    public function getYearReport($dataReport)
+    {
+        $organizationId = App::getOrganizationId();
+        $year = date('Y', strtotime($dataReport));
+
+        $result = [
+            'tests' => 0,
+            'protocols' => 0,
+            'prob' => 0,
+        ];
+
+        $result['requests'] = $this->DB->Query(
+            "select 
+                ID
+            from ba_tz 
+            where 
+                DATE_SOZD between '{$year}-01-01' and '{$year}-12-31' and 
+                organization_id = {$organizationId}"
+        )->SelectedRowsCount();
+
+        $result['orders'] = $this->DB->Query(
+            "select 
+                d.ID
+            from DOGOVOR as d 
+            join ba_tz as tz on d.TZ_ID = tz.ID
+            where 
+                d.`DATE` between '{$year}-01-01' and '{$year}-12-31' and 
+                tz.organization_id = {$organizationId}"
+        )->SelectedRowsCount();
 
         return $result;
     }

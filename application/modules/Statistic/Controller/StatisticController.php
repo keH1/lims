@@ -152,6 +152,8 @@ class StatisticController extends Controller
 
         $this->data['mfc_report'] = $statisticModel->getMfcReport($monthReport);
 
+        $this->data['year_report'] = $statisticModel->getYearReport($monthReport);
+
         $this->data['field_report_protocol'] = [
             'Протоколы',
             'count' => 'Общее количество протоколов, шт',
@@ -191,7 +193,7 @@ class StatisticController extends Controller
             'd' => 'Уникальные (одна лаб.), шт',
             'e' => 'Совместные (несколько лаб.), шт',
             'Клиент',
-            'f' => 'Новый клиентов, шт:',
+            'new_company_count' => 'Новых клиентов, шт:',
             'Акты приемки',
             'g' => 'Общее количество актов приемки проб, шт',
             'k' => 'Завершенные, шт',
@@ -208,8 +210,16 @@ class StatisticController extends Controller
             't' => 'Оплачено на сумму, руб',
         ];
 
-        $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
-		$this->addJs("/assets/js/statistic.js");
+        $this->data['year_report_rows'] = [
+            'requests' => 'Принято заявок',
+            'orders' => 'Заключено договоров',
+            'tests' => 'Всего проведено испытаний',
+            'protocols' => 'Всего выдано протоколов',
+            'prob' => 'Всего принято проб',
+        ];
+
+//        $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
+		$this->addJs("/assets/js/statistic.js?v=1");
 
 		$this->view('headerReport');
 	}
