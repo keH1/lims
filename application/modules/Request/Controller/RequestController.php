@@ -1888,8 +1888,7 @@ class RequestController extends Controller
         $this->data['act_complete']['date_send'] = !empty($actVr['SEND_DATE'])? StringHelper::dateRu($actVr['SEND_DATE']) : 'Не отправлен';
         $this->data['act_complete']['is_disable_form'] = false || 0;
         $this->data['act_complete']['is_disable_mail'] = empty($actVr) || 0;
-        //TODO: пока ид организации задано жестко 1. потом переделать на получение к какой организации принадлежит заявка
-        $this->data['act_complete']['assigned_users'] = $organizationModel->getAllLeaders(1);
+        $this->data['act_complete']['assigned_users'] = $organizationModel->getAllLeaders();
     }
 
 
