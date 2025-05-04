@@ -52,7 +52,7 @@ $(function ($) {
             { $el: $form.find('[name=actNumber]'), message: 'Номер акта обязателен' },
             { $el: $form.find('[name=actDate]'), message: 'Дата акта обязательна' },
             { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' },
-            { $el: $form.find('[name=Email]'), message: 'Email обязателен' },
+            { $el: $email, message: 'Email обязателен' },
         ];
 
         let hasErrors = false
@@ -68,7 +68,11 @@ $(function ($) {
             }
         })
 
-        if (!validateEmailField($email) || hasErrors) {
+        if (hasErrors) {
+            return
+        }
+
+        if (!validateEmailField($email)) {
             return
         }
 
