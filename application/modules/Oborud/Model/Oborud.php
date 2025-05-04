@@ -53,6 +53,8 @@ class Oborud extends Model {
             'dir' => 'DESC'
         ];
 
+        $whereTotal = '';
+
         if ( !empty($filter) ) {
             // из $filter собирать строку $where тут
             // формат такой: $where .= "что-то = чему-то AND ";
@@ -119,6 +121,10 @@ class Oborud extends Model {
                     ];
 
                     $where .= $stage[$filter['search']['stage']];
+
+                    if ( isset($filter['search']['metrolog']) ) {
+                        $whereTotal = $stage[$filter['search']['stage']];
+                    }
                 }
 
                 // Лаба Комната
@@ -220,7 +226,7 @@ class Oborud extends Model {
                     FROM ba_oborud b
                     LEFT JOIN ba_laba l ON l.ID = b.place_of_installation_or_storage
                     left join ba_oborud_certificate as c on c.oborud_id = b.ID
-                    WHERE b.organization_id = {$organizationId}
+                    WHERE {$whereTotal} b.organization_id = {$organizationId}
                     group by b.ID"
         )->SelectedRowsCount();
 
