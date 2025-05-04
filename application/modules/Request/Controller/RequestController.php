@@ -282,6 +282,12 @@ class RequestController extends Controller
         if ($_POST['REQ_TYPE'] === 'SALE') {
             $this->validationSale($_POST, $location);
 
+            // Обновление пользовательского поля Компании Должность руководителя в родительном падеже
+            $customFieldCompanyData = [
+                'PositionGenitive' => trim($_POST['PositionGenitive'])
+            ];
+            $company->setCustomFieldByCompanyId($companyId, $customFieldCompanyData);
+
             $resetId = 1;
             
             $dataBank = [
