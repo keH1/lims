@@ -202,7 +202,7 @@
                 </td>
                 <td>--</td>
                 <td>
-                    <a class="no-decoration me-1 popup-with-form" href="#protocol-modal-form" title="Сформировать">
+                    <a class="no-decoration me-1 popup-with-form" href="#protocol-modal-form" title="Скачать">
                         <svg class="icon" width="35" height="35">
                             <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
                         </svg>
@@ -663,7 +663,7 @@
 </form>
 
 <div id="finish-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative">
-    <div class="title mb-3 h-2">
+    <div class="title mb-3 h-2 pe-4">
         Выберите результат, с которым будет закрыта сделка
     </div>
 

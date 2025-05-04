@@ -2468,10 +2468,12 @@ class ResultController extends Controller
             $deal = $requestModel->getDealById($dealId);
 
             // если у протокола уже сохранена дата начала/конца испытаний - используем её
-            $response['dates_trials'] = array_merge($response['dates_trials'], array_filter([
-                'date_begin' => $response['protocol']['DATE_BEGIN'] ?? null,
-                'date_end' => $response['protocol']['DATE_END'] ?? null
-            ]));
+            if ( !empty($response['protocol']['DATE_BEGIN']) && $response['protocol']['DATE_BEGIN'] !== '0000-00-00' ) {
+                $response['dates_trials']['date_begin'] = $response['protocol']['DATE_BEGIN'];
+            }
+            if ( !empty($response['protocol']['DATE_END']) && $response['protocol']['DATE_END'] !== '0000-00-00' ) {
+                $response['dates_trials']['date_end'] = $response['protocol']['DATE_END'];
+            }
 
             // Если checkbox "Изменить условия испытаний" не отмечен и тип заявки не НК, то берём данные из "Журнала условий"
             if ( empty($response['protocol']['CHANGE_TRIALS_CONDITIONS']) && $deal['TYPE_ID'] != TYPE_DEAL_NK) {

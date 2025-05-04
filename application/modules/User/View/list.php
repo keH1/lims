@@ -46,7 +46,7 @@
         <th scope="col" class="text-nowrap">ФИО</th>
         <th scope="col" class="text-nowrap">Почта</th>
         <th scope="col" class="text-nowrap">Должность</th>
-        <th scope="col" class="text-nowrap">Отдел</th>
+        <th scope="col" class="text-nowrap">Лаборатория</th>
         <th scope="col" class="text-nowrap">Роль</th>
     </tr>
     <tr class="header-search">
@@ -70,8 +70,8 @@
         </th>
         <th scope="col">
             <select  class="form-control search">
-                <option value="">Все отделы</option>
-                <option value="Отдел не указан">Отдел не указан</option>
+                <option value="">Все лаборатории</option>
+                <option value="Лаборатория не указан">Лаборатория не указан</option>
                 <?php foreach ($this->data['department_list'] as $row): ?>
                     <option value="<?=$row['NAME']?>"><?=$row['NAME']?></option>
                 <?php endforeach; ?>
@@ -90,8 +90,6 @@
     <tbody>
     </tbody>
 </table>
-
-<div class="line-dashed"></div>
 
 <form id="user-modal-form" class="bg-light mfp-hide col-md-5 m-auto p-3 position-relative"
       action="<?= URI ?>/import/insertUpdateUser/" method="post">
@@ -148,9 +146,9 @@
     </div>
 
     <div class="mb-3">
-        <label for="departmentId" class="form-label mb-1">Отдел</label>
+        <label for="departmentId" class="form-label mb-1">Лаборатория</label>
         <select name="DEPARTMENT_ID" id="departmentId" class="form-control" required>
-            <option value="">Отдел не указан</option>
+            <option value="">Лаборатория не указан</option>
             <?php if (isset($this->data['department_all'])): ?>
                 <?php foreach ($this->data['department_all'] as $department): ?>
                     <option value="<?=$department['ID']?>" <?= $this->data['DEPARTMENT_ID'] == $department['ID'] ? 'selected' : '' ?> ><?=$department['NAME']?></option>

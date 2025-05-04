@@ -82,6 +82,7 @@ $(function () {
             data: function (d) {
                 d.lab = $('#selectLab option:selected').val()
                 d.stage = item
+                d.metrolog = 1
             },
             url : '/ulab/oborud/getListProcessingAjax/',
             dataSrc: function (json) {

@@ -23,6 +23,11 @@
                     </svg>
                 </a>
             </li>
+            <li class="nav-item me-2">
+                <a class="nav-link" href="<?=URI?>/generator/generateSamplingActDocument/<?=$this->data['deal_id']?>" title="Скачать акт отбора">
+                    Скачать акт отбора
+                </a>
+            </li>
         </ul>
     </nav>
 </header>

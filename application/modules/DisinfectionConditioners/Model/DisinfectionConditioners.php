@@ -114,7 +114,7 @@ class DisinfectionConditioners extends Model
         ];
         $response = [];
         if (isset($namesTable[$name])) {
-            $requestFromSQL = $this->DB->Query("SELECT * from {$namesTable[$name]}");
+            $requestFromSQL = $this->DB->Query("SELECT * FROM {$namesTable[$name]} WHERE organization_id = {$organizationId}");
         }
 
         if ($name == 'getList') {

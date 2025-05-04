@@ -454,6 +454,14 @@ $(function ($) {
     
     $body.on("click", ".form-group button.remove_this", function () {
         let $formGroupContainer = $(this).parents('.form-group')
+
+        $formGroupContainer.find('select.assigned-select').each(function() {
+            const $select = $(this)
+            if ($select.hasClass('select2-hidden-accessible')) {
+                $select.select2('destroy')
+            }
+        })
+
         $formGroupContainer.remove()
     })
 

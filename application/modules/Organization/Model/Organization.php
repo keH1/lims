@@ -53,6 +53,14 @@ class Organization extends Model
             return false;
         }
 
+        if ( !empty($data['bitrix_department_id']) ) {
+            $labModel = new Lab();
+            $labInfo = $labModel->getLabByBitrixDepartmentId($data['bitrix_department_id']);
+            if ( !empty($labInfo['ID']) ) {
+                $data['lab_id'] = $labInfo['ID'];
+            }
+        }
+
         if (!empty($data['lab_id'])) {
             $data['dep_id'] = $this->getDepIdByLab($data['lab_id']);
             $data['branch_id'] = $this->getBranchIdByDep($data['dep_id']);
@@ -525,18 +533,24 @@ class Organization extends Model
      */
     public function getNotAffiliationUser()
     {
-        $sql = $this->DB->Query(
-            "SELECT ID, `NAME`, `LAST_NAME`, `SECOND_NAME`, `WORK_POSITION` 
-             FROM b_user
-             WHERE ID NOT IN
-              (SELECT user_id FROM ulab_user_affiliation) AND ACTIVE = 'Y' AND BLOCKED = 'N'
-             ORDER BY `NAME`, `LAST_NAME`
-        ");
+        $userModel = new User();
+
+        $allUsers = $userModel->getUsers();
+        $sql = $this->DB->Query("SELECT user_id FROM ulab_user_affiliation");
 
         $result = [];
 
+        $userIdList = [];
         while ($row = $sql->Fetch()) {
-            $result[] = $row;
+            $userIdList[] = $row['user_id'];
+        }
+
+        foreach ($allUsers as $user) {
+            if ( in_array($user['ID'], $userIdList) ) {
+                continue;
+            }
+
+            $result[] = $user;
         }
 
         return $result;
@@ -637,7 +651,7 @@ class Organization extends Model
      * @param $filter
      * @return array
      */
-    public function getLabJournal(int $depId, $filter)
+    public function getLabJournal(int $depId, $filter = [])
     {
         $where = "";
         $limit = "";
@@ -921,19 +935,20 @@ class Organization extends Model
      * @param $orgId
      * @return array
      */
-    public function getAllLeaders($orgId)
+    public function getAllLeaders()
     {
         $userModel = new User();
 
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         $sql = $this->DB->Query(
             "select org.head_user_id as org_uid, brnch.head_user_id as brn_uid, dep.head_user_id as dep_uid, lab.HEAD_ID as lab_uid
             from ulab_organization as org
-            join ulab_branch as brnch on org.id = brnch.organization_id
-            join ulab_department as dep on brnch.id = dep.branch_id
-            join ba_laba as lab on lab.dep_id = dep.id
-            where org.id = {$orgId}"
+            left join ulab_branch as brnch on org.id = brnch.organization_id
+            left join ulab_department as dep on brnch.id = dep.branch_id
+            left join ba_laba as lab on lab.dep_id = dep.id
+            where org.id = {$organizationId}"
         );
 
         $columns = ['org_uid', 'brn_uid', 'dep_uid', 'lab_uid'];

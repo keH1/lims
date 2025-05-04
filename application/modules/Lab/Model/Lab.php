@@ -73,8 +73,10 @@ class Lab extends Model
                 "select utsu.VALUE_ID 
                         from b_uts_user as utsu
                         inner join b_user as u on u.ID = utsu.VALUE_ID
-                        where utsu.UF_DEPARTMENT like '%:{$row['id_dep']};%' and u.ACTIVE = 'Y'"
-            );
+                        where utsu.UF_DEPARTMENT like '%:{$row['id_dep']};%' and u.ACTIVE = 'Y'
+                        and utsu.UF_ORG_ID = {$organizationId}
+            ");
+
             $result[$row['id_dep']]['short_name'] = $row['short_name'];
             $result[$row['id_dep']]['lab_id'] = $row['ID'];
 
@@ -94,7 +96,6 @@ class Lab extends Model
                 }
             }
         }
-
         return $result;
     }
 
@@ -127,6 +128,27 @@ class Lab extends Model
         if (empty($labId)) { return []; }
 
         return $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and ID = {$labId}")->Fetch();
+    }
+
+
+    /**
+     * получает лабораторию по ид битриксового департамента
+     * @param $bitrixDepartmentId
+     * @return array
+     * @throws Exception
+     */
+    public function getLabByBitrixDepartmentId($bitrixDepartmentId)
+    {
+        $organizationId = App::getOrganizationId();
+        if (empty($bitrixDepartmentId)) { return []; }
+
+        $sqlLab = $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and id_dep = {$bitrixDepartmentId}")->Fetch();
+
+        if ( empty($sqlLab) ) {
+            return [];
+        }
+
+        return $sqlLab;
     }
 
 
@@ -492,8 +514,9 @@ class Lab extends Model
 
 	public function getLabList()
 	{
+        $organizationId = App::getOrganizationId();
 		$result = [];
-		$res = $this->DB->Query("SELECT * FROM ba_laba WHERE ID <> 6");
+		$res = $this->DB->Query("SELECT * FROM ba_laba WHERE organization_id = {$organizationId}");
 
 		while ($row = $res->Fetch()) {
 			$result[] = $row;
@@ -560,7 +583,7 @@ class Lab extends Model
                 FROM ulab_gost_to_probe ugtp 
                     INNER JOIN ulab_gost_room ugr on ugr.ugtp_id = ugtp.id 
                     INNER JOIN ulab_conditions uc on uc.room_id = ugr.room_id 
-                    WHERE {$where} AND organization_id = {$organizationId}"
+                    WHERE {$where} AND uc.organization_id = {$organizationId}"
         )->Fetch();
 
         if ( !empty($conditionsSql) ) {

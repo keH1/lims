@@ -21,8 +21,8 @@ $(document).ready(function () {
             url: `/ulab/laboratory/getJournalAjax/`,
             data: function (d) {
                 d.token = TOKEN,
-                d.dateStart = $("#dateStart").val(),
-                d.dateEnd = $("#dateEnd").val()
+                d.dateStart = $("#dateStart").val() || "0001-01-01",
+                d.dateEnd = $("#dateEnd").val() || "9999-12-31"
              //   d.hidden = $("#hide-row").attr("visible") == 1 ? 0 : 1
             },
             dataSrc: function (json) {

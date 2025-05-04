@@ -15,19 +15,14 @@ class ObjectController extends Controller
     {
         $version = rand();
 
-        $this->addJs('/assets/js/object.js?v=' . $version);
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
+        $this->addJs('/assets/js/object.js?v=' . $version);
 
         $secondment = $this->model('Secondment');
 
         $this->data["companyList"] = $secondment->getCompanyList();
         $this->data["cityList"] = $secondment->getCityArr();
-
-        echo "<pre>";
-      //  var_dump( $this->data["companyList"]);
-        //var_dump( $cityList);
-        echo "</pre>";
 
         $this->view("new");
     }

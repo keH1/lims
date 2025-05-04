@@ -36,20 +36,13 @@ class DateHelper {
     public static function addWorkingDays($date, $dayQuantity)
     {
         $year = intval(date("Y", strtotime($date)));
-        $jsonDir = "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant";
-        $holidays = json_decode(file_get_contents("{$jsonDir}{$year}.json"), true)["holidays"];
 
         for ($i = 0; $i < $dayQuantity; $i++) {
             if ($date == $year . "-12-31") {
                 $year++;
-                $holidays = json_decode(file_get_contents("{$jsonDir}{$year}.json"), true)["holidays"];
             }
 
             $date = date('Y-m-d', strtotime($date . ' +1 day'));
-
-            if (in_array($date, $holidays)) {
-                $dayQuantity++;
-            }
         }
 
         return $date;

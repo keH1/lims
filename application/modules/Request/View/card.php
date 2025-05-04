@@ -713,12 +713,12 @@
                         <img src="<?=$file['img']?>" alt="ico" width="90">
                     </div>
                     <div class="file-preview-title align-center">
-                        <a class="text-decoration-none" href="/ulab/upload/request/<?=$this->data['deal_id']?>/<?=$file['name']?>" ><?=$file['name']?></a>
+                        <a class="text-decoration-none" href="/ulab/upload/request/<?=$this->data['deal_id']?>/files/<?=$file['name']?>" ><?=$file['name']?></a>
                     </div>
                     <?php if ($this->data['is_managers']): ?>
                         <div class="file-preview-back flex-column">
                             <a class="btn btn-danger" href="/ulab/request/deleteFile/<?=$this->data['deal_id']?>?file=<?=$file['name']?>">Удалить</a>
-                            <a download class="btn btn-success" href="/ulab/upload/request/<?=$this->data['deal_id']?>/<?=$file['name']?>">Скачать</a>
+                            <a download class="btn btn-success" href="/ulab/upload/request/<?=$this->data['deal_id']?>/files/<?=$file['name']?>">Скачать</a>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -976,7 +976,7 @@
 </form>
 
 <div id="finish-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative">
-    <div class="title mb-3 h-2">
+    <div class="title mb-3 h-2 pe-4">
         Выберите результат, с которым будет закрыта сделка
     </div>
 

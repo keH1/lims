@@ -135,63 +135,17 @@ class Standarttitr extends Model
                                         $this->dayInYear DAY) < CURDATE(), 1,
                       0)                               AS is_expired
             FROM standart_titr
-                     JOIN standart_titr_receive
+                     left JOIN standart_titr_receive
                           ON standart_titr_receive.id_standart_titr = standart_titr.id
                      left JOIN standart_titr_manufacturer
                           ON standart_titr_receive.id_standart_titr_manufacturer =
                              standart_titr_manufacturer.id
                      LEFT JOIN b_user ON standart_titr_receive.global_assigned = b_user.id
-            WHERE standart_titr.organization_id = {$organizationId}
+           WHERE standart_titr.organization_id = {$organizationId}
             HAVING  id {$filters['idWhichFilter']}             
                      AND                   {$filters['having']}
                     ORDER BY date_receive IS NULL DESC, {$filters['order']}
-                    
-                    {$filters['limit']} 
-        ";
-            $this->pre("
-            SELECT CONCAT('СТ-', standart_titr.number, IFNULL
-                (CONCAT('-', standart_titr_receive.number), '')) AS number
-                 , standart_titr.id
-                 , standart_titr.name
-                 , standart_titr_receive.number_batch
-                 , standart_titr_receive.volume
-                 , standart_titr_receive.coefficient
-                 , standart_titr_receive.doc_standart_titr
-                 , standart_titr_manufacturer.name     AS manufacturer_name
-                 , DATE_FORMAT(standart_titr_receive.doc_receive_date,
-                               '%d.%m.%Y')             AS doc_receive_date_dateformat
-                 , CONCAT('№ ', standart_titr_receive.doc_receive_name, ' от ',
-                          DATE_FORMAT(standart_titr_receive.doc_receive_date,
-                                      '%d.%m.%Y'))     AS doc_receive_full
-                 , CONCAT(standart_titr_receive.quantity,
-                          ' ампул')                    AS quantity_full
-                 , DATE_FORMAT(standart_titr_receive.date_production,
-                               '%d.%m.%Y')             AS date_production_dateformat
-                 , CONCAT(standart_titr_receive.storage_life_in_year, ' год(а), до ',
-                          DATE_FORMAT(DATE_ADD(standart_titr_receive.date_production,
-                                               INTERVAL
-                                                       standart_titr_receive.storage_life_in_year *
-                                                       $this->dayInYear DAY),
-                                      '%d.%m.%Y'))     AS storage_full
-                 , TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) AS global_assigned_name 
-                 , IF(DATE_ADD(standart_titr_receive.date_production,
-                               INTERVAL standart_titr_receive.storage_life_in_year *
-                                        $this->dayInYear DAY) < CURDATE(), 1,
-                      0)                               AS is_expired
-            FROM standart_titr
-                     JOIN standart_titr_receive
-                          ON standart_titr_receive.id_standart_titr = standart_titr.id
-                     left JOIN standart_titr_manufacturer
-                          ON standart_titr_receive.id_standart_titr_manufacturer =
-                             standart_titr_manufacturer.id
-                     LEFT JOIN b_user ON standart_titr_receive.global_assigned = b_user.id
-            WHERE standart_titr.organization_id = {$organizationId}
-            HAVING  id {$filters['idWhichFilter']}             
-                     AND                   {$filters['having']}
-                    ORDER BY date_receive IS NULL DESC, {$filters['order']}
-                    
-                    {$filters['limit']} 
-        ");
+                    {$filters['limit']}";
         } elseif ($typeName == 'data_for_update') {
             $request = "
                 SELECT *                   
@@ -209,9 +163,7 @@ class Standarttitr extends Model
                              ";
         } elseif (array_key_exists($typeName, $this->selectInList)) {
             if ($this->selectInList[$typeName][0] == 1) {
-                $request = "
-                SELECT * FROM {$typeName}
-             ";
+                $request = "SELECT * FROM {$typeName}";
             } elseif ($this->selectInList[$typeName][0] == 0) {
                 if ($typeName == 'standart_titr_full_name') {
                     $request = "
@@ -252,8 +204,7 @@ class Standarttitr extends Model
         return $this->requestFromSQL($request);
     }
 
-    public
-    function getByID(string $name, $ID): string
+    public function getByID(string $name, $ID): string
     {
         $getFrom = [
             'reactiveName' => 'IDReactiveName'

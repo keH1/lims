@@ -71,7 +71,7 @@ class SecondmentController extends Controller
     {
         $this->data['title'] = 'Журнал командировок';
 
-        /** @var Urer $user */
+        /** @var User $user */
         $user = $this->model('User');
         /** @var Secondment $secondment */
         $secondment = $this->model('Secondment');
@@ -84,28 +84,12 @@ class SecondmentController extends Controller
 
         $this->data['projects'] = array_merge([["id" => 0, "name" => "Без проекта"]], $project->getList());
 
-        $this->data['users'] = $user->getUsersForSecondment();
+        $this->data['users'] = $user->getUsers();
         $this->data['date_start'] = $secondment->getDateStart();
         $this->data['date_end'] = $secondment->getDateEnd();
         $this->data['settlements'] = $secondment->getSettlementsData();
         $this->data['companies'] = $company->getList();
         $this->data['user_id'] = App::getUserId();
-//        $this->data["cityList"] = $secondment->getCityArr();
-
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
 
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
@@ -113,7 +97,7 @@ class SecondmentController extends Controller
 
         $this->addJs("/assets/js/journals/secondment-list.js?v=" . rand());
 
-        $this->view('list');
+        $this->view('list', '', 'template_journal');
     }
 
 
@@ -333,8 +317,8 @@ class SecondmentController extends Controller
                 'comment_per_diem' => $_POST['comment_per_diem'],
                 'accommodation' => $_POST['accommodation'],
                 'comment_accommodation' => $_POST['comment_accommodation'],
-                'other' => floatval($_POST['other']),
-                'comment_other' => $_POST['comment_other'],
+                'other' => floatval($_POST['other'][0]),
+                'comment_other' => (string)$_POST['comment_other'][0],
                 'planned_expenses' => $_POST['planned_expenses'],
                 'comment_planned_expenses' => $_POST['comment_planned_expenses'],
                 'organization_id' => $organizationId,

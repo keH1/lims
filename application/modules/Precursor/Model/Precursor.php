@@ -71,7 +71,7 @@ class Precursor extends Model
             $dataAdd = $data;
         } elseif ($typeName == 'addRemain') {
             $dataFirstAdd['reactive_remain'] = $data['reactive_remain'];
-            $dataFirstAdd['reactive_remain']['date'] = $data['reactive_remain']['date'] . '-01';
+            $dataFirstAdd['reactive_remain']['date'] = $data['reactive_remain']['date'];
             /*$lastReactiveRemain = $this->getFromSQL("lastDate", ['idWhichFilter' => $dataFirstAdd['reactive_remain']['id_library_reactive']]);
             $dataFirstAdd['reactive_remain']['id_reactive_remain'] = $lastReactiveRemain[0]['id'];*/
 
@@ -82,9 +82,9 @@ class Precursor extends Model
         return $this->insertToSQL($dataAdd);
     }
 
-    private
-    function getRequest(string $name): string
+    private function getRequest(string $name): string
     {
+        $organizationId = App::getOrganizationId();
         $receiveReactiveColumns = ["id_library_reactive", "CONCAT(id_library_reactive,'-',id) AS id_id",
             "DATE_FORMAT(date_receive, '%Y%m') AS y_m",
             "date_receive", "doc_receive_name", "doc_receive_date", "quantity", "global_assigned"];
@@ -97,6 +97,7 @@ class Precursor extends Model
                         FROM reactive
                                  LEFT JOIN reactive_model ON reactive_model.id = reactive.id_reactive_model
                                  LEFT JOIN reactive_pure ON reactive.id_pure = reactive_pure.id
+                        WHERE reactive.organization_id = {$organizationId}
          ";
         } elseif ($name == "standartTitr") {
             $request = "SELECT id_library_reactive,
@@ -104,6 +105,8 @@ class Precursor extends Model
                                id_unit_of_quantity,
                                is_precursor
                         FROM standart_titr
+                        WHERE standart_titr.organization_id = {$organizationId}
+
         ";
         } elseif ($name == "gso") {
             $request = "
@@ -112,6 +115,7 @@ class Precursor extends Model
                                id_unit_of_quantity,
                                is_precursor
                         FROM gso
+                        WHERE gso.organization_id = $organizationId
         ";
 
         } elseif ($name == "all_reactives") {
@@ -157,19 +161,17 @@ class Precursor extends Model
                                                   WHEN (@partval := id_library_reactive) IS NOT NULL AND (@rankval := y_m) IS NOT NULL THEN 1
                             END AS rnk,
                                      reactive_consume.*
-                              FROM (SELECT DATE_FORMAT(date, '%Y%m') AS y_m, reactive_consume.*
-                                    FROM reactive_consume
-                                    ORDER BY id_library_reactive, date)
+                              FROM (SELECT DATE_FORMAT(date, '%Y%m') AS y_m, reactive_consume.* FROM reactive_consume ORDER BY id_library_reactive, date)
                                        AS reactive_consume,
                                    (SELECT @rank := NULL, @partval := NULL, @rankval := NULL) AS x
+                            WHERE reactive_consume.organization_id = {$organizationId}
                               ORDER BY id_library_reactive, y_m) AS reactive_consume_full
             ";
         } elseif ($name == "all_reactive_receive_full") {
             $selectColumn = implode(',', $receiveReactiveColumns);
 
             foreach ($receiveReactiveTables as $item) {
-                $reactiveReceiveForUnion[] = "SELECT $selectColumn                                         
-                                            FROM $item";
+                $reactiveReceiveForUnion[] = "SELECT $selectColumn FROM $item WHERE organization_id = {$organizationId}";
             }
             $requestUnion = implode(' UNION ', $reactiveReceiveForUnion);
             $requestOrderBy = "SELECT * FROM ($requestUnion)
@@ -193,6 +195,7 @@ class Precursor extends Model
                                global_assigned
                         FROM ($requestWithRank)AS all_reactive_receive_full
             ";
+
             /* $request="SELECT id_library_reactive,
                                  id_id,
                                  CONCAT(id_library_reactive, '-', y_m, '-', rnk) AS id_y_m_r,
@@ -267,12 +270,12 @@ class Precursor extends Model
                    reactive_remain_end.global_assigned
             FROM (SELECT CONCAT(id_library_reactive, '-', DATE_FORMAT(reactive_remain.date, '%Y%m'), '-1') AS id_y_m_r,
                          reactive_remain.*
-                  FROM reactive_remain) AS reactive_remain_end
+                  FROM reactive_remain WHERE reactive_remain.organization_id = {$organizationId} ) AS reactive_remain_end
                      LEFT JOIN(SELECT CONCAT(id_library_reactive, '-',
                                              DATE_FORMAT(DATE_ADD(reactive_remain.date, INTERVAL 1 MONTH), '%Y%m'),
                                              '-1') AS id_y_m_r,
                                       reactive_remain.*
-                               FROM reactive_remain) AS reactive_remain_begin
+                               FROM reactive_remain  WHERE reactive_remain.organization_id = {$organizationId}) AS reactive_remain_begin
                               ON reactive_remain_end.id_y_m_r = reactive_remain_begin.id_y_m_r
             UNION
             SELECT reactive_remain_begin.quantity                                                             AS quantity_begin,
@@ -284,12 +287,12 @@ class Precursor extends Model
                    reactive_remain_end.global_assigned
             FROM (SELECT CONCAT(id_library_reactive, '-', DATE_FORMAT(reactive_remain.date, '%Y%m'), '-1') AS id_y_m_r,
                          reactive_remain.*
-                  FROM reactive_remain) AS reactive_remain_end
+                  FROM reactive_remain WHERE reactive_remain.organization_id = {$organizationId}) AS reactive_remain_end
                      RIGHT JOIN (SELECT CONCAT(id_library_reactive, '-',
                                                DATE_FORMAT(DATE_ADD(reactive_remain.date, INTERVAL 1 MONTH), '%Y%m'),
                                                '-1') AS id_y_m_r,
                                         reactive_remain.*
-                                 FROM reactive_remain) AS reactive_remain_begin
+                                 FROM reactive_remain WHERE reactive_remain.organization_id = {$organizationId}) AS reactive_remain_begin
                                 ON reactive_remain_end.id_y_m_r = reactive_remain_begin.id_y_m_r       
                       
             ";
@@ -303,7 +306,7 @@ class Precursor extends Model
     private
     function getFromSQL(string $typeName, array $filters = null): array
     {
-
+        $organizationId = App::getOrganizationId();
         if ($typeName == 'getList') {
 
             $request = "
@@ -343,8 +346,8 @@ class Precursor extends Model
                 
                 LEFT JOIN b_user AS user_remain ON user_remain.ID=reactive_remain_full.global_assigned
                 LEFT JOIN b_user AS user_receive ON user_receive.ID=reactive_receive_consume_full.assigned_receive
-                
-                WHERE is_precursor =1 
+            
+                WHERE is_precursor =1
             HAVING all_reactives.id_library_reactive {$filters['idWhichFilter']} AND
                    primary_date>= {$filters['dateStart']} AND primary_date <= {$filters['dateEnd']}   AND
                    {$filters['having']}
@@ -355,14 +358,14 @@ class Precursor extends Model
         } elseif ($typeName == 'lastDate') {
             $request = "SELECT *
                 FROM reactive_remain
-                WHERE id_library_reactive =  {$filters['idWhichFilter']}
+                WHERE id_library_reactive =  {$filters['idWhichFilter']} AND organization_id = {$organizationId}
                 ORDER BY date DESC
                 LIMIT 1
             ";
         } elseif (array_key_exists($typeName, $this->selectInList)) {
             if ($this->selectInList[$typeName][0] == 1) {
                 $request = "
-                SELECT * FROM $typeName
+                SELECT * FROM $typeName WHERE organization_id = {$organizationId}
              ";
             } elseif ($this->selectInList[$typeName][0] == 0) {
                 if ($typeName == 'precursor') {

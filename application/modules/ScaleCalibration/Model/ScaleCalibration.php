@@ -96,6 +96,7 @@ class ScaleCalibration extends Model
 
     public function addToSQL(array $data, string $type = null): int
     {
+        $data['organization_id'] = App::getOrganizationId();
         $namesTable = [
             'scale_calibration'
         ];
@@ -115,6 +116,7 @@ class ScaleCalibration extends Model
 
 	public function getFromSQL(string $name, array $filters = null): array
 	{
+        $organizationId = App::getOrganizationId();
 		$namesTable = [
 			'allRecord' => 'scale_calibration'
 		];
@@ -135,6 +137,7 @@ class ScaleCalibration extends Model
                     LEFT JOIN ba_oborud as bs ON sc.id_scale = bs.ID
                     LEFT JOIN ba_oborud as bw ON sc.id_weight = bw.ID
                     LEFT JOIN b_user as bu ON  sc.global_assigned = bu.ID
+                    WHERE sc.organization_id = {$organizationId}
                     HAVING bs.ID {$filters['idScale']}
                            {$filters['month']} and {$filters['having']}
                     ORDER BY {$filters['order']}
@@ -144,12 +147,12 @@ class ScaleCalibration extends Model
 		if ($name == 'scale') {
 			$requestFromSQL = $this->DB->Query("SELECT ID as id,
  												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
- 												FROM ba_oborud WHERE ID IN (235, 237, 239)");
+ 												FROM ba_oborud WHERE ID IN (235, 237, 239) AND organization_id = {$organizationId}");
 		}
 		if ($name == 'weight') {
 			$requestFromSQL = $this->DB->Query("SELECT ID as id,
  												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
- 												FROM ba_oborud WHERE ID IN (279)");
+ 												FROM ba_oborud WHERE ID IN (279)  AND organization_id = {$organizationId}");
 		}
 
 		$i = 1;
@@ -185,15 +188,17 @@ class ScaleCalibration extends Model
      */
     public function getMinMaxDateFridgeControl()
     {
+        $organizationId = App::getOrganizationId();
         return $this->DB->Query(
             "select max(date_calibration) as max_date, min(date_calibration) as min_date 
                     from scale_calibration
-                    where date_calibration <> '0000-00-00 00:00:00'"
+                    where date_calibration <> '0000-00-00 00:00:00'  AND organization_id = {$organizationId}"
         )->Fetch();
     }
 
 	public function autoFill($dateStart, $dateEnd)
 	{
+        $organizationId = App::getOrganizationId();
 		$userModel = new User();
 		$start = new DateTime($dateStart);
 		$end = new DateTime($dateEnd);
@@ -226,11 +231,13 @@ class ScaleCalibration extends Model
 				$randDate = rand($minDate, $maxDate);
 				$resultDate = date('Y-m-d H:i:s', $randDate);
 
-				$scaleError = $this->DB->Query("select scaleError from ba_oborud where ID = {$value['id_scale']}")->Fetch();
-				$weightMass = $this->DB->Query("select weightMass from ba_oborud where ID = {$value['id_weight']}")->Fetch();
+				$scaleError = $this->DB->Query("select scaleError from ba_oborud where organization_id = {$organizationId} AND ID = {$value['id_scale']}")->Fetch();
+				$weightMass = $this->DB->Query("select weightMass from ba_oborud where organization_id = {$organizationId} AND ID = {$value['id_weight']}")->Fetch();
 
-				$data = $this->DB->Query("select * from scale_calibration where id_scale = {$value['id_scale']} and `date_calibration` like '{$date}'")->Fetch();
-				$dataAssigned = $this->DB->Query("select ID_ASSIGN1, ID_ASSIGN2 from ba_oborud where ID = {$value['id_scale']}")->Fetch();
+				$data = $this->DB->Query("select * from scale_calibration where organization_id = {$organizationId} AND id_scale = {$value['id_scale']} 
+                                  and org
+                                  and `date_calibration` like '{$date}'")->Fetch();
+				$dataAssigned = $this->DB->Query("select ID_ASSIGN1, ID_ASSIGN2 from ba_oborud where organization_id = {$organizationId} AND ID = {$value['id_scale']}")->Fetch();
 
 				if (!empty($dataAssigned['ID_ASSIGN1'])) {
 					$userActive = $userModel->checkWorkActive($dataAssigned['ID_ASSIGN1'], $date);
@@ -245,8 +252,6 @@ class ScaleCalibration extends Model
 
 				$round = pow(10, strlen(explode('.', $scaleError['scaleError'])[1]));
 				$scaleResult = rand(($weightMass['weightMass'] * $round) - ($scaleError['scaleError'] * $round), ($weightMass['weightMass']  * $round) + ($scaleError['scaleError']  * $round)) / $round;
-
-
 
 
 				if ( empty($data) ) {

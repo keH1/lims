@@ -15,6 +15,7 @@ const URI                       = '/ulab';
 const UPLOAD_DIR                = __DIR__ . '/upload';
 const UPLOAD_URL                = URI . '/upload';
 const PROTOCOL_GENERATOR_URL    = '/protocol_generator/';
+const TEMPLATE_DIR              = __DIR__ . '/application/templates';
 
 // добросовестный клиент
 const COMPANY_GOOD = 'UF_CRM_1654574670';

@@ -2618,13 +2618,16 @@ class DocumentGenerator extends Model
 
 		$template->saveAs($file);
 
-		if ($type === 'kp') {
-		    $name_file = 'КП';
-        } elseif ($type === 'tz') {
-            $name_file = 'ТЗ';
-        } elseif ($type === 'dog') {
-            $name_file = 'CO';
-        }
+        $fileMap = [
+            'kp' => ['name_file' => 'КП', 'number_file' => 'NUM_KP'],
+            'tz' => ['name_file' => 'ТЗ', 'number_file' => 'id'],
+            'dog' => ['name_file' => 'CO', 'number_file' => 'id'],
+            'fallback' => ['name_file' => 'Документ', 'number_file' => ''],
+        ];
+
+        $config = $fileMap[$type] ?? $fileMap['fallback'];
+        $nameFile = $config['name_file'];
+        $numberFile = $info[$config['number_file']] ?? '';
 
         $newDirectory = $_SERVER['DOCUMENT_ROOT'] ."/protocol_generator/archive_{$type}/" . $info['id'];
 
@@ -2645,7 +2648,7 @@ class DocumentGenerator extends Model
         }
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-		header('Content-Disposition: attachment; filename="' . $name_file . ' №' . $info['id'] . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
+		header('Content-Disposition: attachment; filename="' . $nameFile . ' №' . $numberFile . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
 		readfile($file);
 	}
 
@@ -2871,6 +2874,86 @@ class DocumentGenerator extends Model
 		echo $content;
 
 	}
+
+    public function generateSamplingAct(int $dealId): void
+    {
+        $requirementModel = new Requirement();
+        $organizationId = App::getOrganizationId();
+
+        $actBase = $requirementModel->getActBase($dealId);
+        $dateReceivedRu = $actBase['date_ru'] ?? ''; // Дата поступления проб
+
+        $dealIdInt = (int)$dealId;
+        $sql = "
+            SELECT
+                umtr.cipher AS cipher,
+                umtr.name_for_protocol AS marker,
+                COALESCE(lab.short_name, lab.NAME) AS laboratory
+            FROM ba_tz as b 
+            INNER JOIN ulab_material_to_request as umtr on b.ID_Z = umtr.deal_id 
+            LEFT JOIN ulab_gost_to_probe ugtp ON umtr.id = ugtp.material_to_request_id 	     
+            LEFT JOIN ulab_methods um ON ugtp.new_method_id = um.id	
+            LEFT JOIN ulab_methods_lab as uml on um.id = uml.method_id  
+            LEFT JOIN ba_laba as lab on uml.lab_id = lab.ID 
+            WHERE b.organization_id = {$organizationId} AND umtr.deal_id = {$dealIdInt} AND umtr.in_act = 1   
+            ORDER BY umtr.cipher ASC 
+        ";
+        $probeResult = $this->DB->Query($sql);
+        $probeRows = [];
+        while ($r = $probeResult->Fetch()) {
+            $probeRows[] = [
+                'cipher'     => $r['cipher'],
+                'marker'     => $r['marker'],
+                'laboratory' => $r['laboratory'],
+            ];
+        }
+
+        $templatePath = TEMPLATE_DIR . '/word/SamplingAct.docx';
+        if (!is_readable($templatePath)) {
+            throw new \RuntimeException("Шаблон не найден: $templatePath");
+        }
+        $template = new \PhpOffice\PhpWord\TemplateProcessor($templatePath);
+
+        $template->setValue('dateReceived', $dateReceivedRu);
+
+        $styleTable = ['alignment' => 'center', 'borderSize' => 5, 'borderColor' => '000000', 'width' => '100%'];
+        $headerStyle = ['size' => 10,'bold' => true];
+        $cellCenter = ['align'=>'center','valign'=>'center'];
+
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $section = $phpWord->addSection();
+        $table = $section->addTable($styleTable);
+
+        // Заголовки
+        $table->addRow(null, array('tblHeader' => true));
+        $table->addCell(self::percentToTwips(30))->addText('Шифр пробы', $headerStyle, $cellCenter);
+        $table->addCell(self::percentToTwips(35))->addText('Маркировка', $headerStyle, $cellCenter);
+        $table->addCell(self::percentToTwips(35))->addText('Лаборатория',$headerStyle, $cellCenter);
+
+        // Строки
+        foreach ($probeRows as $row) {
+            $table->addRow();
+            $table->addCell(self::percentToTwips(30))->addText($row['cipher'], ['size' => 11], $cellCenter);
+            $table->addCell(self::percentToTwips(35))->addText($row['marker'], ['size' => 11], $cellCenter);
+            $table->addCell(self::percentToTwips(35))->addText($row['laboratory'], ['size' => 11], $cellCenter);
+        }
+
+        // Вставляем таблицу в шаблон
+        $template->setComplexBlock('table', $table);
+
+        $outputDir = UPLOAD_DIR . "/sampling_act/{$dealId}/";
+        if (!is_dir($outputDir)) {
+            mkdir($outputDir, 0777, true);
+        }
+        $fileName  = "Акт_отбора_проб_{$dealId}_" . date('Y-m-d_H-i-s') . ".docx";
+        $outputPath = $outputDir . $fileName;
+
+        $template->saveAs($outputPath);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Disposition: attachment; filename="'.$fileName.'"');
+        readfile($outputPath);
+        exit;
+    }
 
     /**
      * @param $year

@@ -11,8 +11,8 @@ $(function ($) {
             type: 'POST',
             data: function (d) {
                 d.idWhichFilter = $('#inputIdWhichFilter').val()
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01"
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31"
             },
             url: '/ulab/electric/getListProcessingAjax/',
             dataSrc: function (json) {
