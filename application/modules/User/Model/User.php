@@ -585,6 +585,12 @@ class User extends Model
     public function getUserList1($order = ['LAST_NAME' => 'asc'], $bitrixFilter = [], $bitrixParams = [], $customFilter = []): array
     {
         $tmp = [];
+        $organizationId = App::getOrganizationId();
+
+        $bitrixFilter = [
+            'UF_ORG_ID' => $organizationId,
+            'ACTIVE' => 'Y'
+        ];
         $users = CUser::GetList($order, $tmp, $bitrixFilter, $bitrixParams);
 
         $result = [];

@@ -12,8 +12,8 @@ function getJournalDataTable($element, columns) {
         ajax: {
             type: 'POST',
             data: function (d) {
-                d.dateStart = $('#inputDateStart:visible').val()
-                d.dateEnd = $('#inputDateEnd:visible').val()
+                d.dateStart = $('#inputDateStart:visible').val() || "0001-01-01"
+                d.dateEnd = $('#inputDateEnd:visible').val() || "9999-12-31"
                 d.stage = $('#selectStage:visible option:selected').val()
                 d.lab = $('#selectLab option:selected').val()
                 d.type_journal = $('input[name="type_journal"]:checked').val()

@@ -1192,9 +1192,9 @@ class Methods extends Model
 
         $data = $this->DB->Query(
            "SELECT DISTINCT 
-                    m.*, m.id method_id,
-                    g.*, g.id gost_id,
-                    p.fsa_id mp_fsa_id, p.name mp_name
+                m.*, m.id method_id,
+                g.*, g.id gost_id,
+                p.fsa_id mp_fsa_id, p.name mp_name
             FROM ulab_gost g
 
             LEFT JOIN ulab_methods AS m
@@ -1212,19 +1212,20 @@ class Methods extends Model
 
         $dataTotal = $this->DB->Query(
             "SELECT DISTINCT *
-                    FROM ulab_gost g
-                    LEFT JOIN ulab_methods m ON g.id = m.gost_id 
-                    LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id 
-                    WHERE g.organization_id = {$organizationId}"
-        )->SelectedRowsCount();
+                FROM ulab_gost g
+                LEFT JOIN ulab_methods m ON g.id = m.gost_id 
+                LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id
+                LEFT JOIN ulab_methods_lab AS l ON l.method_id = m.id
+                WHERE g.organization_id = {$organizationId}
+        ")->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
             "SELECT DISTINCT *
-                    FROM ulab_gost g
-                    LEFT JOIN ulab_methods m ON g.id = m.gost_id 
-                    LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id 
-                    LEFT JOIN ulab_methods_lab AS l ON l.method_id = m.id
-                    WHERE {$where}"
+                FROM ulab_gost g
+                LEFT JOIN ulab_methods m ON g.id = m.gost_id 
+                LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id 
+                LEFT JOIN ulab_methods_lab AS l ON l.method_id = m.id
+                WHERE {$where}"
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
