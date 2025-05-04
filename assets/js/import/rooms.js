@@ -432,6 +432,9 @@ $(function ($) {
             data: formData,
             dataType: "json",
             success: function(data) {
+                $(this).find('.form-button').removeClass('disabled');
+                $(this).find('.form-button').text('Сохранить помещение');
+
                 $.magnificPopup.close()
                 
                 if (data.success) {
