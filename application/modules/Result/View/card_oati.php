@@ -257,7 +257,7 @@
                                                         </form>
                                                     <?php endif; ?>
                                                 <?php else: ?>
-                                                    <span title="Для загрузки PDF-версии, в протоколе отмете 'Протокол выдается Вне системы'">
+                                                    <span title="Для загрузки PDF-версии, в протоколе отмете 'Протокол выдается вне системы'">
                                                         <svg class="icon icon-disabled" width="30" height="30">
                                                             <use xlink:href="<?= URI ?>/assets/images/icons.svg#upload"/>
                                                         </svg>
@@ -871,7 +871,7 @@
 
                     <div class="row">
                         <div class="col">
-                            <div>Протокол выдается Вне системы</div>
+                            <div>Протокол выдается вне системы</div>
                             <label class="switch">
                                 <input class="form-check-input protocol-outside-lis"
                                        name="protocol[PROTOCOL_OUTSIDE_LIS]" type="checkbox" value="1">
