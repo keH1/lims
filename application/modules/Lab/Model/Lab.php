@@ -583,7 +583,7 @@ class Lab extends Model
                 FROM ulab_gost_to_probe ugtp 
                     INNER JOIN ulab_gost_room ugr on ugr.ugtp_id = ugtp.id 
                     INNER JOIN ulab_conditions uc on uc.room_id = ugr.room_id 
-                    WHERE {$where} AND organization_id = {$organizationId}"
+                    WHERE {$where} AND uc.organization_id = {$organizationId}"
         )->Fetch();
 
         if ( !empty($conditionsSql) ) {
