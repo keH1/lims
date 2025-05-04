@@ -112,7 +112,7 @@ class RequestController extends Controller
 
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
-        $this->addJs('/assets/js/request_new.js?v=2');
+        $this->addJs('/assets/js/request_new.js?v='. rand());
 
         $this->view('form');
     }
@@ -831,7 +831,7 @@ class RequestController extends Controller
         /** @var Request $request */
         $request = $this->model('Request');
 
-        $path = "request/{$idDeal}/{$file}";
+        $path = "request/{$idDeal}/files/{$file}";
 
         $request->deleteUploadedFile($path);
 
@@ -1088,7 +1088,7 @@ class RequestController extends Controller
         $request = $this->model('Request');
 
         if ( isset($_FILES['file']) ) {
-            $response = $request->saveAnyFile("request/{$dealId}", $_FILES['file']);
+            $response = $request->saveAnyFile("request/{$dealId}/files", $_FILES['file']);
 
             echo json_encode($response, JSON_UNESCAPED_UNICODE);
         }
@@ -1551,14 +1551,14 @@ class RequestController extends Controller
         $this->data['deal_title'] = $deal['TITLE'];
         
         $this->data['is_complete'] = !($deal['STAGE_ID'] != '2' && $deal['STAGE_ID'] != '3' && $deal['STAGE_ID'] != '4' && $deal['STAGE_ID'] != 'WON');
-        $this->data['is_may_change'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], [1, 10, 35, 62, 9, 11, 58, 34, 43, 61, 13, 7, 15]);
+        $this->data['is_may_change'] = true;//in_array($_SESSION['SESS_AUTH']['USER_ID'], [1, 10, 35, 62, 9, 11, 58, 34, 43, 61, 13, 7, 15]);
         $this->data['is_end_test'] = $deal['STAGE_ID'] == 2 || $deal['STAGE_ID'] == 4 || $deal['STAGE_ID'] == 'WON';
         
         $this->data['user']['name'] = $_SESSION['SESS_AUTH']['NAME'];
         
         $this->data['company_title'] = $deal['COMPANY_TITLE'];
         $this->data['company_id'] = $deal['COMPANY_ID'];
-        $this->data['is_managers'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], [62, 83, 61, 17]);
+        $this->data['is_managers'] = true; //in_array($_SESSION['SESS_AUTH']['USER_ID'], [62, 83, 61, 17]);
         
         $this->data['is_good_company'] = $companyData[COMPANY_GOOD] == 1;
         
@@ -1586,13 +1586,13 @@ class RequestController extends Controller
         
         $this->data['comment'] = $request->getComment($dealId);
         
-        $userFiles = $request->getFilesFromDir(UPLOAD_DIR . "/request/{$dealId}");
+        $userFiles = $request->getFilesFromDir(UPLOAD_DIR . "/request/{$dealId}/files");
         $this->data['user_files'] = [];
         foreach ($userFiles as $file) {
             $imgLinc = URI.'/assets/images/unknown.png';
             $patternImg = "/\.(png|jpg|jpeg)$/i";
             if (preg_match($patternImg, $file)) {
-                $imgLinc = URI."/upload/request/{$dealId}/{$file}";
+                $imgLinc = URI."/upload/request/{$dealId}/files/{$file}";
             }
             $patternPdf = "/\.(pdf)$/i";
             if (preg_match($patternPdf, $file)) {
