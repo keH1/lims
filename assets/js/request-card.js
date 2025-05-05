@@ -278,7 +278,8 @@ $(function ($) {
             "TYPE": $('#TYPE').val(),
             "EMAIL": selectedEmails.join(','),
             "NAME": $form.find('input[name="NAME"]').val(),
-            "TITLE": $('#TITLE').val()
+            "TITLE": $('#TITLE').val(),
+            "is_ajax": 1
         }
         
         if (isOverall) {
