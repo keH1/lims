@@ -743,8 +743,8 @@ $(function ($) {
 
                 journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
             }
-
-            journalDataTable.on('draw.dt', () => initTableScrollNavigation())
+               
+            initTableScrollNavigation()
 
             window.history.replaceState({}, 'Журнал заявок', addr.href)
 
