@@ -125,6 +125,7 @@ class User extends Model
         foreach ($users as &$user) {
             $user['NAME'] = trim($user['NAME']);
             $user['LAST_NAME'] = trim($user['LAST_NAME']);
+            $user['SECOND_NAME'] = trim($user['SECOND_NAME']);
         }
 
         return $users;
