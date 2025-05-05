@@ -44,21 +44,22 @@ $(function ($) {
 
     $('#act-work-modal-form').on('submit', function(e) {
         e.preventDefault()
-        
+
         const $form = $(this)
         const $email = $form.find('[name=Email]')
-    
+
         const fieldsToValidate = [
             { $el: $form.find('[name=actNumber]'), message: 'Номер акта обязателен' },
             { $el: $form.find('[name=actDate]'), message: 'Дата акта обязательна' },
-            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' }
-        ]
-    
+            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' },
+            { $el: $email, message: 'Email обязателен' },
+        ];
+
         let hasErrors = false
-    
+
         // Сброс предыдущих ошибок
         fieldsToValidate.forEach(({ $el }) => clearElementError($el))
-    
+
         // Проверка на пустоту
         fieldsToValidate.forEach(({ $el, message }) => {
             if ($.trim($el.val()) === '') {
@@ -66,11 +67,15 @@ $(function ($) {
                 hasErrors = true
             }
         })
-    
-        if (!validateEmailField($email) || hasErrors) {
+
+        if (hasErrors) {
             return
         }
-    
+
+        if (!validateEmailField($email)) {
+            return
+        }
+
         const params = {
             ID: $.trim($form.find('[name=deal_id]').val()),
             TZ_ID: $.trim($form.find('[name=tz_id]').val()),
@@ -96,7 +101,7 @@ $(function ($) {
                 if (response && response.success) {
                     const downloadUrl = `/protocol_generator/akt_vr.php?${new URLSearchParams(params).toString()}`
                     const downloadWindow = window.open(downloadUrl, '_blank')
-                    
+
                     // if (!downloadWindow || downloadWindow.closed || typeof downloadWindow.closed === 'undefined') {
                     //     alert('Всплывающие окна')
                     //     location.reload()

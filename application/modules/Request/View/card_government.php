@@ -618,8 +618,8 @@
     </div>
 
 	<div class="mb-3">
-		<label class="form-label">Email отправки:</label>
-		<input type="text" name="Email" list="mail_list" class="form-control" value="<?=$this->data['act_complete']['email']?>">
+		<label class="form-label">Email отправки: <span class="redStars">*</span></label>
+		<input type="text" name="Email" list="mail_list" class="form-control" value="<?=$this->data['act_complete']['email']?>" required>
 		<datalist id="mail_list">
 			<?php foreach ($this->data['list_email'] as $email): ?>
 				<option value="<?= $email ?>"><?= $email ?></option>
