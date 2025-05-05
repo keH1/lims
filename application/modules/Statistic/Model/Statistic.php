@@ -647,7 +647,7 @@ class Statistic extends Model
                     'order' => "IF(b_user.ACTIVE = 'Y', 'Да', 'Нет')",
                     'filter' => "IF(b_user.ACTIVE = 'Y', 'Да', 'Нет') like '%{dataFilter}%'",
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
                 'lab' => [
                     'title' => 'Лаборатория',
@@ -655,7 +655,7 @@ class Statistic extends Model
                     'order' => "ba_laba.NAME",
                     'filter' => "ba_laba.NAME like '%{dataFilter}%'",
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
                 'work_position' => [
                     'title' => 'Должность',
@@ -663,16 +663,16 @@ class Statistic extends Model
                     'order' => "b_user.WORK_POSITION",
                     'filter' => "b_user.WORK_POSITION like '%{dataFilter}%'",
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
                 'count_complete' => [
                     'title' => 'Кол-во выполненных методик',
-                    'select' => "sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as count_complete",
+                    'select' => "count(case when ulab_start_trials.state = 'complete' then 1 else NULL end) as count_complete",
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end)",
                     'filter' => false,
                     'default_order' => 'desc',
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
                 'methods_price' => [
                     'title' => 'Стоимость выполненных методик',
@@ -680,7 +680,7 @@ class Statistic extends Model
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end)",
                     'filter' => false,
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
             ],
             'dependency' => [
@@ -694,10 +694,13 @@ class Statistic extends Model
                     'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = b_user.ID" // DEPARTMENT_ID
                 ],
                 'ulab_start_trials' => [
-                    'join' => "left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id"
+                    'join' => "LEFT JOIN ulab_start_trials
+                               ON ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
+                                AND ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'"
+
                 ],
             ],
-            'date_filter' => "ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'",
+            //'date_filter' => "ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'",
             'order' => 'b_user.ID',
             'chart' => [
                 'donut' => [
@@ -834,12 +837,12 @@ class Statistic extends Model
                 ],
                 'count_complete' => [
                     'title' => 'Кол-во выполненных методик',
-                    'select' => "sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as count_complete",
+                    'select' => "COUNT(CASE WHEN ulab_start_trials.state = 'complete' THEN 1 ELSE NULL END) AS count_complete",
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end)",
                     'filter' => false,
                     'default_order' => 'desc',
                     'where' => "ba_laba.id_dep IS NOT NULL AND ba_laba.organization_id = {organizationId}",
-                    'group' => 'ba_laba.ID',
+                    'group' => false,
                 ],
                 'count_probe' => [
                     'title' => 'Кол-во испытанных проб',
@@ -856,7 +859,7 @@ class Statistic extends Model
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end)",
                     'filter' => false,
                     'where' => "ba_laba.id_dep IS NOT NULL AND ba_laba.organization_id = {organizationId}",
-                    'group' => 'ba_laba.ID',
+                    'group' => false,
                 ],
                 'count_protocols' => [
                     'title' => 'Количество протоколов',
@@ -864,7 +867,7 @@ class Statistic extends Model
                     'order' => "count(distinct ulab_gost_to_probe.protocol_id)",
                     'filter' => false,
                     'where' => "",
-                    'group' => 'ba_laba.ID',
+                    'group' => false,
                 ],
             ],
             'dependency' => [
@@ -875,10 +878,12 @@ class Statistic extends Model
                     'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = ulab_user_affiliation.user_id"
                 ],
                 'ulab_start_trials' => [
-                    'join' => "left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id"
+                    'join' => "LEFT JOIN ulab_start_trials
+                               ON ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
+                                AND ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'"
                 ],
             ],
-            'date_filter' => "ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'",
+            //'date_filter' => "ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'",
             'order' => 'ba_laba.ID',
             'chart' => [
                 'donut' => [
@@ -1222,9 +1227,16 @@ class Statistic extends Model
                 $groups[] = $entityData['columns'][$key]['group'];
             }
 
+            // if ( isset($entityData['dependency']) ) {
+            //     foreach ($entityData['dependency'] as $table => $joinStr) {
+            //         $joins[$table] = $joinStr['join'];
+            //     }
+            // }
+
             if ( isset($entityData['dependency']) ) {
                 foreach ($entityData['dependency'] as $table => $joinStr) {
-                    $joins[$table] = $joinStr['join'];
+                    $joins[$table] = str_replace('{dateStart}', $filter['search']['dateStart'], $joinStr['join']);
+                    $joins[$table] = str_replace('{dateEnd}', $filter['search']['dateEnd'], $joins[$table]);
                 }
             }
 
