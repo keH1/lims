@@ -270,7 +270,7 @@
 <!--                            </svg>-->
 <!--                        </a>-->
 <!--                    --><?php //else: ?>
-						<a class="no-decoration me-1 reload" data-href="<?=$this->data['attach']['link']?>" title="Сформировать">
+						<a class="no-decoration me-1 reloadS" data-href="<?=$this->data['attach']['link']?>" title="Сформировать">
 							<svg class="icon" width="35" height="35">
 								<use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
 							</svg>
