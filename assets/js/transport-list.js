@@ -24,7 +24,7 @@ $(function ($) {
         },
         columns: [
             {
-                data: 'id'
+                data: 'local_id'
             },
             {
                 data: 'model'
