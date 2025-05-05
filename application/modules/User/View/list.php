@@ -105,13 +105,13 @@
     <div class="mb-3">
         <label for="name" class="form-label mb-1">Имя</label>
         <input type="text" name="NAME" class="form-control" id="name" placeholder="Введите имя"
-               value="<?= $this->data['NAME'] ?? '' ?>">
+               value="<?= $this->data['NAME'] ?? '' ?>" required>
     </div>
 
     <div class="mb-3">
         <label for="lastName" class="form-label mb-1">Фамилия</label>
         <input type="text" name="LAST_NAME" class="form-control" id="lastName" placeholder="Введите фамилию"
-               value="<?= $this->data['LAST_NAME'] ?? '' ?>">
+               value="<?= $this->data['LAST_NAME'] ?? '' ?>" required>
     </div>
 
     <div class="mb-3">

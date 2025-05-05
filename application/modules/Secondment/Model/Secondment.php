@@ -25,7 +25,7 @@ class Secondment extends Model
     {
         global $DB;
         $organizationId = App::getOrganizationId();
-        $where = "s.del = 0 OR s.del IS NULL AND s.organization_id = $organizationId AND ";
+        $where = "(s.del = 0 OR s.del IS NULL) AND s.organization_id = $organizationId AND ";
         $limit = "";
         $order = [
             'by' => 's_id',
@@ -196,6 +196,9 @@ class Secondment extends Model
              GROUP BY s.id"
         )->SelectedRowsCount();
 
+        // echo '<pre>';
+        // print_r($where);
+        // die;
         $dataFiltered = $this->DB->Query(
             "SELECT s.id val
              FROM secondment AS s 

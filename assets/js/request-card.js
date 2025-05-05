@@ -21,6 +21,9 @@ $(function ($) {
     })
 
     $('.popup-mail').on('click', function () {
+        $('#ATTACH1, #ATTACH2, #ATTACH3').remove()
+        $('#email-check').data('is_overall', false)
+
         $('#TYPE').val($(this).data('type'))
         $('#TITLE').val($(this).data('title'))
         $('#ATTACH').val($(this).data('attach'))
@@ -44,21 +47,22 @@ $(function ($) {
 
     $('#act-work-modal-form').on('submit', function(e) {
         e.preventDefault()
-        
+
         const $form = $(this)
         const $email = $form.find('[name=Email]')
-    
+
         const fieldsToValidate = [
             { $el: $form.find('[name=actNumber]'), message: 'Номер акта обязателен' },
             { $el: $form.find('[name=actDate]'), message: 'Дата акта обязательна' },
-            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' }
-        ]
-    
+            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' },
+            { $el: $email, message: 'Email обязателен' },
+        ];
+
         let hasErrors = false
-    
+
         // Сброс предыдущих ошибок
         fieldsToValidate.forEach(({ $el }) => clearElementError($el))
-    
+
         // Проверка на пустоту
         fieldsToValidate.forEach(({ $el, message }) => {
             if ($.trim($el.val()) === '') {
@@ -66,11 +70,15 @@ $(function ($) {
                 hasErrors = true
             }
         })
-    
-        if (!validateEmailField($email) || hasErrors) {
+
+        if (hasErrors) {
             return
         }
-    
+
+        if (!validateEmailField($email)) {
+            return
+        }
+
         const params = {
             ID: $.trim($form.find('[name=deal_id]').val()),
             TZ_ID: $.trim($form.find('[name=tz_id]').val()),
@@ -96,7 +104,7 @@ $(function ($) {
                 if (response && response.success) {
                     const downloadUrl = `/protocol_generator/akt_vr.php?${new URLSearchParams(params).toString()}`
                     const downloadWindow = window.open(downloadUrl, '_blank')
-                    
+
                     // if (!downloadWindow || downloadWindow.closed || typeof downloadWindow.closed === 'undefined') {
                     //     alert('Всплывающие окна')
                     //     location.reload()
@@ -191,63 +199,119 @@ $(function ($) {
         }
     })
 
-    $btnSend.click(function () {
-
+    $btnSend.click(function(e) {
+        e.preventDefault()
+        
         let $btn = $(this)
-        let orderId = $(this).data('order-id'),
-            dealId = $(this).data('deal-id'),
-            tzId = $(this).data('tz-id'),
-            email = $(this).data('email'),
-            name = $(this).data('name'),
-            attach1 = $(this).data('attach1'),
-            attach2 = $(this).data('attach2'),
-            attach3 = $(this).data('attach3'),
-            title = $(this).data('title')
-
+        let orderId = $btn.data('order-id')
+        let attach1 = $btn.data('attach1')
+        let attach2 = $btn.data('attach2')
+        let attach3 = $btn.data('attach3')
+        let title = $btn.data('title')
+            
         let $checked = $('.check-mail:checked')
-        let data = {
-            "ID": orderId,
-            "ID2": dealId,
-            "TZ_ID": tzId,
-            "TYPE": 7,
-            "EMAIL": email,
-            "NAME": name,
-            "ATTACH1": attach1,
-            "ATTACH2": attach2,
-            "ATTACH3": attach3,
-            "TITLE": title,
-            'is_ajax': 1,
-        }
         let check = []
+        let hasOrder = false
+        let hasAttach = false
+        let hasInvoice = false
 
-        $checked.each(function () {
+        $checked.each(function() {
             let what = $(this).data('text')
             check.push(what)
+
+            if (what === 'Договор') hasOrder = true
+            if (what === 'ТЗ') hasAttach = true
+            if (what === 'Счет') hasInvoice = true
         })
-
-        if ( check.length > 0 ) {
-            data.CHECK = check
+        
+        if (check.length === 0) {
+            showErrorMessage('Пожалуйста, выберите хотя бы один документ для отправки', '#error-message')
+            return false
         }
-
-        $btn.addClass('disabled')
-
+        
+        $('#ATTACH1, #ATTACH2, #ATTACH3').remove()
+        
+        let fieldsHtml = ''
+        if (hasOrder && attach1) {
+            fieldsHtml += `<input name="ATTACH1" id="ATTACH1" value="${attach1}" type="hidden">`
+        }
+        
+        if (hasAttach && attach2) {
+            fieldsHtml += `<input name="ATTACH2" id="ATTACH2" value="${attach2}" type="hidden">`
+        }
+        
+        if (hasInvoice && attach3) {
+            fieldsHtml += `<input name="ATTACH3" id="ATTACH3" value="${attach3}" type="hidden">`
+        }
+        
+        $('#email-check').append(fieldsHtml)
+        
+        $('#ID').val(orderId)
+        $('#TYPE').val(7)
+        $('#TITLE').val(title)
+        
+        $('#email-check').data('check', check)
+        $('#email-check').data('is_overall', true)
+        
+        return false
+    })
+    
+    $('#email-check').on('submit', function(e) {
+        e.preventDefault()
+        
+        let $form = $(this)
+        let check = $form.data('check')
+        let isOverall = $form.data('is_overall')
+        let selectedEmails = $form.find('input[name="EMAIL[]"]:checked').map(function() {
+            return $(this).val()
+        }).get()
+        
+        if (selectedEmails.length === 0) {
+            showErrorMessage('Пожалуйста, выберите хотя бы один адрес электронной почты', '#error-message')
+            return false
+        }
+        
+        let data = {
+            "ID": $('#ID').val(),
+            "ID2": $form.find('input[name="DEAL_ID"]').val(),
+            "TZ_ID": $form.find('input[name="TZ_ID"]').val(),
+            "TYPE": $('#TYPE').val(),
+            "EMAIL": selectedEmails.join(','),
+            "NAME": $form.find('input[name="NAME"]').val(),
+            "TITLE": $('#TITLE').val(),
+            "is_ajax": 1
+        }
+        
+        if (isOverall) {
+            if ($('#ATTACH1').length) data.ATTACH1 = $('#ATTACH1').val()
+            if ($('#ATTACH2').length) data.ATTACH2 = $('#ATTACH2').val()
+            if ($('#ATTACH3').length) data.ATTACH3 = $('#ATTACH3').val()
+            
+            if (check && check.length > 0) {
+                data.CHECK = check
+            }
+        }
+        
+        $form.find('button[type="submit"]').addClass('disabled')
+        
         $.ajax({
             url: `/mail.php`,
-            type: "GET", //метод отправки
-            dataType: 'text', // data type
+            type: "GET",
+            dataType: 'text',
             data: data,
             success: function (result) {
                 showSuccessMessage("Документы отправлены")
                 $('html, body').animate({scrollTop: $('.alert-success').offset().top - 100}, 500)
+                $.magnificPopup.close()
             },
             error: function (xhr, resp, text) {
-                console.log(xhr, resp, text);
+                showErrorMessage("Ошибка при отправке документов", '#error-message')
             },
             complete: function () {
-                $btn.removeClass('disabled')
+                $form.find('button[type="submit"]').removeClass('disabled')
             }
         })
-
+        
         return false
     })
 

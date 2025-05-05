@@ -95,19 +95,19 @@
     <div class="mb-3">
         <label for="name" class="form-label mb-1">Имя</label>
         <input type="text" name="NAME" class="form-control" id="name"
-               value="<?= $this->data['NAME'] ?? '' ?>">
+               value="<?= $this->data['NAME'] ?? '' ?>" required>
     </div>
 
     <div class="mb-3">
         <label for="lastName" class="form-label mb-1">Фамилия</label>
         <input type="text" name="LAST_NAME" class="form-control" id="lastName"
-               value="<?= $this->data['LAST_NAME'] ?? '' ?>">
+               value="<?= $this->data['LAST_NAME'] ?? '' ?>" required>
     </div>
 
     <div class="mb-3">
         <label for="secondName" class="form-label mb-1">Отчество</label>
         <input type="text" name="SECOND_NAME" class="form-control" id="secondName"
-               value="<?= $this->data['SECOND_NAME'] ?? '' ?>">
+               value="<?= $this->data['SECOND_NAME'] ?? '' ?>" >
     </div>
 
     <div class="mb-3">
