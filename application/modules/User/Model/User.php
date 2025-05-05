@@ -587,7 +587,11 @@ class User extends Model
     {
         $tmp = [];
         $organizationId = App::getOrganizationId();
-        $bitrixFilter['UF_ORG_ID'] = $organizationId;
+
+        $bitrixFilter = [
+            'UF_ORG_ID' => $organizationId,
+            'ACTIVE' => 'Y'
+        ];
         $users = CUser::GetList($order, $tmp, $bitrixFilter, $bitrixParams);
 
         $result = [];

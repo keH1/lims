@@ -25,7 +25,7 @@ class Secondment extends Model
     {
         global $DB;
         $organizationId = App::getOrganizationId();
-        $where = "s.del = 0 AND s.organization_id = $organizationId AND ";
+        $where = "(s.del = 0 OR s.del IS NULL) AND s.organization_id = $organizationId AND ";
         $limit = "";
         $order = [
             'by' => 's_id',
@@ -196,6 +196,9 @@ class Secondment extends Model
              GROUP BY s.id"
         )->SelectedRowsCount();
 
+        // echo '<pre>';
+        // print_r($where);
+        // die;
         $dataFiltered = $this->DB->Query(
             "SELECT s.id val
              FROM secondment AS s 
@@ -205,7 +208,7 @@ class Secondment extends Model
              LEFT JOIN secondment_oborud AS s_o ON s_o.secondment_id = s.id 
              LEFT JOIN full_settlements AS f_s ON d_o.CITY_ID = f_s.id 
              LEFT JOIN ba_oborud AS b_o ON b_o.ID = s_o.oborud_id 
-             WHERE {$where} 
+             WHERE {$where}
              GROUP BY s.id"
         )->SelectedRowsCount();
 
@@ -248,13 +251,9 @@ class Secondment extends Model
      */
     public function create(array $data, string $table): int
     {
-        foreach ($data as $key => $item) {
-            if (is_string($item)) {
-                $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
-            }
-        }
+        $sqlData = $this->prepearTableData($table, $data);
 
-        $result = $this->DB->Insert($table, $data);
+        $result = $this->DB->Insert($table, $sqlData);
 
         return intval($result);
     }
@@ -268,14 +267,10 @@ class Secondment extends Model
      */
     public function update(array $data, string $table, int $id)
     {
-        foreach ($data as $key => $item) {
-            if (is_string($item)) {
-                $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
-            }
-        }
+        $sqlData = $this->prepearTableData($table, $data);
 
         $where = "WHERE ID = {$id}";
-        return $this->DB->Update($table, $data, $where);
+        return $this->DB->Update($table, $sqlData, $where);
     }
 
     public function delete($table, $where)

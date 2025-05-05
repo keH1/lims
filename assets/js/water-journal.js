@@ -10,8 +10,8 @@ $(function ($) {
             type: 'POST',
             data: function (d) {
                 d.idWhichFilter = 0 //заглушка для фильтрации без нее ошибка
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01"
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31"
             },
             url: '/ulab/water/getListProcessingAjax/',
             dataSrc: function (json) {

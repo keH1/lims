@@ -25,8 +25,8 @@ $(document).ready(function () {
             data: function (d) {
               //  d.token = TOKEN,
                     d.type = $("#filter-type").val(),
-                    d.dateStart = $("#dateStart").val(),
-                    d.dateEnd = $("#dateEnd").val()
+                    d.dateStart = $('#inputDateStart').val() || "0001-01-01";
+                    d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
             },
             dataSrc: function (json) {
                 console.log(json)

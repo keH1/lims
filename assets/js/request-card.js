@@ -43,44 +43,80 @@ $(function ($) {
     })
 
     $('#act-work-modal-form').on('submit', function(e) {
-        const $form = $(this);
-        const $email = $form.find('[name=Email]');
+        e.preventDefault()
+
+        const $form = $(this)
+        const $email = $form.find('[name=Email]')
 
         const fieldsToValidate = [
             { $el: $form.find('[name=actNumber]'), message: 'Номер акта обязателен' },
             { $el: $form.find('[name=actDate]'), message: 'Дата акта обязательна' },
-            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' }
+            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' },
+            { $el: $email, message: 'Email обязателен' },
         ];
 
-        let hasErrors = false;
+        let hasErrors = false
 
         // Сброс предыдущих ошибок
-        fieldsToValidate.forEach(({ $el }) => clearElementError($el));
+        fieldsToValidate.forEach(({ $el }) => clearElementError($el))
 
         // Проверка на пустоту
         fieldsToValidate.forEach(({ $el, message }) => {
             if ($.trim($el.val()) === '') {
-                showElementError($el, message);
-                hasErrors = true;
+                showElementError($el, message)
+                hasErrors = true
             }
-        });
+        })
 
-        if (!validateEmailField($email) || hasErrors) {
-            e.preventDefault();
-            return;
+        if (hasErrors) {
+            return
         }
 
-        const params = new URLSearchParams({
-            ID:      $.trim($form.find('[name=deal_id]').val()),
-            TZ_ID:   $.trim($form.find('[name=tz_id]').val()),
-            NUM:     $.trim($form.find('[name=actNumber]').val()),
-            DATE:    $.trim($form.find('[name=actDate]').val()),
-            LEAD:    $.trim($form.find('[name=lead]').val()),
-            ACCMAIL: $.trim($form.find('[name=Email]').val())
-        });
+        if (!validateEmailField($email)) {
+            return
+        }
 
-        window.open(`/protocol_generator/akt_vr.php?${params.toString()}`, '_blank');
-    });
+        const params = {
+            ID: $.trim($form.find('[name=deal_id]').val()),
+            TZ_ID: $.trim($form.find('[name=tz_id]').val()),
+            NUM: $.trim($form.find('[name=actNumber]').val()),
+            DATE: $.trim($form.find('[name=actDate]').val()),
+            LEAD: $.trim($form.find('[name=lead]').val()),
+            ACCMAIL: $.trim($form.find('[name=Email]').val())
+        }
+
+        $form.find('button[type="submit"]').replaceWith(
+            `<button class="btn btn-primary" type="button" disabled>
+                <span class="spinner-grow spinner-grow-sm spinner-save" role="status" aria-hidden="true"></span>
+                Сохранение...
+            </button>`
+        )
+
+        $.ajax({
+            url: '/protocol_generator/akt_vr.php',
+            type: 'GET',
+            data: { ...params, ajax: 1 },
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.success) {
+                    const downloadUrl = `/protocol_generator/akt_vr.php?${new URLSearchParams(params).toString()}`
+                    const downloadWindow = window.open(downloadUrl, '_blank')
+
+                    // if (!downloadWindow || downloadWindow.closed || typeof downloadWindow.closed === 'undefined') {
+                    //     alert('Всплывающие окна')
+                    //     location.reload()
+                    //     return
+                    // }
+
+                    setInterval(function() {
+                        if (downloadWindow.closed) {
+                            location.reload()
+                        }
+                    }, 1500)
+                }
+            }
+        })
+    })
 
     $body.on('input change', '#act-work-modal-form input[name="Email"]', function() {
         validateEmailField($(this))

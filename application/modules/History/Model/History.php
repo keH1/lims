@@ -94,6 +94,7 @@ class History extends Model
 
         $dataTotal = $this->DB->Query("SELECT count(*) val
                                        FROM HISTORY AS h
+                                       WHERE organization_id = {$organizationId}
         ")->Fetch();
 
         $dataFiltered = $this->DB->Query("SELECT count(*) val

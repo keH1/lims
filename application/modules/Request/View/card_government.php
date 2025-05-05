@@ -263,7 +263,7 @@
                                 </a>
                             <?php else: ?>
                                 <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$protocol['number']?>" data-type="5" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$protocol['actual_version']?>" data-sig="<?=$protocol['sig']?>" data-pdf="<?=$protocol['pdf']?>" data-year="<?=$protocol['year']?>" data-id_p="<?=$protocol['id']?>"
-                                   href="<?=empty($this->data['mail_list']) ? "/mail.php?ID={$protocol['number']}&TZ_ID={$this->data['tz_id']}&TYPE=5&EMAIL={$this->data['email']}&NAME={$this->data['user']['name']}&ATTACH={$protocol['actual_version']}&TITLE={$this->data['deal_title']}&SIG={$protocol['sig']}&PDF={$protocol['pdf']}&YEAR={$protocol['year']}&ID_P={$protocol['id']}" : "#email-check"?>"
+                                   href="<?=empty($this->data['mail_list']) ? "/mail.php?ID={$protocol['number']}&TZ_ID={$this->data['tz_id']}&TYPE=5&EMAIL={$this->data['email']}&NAME={$this->data['user']['name']}&ATTACH={$protocol['actual_version']}&TITLE={$this->data['deal_title']}&SIG={$protocol['sig']}&PDF={$protocol['pdf']}&YEAR={$protocol['year']}&ID_P={$protocol['id']}&DEAL_ID={$this->data['deal_id']}" : "#email-check"?>"
                                    title="Отправить клиенту"
                                 >
                                     <svg class="icon" width="35" height="35">
@@ -412,12 +412,12 @@
                         <img src="<?=$file['img']?>" alt="ico" width="90">
                     </div>
                     <div class="file-preview-title align-center">
-                        <a class="text-decoration-none" href="/ulab/upload/request/<?=$this->data['deal_id']?>/<?=$file['name']?>" ><?=$file['name']?></a>
+                        <a class="text-decoration-none" href="/ulab/upload/request/<?=$this->data['deal_id']?>/files/<?=$file['name']?>" ><?=$file['name']?></a>
                     </div>
                     <?php if ($this->data['is_managers']): ?>
                         <div class="file-preview-back flex-column">
                             <a class="btn btn-danger" href="/ulab/request/deleteFile/<?=$this->data['deal_id']?>?file=<?=$file['name']?>">Удалить</a>
-                            <a download class="btn btn-success" href="/ulab/upload/request/<?=$this->data['deal_id']?>/<?=$file['name']?>">Скачать</a>
+                            <a download class="btn btn-success" href="/ulab/upload/request/<?=$this->data['deal_id']?>/files/<?=$file['name']?>">Скачать</a>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -618,8 +618,8 @@
     </div>
 
 	<div class="mb-3">
-		<label class="form-label">Email отправки:</label>
-		<input type="text" name="Email" list="mail_list" class="form-control" value="<?=$this->data['act_complete']['email']?>">
+		<label class="form-label">Email отправки: <span class="redStars">*</span></label>
+		<input type="text" name="Email" list="mail_list" class="form-control" value="<?=$this->data['act_complete']['email']?>" required>
 		<datalist id="mail_list">
 			<?php foreach ($this->data['list_email'] as $email): ?>
 				<option value="<?= $email ?>"><?= $email ?></option>
@@ -656,6 +656,7 @@
 	<input name="PDF" id="PDF" value="" type="hidden">
 	<input name="YEAR" id="YEAR" value="" type="hidden">
 	<input name="ID_P" id="ID_P" value="" type="hidden">
+    <input name="DEAL_ID" value="<?=$this->data['deal_id']?>" type="hidden">
 
 	<div class="line-dashed-small"></div>
 
@@ -663,7 +664,7 @@
 </form>
 
 <div id="finish-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative">
-    <div class="title mb-3 h-2">
+    <div class="title mb-3 h-2 pe-4">
         Выберите результат, с которым будет закрыта сделка
     </div>
 

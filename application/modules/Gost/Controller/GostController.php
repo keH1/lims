@@ -551,7 +551,7 @@ class GostController extends Controller
      */
     public function listPrice()
     {
-        $this->data['title'] = 'Формирование прайса';
+        $this->data['title'] = 'Журнал цен';
 
         /** @var  Lab $lab*/
         $lab = $this->model('Lab');
