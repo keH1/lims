@@ -263,7 +263,7 @@
                                 </a>
                             <?php else: ?>
                                 <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$protocol['number']?>" data-type="5" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$protocol['actual_version']?>" data-sig="<?=$protocol['sig']?>" data-pdf="<?=$protocol['pdf']?>" data-year="<?=$protocol['year']?>" data-id_p="<?=$protocol['id']?>"
-                                   href="<?=empty($this->data['mail_list']) ? "/mail.php?ID={$protocol['number']}&TZ_ID={$this->data['tz_id']}&TYPE=5&EMAIL={$this->data['email']}&NAME={$this->data['user']['name']}&ATTACH={$protocol['actual_version']}&TITLE={$this->data['deal_title']}&SIG={$protocol['sig']}&PDF={$protocol['pdf']}&YEAR={$protocol['year']}&ID_P={$protocol['id']}" : "#email-check"?>"
+                                   href="<?=empty($this->data['mail_list']) ? "/mail.php?ID={$protocol['number']}&TZ_ID={$this->data['tz_id']}&TYPE=5&EMAIL={$this->data['email']}&NAME={$this->data['user']['name']}&ATTACH={$protocol['actual_version']}&TITLE={$this->data['deal_title']}&SIG={$protocol['sig']}&PDF={$protocol['pdf']}&YEAR={$protocol['year']}&ID_P={$protocol['id']}&DEAL_ID={$this->data['deal_id']}" : "#email-check"?>"
                                    title="Отправить клиенту"
                                 >
                                     <svg class="icon" width="35" height="35">
@@ -656,6 +656,7 @@
 	<input name="PDF" id="PDF" value="" type="hidden">
 	<input name="YEAR" id="YEAR" value="" type="hidden">
 	<input name="ID_P" id="ID_P" value="" type="hidden">
+    <input name="DEAL_ID" value="<?=$this->data['deal_id']?>" type="hidden">
 
 	<div class="line-dashed-small"></div>
 
