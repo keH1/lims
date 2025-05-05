@@ -86,7 +86,11 @@
                 <td><strong>Техническое задание</strong></td>
                 <td>
                     <?php if ( $this->data['tz']['check'] ): ?>
-                        <a href="<?=$this->data['tz']['tz_link']?>"><?=$this->data['tz']['number']?></a>
+                        <?php if ((int)$this->data['stage']['id'] != 2): ?>
+                            <a href="<?=$this->data['tz']['tz_link']?>"><?=$this->data['tz']['number']?></a>
+                        <?php else: ?>
+                            <?=$this->data['tz']['number']?>
+                        <?php endif; ?>
                     <?php else: ?>
                         Не сформировано
                     <?php endif; ?>

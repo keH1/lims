@@ -1554,6 +1554,8 @@ class RequestController extends Controller
         $this->data['is_government'] = $deal['TYPE_ID'] == '9';
         
         $this->data['stage'] = $request->getStage($requestData);
+        $this->data['stage']['id'] = $requestData['STAGE_ID'];
+
         $this->data['deal_title'] = $deal['TITLE'];
         
         $this->data['is_complete'] = !($deal['STAGE_ID'] != '2' && $deal['STAGE_ID'] != '3' && $deal['STAGE_ID'] != '4' && $deal['STAGE_ID'] != 'WON');
