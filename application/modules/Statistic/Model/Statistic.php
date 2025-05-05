@@ -1795,6 +1795,7 @@ class Statistic extends Model
      */
     public function getStatisticUserMethods($dataReport)
     {
+        $organizationId = App::getOrganizationId();
         $month = date('m', strtotime($dataReport));
         $year = date('Y', strtotime($dataReport));
 
@@ -1802,14 +1803,21 @@ class Statistic extends Model
 
         $sql = $this->DB->Query(
             "select 
-                sum(IF(strt.state = 'complete', 1, 0)) as complete, 
-                sum(IF(strt.state <> 'complete', 1, 0)) as incomplete,
+                sum(strt.state = 'complete') as complete, 
+                sum(strt.state <> 'complete') as incomplete,
                 ugtp.assigned_id, 
                 sum(IF(strt.state = 'complete', ugtp.price, 0)) as price
             from ulab_gost_to_probe as ugtp
+            inner join ulab_material_to_request as umtr on ugtp.material_to_request_id = umtr.id
+            inner join ba_tz as tz on tz.ID_Z = umtr.deal_id
             inner join ulab_start_trials as strt on strt.ugtp_id = ugtp.id
             inner join (select pi.id, MAX(pi.id) as maxpostid from ulab_start_trials as pi group by pi.ugtp_id) as p2 ON (strt.id = p2.maxpostid)
-            where year(strt.date) = {$year} and month(strt.date) = {$month} and strt.is_actual = 1 and ugtp.assigned_id > 0
+            where 
+                year(strt.date) = {$year} 
+                and month(strt.date) = {$month} 
+                and strt.is_actual = 1 
+                and ugtp.assigned_id > 0
+                and tz.organization_id = {$organizationId}
             group by ugtp.assigned_id"
         );
 
@@ -1847,6 +1855,8 @@ class Statistic extends Model
     public function getMfcReport($dataReport)
     {
         $companyMethod = new Company();
+        $userModel = new User();
+
         $organizationId = App::getOrganizationId();
         $month = date('m', strtotime($dataReport));
         $year = date('Y', strtotime($dataReport));
@@ -1855,6 +1865,7 @@ class Statistic extends Model
             'new_company_count' => 0,
         ];
 
+        // Клиент
         if ( Loader::IncludeModule('crm') ) {
             $arOrder  = ['ID' => 'ASC'];
             $arFilter = [
@@ -1869,6 +1880,7 @@ class Statistic extends Model
             $result['new_company_count'] = $companies->SelectedRowsCount();
         }
 
+        // Заявка
         $requestSql = $this->DB->Query(
             "select 
                 count(*) as count_total_request, 
@@ -1885,12 +1897,113 @@ class Statistic extends Model
         $result['count_won'] = $requestSql['count_won'];
         $result['count_lose'] = $requestSql['count_lose'];
 
+        $sql = $this->DB->Query(
+            "select ID_Z 
+            from ba_tz 
+            where 
+                organization_id = {$organizationId}
+                and DATE_CREATE_TIMESTAMP >= '{$year}-{$month}-01' 
+                and DATE_CREATE_TIMESTAMP < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        );
+
+        $result['count_request_one_lab'] = 0;
+        $result['count_request_multi_lab'] = 0;
+        while ($row = $sql->Fetch()) {
+            $users = $userModel->getAssignedByDealId($row['ID_Z']);
+
+            $lab = [];
+            foreach ($users as $user) {
+                if ( $user['is_main'] ) {
+                    continue;
+                }
+
+                $depId = $userModel->getDepartmentByUserId($user['user_id']);
+                $lab[$depId] = $depId;
+            }
+
+            if ( count($lab) > 1 ) {
+                $result['count_request_multi_lab']++;
+            } else if ( count($lab) == 1 ) {
+                $result['count_request_one_lab']++;
+            }
+        }
+
+
+        // Акты приемки
+        $actSql = $this->DB->Query(
+            "SELECT 
+                count(act.ID) as act_total,
+                sum(tz.STAGE_ID = 'WON') as act_won,
+                sum(tz.STAGE_ID not in ('WON', 'LOSE', 5, 6, 7, 8, 9, 10, 11, 12)) as act_in_process
+            FROM ACT_BASE as act
+            JOIN ba_tz as tz ON act.ID_Z = tz.ID_Z
+            WHERE 
+                tz.organization_id = {$organizationId}
+                and act.ACT_DATE >= '{$year}-{$month}-01' 
+                and act.ACT_DATE < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        )->Fetch();
+
+        $result['act_total'] = $actSql['act_total'];
+        $result['act_won'] = $actSql['act_won'];
+        $result['act_in_process'] = $actSql['act_in_process'];
+
+        // Договоры
+        $contractSql = $this->DB->Query(
+            "SELECT 
+                count(dog.ID) as contracts_total,
+                sum(dog.PDF is not null) as contracts_signed,
+                sum(dog.PDF is null) as contracts_unsigned
+            FROM DOGOVOR as dog
+            JOIN ba_tz as tz ON dog.DEAL_ID = tz.ID_Z
+            WHERE 
+                tz.organization_id = {$organizationId}
+                and dog.DATE >= '{$year}-{$month}-01' 
+                and dog.DATE < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        )->Fetch();
+
+        $result['contracts_total'] = $contractSql['contracts_total'];
+        $result['contracts_signed'] = $contractSql['contracts_signed'];
+        $result['contracts_unsigned'] = $contractSql['contracts_unsigned'];
+
+        // Техническое задание
+        $contractSql = $this->DB->Query(
+            "SELECT 
+                dog.ID
+            FROM TZ_DOC as dog
+            JOIN ba_tz as tz ON dog.TZ_ID = tz.ID
+            WHERE 
+                tz.organization_id = {$organizationId}
+                and dog.DATE >= '{$year}-{$month}-01' 
+                and dog.DATE < '{$year}-{$month}-01' + INTERVAL 1 MONTH
+                and dog.SEND_DATE is not null"
+        );
+
+        $result['send_tz'] = $contractSql->SelectedRowsCount();
+
+        // Счета
+        $invoiceSql = $this->DB->Query(
+            "SELECT 
+                count(inv.ID) as invoice_count,
+                sum(tz.price_discount) as price,
+                sum(tz.OPLATA) as oplata
+            FROM INVOICE as inv
+            JOIN ba_tz as tz ON inv.TZ_ID = tz.ID
+            WHERE 
+                tz.organization_id = {$organizationId}
+                and inv.DATE >= '{$year}-{$month}-01' 
+                and inv.DATE < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        )->Fetch();
+
+        $result['invoice_count'] = $invoiceSql['invoice_count'];
+        $result['price'] = $invoiceSql['price'];
+        $result['oplata'] = $invoiceSql['oplata'];
+
         return $result;
     }
 
 
     /**
-     * отчет годовой
+     * Отчет годовой
      * @param $dataReport
      * @return int[]
      */
@@ -1898,33 +2011,44 @@ class Statistic extends Model
     {
         $organizationId = App::getOrganizationId();
         $year = date('Y', strtotime($dataReport));
+        $startDate = "'{$year}-01-01'";
+        $endDate = "'{$year}-12-31'";
 
-        $result = [
-            'tests' => 0,
-            'protocols' => 0,
-            'prob' => 0,
+        $queryRequests = "SELECT ID FROM ba_tz 
+                 WHERE DATE_SOZD BETWEEN {$startDate} AND {$endDate} AND organization_id = {$organizationId}";
+
+        $queryOrders = "SELECT d.ID FROM DOGOVOR as d 
+               JOIN ba_tz as tz ON d.TZ_ID = tz.ID
+               WHERE d.`DATE` BETWEEN {$startDate} AND {$endDate} AND tz.organization_id = {$organizationId}";
+
+        $queryTests = "SELECT ugtp.id FROM ulab_gost_to_probe as ugtp 
+              JOIN ulab_material_to_request as umtr ON umtr.id = ugtp.material_to_request_id
+              JOIN ulab_start_trials as start ON ugtp.id = start.ugtp_id
+              JOIN ba_tz as tz ON umtr.deal_id = tz.ID_Z
+              WHERE start.date BETWEEN {$startDate} AND {$endDate} 
+              AND start.is_actual = 1 AND start.state = 'complete' 
+              AND tz.organization_id = {$organizationId}";
+
+        $queryProtocols = "SELECT p.ID FROM PROTOCOLS as p 
+                  JOIN ba_tz as tz ON p.DEAL_ID = tz.ID_Z
+                  WHERE p.date BETWEEN {$startDate} AND {$endDate} 
+                  AND p.NUMBER IS NOT NULL 
+                  AND tz.organization_id = {$organizationId}";
+
+        $queryProb = "SELECT umtr.id FROM ulab_material_to_request as umtr
+             JOIN ba_tz as tz ON umtr.deal_id = tz.ID_Z
+             JOIN ACT_BASE as act ON act.ID_Z = tz.ID_Z
+             WHERE act.ACT_DATE BETWEEN {$startDate} AND {$endDate} 
+             AND umtr.cipher <> '' 
+             AND tz.organization_id = {$organizationId}";
+
+        return [
+            'requests' => $this->DB->Query($queryRequests)->SelectedRowsCount(),
+            'orders' => $this->DB->Query($queryOrders)->SelectedRowsCount(),
+            'tests' => $this->DB->Query($queryTests)->SelectedRowsCount(),
+            'protocols' => $this->DB->Query($queryProtocols)->SelectedRowsCount(),
+            'prob' => $this->DB->Query($queryProb)->SelectedRowsCount(),
         ];
-
-        $result['requests'] = $this->DB->Query(
-            "select 
-                ID
-            from ba_tz 
-            where 
-                DATE_SOZD between '{$year}-01-01' and '{$year}-12-31' and 
-                organization_id = {$organizationId}"
-        )->SelectedRowsCount();
-
-        $result['orders'] = $this->DB->Query(
-            "select 
-                d.ID
-            from DOGOVOR as d 
-            join ba_tz as tz on d.TZ_ID = tz.ID
-            where 
-                d.`DATE` between '{$year}-01-01' and '{$year}-12-31' and 
-                tz.organization_id = {$organizationId}"
-        )->SelectedRowsCount();
-
-        return $result;
     }
 
 
