@@ -639,7 +639,7 @@ class Statistic extends Model
                     'filter' => "TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) like '%{dataFilter}%'",
                     'where' => false,
                     'group' => 'b_user.ID',
-                    'link' => '<a class="chart_link" data-id="{user_id}" data-entity="users" href="#">{user}</a>',
+                    'link' => '{user}',
                 ],
                 'active' => [
                     'title' => 'Действующий',
@@ -833,7 +833,7 @@ class Statistic extends Model
                     'filter' => "ba_laba.NAME like '%{dataFilter}%'",
                     'where' => false,
                     'group' => 'ba_laba.ID',
-                    'link' => '<a class="chart_link" data-id="{laba_id}" data-entity="lab" href="#">{lab}</a>',
+                    'link' => '{lab}',
                 ],
                 'count_complete' => [
                     'title' => 'Кол-во выполненных методик',
