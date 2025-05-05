@@ -107,7 +107,7 @@
     <div class="mb-3">
         <label for="secondName" class="form-label mb-1">Отчество</label>
         <input type="text" name="SECOND_NAME" class="form-control" id="secondName"
-               value="<?= $this->data['SECOND_NAME'] ?? '' ?>" required>
+               value="<?= $this->data['SECOND_NAME'] ?? '' ?>" >
     </div>
 
     <div class="mb-3">
