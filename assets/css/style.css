@@ -1515,10 +1515,6 @@ table.fixedHeader-floating thead tr {
     background-color: #87eab799 !important;
 }
 
-.measurement_content .content-wrapper {
-    margin-bottom: 3rem;
-}
-
 .btn-gradient {
     color: #9836ec;
     border: 2px solid #8234d5;

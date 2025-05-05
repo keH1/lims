@@ -13,8 +13,6 @@ $(function ($) {
 		$('.zern-link').attr('href', '/zern.php?ID='+groupId)
 		$('.table_block').empty();
 
-		console.log('ok2', groupId)
-
 		$.ajax({
 			method: 'POST',
 			url: '/ulab/material/getGroupMaterialAjax',
