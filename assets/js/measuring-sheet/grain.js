@@ -13,13 +13,11 @@ $(function ($) {
 	})
 
 	body.on('change', '.material-group', function () {
+		let $parent = $(this).closest('.measurement-wrapper')
 		let groupId = $(this).val()
+		let ugtp_id = $parent.find('.ugtp').val()
 
 		$('.list_data').remove();
-
-
-		console.log('ok')
-
 
 		$.ajax({
 			method: 'POST',
@@ -39,46 +37,46 @@ $(function ($) {
 					header += `<th class="text-center">
 									<div class="form-check">
 										<input class="form-check-input" type="checkbox" value="${i}" id="checkbox_${i}" 
-											name="in_protocol[${i}]" checked>
+											name="form_data[${ugtp_id}][in_protocol][${i}]" checked>
 										<label class="form-check-label" for="checkbox_${i}">
 										${val}
 									</label> 
-									<input type="hidden" name="title[${i}]" value="${val}">
+									<input type="hidden" name="form_data[${ugtp_id}][title][${i}]" value="${val}">
 								</th>`
 
 					if (i == 0) {
 						m += `<td>
-								<input class="form-control calculate first" data-col="${i}" type="number" step="any" name="m[${i}]" value="">
+								<input class="form-control calculate first" data-col="${i}" type="number" step="any" name="form_data[${ugtp_id}][m][${i}]" value="">
 							</td>`
 
 						a += `<td>
-								<input class="form-control first" data-col="${i}" type="number" step="any" name="a[${i}]" value="">
+								<input class="form-control input_a first" data-col="${i}" type="number" step="any" name="form_data[${ugtp_id}][a][${i}]" value="">
 							</td>`
 
 						p += `<td>
-								<input class="form-control first" data-col="${i}"type="number" step="any" name="p[${i}]" value="">
+								<input class="form-control first input_p" data-col="${i}"type="number" step="any" name="form_data[${ugtp_id}][p][${i}]" value="">
 							</td>`
 					} else {
 						m += `<td>
-								<input class="form-control calculate" data-col="${i}" type="number" step="any" name="m[${i}]" value="">
+								<input class="form-control calculate" data-col="${i}" type="number" step="any" name="form_data[${ugtp_id}][m][${i}]" value="">
 							</td>`
 
 						a += `<td>
-								<input class="form-control" data-col="${i}" type="number" step="any" name="a[${i}]" value="">
+								<input class="form-control input_a" data-col="${i}" type="number" step="any" name="form_data[${ugtp_id}][a][${i}]" value="">
 							</td>`
 
 						p += `<td>
-								<input class="form-control" data-col="${i}"type="number" step="any" name="p[${i}]" value="">
+								<input class="form-control input_p" data-col="${i}"type="number" step="any" name="form_data[${ugtp_id}][p][${i}]" value="">
 							</td>`
 					}
 
 					if (data.norm_to[i] == '' || data.norm_to[i] === data.norm_from[i]) {
 						norm += `<td>
-								<input class="form-control" type="text" step="any" name="norm[${i}]" value="${data.norm_from[i]}">
+								<input class="form-control" type="text" step="any" name="form_data[${ugtp_id}][norm][${i}]" value="${data.norm_from[i]}">
 							</td>`
 					} else {
 						norm += `<td>
-								<input class="form-control" type="text" step="any" name="norm[${i}]" value="${data.norm_from[i]}-${data.norm_to[i]}">
+								<input class="form-control" type="text" step="any" name="form_data[${ugtp_id}][norm][${i}]" value="${data.norm_from[i]}-${data.norm_to[i]}">
 							</td>`
 					}
 
@@ -102,17 +100,17 @@ $(function ($) {
 							</tr>
 							<tr>
 								<td class="text-center">a<sub>i</sub></td>
-								<td class="text-center"><input class="form-check-input" type="checkbox" value="1" id="a" name="a_in_protocol" checked></td>
+								<td class="text-center"><input class="form-check-input" type="checkbox" value="1" id="a" name="form_data[${ugtp_id}][a_in_protocol]" checked></td>
 								${a}
 							</tr>
 							<tr>
 								<td class="text-center">П<sub>i</sub></td>
-								<td class="text-center"><input class="form-check-input" type="checkbox" value="1" id="p" name="p_in_protocol" checked></td>
+								<td class="text-center"><input class="form-check-input" type="checkbox" value="1" id="p" name="form_data[${ugtp_id}][p_in_protocol]" checked></td>
 								${p}
 							</tr>
 							<tr>
 								<td class="text-center">Требования</td>
-								<td class="text-center"><input class="form-check-input" type="checkbox" value="1" id="req" name="req_in_protocol" checked></td>
+								<td class="text-center"><input class="form-check-input" type="checkbox" value="1" id="req" name="form_data[${ugtp_id}][req_in_protocol]" checked></td>
 								${norm}
 							</tr>
 						</tbody>
@@ -148,29 +146,29 @@ $(function ($) {
 		return Math.round(x * m) / m;
 	}
 
-	body.on('change', '.calculate', function(){
+	body.on('change', '.calculate', function() {
+		let $parent = $(this).closest('.measurement-wrapper')
+		let ugtp_id = $parent.find('.ugtp').val()
 		let equal = $(this).data('col')
-		let average_mass = $("[name='initial_mass']").val();
+		let average_mass = $parent.find(".initial_mass").val();
 
 		if(equal == 0) {
-			console.log()
 			a_i = roundPlus((($(this).val() / average_mass) * 100), 2);
 
-			$('[name^=a].first').val(a_i);
-			$(`[name^=p].first`).val(a_i);
-		}
-		else{
-			a_i = roundPlus((($(`[name='m[${equal}]']`).val() / average_mass) * 100), 2);
+			$(`[name^='form_data[${ugtp_id}][a]'].first`).val(a_i);
+			$(`[name^='form_data[${ugtp_id}][p]'].first`).val(a_i);
+		} else {
+			a_i = roundPlus((($(`[name='form_data[${ugtp_id}][m][${equal}]']`).val() / average_mass) * 100), 2);
 
-			$(`[name='a[${equal}]']`).val(a_i);
+			$(`[name='form_data[${ugtp_id}][a][${equal}]']`).val(a_i);
 
-			let parentTD = $($(`[name='p[${equal}]']`)).parent();
+			let parentTD = $($(`[name='form_data[${ugtp_id}][p][${equal}]']`)).parent();
 			let adjacentTD = $(parentTD).prev();
 
 			let adjacentInput = Number($(adjacentTD).children().val());
 
 			P_i = roundPlus((adjacentInput + a_i), 2);
-			$(`[name='p[${equal}]']`).val(P_i);
+			$(`[name='form_data[${ugtp_id}][p][${equal}]']`).val(P_i);
 		}
 	});
 
