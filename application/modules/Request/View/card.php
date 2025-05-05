@@ -134,7 +134,7 @@
                 </td>
                 <td class="w30">
                     <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>"  data-id="<?=$this->data['deal_id']?>" data-type="1" data-title="<?=$this->data['deal_title']?>"
-					   href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TYPE=1&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}" : "#email-check"?>"
+					   href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TYPE=1&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}&DEAL_ID={$this->data['deal_id']}" : "#email-check"?>"
 					   title="Отправить клиенту бланк заявки">
                         <svg class="icon" width="35" height="35">
                             <use xlink:href="<?=URI?>/assets/images/icons.svg#mail"/>
@@ -184,7 +184,7 @@
 <!--                    </div>-->
                     <?php else: ?>
                         <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$this->data['deal_id']?>" data-type="2" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$this->data['proposal']['attach']?>"
-                           href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['request']['ID']}&TYPE=2&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}&ATTACH={$this->data['proposal']['attach']}" : "#email-check"?>"
+                           href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['request']['ID']}&TYPE=2&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}&ATTACH={$this->data['proposal']['attach']}&DEAL_ID={$this->data['deal_id']}" : "#email-check"?>"
                            title="Отправить клиенту"
                         >
                             <svg class="icon" width="35" height="35">
@@ -230,7 +230,7 @@
                 <td>
                     <?php if ( !$this->data['order']['is_disable_mail'] ): ?>
                         <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$this->data['order']['id']?>" data-type="3" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$this->data['order']['attach']?>"
-                           href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['order']['id']}&TZ_ID={$this->data['tz_id']}&TYPE=3&EMAIL={$this->data['email']}&NAME={$this->data['user']['name']}&ATTACH={$this->data['order']['attach']}&TITLE={$this->data['deal_title']}" : "#email-check"?>"
+                           href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['order']['id']}&TZ_ID={$this->data['tz_id']}&TYPE=3&EMAIL={$this->data['email']}&NAME={$this->data['user']['name']}&ATTACH={$this->data['order']['attach']}&TITLE={$this->data['deal_title']}&DEAL_ID={$this->data['deal_id']}" : "#email-check"?>"
                            title="Отправить клиенту"
                         >
                             <svg class="icon me-1" width="35" height="35">
@@ -286,7 +286,7 @@
                         </a>
                     <?php else: ?>
                         <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$this->data['deal_id']?>" data-type="6" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$this->data['attach']['actual_ver']?>"
-                           href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['tz_id']}&TYPE=6&EMAIL={$this->data['email']}&ATTACH={$this->data['attach']['actual_ver']}&TITLE={$this->data['deal_title']}" : "#email-check"?>"
+                           href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['tz_id']}&TYPE=6&EMAIL={$this->data['email']}&ATTACH={$this->data['attach']['actual_ver']}&TITLE={$this->data['deal_title']}&DEAL_ID={$this->data['deal_id']}" : "#email-check"?>"
                            title="Отправить клиенту"
                         >
                             <svg class="icon" width="35" height="35">
@@ -348,7 +348,7 @@
                         </a>
                     <?php else: ?>
                         <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$this->data['deal_id']?>" data-type="4" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$this->data['invoice']['attach']?>"
-						   href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['tz_id']}&TYPE=4&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}&ATTACH={$this->data['invoice']['attach']}" : "#email-check"?>"
+						   href="<?= empty($this->data['mail_list']) ? "/mail.php?ID={$this->data['deal_id']}&TZ_ID={$this->data['tz_id']}&TYPE=4&EMAIL={$this->data['email']}&TITLE={$this->data['deal_title']}&ATTACH={$this->data['invoice']['attach']}&DEAL_ID={$this->data['deal_id']}" : "#email-check"?>"
 						   title="Отправить клиенту">
                             <svg class="icon" width="35" height="35">
                                 <use xlink:href="<?=URI?>/assets/images/icons.svg#mail"/>
@@ -541,7 +541,7 @@
                                 </a>
                             <?php else: ?>
                                 <a class="no-decoration me-1 <?=!empty($this->data['mail_list']) ? 'popup-mail' : ''?>" data-id="<?=$protocol['number']?>" data-type="5" data-title="<?=$this->data['deal_title']?>" data-attach="<?=$protocol['actual_version']?>" data-sig="<?=$protocol['sig']?>" data-pdf="<?=$protocol['pdf']?>" data-year="<?=$protocol['year']?>" data-id_p="<?=$protocol['id']?>"
-                                   href="<?=empty($this->data['mail_list']) ? "/mail.php?ID={$protocol['number']}&TZ_ID={$this->data['tz_id']}&TYPE=5&EMAIL={$this->data['email']}&NAME={$this->data['user']['name']}&ATTACH={$protocol['actual_version']}&TITLE={$this->data['deal_title']}&SIG={$protocol['sig']}&PDF={$protocol['pdf']}&YEAR={$protocol['year']}&ID_P={$protocol['id']}" : "#email-check"?>"
+                                   href="<?=empty($this->data['mail_list']) ? "/mail.php?ID={$protocol['number']}&TZ_ID={$this->data['tz_id']}&TYPE=5&EMAIL={$this->data['email']}&NAME={$this->data['user']['name']}&ATTACH={$protocol['actual_version']}&TITLE={$this->data['deal_title']}&SIG={$protocol['sig']}&PDF={$protocol['pdf']}&YEAR={$protocol['year']}&ID_P={$protocol['id']}&DEAL_ID={$this->data['deal_id']}" : "#email-check"?>"
                                    title="Отправить клиенту"
                                 >
                                     <svg class="icon" width="35" height="35">
@@ -662,7 +662,7 @@
                         </a>
                     <?php else: ?>
                         <a class="no-decoration me-1"
-                           href="/mail.php?ID=<?=$this->data['deal_id']?>&TZ_ID=<?=$this->data['tz_id']?>&TYPE=8&EMAIL=<?= !empty($this->data['acc_email']) ? $this->data['acc_email'] : $this->data['email']?>&NAME=<?=$this->data['user']['name']?>&ATTACH=<?=$this->data['act_complete']['attach']?>"
+                           href="/mail.php?ID=<?=$this->data['deal_id']?>&TZ_ID=<?=$this->data['tz_id']?>&TYPE=8&EMAIL=<?= !empty($this->data['acc_email']) ? $this->data['acc_email'] : $this->data['email']?>&NAME=<?=$this->data['user']['name']?>&ATTACH=<?=$this->data['act_complete']['attach']?>&DEAL_ID=<?=$this->data['deal_id']?>"
                            title="Отправить клиенту"
                         >
                             <svg class="icon" width="35" height="35">
@@ -969,6 +969,7 @@
 	<input name="PDF" id="PDF" value="" type="hidden">
 	<input name="YEAR" id="YEAR" value="" type="hidden">
 	<input name="ID_P" id="ID_P" value="" type="hidden">
+    <input name="DEAL_ID" value="<?=$this->data['deal_id']?>" type="hidden">
 
 	<div class="line-dashed-small"></div>
 
