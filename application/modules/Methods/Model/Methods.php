@@ -955,11 +955,11 @@ class Methods extends Model
             ON l.method_id = m.id
 
             INNER JOIN ulab_gost_to_probe AS gtp
-            ON gtp.new_method_id = m.id
+            ON gtp.new_method_id = m.id 
+                AND gtp.protocol_id > 0 
 
             INNER JOIN ulab_material_to_request AS mater
             ON gtp.material_to_request_id = mater.id
-                AND mater.protocol_id > 0
 
             INNER JOIN ulab_start_trials AS st
             ON st.ugtp_id = gtp.id
@@ -983,11 +983,11 @@ class Methods extends Model
             ON l.method_id = m.id 
 
             INNER JOIN ulab_gost_to_probe AS gtp
-            ON gtp.new_method_id = m.id
+            ON gtp.new_method_id = m.id 
+                AND gtp.protocol_id > 0 
 
             INNER JOIN ulab_material_to_request AS mater
-            ON gtp.material_to_request_id = mater.id
-                AND mater.protocol_id > 0
+            ON gtp.material_to_request_id = mater.id 
 
             INNER JOIN ulab_start_trials AS st
             ON st.ugtp_id = gtp.id
@@ -1010,11 +1010,11 @@ class Methods extends Model
             ON l.method_id = m.id
 
             INNER JOIN ulab_gost_to_probe AS gtp
-            ON gtp.new_method_id = m.id
+            ON gtp.new_method_id = m.id 
+                AND gtp.protocol_id > 0 
 
             INNER JOIN ulab_material_to_request AS mater
-            ON gtp.material_to_request_id = mater.id
-                AND mater.protocol_id > 0
+            ON gtp.material_to_request_id = mater.id 
 
             INNER JOIN ulab_start_trials AS st
             ON st.ugtp_id = gtp.id
