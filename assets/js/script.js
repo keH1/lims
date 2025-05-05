@@ -7,14 +7,6 @@ function initDataTable(selector, options) {
         fixedHeader: false,
         colReorder: true,
         fixedColumns: false,
-        // bAutoWidth: false,
-        // autoWidth: false,
-
-        // processing: true,
-        // serverSide: true,
-        // scrollX: true,
-        // bSortCellsTop: true,
-        // fixedHeader: false
     }
     
     const tableOptions = $.extend(true, {}, defaultOptions, options)
@@ -22,21 +14,8 @@ function initDataTable(selector, options) {
 
     setupTableResizeHandlers()
     
-    // dataTable.on('column-visibility.dt', function(e, settings, column, state) {
-    //     dataTable.columns().every(function() {
-    //         if (this.visible()) {
-    //             $(this.header()).css('width', $(this.header()).width() + 'px')
-    //             $(this.footer()).css('width', $(this.header()).width() + 'px')
-    //         }
-    //     })
-        
-    //     dataTable.columns.adjust().draw()
-    // })
-   
     return dataTable
 }
-
-// window.initDataTable = initDataTable
 
 /**
  * Настройка поиска по колонкам в DataTable

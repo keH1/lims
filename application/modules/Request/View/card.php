@@ -299,8 +299,8 @@
                     <input type="checkbox" data-text="ТЗ" class="form-check-input check-mail" <?=$this->data['attach']['check']? 'checked' : 'disabled'?>>
                 </td>
                 <td>
-                    <a class="no-decoration <?=($this->data['attach']['check'] || $this->data['order']['check'] || $this->data['invoice']['check'])? '' : 'disabled'?> me-1 btnOverall"
-                       href="#"
+                    <a class="no-decoration popup-with-form <?=($this->data['attach']['check'] || $this->data['order']['check'] || $this->data['invoice']['check'])? '' : 'disabled'?> me-1 btnOverall"
+                       href="#email-check"
                        title="Отправить клиенту"
                        data-order-id="<?=$this->data['doc_id']?>"
                        data-deal-id="<?=$this->data['deal_id']?>"
