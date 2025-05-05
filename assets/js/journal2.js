@@ -496,48 +496,6 @@ $(function ($) {
         location.reload()
     })
 
-    /*journal buttons*/
-    let container = $('body').find('div.dataTables_scrollBody'),
-        scroll = $journalTable.width()
-
-    $('.btnRightTable, .arrowRight').hover(function() {
-        container.animate(
-            {
-                scrollLeft: scroll
-            },
-            {
-                duration: 4000, queue: false
-            }
-        )
-    },
-    function() {
-        container.stop();
-    })
-
-    $('.btnLeftTable, .arrowLeft').hover(function() {
-        container.animate(
-            {
-                scrollLeft: -scroll
-            },
-            {
-                duration: 4000, queue: false
-            }
-        )
-    },
-    function() {
-        container.stop();
-    })
-
-    $(document).scroll(function() {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height()
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
-            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
-        }
-    })
-
     /*journal modal window*/
     if (window.location.pathname === '/ulab/request/list/') {
 
@@ -785,6 +743,8 @@ $(function ($) {
 
                 journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
             }
+               
+            initTableScrollNavigation()
 
             window.history.replaceState({}, 'Журнал заявок', addr.href)
 

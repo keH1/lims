@@ -65,17 +65,6 @@
 </tbody>
 </table>
 
-<div class='arrowLeft'>
-    <svg class="bi" width="40" height="40">
-        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-left"/>
-    </svg>
-</div>
-<div class='arrowRight'>
-    <svg class="bi" width="40" height="40">
-        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-right"/>
-    </svg>
-</div>
-
 <?php if ( !empty($this->data['tz_under_consideration']) || !empty($this->data['probe_in_lab']) ): ?>
     <div id="notify_leader" class="bg-light mfp-hide col-xl-8 col-lg-9 m-auto p-3 position-relative">
         <div class="row">
