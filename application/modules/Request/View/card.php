@@ -521,7 +521,7 @@
                                     </svg>
                                 </a>
                             <?php else: ?>
-                                <a class="no-decoration me-1 validate-protocol"
+                                <a class="no-decoration me-1 validate-protocol reloadS"
                                    data-protocol_id="<?=$protocol['id']?>"
                                    href="<?=$protocol['link']?>"
                                    title="Сформировать"
