@@ -1563,10 +1563,10 @@ class Request extends Model
                 }
                 // Дата
                 if ( isset($filter['search']['DATE_ACT']) ) {
-                    $where .= "LOCATE('{$filter['search']['DATE_ACT']}', DATE_FORMAT(a.ACT_DATE, '%d.%m.%Y')) > 0 AND ";
+                    $where .= "LOCATE('{$filter['search']['DATE_ACT']}', DATE_FORMAT(b.DATE_ACT, '%d.%m.%Y')) > 0 AND ";
                 }
                 if ( isset($filter['search']['dateStart']) ) {
-                    $where .= "(a.ACT_DATE >= '{$filter['search']['dateStart']}' AND a.ACT_DATE <= '{$filter['search']['dateEnd']}') AND ";
+                    $where .= "(b.DATE_ACT >= '{$filter['search']['dateStart']}' AND b.DATE_ACT <= '{$filter['search']['dateEnd']}') AND ";
                 }
                 // Клиент
                 if ( isset($filter['search']['COMPANY_TITLE']) ) {
@@ -1715,7 +1715,7 @@ class Request extends Model
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
-            $row['DATE_ACT'] = !empty($row['DATE_ACT']) ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
+            $row['DATE_ACT'] = (!empty($row['DATE_ACT']) && $row['DATE_ACT'] !== '0000-00-00') ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
 
             $arrNameLabs = [];
             $labs = [];
