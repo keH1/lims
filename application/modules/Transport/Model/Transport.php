@@ -10,16 +10,28 @@ class Transport extends Model {
      */
     public function create(array $data, string $table): int
     {
+
         if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
             return 0;
         }
 
-        $data['organization_id'] = App::getOrganizationId();
+        $organizqationId = App::getOrganizationId();
 
-        $sqlData = $this->prepearTableData($table, $data);
+        $conn = Bitrix\Main\Application::getConnection();
+        $conn->startTransaction();
 
-        $result = $this->DB->Insert($table, $sqlData);
+        $max = $conn->query("SELECT MAX(local_id) AS max_local_id FROM transport WHERE organization_id = {$organizqationId}");
+        $lastLocalId = (int)$max->fetch()['max_local_id'];
+        $data['local_id'] = $lastLocalId + 1;
+        $data['organization_id'] = $organizqationId;
 
+        $result = $conn->add($table,$data);
+
+        if ($result  == 0){
+            $conn->rollbackTransaction();
+        }
+
+        $conn->commitTransaction();
         return intval($result);
     }
 
