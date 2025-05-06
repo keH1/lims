@@ -925,7 +925,7 @@ class Request extends Model
                 }
                 // Лаборатории
                 if ( isset($filter['search']['lab']) ) {
-                    $where .= "b.LABA_ID LIKE '%{$filter['search']['lab']}%' AND ";
+                    $where .= "uts_usr.UF_DEPARTMENT LIKE '%:{$filter['search']['lab']};%' AND ";
                 }
                 // Протокол
                 if ( isset($filter['search']['PROTOCOLS']) && !empty($filter['search']['PROTOCOLS']) ) {
@@ -1083,7 +1083,8 @@ class Request extends Model
                     LEFT JOIN DOGOVOR d ON d.ID=dtc.ID_CONTRACT 
                     LEFT JOIN AKT_VR act ON act.TZ_ID=b.ID 
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
-                    LEFT JOIN b_user usr ON ass.user_id = usr.ID 
+                    LEFT JOIN b_user as usr ON ass.user_id = usr.ID 
+                    left join b_uts_user as uts_usr on usr.ID = uts_usr.VALUE_ID
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID 
                     LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
@@ -1121,6 +1122,7 @@ class Request extends Model
                     LEFT JOIN AKT_VR act ON act.TZ_ID=b.ID 
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
+                    left join b_uts_user as uts_usr on usr.ID = uts_usr.VALUE_ID
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID    
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
