@@ -263,19 +263,19 @@
                     <?=$this->data['attach']['date_send']?>
                 </td>
                 <td>
-<!--                    --><?php //if ($this->data['attach']['is_disable_form']): ?>
-<!--                        <a class="no-decoration me-1 disabled" href="#" title="Сформировать">-->
-<!--                            <svg class="icon" width="35" height="35">-->
-<!--                                <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#form"/>-->
-<!--                            </svg>-->
-<!--                        </a>-->
-<!--                    --><?php //else: ?>
+                    <?php if ($this->data['attach']['is_disable_form']): ?>
+                        <a class="no-decoration me-1 disabled" href="#" title="Сформировать">
+                            <svg class="icon" width="35" height="35">
+                                <use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
+                            </svg>
+                        </a>
+                    <?php else: ?>
 						<a class="no-decoration me-1 reloadS" data-href="<?=$this->data['attach']['link']?>" title="Сформировать">
 							<svg class="icon" width="35" height="35">
 								<use xlink:href="<?=URI?>/assets/images/icons.svg#form"/>
 							</svg>
 						</a>
-<!--                    --><?php //endif; ?>
+                    <?php endif; ?>
                 </td>
                 <td>
                     <?php if ($this->data['attach']['is_disable_mail']): ?>
