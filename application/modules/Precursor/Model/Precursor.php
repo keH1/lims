@@ -347,9 +347,8 @@ class Precursor extends Model
                 LEFT JOIN b_user AS user_remain ON user_remain.ID=reactive_remain_full.global_assigned
                 LEFT JOIN b_user AS user_receive ON user_receive.ID=reactive_receive_consume_full.assigned_receive
             
-                WHERE is_precursor =1
+                WHERE is_precursor =1 AND reactive_receive_consume_full.date_receive BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']}
             HAVING all_reactives.id_library_reactive {$filters['idWhichFilter']} AND
-                   primary_date>= {$filters['dateStart']} AND primary_date <= {$filters['dateEnd']}   AND
                    {$filters['having']}
                 ORDER BY {$filters['order']}
                 {$filters['limit']}
