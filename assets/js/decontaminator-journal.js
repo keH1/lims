@@ -86,7 +86,7 @@ $(function ($) {
         })
 
         fridgejournal.columns().every(function () {
-            $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
+            $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function () {
                 fridgejournal
                     .column($(this).parent().index())
                     .search(this.value)

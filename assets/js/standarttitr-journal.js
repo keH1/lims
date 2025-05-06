@@ -90,7 +90,7 @@ $(function ($) {
 
     recipeJournal.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {

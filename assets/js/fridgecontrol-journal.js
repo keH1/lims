@@ -119,7 +119,7 @@ $(function ($) {
     })
 
     precursorJournal.columns().every( function () {
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'input', function () {
             precursorJournal
                 .column( $(this).parent().index() )
                 .search( this.value )

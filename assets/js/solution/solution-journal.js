@@ -74,7 +74,7 @@ $(function ($) {
     })
 
     solutionJournal.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function () {
             solutionJournal
                 .column($(this).parent().index())
                 .search(this.value)
