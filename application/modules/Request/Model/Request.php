@@ -1012,7 +1012,7 @@ class Request extends Model
                         $order['by'] = "group_concat(distinct mater.NAME SEPARATOR ', ')";
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', '), 1)";
+                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.LAST_NAME, usr.NAME, usr.SECOND_NAME)) SEPARATOR ', '), 1)";
                         break;
                     case 'NUM_ACT_TABLE':
                         $order['by'] = 'YEAR(ACT_DATE) DESC, a.ACT_NUM';
@@ -1072,7 +1072,7 @@ class Request extends Model
                         count(c.id) c_count, count(c.date_return) с_date_return, k.ID k_id , d.IS_ACTION, CONCAT(d.CONTRACT_TYPE, ' ', d.NUMBER, ' от ', DATE_FORMAT(d.DATE, '%d.%m.%Y')) as DOGOVOR_TABLE,
                         tzdoc.pdf tz_pdf,
                         gw.departure_date, gw.object as object_gov,
-                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', ') as ASSIGNED,
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.LAST_NAME, usr.NAME, usr.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED,
                         group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
@@ -1111,7 +1111,7 @@ class Request extends Model
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
             "SELECT b.ID val, group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL, 
-                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', ') as ASSIGNED 
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.LAST_NAME, usr.NAME, usr.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED 
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ AS c ON b.ID=c.tz_id
