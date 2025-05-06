@@ -27,8 +27,8 @@ class StatisticController extends Controller
         $this->addJs('/assets/plugins/morris-chart/morris.js');
         $this->addJs('/assets/plugins/morris-chart/raphael-min.js');
 
-        $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
-        $this->addCDN("https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation");
+//        $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
+//        $this->addCDN("https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation");
 
         $this->addJS("/assets/js/statistic/report-constructor.js?v=" . rand());
 
@@ -150,6 +150,11 @@ class StatisticController extends Controller
 
         $this->data['fin_report'] = $statisticModel->getFinReport($monthReport);
 
+        $this->data['mfc_report'] = $statisticModel->getMfcReport($monthReport);
+
+        $this->data['year_report'] = $statisticModel->getYearReport($monthReport);
+
+        // Отчет по руководителям ИЦ
         $this->data['field_report_protocol'] = [
             'Протоколы',
             'count' => 'Общее количество протоколов, шт',
@@ -161,6 +166,7 @@ class StatisticController extends Controller
             'methods' => 'Использовано методик, шт',
         ];
 
+        // Отчет по сотрудникам ИЦ
         $this->data['field_report_user'] = [
             'complete' => 'Количество завершенных испытаний, шт:',
             'incomplete' => 'Количество незавершенных испытаний, шт:',
@@ -169,6 +175,7 @@ class StatisticController extends Controller
             'percent_price' => "Процент от общей стоимости<br> выполненных методик лаборатории, %",
         ];
 
+        // Финансовый Отчет ИЦ
         $this->data['fin_report_rows'] = [
             'month_price_new' => 'Общая стоимость новых заявок, руб',
             'year_price_new' => '-- С начала года, руб',
@@ -181,33 +188,44 @@ class StatisticController extends Controller
             'year_part_paid_price' => '-- С начала года, руб',
         ];
 
+        // Отчет по МФЦ ИЦ
         $this->data['mfc_report_rows'] = [
             'Заявка',
-            'a' => 'Общее количество заявок, шт',
-            'b' => 'Успешные, шт',
-            'c' => 'Неуспешные, шт',
-            'd' => 'Уникальные (одна лаб.), шт',
-            'e' => 'Совместные (несколько лаб.), шт',
+            'count_total_request' => 'Общее количество заявок, шт',
+            'count_won' => 'Успешные, шт',
+            'count_lose' => 'Неуспешные, шт',
+            'count_request_one_lab' => 'Уникальные (одна лаб.), шт',
+            'count_request_multi_lab' => 'Совместные (несколько лаб.), шт',
             'Клиент',
-            'f' => 'Новый клиентов, шт:',
+            'new_company_count' => 'Новых клиентов, шт:',
             'Акты приемки',
-            'g' => 'Общее количество актов приемки проб, шт',
-            'k' => 'Завершенные, шт',
-            'l' => 'Незавершенные, шт',
+            'act_total' => 'Общее количество актов приемки проб, шт',
+            'act_won' => 'Завершенные, шт',
+            'act_in_process' => 'Незавершенные, шт',
             'Договоры',
-            'n' => 'Сфоромированно, шт',
-            'm' => 'Подписаны, шт',
-            'o' => 'Не подписаны, шт',
+            'contracts_total' => 'Сформировано, шт',
+            'contracts_signed' => 'Подписаны, шт',
+            'contracts_unsigned' => 'Не подписаны, шт',
             'Техническое задание',
-            'p' => 'Отправлены клиенту, шт',
+            'send_tz' => 'Отправлены клиенту, шт',
             'Счета',
-            'r' => 'Сформировано, шт',
-            's' => 'Сформировано на сумму, руб',
-            't' => 'Оплачено на сумму, руб',
+            'invoice_count' => 'Сформировано, шт',
+            'price' => 'Сформировано на сумму, руб',
+            'oplata' => 'Оплачено на сумму, руб',
         ];
 
-        $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
-		$this->addJs("/assets/js/statistic.js");
+        // Годовой статистический отчет
+        $this->data['year_report_rows'] = [
+            'requests' => 'Принято заявок',
+            'orders' => 'Заключено договоров',
+            'orders_abonent' => 'Из них абонентских',
+            'tests' => 'Всего проведено испытаний',
+            'protocols' => 'Всего выдано протоколов',
+            'prob' => 'Всего принято проб',
+        ];
+
+//        $this->addCDN("https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js");
+		$this->addJs("/assets/js/statistic.js?v=1");
 
 		$this->view('headerReport');
 	}
@@ -640,8 +658,6 @@ class StatisticController extends Controller
 
         /** @var Statistic $statisticModel */
         $statisticModel = $this->model('Statistic');
-
-//        $statisticModel->pre($_POST);
 
         $result = $statisticModel->getColumnsEntity($_POST['entity']);
 

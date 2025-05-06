@@ -206,7 +206,11 @@
                         <?=$row?>
                     </td>
                     <td>
-                        0
+                        <?php if (isset($this->data['mfc_report'][$key])): ?>
+                            <?=$this->data['mfc_report'][$key]?>
+                        <?php else: ?>
+                            0
+                        <?php endif; ?>
                     </td>
                 <?php endif; ?>
                 </tr>
@@ -225,15 +229,16 @@
 	</header>
 	<div class="panel-body">
 		<h4>За данный год было:</h4>
-		<p>Принято <strong><?=$this->data['Year']['fullYearRequest']?></strong> заявок</p>
-		<br>
-		<p>Заключено договоров: <b><?=$this->data['Year']['fullYearContract']?></b>, из них абонентских <b><?=$this->data['Year']['fullYearContractLongterm']?></b></p>
-		<br>
-		<p>Всего проведено испытаний: <b><?=$this->data['Year']['fullYearTests']?></b></p>
-		<br>
-		<p>Всего выдано протоколов: <b><?=$this->data['Year']['fullYearProtocols']?></b></p>
-		<br>
-		<p>Всего принято проб: <b><?=$this->data['Year']['fullYearProbe']?></b></p>
+        <?php foreach ($this->data['year_report_rows'] as $key => $row): ?>
+            <p>
+                <?=$row?>
+                <?php if (isset($this->data['year_report'][$key])): ?>
+                    <strong><?=$this->data['year_report'][$key]?></strong>
+                <?php endif; ?>
+
+            </p>
+            <br>
+        <?php endforeach; ?>
 	</div>
 </div>
 
