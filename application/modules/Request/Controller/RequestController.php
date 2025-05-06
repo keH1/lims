@@ -1757,7 +1757,7 @@ class RequestController extends Controller
         $this->data['sample']['link'] = "/ulab/generator/actSampleDocument/{$this->data['deal_id']}";
         $this->data['sample']['check'] = !empty($requestData['ACT_NUM']);
         $this->data['sample']['number'] = $requestData['ACT_NUM'] . "/" . date("Y", strtotime($requestData['DATE_ACT']));
-        $this->data['sample']['date'] = !empty($requestData['DATE_ACT']) ? StringHelper::dateRu($requestData['DATE_ACT']) : '';
+        $this->data['sample']['date'] = (!empty($requestData['DATE_ACT']) && $requestData['DATE_ACT'] !== '0000-00-00') ? StringHelper::dateRu($requestData['DATE_ACT']) : '';
         $this->data['sample']['date_act'] = !empty($requestData['DATE_ACT']) ? $requestData['DATE_ACT'] : '';
         $this->data['sample']['date_send'] = '--';
         $this->data['sample']['is_disable_form'] = !empty($requestData['ACT_NUM']) || !empty($requestData['dateEnd']) || !empty($actVr);
