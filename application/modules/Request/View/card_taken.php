@@ -47,7 +47,7 @@
         <div class="row mb-3">
             <div class="col-4">
                 <div>Общая стоимость</div>
-                <div><strong><?=$this->data['request']['price']['price_ru']?></strong></div>
+                <div><strong><?=$this->data['request']['price_ru']?></strong></div>
             </div>
             <div class="col-4">
                 <div>Ответственный</div>
