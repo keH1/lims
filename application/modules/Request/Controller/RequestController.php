@@ -9,6 +9,8 @@ class RequestController extends Controller
     //ID ТЗ с которого начинается рефакторинг ТЗ (TODO: Для новых лабораторий удалить, так же убрать из карточки card.php)
     //const TZ_REFACTORING_START_ID = 7433;
 
+    const STAGE_ID_COMPLETED = 2;
+
     private $requestTypeConfig = [
         '9' => [
             'blocks' => [
@@ -1554,6 +1556,9 @@ class RequestController extends Controller
         $this->data['is_government'] = $deal['TYPE_ID'] == '9';
         
         $this->data['stage'] = $request->getStage($requestData);
+        $this->data['stage']['id'] = $requestData['STAGE_ID'];
+        $this->data['stage_complete']['id'] = self::STAGE_ID_COMPLETED;
+
         $this->data['deal_title'] = $deal['TITLE'];
         
         $this->data['is_complete'] = !($deal['STAGE_ID'] != '2' && $deal['STAGE_ID'] != '3' && $deal['STAGE_ID'] != '4' && $deal['STAGE_ID'] != 'WON');
