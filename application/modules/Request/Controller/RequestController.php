@@ -1693,8 +1693,7 @@ class RequestController extends Controller
         $this->data['attach']['date'] = !empty($tzDoc['DATE'])? StringHelper::dateRu($tzDoc['DATE']) : '--';
         $this->data['attach']['date_send'] = !empty($tzDoc['SEND_DATE'])? StringHelper::dateRu($tzDoc['SEND_DATE']) : 'Не отправлен';
         $this->data['attach']['actual_ver'] = $tzDoc['ACTUAL_VER'];
-        $this->data['attach']['is_disable_form'] =
-            !empty($actVr) || !empty($requestData['dateEnd']) || !empty($requestData['DOGOVOR_NUM']);
+        $this->data['attach']['is_disable_form'] = !empty($actVr) || !empty($requestData['dateEnd']);
 		$this->data['attach']['is_disable_form_test'] = !$this->data['is_deal_osk'];
         $this->data['attach']['is_disable_mail'] = empty($tzDoc) || 0;
 
@@ -1717,8 +1716,7 @@ class RequestController extends Controller
         $this->data['invoice']['number'] = !empty($invoiceData['ID']) ? $requestData['ACCOUNT'] : 'Не сформирован';
         $this->data['invoice']['date'] = !empty($invoiceData['DATE'])? StringHelper::dateRu($invoiceData['DATE']) : '--';
         $this->data['invoice']['date_send'] = !empty($invoiceData['SEND_DATE'])? StringHelper::dateRu($invoiceData['SEND_DATE']) : 'Не отправлен';
-        $this->data['invoice']['is_disable_form'] =
-            !empty($actVr) || !empty($requestData['dateEnd']) || !empty($requestData['DOGOVOR_NUM']);
+        $this->data['invoice']['is_disable_form'] = !empty($actVr) || !empty($requestData['dateEnd']);
         $this->data['invoice']['is_disable_mail'] = empty($invoiceData) || 0;
         $this->data['invoice']['attach'] = $invoiceData['ACTUAL_VER'];
     }
