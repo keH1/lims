@@ -61,4 +61,6 @@ cleanup_and_push_job:
   tags:
     - vpn
   rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
     - when: manual
