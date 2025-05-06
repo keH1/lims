@@ -86,7 +86,7 @@
                 <td><strong>Техническое задание</strong></td>
                 <td>
                     <?php if ( $this->data['tz']['check'] ): ?>
-                        <?php if ((int)$this->data['stage']['id'] != 2): ?>
+                        <?php if ((int)$this->data['stage']['id'] != $this->data['stage_complete']['id']): ?>
                             <a href="<?=$this->data['tz']['tz_link']?>"><?=$this->data['tz']['number']?></a>
                         <?php else: ?>
                             <?=$this->data['tz']['number']?>
