@@ -1869,6 +1869,21 @@ class Requirement extends Model
         $data['TAKEN_SERT_ISP'] = $data['tests_for'] == 'certification' || isset($data['TAKEN_SERT_ISP']) ? 1 : 0;
         $data['add_info'] = json_encode($data['add_info']);
 
+        $tzInfo = $this->getTzByTzId($tzId);
+        if ( empty($tzInfo) ) {
+            $tzInfo['DATE_SOZD'] = date('Y-m-d H:i:s');
+        }
+        if ( $data['DAY_TO_TEST'] < 0 ) {
+            $data['DAY_TO_TEST'] = 0;
+        }
+        if ( $data['type_of_day'] == 'work_day' ) {
+            $data['DEADLINE_TABLE'] = DateHelper::addWorkingDays($tzInfo['DATE_SOZD'], $data['DAY_TO_TEST']);
+        } else if ( $data['type_of_day'] == 'day' ) {
+            $data['DEADLINE_TABLE'] =  date('Y-m-d', strtotime("{$tzInfo['DATE_SOZD']} +{$data['DAY_TO_TEST']} day"));
+        } else if ( $data['type_of_day'] == 'month' ) {
+            $data['DEADLINE_TABLE'] =  date('Y-m-d', strtotime("{$tzInfo['DATE_SOZD']} +{$data['DAY_TO_TEST']} month"));
+        }
+
         $sqlData = $this->prepearTableData('ba_tz', $data);
 
         $where = "WHERE ID = {$tzId}";
