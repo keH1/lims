@@ -2033,6 +2033,10 @@ class Statistic extends Model
                JOIN ba_tz as tz ON d.TZ_ID = tz.ID
                WHERE d.`DATE` BETWEEN {$startDate} AND {$endDate} AND tz.organization_id = {$organizationId}";
 
+        $queryOrdersAbonent = "SELECT d.ID FROM DOGOVOR as d 
+               JOIN ba_tz as tz ON d.TZ_ID = tz.ID
+               WHERE d.`DATE` BETWEEN {$startDate} AND {$endDate} AND d.LONGTERM = 1 and tz.organization_id = {$organizationId}";
+
         $queryTests = "SELECT ugtp.id FROM ulab_gost_to_probe as ugtp 
               JOIN ulab_material_to_request as umtr ON umtr.id = ugtp.material_to_request_id
               JOIN ulab_start_trials as start ON ugtp.id = start.ugtp_id
@@ -2057,6 +2061,7 @@ class Statistic extends Model
         return [
             'requests' => $this->DB->Query($queryRequests)->SelectedRowsCount(),
             'orders' => $this->DB->Query($queryOrders)->SelectedRowsCount(),
+            'orders_abonent' => $this->DB->Query($queryOrdersAbonent)->SelectedRowsCount(),
             'tests' => $this->DB->Query($queryTests)->SelectedRowsCount(),
             'protocols' => $this->DB->Query($queryProtocols)->SelectedRowsCount(),
             'prob' => $this->DB->Query($queryProb)->SelectedRowsCount(),

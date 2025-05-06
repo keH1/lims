@@ -218,6 +218,7 @@ class StatisticController extends Controller
         $this->data['year_report_rows'] = [
             'requests' => 'Принято заявок',
             'orders' => 'Заключено договоров',
+            'orders_abonent' => 'Из них абонентских',
             'tests' => 'Всего проведено испытаний',
             'protocols' => 'Всего выдано протоколов',
             'prob' => 'Всего принято проб',
@@ -657,8 +658,6 @@ class StatisticController extends Controller
 
         /** @var Statistic $statisticModel */
         $statisticModel = $this->model('Statistic');
-
-//        $statisticModel->pre($_POST);
 
         $result = $statisticModel->getColumnsEntity($_POST['entity']);
 
