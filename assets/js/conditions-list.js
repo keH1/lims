@@ -673,4 +673,20 @@ $(function ($) {
             window.open(`/Condition/condition_doc_new.php?ID=${roomId}&year=${yearId}&month=${monthId}`);
         }
     });
+
+    // Находим все поля с type="number" внутри формы
+    const numberInputs = document.querySelectorAll('#conditionsModalForm input[type="number"]');
+    numberInputs.forEach(input => {
+        input.addEventListener('input', function () {
+            let value = this.value;
+            // Разрешаем только цифры, одну точку или запятую
+            value = value
+                .replace(/[^0-9.,]/g, '')                  // Удаляем всё кроме цифр и разделителей
+                .replace(/[.,][.,]+/g, '.')                // Только один разделитель
+                .replace(/^([0-9]*[.,]?[0-9]*)$/g, '$1')  // Корректный формат
+                .replace(',', '.');
+            this.value = value;
+        });
+    });
+
 });
