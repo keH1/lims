@@ -664,7 +664,7 @@ class RequestController extends Controller
         }
         
         if ($config['blocks']['invoice']) {
-            $this->prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm);
+            $this->prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm, $actVr);
         }
         
         if ($config['blocks']['payment']) {
@@ -1693,8 +1693,7 @@ class RequestController extends Controller
         $this->data['attach']['date'] = !empty($tzDoc['DATE'])? StringHelper::dateRu($tzDoc['DATE']) : '--';
         $this->data['attach']['date_send'] = !empty($tzDoc['SEND_DATE'])? StringHelper::dateRu($tzDoc['SEND_DATE']) : 'Не отправлен';
         $this->data['attach']['actual_ver'] = $tzDoc['ACTUAL_VER'];
-        $this->data['attach']['is_disable_form'] = !$this->data['is_deal_osk'] && (
-			!$isExistTz || !empty($requestData['dateEnd']) || !$isConfirm || !empty($actVr));
+        $this->data['attach']['is_disable_form'] = !empty($actVr) || !empty($requestData['dateEnd']);
 		$this->data['attach']['is_disable_form_test'] = !$this->data['is_deal_osk'];
         $this->data['attach']['is_disable_mail'] = empty($tzDoc) || 0;
 
@@ -1710,15 +1709,14 @@ class RequestController extends Controller
     /**
      * Подготовка данных счета
      */
-    private function prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm)
+    private function prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm, $actVr)
     {
         $this->data['invoice']['link'] = "/protocol_generator/account_new.php?ID={$dealId}&TZ_ID={$requestData['ID']}";
         $this->data['invoice']['check'] = !empty($invoiceData);
         $this->data['invoice']['number'] = !empty($invoiceData['ID']) ? $requestData['ACCOUNT'] : 'Не сформирован';
         $this->data['invoice']['date'] = !empty($invoiceData['DATE'])? StringHelper::dateRu($invoiceData['DATE']) : '--';
         $this->data['invoice']['date_send'] = !empty($invoiceData['SEND_DATE'])? StringHelper::dateRu($invoiceData['SEND_DATE']) : 'Не отправлен';
-        $this->data['invoice']['is_disable_form'] = false && !$this->data['is_deal_osk'] && (
-            !$isExistTz || empty($requestData['DOGOVOR_NUM']) || !empty($requestData['dateEnd']) || !empty($requestData['TAKEN_ID_DEAL']) || !$isConfirm);
+        $this->data['invoice']['is_disable_form'] = !empty($actVr) || !empty($requestData['dateEnd']);
         $this->data['invoice']['is_disable_mail'] = empty($invoiceData) || 0;
         $this->data['invoice']['attach'] = $invoiceData['ACTUAL_VER'];
     }
