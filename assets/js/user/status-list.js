@@ -386,7 +386,7 @@ $(function ($) {
         journalDataTable.columns().every(function () {
             let columnIndex = this.index();
 
-            $(this.header()).closest('thead').find('.search:eq(' + columnIndex + ')').on('keyup change clear', function () {
+            $(this.header()).closest('thead').find('.search:eq(' + columnIndex + ')').on('input', function () {
                 clearTimeout(searchTimeouts[columnIndex]);
 
                 let inputElement = this;

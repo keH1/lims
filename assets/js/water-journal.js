@@ -110,7 +110,7 @@ $(function ($) {
     mainTable.columns().every(function () {
         const columnIndex = this.index();
 
-        $(this.header()).closest('thead').find('.search:eq(' + columnIndex + ')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq(' + columnIndex + ')').on('input', function() {
             clearTimeout(searchTimeouts[columnIndex]);
 
             const searchValue = this.value;
