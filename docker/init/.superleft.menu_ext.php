@@ -4,7 +4,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 $aMenuLinks = array(
     array(
         "Профиль организации", 
-        "/ulab/import/organization/1", 
+        "/ulab/import/organization/",
         array(), 
         array(
             "menu_item_id" => "menu_organization",
@@ -146,7 +146,7 @@ $aMenuLinks = array(
         ""
     ),
     array(
-        "Журнал оборудования", 
+        "Журнал учета оборудования",
         "/ulab/oborud/list/", 
         array(), 
         array(
@@ -179,17 +179,6 @@ $aMenuLinks = array(
         ""
     ),
     array(
-        "Журнал объектов строительства", 
-        "/objects.php", 
-        array(), 
-        array(
-            "menu_item_id" => "menu_objects",
-            "counter_id" => "",
-            "color" => ""
-        ),
-        ""
-    ),
-    array(
         "Журнал автотранспорта", 
         "/ulab/transport/list", 
         array(), 
@@ -212,7 +201,7 @@ $aMenuLinks = array(
         ""
     ),
     array(
-        "Журнал сверки", 
+        "Журнала актов сверки взаимных расчетов",
         "/ulab/order/reviseList", 
         array(), 
         array(
@@ -233,20 +222,20 @@ $aMenuLinks = array(
         ),
         ""
     ),
-    array(
-        "Журнал приготовления растворов и реактивов", 
-        "/ulab/solution/list/", 
-        array(), 
-        array(
-            "menu_item_id" => "menu_solution_list",
-            "counter_id" => "",
-            "color" => ""
-        ),
-        ""
-    ),
+//    array(
+//        "Журнал приготовления растворов и реактивов",
+//        "/ulab/solution/list/",
+//        array(),
+//        array(
+//            "menu_item_id" => "menu_solution_list",
+//            "counter_id" => "",
+//            "color" => ""
+//        ),
+//        ""
+//    ),
     array(
         "Журнал метролога", 
-        "/metrolog.php", 
+        "/ulab/oborud/metrolog", 
         array(), 
         array(
             "menu_item_id" => "menu_metrolog",
@@ -289,7 +278,7 @@ $aMenuLinks = array(
         ""
     ),
     array(
-        "Журнал расхода реактивов",
+        "Журнал списания реактивов",
         "/ulab/reactiveconsumption/list/", 
         array(), 
         array(
@@ -344,7 +333,7 @@ $aMenuLinks = array(
         ""
     ),
     array(
-        "Стандарт-титры", 
+        "Журнал стандарт-титры",
         "/ulab/standarttitr/list/", 
         array(), 
         array(
@@ -433,7 +422,7 @@ $aMenuLinks = array(
     ),
     array(
         "Журнал истории изменений", 
-        "/history.php", 
+        "/ulab/history/list", 
         array(), 
         array(
             "menu_item_id" => "menu_history",
@@ -514,6 +503,17 @@ $aMenuLinks = array(
         array(), 
         array(
             "menu_item_id" => "menu_coal_list",
+            "counter_id" => "",
+            "color" => ""
+        ),
+        ""
+    ),
+    array(
+        "Журнал цен",
+        "/ulab/gost/listPrice",
+        array(),
+        array(
+            "menu_item_id" => "menu_list_price",
             "counter_id" => "",
             "color" => ""
         ),
