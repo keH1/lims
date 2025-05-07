@@ -1629,22 +1629,29 @@ class Statistic extends Model
         while ($row = $protocolSql->Fetch()) {
             $methodsSql = $this->DB->Query("SELECT count(id) as `count` FROM `ulab_gost_to_probe` WHERE protocol_id = {$row['ID']}")->Fetch();
 
-            // ид пользователей, которые подписали протокол
-            $userVerify = unserialize($row['VERIFY']);
+            $departmentIdSql = $this->DB->Query(
+                "SELECT lab.id_dep 
+                FROM `ulab_gost_to_probe` as ugtp
+                join ulab_methods_lab as m_lab on m_lab.method_id = ugtp.new_method_id
+                join ba_laba as lab on lab.ID = m_lab.lab_id
+                WHERE protocol_id = {$row['ID']} and lab.id_dep is not null
+                group by lab.id_dep"
+            );
 
+            // выдано протоколов на сумму (сумма цены протоколов с номером)
             $price = $protocolModel->getPriceWonProtocol((int)$row['ID']);
             $allPrice += $price;
 
+            $allMethods += $methodsSql['count']?? 0;
             if ( !empty($row['NUMBER']) ) {
                 $allWon++;
                 $allWonMethods += $methodsSql['count']?? 0;
             } else {
                 $allInWork++;
-                $allMethods += $methodsSql['count']?? 0;
             }
 
-            foreach ($userVerify as $assign) {
-                $departmentId = $userModel->getDepartmentByUserId($assign);
+            while ($departmentRow = $departmentIdSql->Fetch()) {
+                $departmentId = $departmentRow['id_dep'];
 
                 if ( !isset($result[$departmentId]['count']) ) {
                     $result['dep'][$departmentId]['count'] = 0;
@@ -1665,15 +1672,15 @@ class Statistic extends Model
                     $result['dep'][$departmentId]['methods'] = 0;
                 }
 
-                $result[$departmentId]['count']++;
-                $result[$departmentId]['price'] += $price;
+                $result['dep'][$departmentId]['count']++;
+                $result['dep'][$departmentId]['price'] += $price;
 
+                $result['dep'][$departmentId]['methods'] += $methodsSql['count']?? 0;
                 if ( !empty($row['NUMBER']) ) {
                     $result['dep'][$departmentId]['won']++;
                     $result['dep'][$departmentId]['won_methods'] += $methodsSql['count']?? 0;
                 } else {
                     $result['dep'][$departmentId]['in_work']++;
-                    $result['dep'][$departmentId]['methods'] += $methodsSql['count']?? 0;
                 }
             }
         }
@@ -1877,13 +1884,18 @@ class Statistic extends Model
             'new_company_count' => 0,
         ];
 
+        $date = new DateTime("{$year}-{$month}-01");
+        $dateStart = $date->format('d.m.Y H:i:s');
+        $date->modify('+1 month');
+        $dateEnd = $date->format('d.m.Y H:i:s');
+
         // Клиент
         if ( Loader::IncludeModule('crm') ) {
             $arOrder  = ['ID' => 'ASC'];
             $arFilter = [
                 $companyMethod::COMPANY_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId,
-                '>=DATE_CREATE' => "01.{$month}.{$year} 00:00:00",
-                '<DATE_CREATE' => "01.{$month}.{$year} 00:00:00 + INTERVAL 1 MONTH",
+                '>=DATE_CREATE' => "{$dateStart}",
+                '<DATE_CREATE' => "{$dateEnd}",
             ];
 
             $arSelect = [];
