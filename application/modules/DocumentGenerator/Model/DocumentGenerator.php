@@ -907,10 +907,10 @@ class DocumentGenerator extends Model
 		$oborudData = $oborudModel->getTzObConnectByProtocolId($protocolID);
 
 		//Выбор скртификата поверки
-		foreach ($oborudData as $k => $ob) {
-			$certificateOborud = $oborudModel->getCertificateByOborudId($k);
-			$oborudData[$k]['certificate'] = $certificateOborud;
-		}
+//		foreach ($oborudData as $k => $ob) {
+//			$certificateOborud = $oborudModel->getCertificateByOborudId($k);
+//			$oborudData[$k]['certificate'] = $certificateOborud;
+//		}
 
 		// Результаты испытаний
 		$results = [];
