@@ -6,7 +6,7 @@
  */
 class Lab extends Model
 {
-    const USERS_CAN_EDIT_CONDITIONS = [1, 7, 61, 75, 10, 33, 9, 58, 13, 11, 15, 100]; //пользователи могут редактировать условия
+    const USERS_CAN_EDIT_CONDITIONS = []; //пользователи могут редактировать условия
 
     /**
      * @param $labId
@@ -202,27 +202,28 @@ class Lab extends Model
         );
 
         $result = [];
-
         $lastId = 0;
+
         while ($row = $laboratories->Fetch()) {
             if ( $lastId != $row['LAB_ID'] ) {
                 $result[] = [
-                    'id' => $row['LAB_ID'],
+                    'id' => (int)$row['LAB_ID'],
                     'name' => $row['laba_name'],
                 ];
 
-                $result[] = [
-                    'id' => $row['room_id'] + 100,
-                    'name' => trim($row['room_name']) . ' ' . trim($row['NUMBER']),
-                ];
-
                 $lastId = $row['LAB_ID'];
-            } else {
-                $result[] = [
-                    'id' => $row['room_id'] + 100,
-                    'name' => trim($row['room_name']) . ' ' . trim($row['NUMBER']),
-                ];
             }
+
+            $roomId = (int)$row['room_id'];
+            if ($roomId <= 0) {
+                continue; // Если нет помещения
+            }
+
+            // Помещение с отрицательным ID
+            $result[] = [
+                'id' => -1 * (int)$row['room_id'],
+                'name' => trim($row['room_name']) . ' ' . trim($row['NUMBER']),
+            ];
         }
 
         return $result;
@@ -337,8 +338,12 @@ class Lab extends Model
                 }
                 // помещение (верхний фильтр)
                 if (isset($filter['search']['room'])) {
-                    $roomId = intval($filter['search']['room']) - 100;
-                    $where .= "u_c.room_id = {$roomId} AND ";
+                    $selected = (int)$filter['search']['room'];
+
+                    if ($selected < 0) {
+                        $roomId = abs($selected);
+                        $where .= "u_c.room_id = {$roomId} AND ";
+                    }
                 }
             }
         }
@@ -461,7 +466,9 @@ class Lab extends Model
             "SELECT * FROM ulab_conditions WHERE id = {$id} AND organization_id = {$organizationId}")->Fetch();
 
         if (!empty($result)) {
-            $result['room_id'] = $result['room_id'] + 100;
+            $result['room_id'] = ($result['room_id'] > 0)
+                ? -1 * (int)$result['room_id']
+                : (int)$result['room_id'];
             //$result['date'] = date('Y-m-d', strtotime($result['updated_at']));
             $result['date'] = date('Y-m-d H:i', strtotime($result['updated_at']));
             $response = $result;
