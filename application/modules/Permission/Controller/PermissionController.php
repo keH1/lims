@@ -69,7 +69,7 @@ class PermissionController extends Controller
      * @desc Управление доступами
      * @param int|string $roleId - выбранна роль
      */
-    public function list($roleId = 1)
+    public function list($roleId = 2)
     {
         $this->data['title'] = 'Роли и доступы';
 
@@ -81,7 +81,7 @@ class PermissionController extends Controller
         $this->data['permission_list'] = $permissionModel->getPermission();
 
         if ( empty($roleId) ) {
-            $roleId = 1;
+            $roleId = 2;
         }
 
         $this->data['role_id'] = $roleId;

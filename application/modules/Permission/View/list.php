@@ -58,7 +58,7 @@
                                 <?=$this->data['role_info']['permission'] == 'all'? 'disabled' : ''?>
                         >
                         <label for="controller-<?=$controller['name']?>">
-                            <strong><?=$controller['name']?></strong> <span class="annotation-desc"><?=$controller['desc']?></span>
+                            <strong><?=$controller['desc']?></strong>
                         </label>
 
                         <ul class="list-group mt-1">
@@ -84,7 +84,7 @@
                                         >
                                     <?php endif; ?>
                                     <label for="method-<?=$controller['name']?>-<?=$method['name']?>">
-                                        <?=$method['name']?> <span class="annotation-desc"><?=$method['desc']?></span>
+                                        <span class="--annotation-desc"><?=$method['desc']?></span>
                                     </label>
                                 </li>
                             <?php endforeach; ?>
