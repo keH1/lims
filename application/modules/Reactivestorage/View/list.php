@@ -67,7 +67,7 @@
     <div class="line-dashed-small"></div>
     <div class="row mb-3">
         <div class="col">
-            <select name="toSQL[reactive_consume][id_merge]" class="form-control select-reactive h-auto"
+            <select name="reactive_consume[id_merge]" class="form-control select-reactive h-auto"
                     required>
                 <option value="" selected disabled></option>
                 <?php
@@ -83,21 +83,21 @@
         <div class="col">
             <label class="form-label">Количество</label>
             <div class="input-group">
-                <input type="number" name="toSQL[reactive_consume][quantity]" step="0.01" min="0" max="10000"
+                <input type="number" name="reactive_consume[quantity]" step="0.01" min="0" max="10000"
                        class="form-control bg-white" required>
                 <span class="input-group-text quantity-reactive"></span>
             </div>
         </div>
         <div class="col">
             <label class="form-label">Дата</label>
-            <input name="toSQL[reactive_consume][date]" type="date" class="form-control filter filter-date-start"
-                   value="<?= $this->data['current_date'] ?>">
+            <input name="reactive_consume[date]" type="date" class="form-control filter filter-date-start"
+                   value="">
         </div>
     </div>
     <div class="row mb-3">
         <div class="col">
-            <label class="form-label" ">Назначение списания</label>
-            <input type="text" name="toSQL[reactive_consume][type]" class="form-control">
+            <label class="form-label">Назначение списания</label>
+            <input type="text" name="reactive_consume[type]" class="form-control">
         </div>
     </div>
     <button type="submit" class="btn btn-primary">Отправить</button>

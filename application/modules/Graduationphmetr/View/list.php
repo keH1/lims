@@ -17,11 +17,11 @@
         </div>
         <div class="col-auto">
             <input type="date" id="inputDateStart" class="form-control filter filter-date-start"
-                   value="<?= date("Y") . '-01-01' ?>" title="Введите дату начала">
+                   value="" title="Введите дату начала">
         </div>
         <div class="col-auto">
             <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"
-                   value="<?= date("Y-m-d") ?>" title="Введите дату окончания">
+                   value="" title="Введите дату окончания">
         </div>
         <div class="col-auto">
             <button type="button" class="btn btn-outline-secondary filter-btn-reset" title="Сбросить фильтр">Сбросить
@@ -106,14 +106,14 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Дата замера</label>
-            <input name="toSQL[ph_metr_graduation][date]" type="datetime-local" class="form-control"
+            <input name="ph_metr_graduation[date]" type="datetime-local" class="form-control"
                    value="" placeholder="Дата замера" required>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Оборудование</label>
-            <select name="toSQL[ph_metr_graduation][id_ph_metr]" class="form-control bg-white" required>
+            <select name="ph_metr_graduation[id_ph_metr]" class="form-control bg-white" required>
                 <option value="" selected disabled></option>
                 <?php foreach ($this->data['ph_metr'] as $val): ?>
                     <option value="<?= $val['id'] ?? '' ?>"><?= $val['name'] ?></option>
@@ -150,22 +150,22 @@
             <tr class="hidden-measure">
                 <td>
                     1.65
-                    <input name="toSQL[measurements][1][ph_metr_measurement][id_ph_metr_buffer]"
+                    <input name="measurements[1][ph_metr_measurement][id_ph_metr_buffer]"
                            type="number" class="form-control" value="1" hidden="" disabled>
                 </td>
 
                 <td>
-                    <input name="toSQL[measurements][1][ph_metr_measurement][m1]"
+                    <input name="measurements[1][ph_metr_measurement][m1]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required disabled>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][1][ph_metr_measurement][m2]"
+                    <input name="measurements[1][ph_metr_measurement][m2]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required disabled>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][1][ph_metr_measurement][m3]"
+                    <input name="measurements[1][ph_metr_measurement][m3]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required disabled>
                 </td>
@@ -173,22 +173,22 @@
             <tr>
                 <td>
                     4.01
-                    <input name="toSQL[measurements][2][ph_metr_measurement][id_ph_metr_buffer]"
+                    <input name="measurements[2][ph_metr_measurement][id_ph_metr_buffer]"
                            type="number" class="form-control" value="2" hidden="">
                 </td>
 
                 <td>
-                    <input name="toSQL[measurements][2][ph_metr_measurement][m1]"
+                    <input name="measurements[2][ph_metr_measurement][m1]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][2][ph_metr_measurement][m2]"
+                    <input name="measurements[2][ph_metr_measurement][m2]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][2][ph_metr_measurement][m3]"
+                    <input name="measurements[2][ph_metr_measurement][m3]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required>
                 </td>
@@ -196,22 +196,22 @@
             <tr>
                 <td>
                     6.86
-                    <input name="toSQL[measurements][3][ph_metr_measurement][id_ph_metr_buffer]"
+                    <input name="measurements[3][ph_metr_measurement][id_ph_metr_buffer]"
                            type="number" class="form-control" value="3" hidden="">
                 </td>
 
                 <td>
-                    <input name="toSQL[measurements][3][ph_metr_measurement][m1]"
+                    <input name="measurements[3][ph_metr_measurement][m1]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][3][ph_metr_measurement][m2]"
+                    <input name="measurements[3][ph_metr_measurement][m2]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][3][ph_metr_measurement][m3]"
+                    <input name="measurements[3][ph_metr_measurement][m3]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required>
                 </td>
@@ -219,22 +219,22 @@
             <tr>
                 <td>
                     9.18
-                    <input name="toSQL[measurements][4][ph_metr_measurement][id_ph_metr_buffer]"
+                    <input name="measurements[4][ph_metr_measurement][id_ph_metr_buffer]"
                            type="number" class="form-control" value="4" hidden="">
                 </td>
 
                 <td>
-                    <input name="toSQL[measurements][4][ph_metr_measurement][m1]"
+                    <input name="measurements[4][ph_metr_measurement][m1]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][4][ph_metr_measurement][m2]"
+                    <input name="measurements[4][ph_metr_measurement][m2]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][4][ph_metr_measurement][m3]"
+                    <input name="measurements[4][ph_metr_measurement][m3]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required>
                 </td>
@@ -242,21 +242,21 @@
             <tr class="hidden-measure">
                 <td>
                     12.43
-                    <input name="toSQL[measurements][5][ph_metr_measurement][id_ph_metr_buffer]"
+                    <input name="measurements[5][ph_metr_measurement][id_ph_metr_buffer]"
                            type="number" class="form-control" value="5" hidden="" disabled>
 
                 <td>
-                    <input name="toSQL[measurements][5][ph_metr_measurement][m1]"
+                    <input name="measurements[5][ph_metr_measurement][m1]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required disabled>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][5][ph_metr_measurement][m2]"
+                    <input name="measurements[5][ph_metr_measurement][m2]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required disabled>
                 </td>
                 <td>
-                    <input name="toSQL[measurements][5][ph_metr_measurement][m3]"
+                    <input name="measurements[5][ph_metr_measurement][m3]"
                            type="number" step="0.001" min="0" max="14"
                            class="form-control" value="" required disabled>
                 </td>

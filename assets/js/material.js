@@ -70,7 +70,7 @@ $(function ($) {
         let tr = `<tr>
                     <td><a href="/ulab/gost/method/${gostId}" >${gost}</a><input type="hidden" value="${gostId}" name="arrGost[]"></td>
                     <td>${spec}</td>
-                    <td><button type="button" class="btn btn-outline-danger del-gost btn-square-new"><i class="fa-solid fa-minus icon-fix"></i></button></td>
+                    <td><button type="button" class="btn btn-danger del-gost btn-square-new"><i class="fa-solid fa-minus icon-fix"></i></button></td>
                 </tr>`
 
         if ($('#table-gost tbody tr').length !== 0) {
@@ -246,8 +246,6 @@ $(function ($) {
             return false
         }
 
-        console.log(scheme_param)
-
         $.ajax({
             method: 'POST',
             url: '/ulab/material/setSchemeAjax',
@@ -415,7 +413,7 @@ $(function ($) {
 
         $.ajax({
             method: 'POST',
-            url: '/ulab/material/setNewName',
+            url: '/ulab/material/setNewNameAjax',
             data: {
                 id_material: id_material,
                 name: data
@@ -427,19 +425,26 @@ $(function ($) {
         })
 
         $('.save-name')[0].innerHTML =
-            `
-                        <svg width="24px" height="24px" viewBox="0 0 16 16" fill="#9D4CF7" x="128" y="128" role="img" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg"><g fill="#9D4CF7"><g fill="currentColor"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></g></g></svg>
-                    `;
+            `<svg width="24px" height="24px" viewBox="0 0 16 16"
+                  fill="#9D4CF7" x="128" y="128" role="img"
+                  style="display:inline-block;vertical-align:middle"
+                  xmlns="http://www.w3.org/2000/svg"
+            >
+                <g fill="#9D4CF7">
+                    <g fill="currentColor">
+                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                    </g>
+                </g>
+            </svg>`;
 
         $(this).removeClass('save-name')
         $(this).addClass('edit-name')
 
         $('.title-block')[0].innerHTML =
-            `
-                     <h2 class="mb-3" id="material-name" style="margin-bottom: 0 !important;">
-                        ${data}
-                    </h2>
-                    `;
+            `<h2 class="mb-3" id="material-name" style="margin-bottom: 0 !important;">
+                ${data}
+            </h2>`;
     })
 
     $('#search-text').on('keydown', function (event) {
@@ -448,8 +453,26 @@ $(function ($) {
             tableSearch()
         }
     })
-})
 
+    body.on('click', '.pill-add', function() {
+        const $buttonPill = $(this)
+        const isDisabledPill = $buttonPill.prop('disabled')
+        
+        if (!isDisabledPill) {
+            console.log('disabled')
+            $buttonPill.prop('disabled', true)
+        }
+    })
+
+    body.on('click', '.nav-pills .nav-link', function() {
+        const $buttonAddPill = $('.pill-add')
+        const isDisabledAddPill = $buttonAddPill.prop('disabled')
+        
+        if (isDisabledAddPill) {
+            $buttonAddPill.prop('disabled', false)
+        }
+    })
+})
 function tableSearch() {
     let phrase = document.getElementById('search-text'),
         table = document.getElementById('table-gost'),

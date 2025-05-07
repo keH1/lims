@@ -113,6 +113,7 @@
                 <th scope="col" class="text-nowrap">Статус</th>
                 <th scope="col" class="text-nowrap">Заменяет</th>
                 <th scope="col" class="text-nowrap"></th>
+                <th scope="col" class="text-nowrap"></th>
             </tr>
             </thead>
             <tbody>
@@ -175,7 +176,7 @@
             <div class="form-group row mb-0 align-items-center">
                 <label class="col-sm-4 col-form-label">Нормативная документация</label>
                 <div class="col">
-                    <a href="/ulab/techCondition/list/"  title="Журнал НД, Импорт и экспорт" data-bs-placement="left" data-bs-toggle="tooltip">
+                    <a href="/ulab/normDocGost/list/"  title="Журнал НД" data-bs-placement="left" data-bs-toggle="tooltip">
                         Редактировать
                     </a>
                 </div>
@@ -193,28 +194,16 @@
             </div>
         </li>
 
-        <li class="list-group-item  ">
-            <div class="form-group row mb-0 align-items-center">
-                <label class="col-sm-4 col-form-label">Прайс</label>
-                <div class="col">
-                    <a href="/ulab/gost/listPrice/" >
-                        Редактировать
-                    </a>
-                </div>
-            </div>
-        </li>
-
-        <!--                <li class="list-group-item ">-->
-        <!--                    <div class="form-group row mb-0 align-items-center">-->
-        <!--                        <label class="col-sm-4 col-form-label">Конфигурационные справочники</label>-->
-        <!--                        <div class="col">-->
-        <!--                            <div class="btn btn-gradient disabled mt-0 w-100 rounded" title='Данный раздел находится в разработке.' data-bs-placement="left" data-bs-toggle="tooltip">-->
-        <!--                                Недоступно-->
-        <!--                            </div>-->
-        <!--                        </div>-->
-        <!--                    </div>-->
-        <!--                </li>-->
-
+<!--        <li class="list-group-item  ">-->
+<!--            <div class="form-group row mb-0 align-items-center">-->
+<!--                <label class="col-sm-4 col-form-label">Прайс</label>-->
+<!--                <div class="col">-->
+<!--                    <a href="/ulab/gost/listPrice/" >-->
+<!--                        Редактировать-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
     </div>
 </div>
 
@@ -303,22 +292,15 @@
     <input type="hidden" name="lab_id" value="<?=$this->data['info']['ID']?>">
 
     <div class="mb-3">
-        <label class="form-label" for="form_entity_user_id">Сотрудник</label>
-        <select id="form_entity_user_id" class="form-control select2" name="user_id" readonly>
-            <?php foreach ($this->data['users'] as $user): ?>
-                <option value="<?=$user['ID']?>" data-position="<?=$user['WORK_POSITION']?>"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
-            <?php endforeach; ?>
-        </select>
+        <label class="form-label" for="form_edit_user_name">Сотрудник</label>
+        <input type="text" id="form_edit_user_name" class="form-control " disabled>
+        <input type="hidden" id="form_edit_user_id" name="user_id">
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="form_entity_position">Должность</label>
-        <select id="form_entity_position" class="form-control select2" name="position" readonly>
-            <option value="">Не выбрана</option>
-            <?php foreach ($this->data['position_list'] as $position): ?>
-                <option value="<?= $position ?>"><?= $position ?></option>
-            <?php endforeach; ?>
-        </select>
+        <label class="form-label" for="form_edit_position">Должность</label>
+        <input type="text" id="form_edit_position_name" class="form-control" disabled>
+        <input type="hidden" id="form_edit_position" class="form-control" name="position">
     </div>
 
     <div class="mb-3">

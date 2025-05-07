@@ -20,27 +20,6 @@
 				Добавить измерения с загруженным БДБ-13
 			</button>
 		</div>
-
-<!--        <div class="col">-->
-<!--            <select name="" class="form-control h-auto select-scale filter">-->
-<!--                <option value="">Все</option>-->
-<!--                --><?php //foreach ($this->data['scale'] as $val): ?>
-<!--                    <option value="--><?//= $val['id']?><!--">--><?//= $val['name']?><!--</option>-->
-<!--                --><?php //endforeach; ?>
-<!--            </select>-->
-<!--        </div>-->
-
-<!--        <div class="col-auto">-->
-<!--            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="--><?//= $this->data['min_date'] ?><!--" title="Введите дату начала">-->
-<!--        </div>-->
-<!---->
-<!--        <div class="col-auto">-->
-<!--            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="--><?//= $this->data['max_date'] ?><!--" title="Введите дату окончания">-->
-<!--        </div>-->
-
-<!--        <div class="col-auto">-->
-<!--            <button type="button" class="btn btn-outline-secondary filter-btn-reset" title="Сбросить фильтр">Сбросить</button>-->
-<!--        </div>-->
     </div>
 </div>
 
@@ -188,7 +167,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Дата и время окончания регенерации активированного угля</label>
-			<input name="toSQL[coal_regeneration][date_regeneration_end]" type="datetime-local"
+			<input name="coal_regeneration[date_regeneration_end]" type="datetime-local"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -206,7 +185,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Дата и время окончания регенерации</label>
-			<select name="toSQL[empty_bdb][id_cr]" class="form-control h-auto"
+			<select name="empty_bdb[id_cr]" class="form-control h-auto"
 					required>
 				<option value="" selected disabled>Выберите</option>
 				<?php foreach ( $this->data['coal_empty'] as $val):?>
@@ -219,7 +198,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Дата и время измерения</label>
-			<input name="toSQL[empty_bdb][date_test]" type="datetime-local" class="bg-white form-control"
+			<input name="empty_bdb[date_test]" type="datetime-local" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -228,7 +207,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Выберите тип БДБ-13</label>
-			<select name="toSQL[empty_bdb][type_bdb]" class="form-control h-auto"
+			<select name="empty_bdb[type_bdb]" class="form-control h-auto"
 					required>
 				<option value="" selected disabled>Выберите</option>
 				<option value="1033">1033</option>
@@ -248,19 +227,19 @@
 	<div class="row mb-3">
 		<div class="col text-center">
 			<label class="form-label"><strong>1</strong></label>
-			<input name="toSQL[empty_bdb][impuls_1]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[impuls_1]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>2</strong></label>
-			<input name="toSQL[empty_bdb][impuls_2]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[impuls_2]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>3</strong></label>
-			<input name="toSQL[empty_bdb][impuls_3]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[impuls_3]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -272,19 +251,19 @@
 	<div class="row mb-3">
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>1</strong></label>
-			<input name="toSQL[empty_bdb][t_1]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[t_1]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>2</strong></label>
-			<input name="toSQL[empty_bdb][t_2]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[t_2]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>3</strong></label>
-			<input name="toSQL[empty_bdb][t_3]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[t_3]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -296,19 +275,19 @@
 	<div class="row mb-3">
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>1</strong></label>
-			<input name="toSQL[empty_bdb][speed_1]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[speed_1]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>2</strong></label>
-			<input name="toSQL[empty_bdb][speed_2]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[speed_2]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>3</strong></label>
-			<input name="toSQL[empty_bdb][speed_3]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[speed_3]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -319,7 +298,7 @@
 	<h5 class="text-center">Среднее значение скорости счета импульсов, B_b, c&#713&sup1</h5>
 	<div class="row mb-3">
 		<div class="col text-center">
-			<input name="toSQL[empty_bdb][average]" type="number" step="0.001" class="bg-white form-control"
+			<input name="empty_bdb[average]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -339,7 +318,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Дата и время окончания регенерации</label>
-			<select name="toSQL[full_bdb][id_cr]" class="form-control h-auto"
+			<select name="full_bdb[id_cr]" class="form-control h-auto"
 					required>
 				<option value="" selected disabled>Выберите</option>
 				<?php foreach ( $this->data['coal_full'] as $val):?>
@@ -352,7 +331,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Дата и время измерения</label>
-			<input name="toSQL[full_bdb][date_test]" type="datetime-local" class="bg-white form-control"
+			<input name="full_bdb[date_test]" type="datetime-local" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -363,19 +342,19 @@
 	<div class="row mb-3">
 		<div class="col text-center">
 			<label class="form-label"><strong>1</strong></label>
-			<input name="toSQL[full_bdb][impuls_1]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[impuls_1]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>2</strong></label>
-			<input name="toSQL[full_bdb][impuls_2]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[impuls_2]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>3</strong></label>
-			<input name="toSQL[full_bdb][impuls_3]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[impuls_3]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -387,19 +366,19 @@
 	<div class="row mb-3">
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>1</strong></label>
-			<input name="toSQL[full_bdb][t_1]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[t_1]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>2</strong></label>
-			<input name="toSQL[full_bdb][t_2]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[t_2]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>3</strong></label>
-			<input name="toSQL[full_bdb][t_3]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[t_3]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -411,19 +390,19 @@
 	<div class="row mb-3">
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>1</strong></label>
-			<input name="toSQL[full_bdb][speed_1]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[speed_1]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>2</strong></label>
-			<input name="toSQL[full_bdb][speed_2]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[speed_2]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
 		<div class="col text-center">
 			<label class="form-label text-center"><strong>3</strong></label>
-			<input name="toSQL[full_bdb][speed_3]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[speed_3]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -434,7 +413,7 @@
 	<h5 class="text-center">Среднее значение скорости счета импульсов (загр.), N_b, c&#713&sup1</h5>
 	<div class="row mb-3">
 		<div class="col text-center">
-			<input name="toSQL[full_bdb][average]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[average]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>
@@ -445,7 +424,7 @@
 	<h5 class="text-center">A_bф, Бк</h5>
 	<div class="row mb-3">
 		<div class="col text-center">
-			<input name="toSQL[full_bdb][A_b]" type="number" step="0.001" class="bg-white form-control"
+			<input name="full_bdb[A_b]" type="number" step="0.001" class="bg-white form-control"
 				   class="form-control"
 				   value="" required>
 		</div>

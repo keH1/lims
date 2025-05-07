@@ -6,15 +6,41 @@ $(function ($) {
     let currentEditCell = null
     window.labsList = window.labsList || []
 
+    const redStar = '<span class="redStars">*</span>'
+    const labelCompanyType = {
+        "labelGovernment": "Организация",
+        "labelCommercial": "Клиент"
+    }
+
     initForm()
     initGovDeadlineValidation()
-    
+
+    function initSelect2($select) {
+        $select.select2({
+            theme: 'bootstrap-5',
+            placeholder: $select.data('placeholder'),
+            width: '100%'
+        })
+    }
+
+    function destroySelect2($select) {
+        if ($select.hasClass('select2-hidden-accessible')) {
+            $select.select2('destroy')
+        }
+    }
+
+    // Инициализируем Select2 для всех ответственных
+    $('.assigned-select').each(function(){
+        initSelect2($(this))
+    })
+
     /**
      * @desc Переключает тип заявки
      */
     function toggleRequestType() {
-        const reqType = $('#req-type-select').val()
+        const reqType = $('.req-type-field').val()
         const hasId = $('input[name="id"]').length > 0
+        const $labelCompany = $('.label-company')
 
         // Сначала скрываем все специфичные для типов блоки
         $('.type-specific-block').addClass('visually-hidden')
@@ -29,11 +55,20 @@ $(function ($) {
         
         // Гос. работы
         if (reqType === '9') {
+            // Для гос. работ показываем текстовое поле и скрываем селект
+            $('#contract-select').addClass('visually-hidden').prop('disabled', true)
+            $('#contract-input').removeClass('visually-hidden').prop('disabled', false)
+
+            //Скрываем кнопку добавления пользователей
+            $('.add_assigned').addClass('visually-hidden')
+            
             $('.type-gov-block').removeClass('visually-hidden')
             
             // Активация полей и required для отображаемых блоков
             $('.type-gov-block input, .type-gov-block select').prop('disabled', false)
             $('.type-gov-block [data-conditionally-required="true"]').prop('required', true)
+
+            $labelCompany.html(labelCompanyType.labelGovernment + ' ' + redStar)
             
             // Работа с таблицей гос. работ
             initializeResponsibleSelects()
@@ -45,6 +80,11 @@ $(function ($) {
             //     addGovWorkRow()
             // }
         } else if (reqType === 'SALE') {
+            // Для коммерческих заявок показываем селект и скрываем текстовое поле
+            $('#contract-select').removeClass('visually-hidden').prop('disabled', false)
+            $('#contract-input').addClass('visually-hidden').prop('disabled', true)
+            $('.add_assigned').removeClass('visually-hidden')
+            
             $('.type-sale-block').not('#sale-materials-block').removeClass('visually-hidden')
             
             if (!hasId) {
@@ -58,6 +98,8 @@ $(function ($) {
             // Активация полей и required для отображаемых блоков
             $('.type-sale-block').not('#sale-materials-block').find('input, select').prop('disabled', false)
             $('.type-sale-block').not('#sale-materials-block').find('[data-conditionally-required="true"]').prop('required', true)
+
+            $labelCompany.html(labelCompanyType.labelCommercial + ' ' + redStar)
         }
     }
     
@@ -65,11 +107,10 @@ $(function ($) {
      * @desc Инициализация при загрузке страницы
      */
     function initForm() {
-        const reqType = $('#req-type-select').val()
+        const reqType = $('.req-type-field').val()
 
         if (isNewRequest) {
             if (reqType) {
-                // При ошибке валидации
                 toggleRequestType()
             } else {
                 // Скрываем все блоки для новой заявки
@@ -88,13 +129,13 @@ $(function ($) {
         }
     }
     
-    $body.on('change', '#req-type-select', function() {
+    $body.on('change', '.req-type-field', function() {
         toggleRequestType()
     })
     
     // Вероятно надо использовать id для формы
     $body.on('submit', 'form', function(e) {
-        const reqType = $('#req-type-select').val()
+        const reqType = $('.req-type-field').val()
         
         if (!reqType) {
             e.preventDefault()
@@ -120,10 +161,10 @@ $(function ($) {
      * @desc Валидация для заявок гос. работа
      */
     function validateGovWorksForm() {
-        const company = $('#company').val(),
-              responsible = $('#assigned0').val(),
-              responsibleHidden = $('#assigned0-hidden').val(),
-              workRows = $('.gov-works-table tbody tr.gov-work-row')
+        const company = $('#company').val()
+        const responsible = $('#assigned0').val()
+        const responsibleHidden = $('#assigned0-hidden').val()
+        const workRows = $('.gov-works-table tbody tr.gov-work-row')
         
         if (!company || (!responsible && !responsibleHidden) || workRows.length === 0) {
             if (!company) {
@@ -137,9 +178,8 @@ $(function ($) {
         }
         
         // Обязательные поля в работах
-        let hasEmptyRequired = false,
-            emptyFieldName = '',
-            emptyFieldRow = null
+        let hasEmptyRequired = false
+        let emptyFieldName = ''
         
         workRows.each(function(rowIndex) {
             const row = $(this)
@@ -148,8 +188,7 @@ $(function ($) {
             const nameCell = row.find('[data-type="text"][data-required="true"]')
             if (nameCell.length && !nameCell.find('.cell-input').val()) {
                 hasEmptyRequired = true
-                emptyFieldName = 'Наименование работы'
-                emptyFieldRow = row
+                emptyFieldName = 'Наименование'
                 return false
             }
             
@@ -163,7 +202,6 @@ $(function ($) {
                 if (!materialSelect.val()) {
                     hasEmptyRequired = true
                     emptyFieldName = 'Материал'
-                    emptyFieldRow = row
                     return false
                 }
             }
@@ -173,7 +211,6 @@ $(function ($) {
             if (quantityCell.length && !quantityCell.find('.cell-input').val()) {
                 hasEmptyRequired = true
                 emptyFieldName = 'Количество'
-                emptyFieldRow = row
                 return false
             }
             
@@ -187,7 +224,6 @@ $(function ($) {
                 if (!deadlineInput.val()) {
                     hasEmptyRequired = true
                     emptyFieldName = 'Сроки'
-                    emptyFieldRow = row
                     return false
                 }
             }
@@ -202,7 +238,6 @@ $(function ($) {
                 if (!responsibleSelect.val()) {
                     hasEmptyRequired = true
                     emptyFieldName = 'Ответственный'
-                    emptyFieldRow = row
                     return false
                 }
             }
@@ -217,17 +252,13 @@ $(function ($) {
                 if (!labSelect.val()) {
                     hasEmptyRequired = true
                     emptyFieldName = 'Испытания в лаборатории'
-                    emptyFieldRow = row
                     return false
                 }
             }
         })
         
         if (hasEmptyRequired) {
-            const rowNumber = emptyFieldRow ? $('.gov-works-table tbody tr.gov-work-row').index(emptyFieldRow) + 1 : '',
-                  rowText = rowNumber ? ` в строке ${rowNumber}` : ''
-            
-            showErrorMessage(`Пожалуйста, заполните обязательное поле "${emptyFieldName}"${rowText}`, '#error-message')
+            showErrorMessage(`Пожалуйста, заполните обязательное поле "${emptyFieldName}"`, '#error-message')
             return false
         }
         
@@ -254,41 +285,18 @@ $(function ($) {
     }
 
     function validateEmailField($emailField) {
-        clearError($emailField)
+        clearElementError($emailField)
 
         let emailVal = $emailField.val()?.toString().trim() || ''
         const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
 
         if (emailVal && !emailPattern.test(emailVal)) {
-            showError($emailField, 'Введите корректный e-mail (например: user@example.com)')
+            showElementError($emailField, 'Введите корректный e-mail (например: user@example.com)')
             return false
         }
 
         return true
     }
-
-    function showError($element, message) {
-        const $errorContainer = $element.next('.invalid-feedback')
-
-        if (!$errorContainer.length) {
-            $element.after('<div class="invalid-feedback"></div>')
-        }
-
-        $element.addClass('is-invalid')
-        $element.next('.invalid-feedback').text(message).show()
-    }
-
-    function clearError($element) {
-        $element.removeClass('is-invalid')
-        const $errorContainer = $element.next('.invalid-feedback')
-        if ($errorContainer.length) {
-            $errorContainer.text('').hide()
-        }
-    }
-
-    $body.on('input change', 'input[name="EMAIL"], input[name="POST_MAIL"], input[name="addEmail[]"]', function() {
-        validateEmailField($(this))
-    })
 
     /**
      * @desc Получает список материалов
@@ -326,34 +334,16 @@ $(function ($) {
         
         let responsibleOptions = '<option value="">Выберите ответственного</option>'
         
-        /* Запрет выбора ответственных
-        const selectedResponsibles = []
-        $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
+        $('#assigned0 option').each(function() {
             const value = $(this).val()
-            if (value) {
-                selectedResponsibles.push(value)
-            }
-        })
-        
-        $('#assigned0 option').each(function() {
-            const value = $(this).val(),
-                  text = $(this).text()
-            if (value && selectedResponsibles.indexOf(value) === -1) {
-                responsibleOptions += `<option value="${value}">${text}</option>`
-            }
-        })
-        */
-        
-        $('#assigned0 option').each(function() {
-            const value = $(this).val(),
-                  text = $(this).text()
+            const text = $(this).text()
             if (value) {
                 responsibleOptions += `<option value="${value}">${text}</option>`
             }
         })
         
-        const labOptions = getLabOptions(),
-              materialOptions = getMaterialOptions()
+        const labOptions = getLabOptions()
+        const materialOptions = getMaterialOptions()
         
         const newRow = `
             <tr class="gov-work-row">
@@ -474,44 +464,47 @@ $(function ($) {
      */
     function updateAssignedSelects() {
         const $main = $('#assigned0')
-        const optionsHTML = $main.html()
+        const mainOptionsHTML = $main.html()
         const mainVal = $main.val()
 
         $('.added_assigned select.assigned-select').each(function() {
             const $select = $(this)
             const oldVal = $select.val()
 
-            let $temp = $('<select>' + optionsHTML + '</select>')
+            destroySelect2($select)
 
-            let $option = $temp.find('option[value=""][disabled]').filter(function() {
-                return $(this).text().trim() === 'Выберите главного ответственного'
-            });
-            if ($option.length) {
-                $option.text('Выберите ответственного')
-            } else {
-                $temp.find('option').each(function() {
-                    if ($(this).text().trim() === 'Выберите главного ответственного') {
-                        $(this).text('Выберите ответственного')
-                    }
-                });
-            }
-
+            // Временный select на базе главного
+            let $temp = $('<select>' + mainOptionsHTML + '</select>')
+            $temp.find('option[value=""][disabled]').text('Выберите ответственного')
+            // Исключаем из списка опцию, выбранную главным
             if (mainVal) {
-                $temp.find('option[value="' + mainVal + '"]').remove()
+                $temp.find(`option[value="${mainVal}"]`).remove()
             }
 
             $select.html($temp.html())
 
-            // Если ранее выбранное значение все еще присутствует в обновлённом списке, восстанавливаем его
-            if ($select.find('option[value="' + oldVal + '"]').length > 0) {
+            // Восстанавливаем старое значение, если оно не выбрано главным ответственным
+            if (oldVal && oldVal !== mainVal && $select.find(`option[value="${oldVal}"]`).length) {
                 $select.val(oldVal)
+            } else {
+                $select.val(null).trigger('change')
             }
-        });
+
+            initSelect2($select)
+        })
     }
 
     $body.on('change', '#assigned0', function() {
-        updateAssignedSelects();
-        $('.add_assigned').prop('disabled', !$(this).val())
+        const $main = $(this)
+
+        // Сброс и реинициализация Select2 у главного ответственного (чтобы он подхватил новые изменения)
+        destroySelect2($main)
+        initSelect2($main)
+
+        // Обновляем всех дополнительных ответственных
+        updateAssignedSelects()
+
+        $('.add_assigned').prop('disabled', !$main.val())
     })
 
     $body.on('click', '.add_assigned', function() {
@@ -524,21 +517,22 @@ $(function ($) {
         }
 
         const mainVal = $('#assigned0').val()
-        let optionsHTML = $('#assigned0').html()
 
-        let $temp = $('<select>' + optionsHTML + '</select>');
-        $temp.find('option[value="' + mainVal + '"]').remove();
-        optionsHTML = $temp.html();
+        let $temp = $('<select>' + $('#assigned0').html() + '</select>')
+        if (mainVal) {
+            $temp.find(`option[value="${mainVal}"]`).remove()
+        }
+        let optionsHTML = $temp.html()
 
-        const newAssigned = `
+        const newAssigned = $(`
             <div class="form-group row added_assigned">
                 <label class="col-sm-2 col-form-label">Ответственный</label>
                 <div class="col-sm-8">
                     <select class="form-control assigned-select"
                             id="assigned${index}"
-                            required
-                            name="ASSIGNED[]"
-                    >
+                            data-placeholder="Выберите ответственного"
+                            name="ASSIGNED[]">
+                    <option value=""></option>
                         ${optionsHTML}
                     </select>
                     <input name="id_assign[]" id="assigned${index}-hidden" class="assigned_id" type="hidden" value="">
@@ -548,18 +542,24 @@ $(function ($) {
                         <i class="fa-solid fa-minus icon-fix"></i>
                     </button>
                 </div>
-            </div>`
+            </div>
+        `)
 
         if (lastAssigned.length > 0) {
             lastAssigned.after(newAssigned)
         } else {
             $('#main-responsible-block').after(newAssigned)
         }
-    })
+
+        const $newSelect = newAssigned.find('select.assigned-select');
+        initSelect2($newSelect)
+        // Сбрасываем и показываем placeholder
+        $newSelect.val(null).trigger('change')
+    });
 
     $body.on('click', '.add_email', function() {
-        let $formGroupContainer = $(this).parents('.form-group'),
-            countAddedEmail = $('.added_mail').length + 1
+        let $formGroupContainer = $(this).parents('.form-group')
+        let countAddedEmail = $('.added_mail').length + 1
 
         if (countAddedEmail > 1) {
             $formGroupContainer = $('.form-horizontal .added_mail').last()
@@ -576,14 +576,6 @@ $(function ($) {
                 </div>
             </div>`
         )
-    })
-
-    $body.on('change', '.assigned-select', function(e) {
-        let $select = $(e.target),
-            $hiddenInput = $('#' + $select.attr('id') + '-hidden')
-
-        $hiddenInput.val($($select).val())
-        $(this).parents('.form-group').find('.add_assigned').removeAttr('disabled')
     })
     
     $body.on('click', '#addGovWork', function() {
@@ -618,6 +610,10 @@ $(function ($) {
             })
         }
     })
+
+    $body.on('input change', 'input[name="EMAIL"], input[name="POST_MAIL"], input[name="addEmail[]"]', function() {
+        validateEmailField($(this))
+    })
     
     /**
      * @desc Уничтожает все подсказки на странице
@@ -632,22 +628,14 @@ $(function ($) {
     }
     
     /**
-     * @desc Инициализации редактируемых ячеек
+     * @desc Инициализация редактируемых ячеек
      */
     function initializeEditableCells() {
         destroyAllTooltips()
         
-        // Выделяем пустые обязательные поля
         $('.editable-cell[data-required="true"]').each(function() {
-            const cell = $(this),
-            //   input = cell.find('.cell-input'),
-                  display = cell.find('.cell-display')
-            
-            // if (!input.val()) {
-            //     display.addClass('empty-required')
-            // } else {
-            //     display.removeClass('empty-required')
-            // }
+            const cell = $(this)
+            const display = cell.find('.cell-display')
             
             // Удаляем data-bs-* атрибуты, если они есть от предыдущих инициализаций
             display.removeAttr('data-bs-original-title')
@@ -663,8 +651,8 @@ $(function ($) {
         
         // Установка min и step для полей количества
         $('.editable-cell[data-type="number"]').each(function() {
-            const cell = $(this),
-                  input = cell.find('.cell-input')
+            const cell = $(this)
+            const input = cell.find('.cell-input')
             
             if (input.attr('name').includes('quantity')) {
                 input.attr('min', '1')
@@ -721,14 +709,14 @@ $(function ($) {
             const cell = $(this).closest('.editable-cell')
             currentEditCell = cell
             
-            const cellType = cell.data('type'),
-                  inputElement = cell.find('.cell-input'),
-                  currentValue = inputElement.val(),
-                  isRequired = cell.data('required') === true
+            const cellType = cell.data('type')
+            const inputElement = cell.find('.cell-input')
+            const currentValue = inputElement.val()
+            const isRequired = cell.data('required') === true
             
-            let modalTitle = 'Редактирование поля',
-                modalContent = '',
-                modalSelect = null
+            let modalTitle = 'Редактирование поля'
+            let modalContent = ''
+            let modalSelect = null
             
             if (cellType === 'text' || cellType === 'number') {
                 modalContent = `
@@ -762,8 +750,8 @@ $(function ($) {
                     modalTitle = 'Выберите материал'
                     
                     // Сохраняем текущее значение материала перед обновлением опций
-                    const currentMaterialValue = inputElement.val(),
-                          currentMaterialText = currentMaterialValue ? inputElement.find(`option[value="${currentMaterialValue}"]`).text() : ''
+                    const currentMaterialValue = inputElement.val()
+                    const currentMaterialText = currentMaterialValue ? inputElement.find(`option[value="${currentMaterialValue}"]`).text() : ''
                     
                     inputElement.html(getMaterialOptions())
                     
@@ -821,35 +809,6 @@ $(function ($) {
                 modalInput.val(currentValue)
             }
             
-            /* Запрет выбора ответственных
-            if (cellType === 'select' && inputElement.attr('name').includes('assigned_id')) {
-                const modalInput = $('.modal-input')
-                if (modalInput.length > 0) {
-                    const selectedResponsibles = []
-                    
-                    $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
-                        const select = $(this),
-                              value = select.val()
-                        if (value && select.get(0) !== inputElement.get(0)) {
-                            selectedResponsibles.push(value)
-                        }
-                    })
-                    
-                    modalInput.find('option').each(function() {
-                        const option = $(this),
-                              value = option.val()
-                        if (value && selectedResponsibles.includes(value)) {
-                            option.remove()
-                        }
-                    })
-                    
-                    if (modalInput.find('option').length <= 1) {
-                        modalInput.html('<option value="" disabled>Нет доступных вариантов</option>')
-                    }
-                }
-            }
-            */
-            
             $('.modal-edit-cell').css('display', 'flex').fadeIn(200)
             
             if ($('.modal-input').length > 0) {
@@ -871,12 +830,12 @@ $(function ($) {
         $body.off('change', '.modal-input').on('change', '.modal-input', function() {
             if (!currentEditCell) return
             
-            const cellType = currentEditCell.data('type'),
-                  inputElement = currentEditCell.find('.cell-input')
+            const cellType = currentEditCell.data('type')
+            const inputElement = currentEditCell.find('.cell-input')
             
             if (cellType === 'select' && inputElement.attr('name').includes('material')) {
-                const modalSelect = $(this),
-                      newValue = modalSelect.val()
+                const modalSelect = $(this)
+                const newValue = modalSelect.val()
                 
                 if (newValue) {
                     inputElement.val(newValue)
@@ -897,19 +856,19 @@ $(function ($) {
         
         $body.off('click', '.modal-edit-save').on('click', '.modal-edit-save', function() {
             if (currentEditCell) {
-                const cellType = currentEditCell.data('type'),
-                      inputElement = currentEditCell.find('.cell-input'),
-                      displayElement = currentEditCell.find('.cell-display'),
-                      modalInput = $('.modal-input'),
-                      oldValue = inputElement.val()
+                const cellType = currentEditCell.data('type')
+                const inputElement = currentEditCell.find('.cell-input')
+                const displayElement = currentEditCell.find('.cell-display')
+                const modalInput = $('.modal-input')
+                const oldValue = inputElement.val()
                 
                 if (currentEditCell.data('required') && !modalInput.val()) {
                     modalInput.addClass('is-invalid')
                     return
                 }
                 
-                let newValue = modalInput.val(),
-                    displayValue = newValue
+                let newValue = modalInput.val()
+                let displayValue = newValue
                 
                 if (cellType === 'number' && inputElement.attr('name').includes('quantity')) {
                     if (newValue <= 0) {
@@ -986,12 +945,6 @@ $(function ($) {
                     }
                 }
                 
-                // if (currentEditCell.data('required') && !newValue) {
-                //     displayElement.addClass('empty-required')
-                // } else {
-                //     displayElement.removeClass('empty-required')
-                // }
-                
                 closeModal()
             }
         })
@@ -1020,8 +973,8 @@ $(function ($) {
      * @desc Закрытие модального окна
      */
     function closeModal() {
-        const currentCell = currentEditCell,
-              currentModalInput = $('.modal-input')
+        const currentCell = currentEditCell
+        const currentModalInput = $('.modal-input')
         
         // Сохраняем текущее значение перед закрытием, чтобы восстановить его при следующем открытии
         if (currentCell && currentCell.data('type') === 'select') {
@@ -1080,17 +1033,17 @@ $(function ($) {
             const row = $(this)
             
             row.find('input, select').each(function() {
-                const input = $(this),
-                      cell = input.parent(),
-                      inputType = input.attr('type') || (input.is('select') ? 'select' : 'text'),
-                      isRequired = input.prop('required')
+                const input = $(this)
+                const cell = input.parent()
+                const inputType = input.attr('type') || (input.is('select') ? 'select' : 'text')
+                const isRequired = input.prop('required')
                 
                 if (cell.hasClass('editable-cell')) {
                     return
                 }
                 
-                let currentValue = input.val(),
-                    displayValue = currentValue
+                let currentValue = input.val()
+                let displayValue = currentValue
                 
                 if (inputType === 'select' || input.is('select')) {
                     displayValue = input.find('option:selected').text()
@@ -1156,8 +1109,8 @@ $(function ($) {
      */
     function updateLabSelects(labOptions) {
         $('select[name$="[lab_id]"]').each(function() {
-            const select = $(this),
-                  currentValue = select.val()
+            const select = $(this)
+            const currentValue = select.val()
             
             select.empty().html(labOptions)
             
@@ -1171,57 +1124,37 @@ $(function ($) {
      * @desc Обновление всех селектов ответственных в таблице гос. работ
      */
     function updateGovWorksResponsibles() {
-        /* Запрет выбора ответственных
-        const selectedResponsibles = []
-        $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
-            const value = $(this).val()
-            if (value) {
-                selectedResponsibles.push(value)
-            }
-        })
-        */
-        
         const allOptions = $('#assigned0 option').clone()
         
         $('.gov-works-table tbody tr.gov-work-row select[name$="[assigned_id]"]').each(function() {
-            const select = $(this),
-                  currentValue = select.val()
+            const select = $(this)
+            const currentValue = select.val()
             
             if (!currentValue) {
                 select.empty()
                 select.append('<option value="">Выберите ответственного</option>')
                 
                 allOptions.each(function() {
-                    const option = $(this).clone(),
-                          optionValue = option.val()
+                    const option = $(this).clone()
+                    const optionValue = option.val()
                     
                     if (!optionValue) {
                         return
                     }
                     
-                    /* Запрет выбора ответственных
-                    if (selectedResponsibles.indexOf(optionValue) === -1) {
-                        select.append(option)
-                    }
-                    */
                     select.append(option)
                 })
             } else {
                 select.empty()
                 
                 allOptions.each(function() {
-                    const option = $(this).clone(),
-                          optionValue = option.val()
+                    const option = $(this).clone()
+                    const optionValue = option.val()
                     
                     if (!optionValue) {
                         return
                     }
                     
-                    /* Запрет выбора ответственных
-                    if (optionValue === currentValue || selectedResponsibles.indexOf(optionValue) === -1) {
-                        select.append(option)
-                    }
-                    */
                     select.append(option)
                 })
                 

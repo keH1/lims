@@ -4,6 +4,7 @@ class History extends Model
 {
 	public function addHistory($data)
 	{
+        $data['organization_id'] = App::getOrganizationId();
 		$sql = $this->prepearTableData('HISTORY', $data);
 		$this->DB->Insert('HISTORY', $sql);
 	}
@@ -14,6 +15,7 @@ class History extends Model
 	 */
 	public function getDataToJournalHistory(array $filter = []): array
 	{
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -32,7 +34,12 @@ class History extends Model
                     $where .= "h.REQUEST LIKE '%{$filter['search']['REQUEST']}%' AND ";
                 }
 				if (isset($filter['search']['PROT_NUM'])) {
-                    $where .= "h.PROT_NUM = '{$filter['search']['PROT_NUM']}' AND ";
+                    $protocolNumber = $filter['search']['PROT_NUM'];
+                    if (ctype_digit($protocolNumber)) {
+                        $where .= "h.PROT_NUM = '{$protocolNumber}' AND ";
+                    } else {
+                        $where .= "(1=0) AND ";
+                    }
                 }
 				if (isset($filter['search']['TZ_ID'])) {
                     $where .= "h.TZ_ID = '{$filter['search']['TZ_ID']}' AND ";
@@ -74,7 +81,7 @@ class History extends Model
                 }
             }
         }
-        $where .= "1 ";
+        $where .= "organization_id = {$organizationId}";
 
         $result = [];
 
@@ -87,6 +94,7 @@ class History extends Model
 
         $dataTotal = $this->DB->Query("SELECT count(*) val
                                        FROM HISTORY AS h
+                                       WHERE organization_id = {$organizationId}
         ")->Fetch();
 
         $dataFiltered = $this->DB->Query("SELECT count(*) val

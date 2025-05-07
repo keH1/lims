@@ -98,6 +98,37 @@ class GeneratorController extends Controller
 		$this->showSuccessMessage("Акт приема проб сформирован");
 	}
 
+    /**
+     * @desc Формирует Акт отбора проб
+     * @param int|null $dealId
+     */
+    public function generateSamplingActDocument(?int $dealId): void
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var DocumentGenerator $generatorModel */
+        $generatorModel = $this->model('DocumentGenerator');
+        /** @var Request $requestModel */
+        $requestModel = $this->model('Request');
+
+        $dealId = (int)$dealId;
+        if ($dealId <= 0) {
+            $this->showErrorMessage('Не указан, или указан неверно ИД заявки');
+            $this->redirect("/request/list/");
+        }
+
+        $deal = $requestModel->getDealById($dealId);
+        if (empty($deal)) {
+            $this->showErrorMessage("Заявки с ИД {$dealId} не существует");
+            $this->redirect('/request/list/');
+        }
+
+        $generatorModel->generateSamplingAct($dealId);
+
+        $this->showSuccessMessage("Акт отбора проб сформирован");
+    }
+
 
     /**
      * @desc Формирует Счет-оферта

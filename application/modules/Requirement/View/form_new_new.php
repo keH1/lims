@@ -11,32 +11,32 @@
                     <i class="fa-solid fa-list"></i>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="nav-link link-card" href="#">
-                    <svg class="icon" width="25" height="25">
-                        <use xlink:href="<?=URI?>/assets/images/icons.svg#card"/>
-                    </svg>
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link link-docs" href="#">
-                    <svg class="icon" width="25" height="25">
-                        <use xlink:href="<?=URI?>/assets/images/icons.svg#docs"/>
-                    </svg>
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link link-doc-edit" href="#">
-                    <svg class="icon" width="25" height="25">
-                        <use xlink:href="<?=URI?>/assets/images/icons.svg#doc-edit"/>
-                    </svg>
-                </a>
-            </li>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Technical_spec_int/Tec_spec_int.html" title="Техническая поддержка">
-                    <i class="fa-solid fa-question"></i>
-                </a>
-            </li>
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link link-card" href="#">-->
+<!--                    <svg class="icon" width="25" height="25">-->
+<!--                        <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#card"/>-->
+<!--                    </svg>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link link-docs" href="#">-->
+<!--                    <svg class="icon" width="25" height="25">-->
+<!--                        <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#docs"/>-->
+<!--                    </svg>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link link-doc-edit" href="#">-->
+<!--                    <svg class="icon" width="25" height="25">-->
+<!--                        <use xlink:href="--><?//=URI?><!--/assets/images/icons.svg#doc-edit"/>-->
+<!--                    </svg>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Technical_spec_int/Tec_spec_int.html" title="Техническая поддержка">-->
+<!--                    <i class="fa-solid fa-question"></i>-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
     </nav>
 </header>
@@ -153,6 +153,7 @@
 
         <input type="hidden" id="tz_id" name="tz_id" value="<?= $this->data['tz_id'] ?>">
         <input type="hidden" id="deal_id" name="deal_id" value="<?= $this->data['deal_id'] ?>">
+        <input type="hidden" id="type_id" value="<?= $this->data['tz']['TYPE_ID'] ?>">
         <input type="hidden" id="clear_confirm" name="clear_confirm" value="0">
 
         <div class="panel panel-default">
@@ -171,15 +172,13 @@
                             <label class="form-label mb-1">Основание для проведения испытаний</label>
                             <div>
                                 <strong>
-                                <?php if ($this->data['tz']['TYPE_ID'] == '9'): ?>
-                                    <?php if ( !empty($this->data['contract_number']) ): ?>
-                                        <?= $this->data['contract_type'] ?> №<?= $this->data['contract_number'] ?> от <?= $this->data['contract_date'] ?>
+                                    <?php if ($this->data['tz']['TYPE_ID'] == '9'): ?>
+                                        <?php if ( !empty($this->data['contract_number']) ): ?>
+                                            <?= $this->data['contract_number'] ?>
+                                        <?php endif; ?>
                                     <?php else: ?>
-                                        Договор еще не составлен
+                                        Экспертное задание
                                     <?php endif; ?>
-                                <?php else: ?>
-                                    Экспертное задание
-                                <?php endif; ?>
                                 </strong>
                             </div>
                         </div>
@@ -202,7 +201,11 @@
                         <div class="form-group">
                             <label class="form-label mb-1" for="day_to_test">Срок проведения испытаний</label>
                             <div class="input-group mb-3">
-                                <input type="number" class="clear_confirm_change form-control number-only day-to-test" id="day_to_test" name="tz[DAY_TO_TEST]" value="<?= $this->data['tz']['DAY_TO_TEST']?? 20 ?>" aria-describedby="basic-addon2">
+                                <input type="number" class="clear_confirm_change form-control number-only day-to-test"
+                                       id="day_to_test" name="tz[DAY_TO_TEST]"
+                                       value="<?= $this->data['tz']['DAY_TO_TEST'] ?? 20 ?>"
+                                       aria-describedby="basic-addon2"
+                                >
                                 <select class="input-group-text col-3 clear_confirm_change" id="basic-addon2" name="tz[type_of_day]">
                                     <option value="work_day" <?=$this->data['tz']['type_of_day'] == 'work_day' ? 'selected' : ''?>>рабочих дней</option>
                                     <option value="day" <?=$this->data['tz']['type_of_day'] == 'day' ? 'selected' : ''?>>дней</option>
@@ -473,81 +476,83 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Подтверждение ТЗ
-                <span class="tools float-end">
-                    <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
-                    <a href="javascript:;" class="fa fa-chevron-up"></a>
-                </span>
-            </div>
-            <div class="panel-body">
-                <?php if (!empty($this->data['lab_head']['user'])): ?>
-                    <?php foreach ($this->data['lab_head']['user'] as $user): ?>
-                        <div class="head-user-block <?=$user['user_id'] == $this->data['curr_user']? 'curr_user' : ''?>">
-                            <?php if ( $user['is_confirm'] == CHECK_TZ_NOT_SENT && $this->data['check_state'] != CHECK_TZ_NOT_SENT ): ?>
-                                <span class="icon" title="ТЗ не отправлено">
-                                    <i class="fa-solid fa-minus"></i>
-                                </span>
-                            <?php elseif ( $user['is_confirm'] == CHECK_TZ_NOT_SENT ): ?>
-                                <span class="icon" title="ТЗ не отправлено">
-                                    <i class="fa-regular fa-paper-plane"></i>
-                                </span>
-                            <?php elseif ($user['is_confirm'] == CHECK_TZ_APPROVE): ?>
-                                <span class="text-green icon" title="ТЗ потверждено">
-                                    <i class="fa-regular fa-circle-check"></i>
-                                </span>
-                            <?php elseif ($user['is_confirm'] == CHECK_TZ_NOT_APPROVE): ?>
-                                <span class="text-red icon" title="ТЗ не потверждено">
-                                    <i class="fa-regular fa-circle-xmark"></i>
-                                </span>
+        <?php if ($this->data['tz']['TYPE_ID'] != '9'): ?>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Подтверждение ТЗ
+                    <span class="tools float-end">
+                        <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
+                        <a href="javascript:;" class="fa fa-chevron-up"></a>
+                    </span>
+                </div>
+                <div class="panel-body">
+                    <?php if (!empty($this->data['lab_head']['user'])): ?>
+                        <?php foreach ($this->data['lab_head']['user'] as $user): ?>
+                            <div class="head-user-block <?=$user['user_id'] == $this->data['curr_user']? 'curr_user' : ''?>">
+                                <?php if ( $user['is_confirm'] == CHECK_TZ_NOT_SENT && $this->data['check_state'] != CHECK_TZ_NOT_SENT ): ?>
+                                    <span class="icon" title="ТЗ не отправлено">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </span>
+                                <?php elseif ( $user['is_confirm'] == CHECK_TZ_NOT_SENT ): ?>
+                                    <span class="icon" title="ТЗ не отправлено">
+                                        <i class="fa-regular fa-paper-plane"></i>
+                                    </span>
+                                <?php elseif ($user['is_confirm'] == CHECK_TZ_APPROVE): ?>
+                                    <span class="text-green icon" title="ТЗ потверждено">
+                                        <i class="fa-regular fa-circle-check"></i>
+                                    </span>
+                                <?php elseif ($user['is_confirm'] == CHECK_TZ_NOT_APPROVE): ?>
+                                    <span class="text-red icon" title="ТЗ не потверждено">
+                                        <i class="fa-regular fa-circle-xmark"></i>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="icon" title="Ожидание проверки">
+                                        <i class="fa-solid fa-hourglass-half"></i>
+                                    </span>
+                                <?php endif; ?>
+
+                                <span class="<?=$user['user_id'] == $this->data['curr_user']? 'fw-bold' : ''?>"><?=$user['short_name'];?></span>
+                            </div>
+                        <?php endforeach; ?>
+
+
+                        <?php if (!empty($this->data['lab_head']['user']) && $this->data['check_state'] == CHECK_TZ_APPROVE): ?>
+                            <div class="mt-1">
+                                <label class="form-label text-green fw-bold">Техническое задание утверждено.</label>
+                            </div>
+                        <?php endif;?>
+
+
+                        <div class="line-dashed"></div>
+
+                        <?php if ($this->data['lab_head']['is_curr_user']): ?>
+                            <?php if ($this->data['check_state'] == CHECK_TZ_NOT_SENT): ?>
+                                    <button type="button"
+                                            class="btn btn-primary sent_approve_tz <?=$this->data['lab_head']['check_state'] == CHECK_TZ_NOT_SENT? '': 'disable'?>"
+                                    ><i class="fa-regular fa-paper-plane"></i> Передать и утвердить</button>
                             <?php else: ?>
-                                <span class="icon" title="Ожидание проверки">
-                                    <i class="fa-solid fa-hourglass-half"></i>
-                                </span>
-                            <?php endif; ?>
-
-                            <span class="<?=$user['user_id'] == $this->data['curr_user']? 'fw-bold' : ''?>"><?=$user['short_name'];?></span>
-                        </div>
-                    <?php endforeach; ?>
-
-
-                    <?php if (!empty($this->data['lab_head']['user']) && $this->data['check_state'] == CHECK_TZ_APPROVE): ?>
-                        <div class="mt-1">
-                            <label class="form-label text-green fw-bold">Техническое задание утверждено.</label>
-                        </div>
-                    <?php endif;?>
-
-
-                    <div class="line-dashed"></div>
-
-                    <?php if ($this->data['lab_head']['is_curr_user']): ?>
-                        <?php if ($this->data['check_state'] == CHECK_TZ_NOT_SENT): ?>
                                 <button type="button"
-                                        class="btn btn-primary sent_approve_tz <?=$this->data['lab_head']['check_state'] == CHECK_TZ_NOT_SENT? '': 'disable'?>"
-                                ><i class="fa-regular fa-paper-plane"></i> Передать и утвердить</button>
+                                        class="btn btn-success me-3 approve_tz
+                                        <?=$this->data['check_state'] == CHECK_TZ_WAIT && $this->data['lab_head']['curr_user_status'] != 1? '': 'disable'?>"
+                                ><i class="fa-regular fa-circle-check"></i> Утвердить</button>
+                                <a href="#return-modal-form"
+                                        class="btn btn-danger me-3 not_approve_tz popup-with-form
+                                        <?=$this->data['check_state'] == CHECK_TZ_WAIT && $this->data['lab_head']['curr_user_status'] != 1? '': 'disable'?>"
+                                ><i class="fa-regular fa-circle-xmark"></i> Вернуть</a>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <button type="button"
-                                    class="btn btn-success me-3 approve_tz
-                                    <?=$this->data['check_state'] == CHECK_TZ_WAIT && $this->data['lab_head']['curr_user_status'] != 1? '': 'disable'?>"
-                            ><i class="fa-regular fa-circle-check"></i> Утвердить</button>
-                            <a href="#return-modal-form"
-                                    class="btn btn-danger me-3 not_approve_tz popup-with-form
-                                    <?=$this->data['check_state'] == CHECK_TZ_WAIT && $this->data['lab_head']['curr_user_status'] != 1? '': 'disable'?>"
-                            ><i class="fa-regular fa-circle-xmark"></i> Вернуть</a>
+                            <a href="#send-modal-form"
+                            class="btn btn-primary popup-with-form <?=$this->data['check_state'] == CHECK_TZ_NOT_SENT? '': 'disable'?>"
+                            ><i class="fa-regular fa-paper-plane"></i> Передать</a>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <a href="#send-modal-form"
-                           class="btn btn-primary popup-with-form <?=$this->data['check_state'] == CHECK_TZ_NOT_SENT? '': 'disable'?>"
-                        ><i class="fa-regular fa-paper-plane"></i> Передать</a>
-                    <?php endif; ?>
 
-                <?php else: ?>
-                    <span class="fw-bold">Сохраните техническое задание</span>
-                <?php endif; ?>
+                    <?php else: ?>
+                        <span class="fw-bold">Сохраните техническое задание</span>
+                    <?php endif; ?>
+                </div>
+                <!--./panel-body-->
             </div>
-            <!--./panel-body-->
-        </div>
+        <?php endif; ?>
 
         <?php if (!empty($this->data['lab_head']['user']) && $this->data['check_state'] != CHECK_TZ_NOT_SENT): ?>
             <label class="form-label text-red">Техническое задание на проверке. При нажатии "Сохранить" отзовет проверку</label>
@@ -645,17 +650,17 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-4">
+    <div class="row justify-content-between">
+        <div class="<?=$this->data['tz']['TYPE_ID'] == '9'? 'col-3' : 'col-4'?>">
             <label class="form-label mb-1">Методика испытаний <span class="redStars">*</span></label>
         </div>
-        <div class="col-4">
+        <div class="<?=$this->data['tz']['TYPE_ID'] == '9'? 'col-3' : 'col-4'?>">
             <label class="form-label mb-1">Нормативная документация</label>
         </div>
-        <div class="col-2">
+        <div class="<?=$this->data['tz']['TYPE_ID'] == '9'? 'col-3' : 'col-2'?>">
             <label class="form-label mb-1">Исполнитель</label>
         </div>
-        <div class="col">
+        <div class="<?=$this->data['tz']['TYPE_ID'] == '9'? 'd-none' : 'col'?>">
             <label class="form-label mb-1">Цена</label>
         </div>
     </div>

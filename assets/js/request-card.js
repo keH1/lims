@@ -1,6 +1,8 @@
 $(function ($) {
     const $body = $('body')
 
+    $('[data-bs-toggle="popover"]').popover()
+
     $('.popup-with-form').magnificPopup({
         type: 'inline',
         closeBtnInside:true,
@@ -19,6 +21,9 @@ $(function ($) {
     })
 
     $('.popup-mail').on('click', function () {
+        $('#ATTACH1, #ATTACH2, #ATTACH3').remove()
+        $('#email-check').data('is_overall', false)
+
         $('#TYPE').val($(this).data('type'))
         $('#TITLE').val($(this).data('title'))
         $('#ATTACH').val($(this).data('attach'))
@@ -40,15 +45,84 @@ $(function ($) {
         $('.act-manual-block').toggleClass('visually-hidden')
     })
 
-    $('#act-work-modal-form').submit(function () {
-        let actNumber     = $(this).find('input[name=actNumber]').val(),
-            actDate       = $(this).find('input[name=actDate]').val(),
-            lead          = $(this).find('select[name=lead] option:selected').val(),
-            dealId        = $(this).find('input[name=deal_id]').val(),
-            tzId          = $(this).find('input[name=tz_id]').val(),
-            accountEmail  = $(this).find('input[name=Email]').val()
+    $('#act-work-modal-form').on('submit', function(e) {
+        e.preventDefault()
 
-        window.open(`/protocol_generator/akt_vr.php?ID=${dealId}&TZ_ID=${tzId}&NUM=${actNumber}&DATE=${actDate}&LEAD=${lead}&ACCMAIL=${accountEmail}`, '_blank');
+        const $form = $(this)
+        const $email = $form.find('[name=Email]')
+
+        const fieldsToValidate = [
+            { $el: $form.find('[name=actNumber]'), message: 'Номер акта обязателен' },
+            { $el: $form.find('[name=actDate]'), message: 'Дата акта обязательна' },
+            { $el: $form.find('[name=lead]'), message: 'Руководитель обязателен' },
+            { $el: $email, message: 'Email обязателен' },
+        ];
+
+        let hasErrors = false
+
+        // Сброс предыдущих ошибок
+        fieldsToValidate.forEach(({ $el }) => clearElementError($el))
+
+        // Проверка на пустоту
+        fieldsToValidate.forEach(({ $el, message }) => {
+            if ($.trim($el.val()) === '') {
+                showElementError($el, message)
+                hasErrors = true
+            }
+        })
+
+        if (hasErrors) {
+            return
+        }
+
+        if (!validateEmailField($email)) {
+            return
+        }
+
+        const params = {
+            ID: $.trim($form.find('[name=deal_id]').val()),
+            TZ_ID: $.trim($form.find('[name=tz_id]').val()),
+            NUM: $.trim($form.find('[name=actNumber]').val()),
+            DATE: $.trim($form.find('[name=actDate]').val()),
+            LEAD: $.trim($form.find('[name=lead]').val()),
+            ACCMAIL: $.trim($form.find('[name=Email]').val())
+        }
+
+        $form.find('button[type="submit"]').replaceWith(
+            `<button class="btn btn-primary" type="button" disabled>
+                <span class="spinner-grow spinner-grow-sm spinner-save" role="status" aria-hidden="true"></span>
+                Сохранение...
+            </button>`
+        )
+
+        $.ajax({
+            url: '/protocol_generator/akt_vr.php',
+            type: 'GET',
+            data: { ...params, ajax: 1 },
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.success) {
+                    const downloadUrl = `/protocol_generator/akt_vr.php?${new URLSearchParams(params).toString()}`
+                    const downloadWindow = window.open(downloadUrl, '_blank')
+
+                    // if (!downloadWindow || downloadWindow.closed || typeof downloadWindow.closed === 'undefined') {
+                    //     alert('Всплывающие окна')
+                    //     location.reload()
+                    //     return
+                    // }
+
+                    setInterval(function() {
+                        if (downloadWindow.closed) {
+                            location.reload()
+                        }
+                    }, 1500)
+                }
+            }
+        })
+    })
+
+    $body.on('input change', '#act-work-modal-form input[name="Email"]', function() {
+        validateEmailField($(this))
     })
 
     $('.akt-finish').click(function() {
@@ -57,34 +131,59 @@ $(function ($) {
 
         $.ajax({
             method: 'POST',
-            url: '/update_stage_id.php',
+            url: '/ulab/request/updateApplicationStageAjax',
             data: {
-                satge_id: stage,
-                tz_id: tzId,
+                stage_id: stage,
+                tz_id: tzId
             },
-            success: function(textContent) {
-                if (textContent) {
-                    location.reload();
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    location.reload()
+                } else {
+                    showErrorMessage(response.message, '#error-message')
                 }
             },
             error: function (jqXHR, exception) {
                 let msg = '';
                 if (jqXHR.status === 0) {
-                    msg = 'Not connect.\n Verify Network.';
+                    msg = 'Отсутствует соединение. Проверьте сеть.';
                 } else if (jqXHR.status === 404) {
-                    msg = 'Requested page not found. [404]';
+                    msg = 'Запрашиваемая страница не найдена [404].';
                 } else if (jqXHR.status === 500) {
-                    msg = 'Internal Server Error [500].';
+                    msg = 'Внутренняя ошибка сервера [500].';
                 } else if (exception === 'parsererror') {
-                    msg = 'Requested JSON parse failed.';
+                    msg = 'Ошибка при обработке ответа сервера.';
                 } else if (exception === 'timeout') {
-                    msg = 'Time out error.';
+                    msg = 'Время ожидания истекло.';
                 } else if (exception === 'abort') {
-                    msg = 'Ajax request aborted.';
+                    msg = 'Запрос был прерван.';
                 } else {
-                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                    msg = 'Неизвестная ошибка: ' + jqXHR.responseText;
                 }
                 console.log(msg)
+            }
+        })
+    })
+
+    // Завершение заявки в карточке Гос. работ
+    $body.on('click', '#close_app', function() {
+        const $btn = $(this)
+        const tzId = $btn.data('tz-id')
+        const stage = $btn.data('stage')
+
+        $.ajax({
+            method: 'POST',
+            url: '/ulab/request/updateApplicationStageAjax',
+            data: {
+                stage_id: stage,
+                tz_id: tzId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    location.reload()
+                }
             }
         })
     })
@@ -100,63 +199,119 @@ $(function ($) {
         }
     })
 
-    $btnSend.click(function () {
-
+    $btnSend.click(function(e) {
+        e.preventDefault()
+        
         let $btn = $(this)
-        let orderId = $(this).data('order-id'),
-            dealId = $(this).data('deal-id'),
-            tzId = $(this).data('tz-id'),
-            email = $(this).data('email'),
-            name = $(this).data('name'),
-            attach1 = $(this).data('attach1'),
-            attach2 = $(this).data('attach2'),
-            attach3 = $(this).data('attach3'),
-            title = $(this).data('title')
-
+        let orderId = $btn.data('order-id')
+        let attach1 = $btn.data('attach1')
+        let attach2 = $btn.data('attach2')
+        let attach3 = $btn.data('attach3')
+        let title = $btn.data('title')
+            
         let $checked = $('.check-mail:checked')
-        let data = {
-            "ID": orderId,
-            "ID2": dealId,
-            "TZ_ID": tzId,
-            "TYPE": 7,
-            "EMAIL": email,
-            "NAME": name,
-            "ATTACH1": attach1,
-            "ATTACH2": attach2,
-            "ATTACH3": attach3,
-            "TITLE": title,
-            'is_ajax': 1,
-        }
         let check = []
+        let hasOrder = false
+        let hasAttach = false
+        let hasInvoice = false
 
-        $checked.each(function () {
+        $checked.each(function() {
             let what = $(this).data('text')
             check.push(what)
+
+            if (what === 'Договор') hasOrder = true
+            if (what === 'ТЗ') hasAttach = true
+            if (what === 'Счет') hasInvoice = true
         })
-
-        if ( check.length > 0 ) {
-            data.CHECK = check
+        
+        if (check.length === 0) {
+            showErrorMessage('Пожалуйста, выберите хотя бы один документ для отправки', '#error-message')
+            return false
         }
-
-        $btn.addClass('disabled')
-
+        
+        $('#ATTACH1, #ATTACH2, #ATTACH3').remove()
+        
+        let fieldsHtml = ''
+        if (hasOrder && attach1) {
+            fieldsHtml += `<input name="ATTACH1" id="ATTACH1" value="${attach1}" type="hidden">`
+        }
+        
+        if (hasAttach && attach2) {
+            fieldsHtml += `<input name="ATTACH2" id="ATTACH2" value="${attach2}" type="hidden">`
+        }
+        
+        if (hasInvoice && attach3) {
+            fieldsHtml += `<input name="ATTACH3" id="ATTACH3" value="${attach3}" type="hidden">`
+        }
+        
+        $('#email-check').append(fieldsHtml)
+        
+        $('#ID').val(orderId)
+        $('#TYPE').val(7)
+        $('#TITLE').val(title)
+        
+        $('#email-check').data('check', check)
+        $('#email-check').data('is_overall', true)
+        
+        return false
+    })
+    
+    $('#email-check').on('submit', function(e) {
+        e.preventDefault()
+        
+        let $form = $(this)
+        let check = $form.data('check')
+        let isOverall = $form.data('is_overall')
+        let selectedEmails = $form.find('input[name="EMAIL[]"]:checked').map(function() {
+            return $(this).val()
+        }).get()
+        
+        if (selectedEmails.length === 0) {
+            showErrorMessage('Пожалуйста, выберите хотя бы один адрес электронной почты', '#error-message')
+            return false
+        }
+        
+        let data = {
+            "ID": $('#ID').val(),
+            "ID2": $form.find('input[name="DEAL_ID"]').val(),
+            "TZ_ID": $form.find('input[name="TZ_ID"]').val(),
+            "TYPE": $('#TYPE').val(),
+            "EMAIL": selectedEmails.join(','),
+            "NAME": $form.find('input[name="NAME"]').val(),
+            "TITLE": $('#TITLE').val(),
+            "is_ajax": 1
+        }
+        
+        if (isOverall) {
+            if ($('#ATTACH1').length) data.ATTACH1 = $('#ATTACH1').val()
+            if ($('#ATTACH2').length) data.ATTACH2 = $('#ATTACH2').val()
+            if ($('#ATTACH3').length) data.ATTACH3 = $('#ATTACH3').val()
+            
+            if (check && check.length > 0) {
+                data.CHECK = check
+            }
+        }
+        
+        $form.find('button[type="submit"]').addClass('disabled')
+        
         $.ajax({
             url: `/mail.php`,
-            type: "GET", //метод отправки
-            dataType: 'text', // data type
+            type: "GET",
+            dataType: 'text',
             data: data,
             success: function (result) {
                 showSuccessMessage("Документы отправлены")
                 $('html, body').animate({scrollTop: $('.alert-success').offset().top - 100}, 500)
+                $.magnificPopup.close()
             },
             error: function (xhr, resp, text) {
-                console.log(xhr, resp, text);
+                showErrorMessage("Ошибка при отправке документов", '#error-message')
             },
             complete: function () {
-                $btn.removeClass('disabled')
+                $form.find('button[type="submit"]').removeClass('disabled')
             }
         })
-
+        
         return false
     })
 
@@ -193,7 +348,7 @@ $(function ($) {
                     
                     if (fileNameContainer.length === 0) {
                         const secondCell = parentRow.find('td:nth-child(2) div:first')
-                        fileNameContainer = $('<div class="file-name-container mb-2"></div>')
+                        fileNameContainer = $('<div class="file-name-container"></div>')
                         secondCell.append(fileNameContainer)
                     }
                     
@@ -203,6 +358,9 @@ $(function ($) {
                             <i class="fa fa-times"></i>
                         </a>
                     `)
+
+                    parentRow.addClass('table-green')
+                    $('.label-pdf-file-upload').addClass('disabled')
                 }
             }
         })
@@ -226,6 +384,8 @@ $(function ($) {
                 if (data.success) {
                     const fileContainer = deleteBtn.closest('.file-name-container')
                     fileContainer.html('Файл не загружен')
+                    fileContainer.closest('tr').removeClass('table-green')
+                    $('.label-pdf-file-upload').removeClass('disabled')
                 }
             }
         })
@@ -252,7 +412,9 @@ $(function ($) {
 
     $body.on('click', '.download-selected-protocols', function(e) {
         const selectedProtocols = $('.protocol-checkbox:checked')
-        
+        const $protocolRow = $('tr[data-protocol]')
+        const dealId = $('input[name="deal_id"]').val()
+
         if (selectedProtocols.length === 1) {
             const filePath = selectedProtocols.first().data('file-path')
             const fileType = selectedProtocols.first().data('file-type')
@@ -288,6 +450,18 @@ $(function ($) {
             
             $form.submit()
         }
+
+        $.ajax({
+            url: '/ulab/request/updateProtocolStatusAjax',
+            type: 'POST',
+            data: {
+                deal_id: dealId
+            },
+            success: function() {
+                $protocolRow.addClass('table-green')
+                $protocolRow.find('td:nth-child(2)').text('Сформирован')
+            }
+        })
     })
 })
 

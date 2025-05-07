@@ -12,8 +12,8 @@ function getJournalDataTable($element, columns) {
         ajax: {
             type: 'POST',
             data: function (d) {
-                d.dateStart = $('#inputDateStart:visible').val()
-                d.dateEnd = $('#inputDateEnd:visible').val()
+                d.dateStart = $('#inputDateStart:visible').val() || "0001-01-01"
+                d.dateEnd = $('#inputDateEnd:visible').val() || "9999-12-31"
                 d.stage = $('#selectStage:visible option:selected').val()
                 d.lab = $('#selectLab option:selected').val()
                 d.type_journal = $('input[name="type_journal"]:checked').val()
@@ -107,7 +107,7 @@ $(function ($) {
         },
         {
             data: 'ASSIGNED',
-            orderable: false,
+            orderable: true,
             render: $.fn.dataTable.render.ellipsis(40, true)
         },
         {
@@ -174,48 +174,21 @@ $(function ($) {
                 let i = 0;
                 let dataProtocol = `<div class="d-flex flex-column">`
 
-                if (item['PROTOCOLS']) {
+                if (item['PROTOCOLS'].length > 0) {
                     for (const val of item['PROTOCOLS']) {
                         if ( i === 3 ) { break; }
                         i++
 
-                        for (const file of val['FILES']) {
-                            if (file.indexOf('.pdf') !== -1) {
-                                dataProtocol += `<a class="protocol-link" 
-                                                        href="/protocol_generator/archive/${item['b_id']}${val['YEAR']}/${val['ID']}/${file}"
-                                                        >
-                                                        ${val['NUMBER_AND_YEAR']}
-                                                    </a>`
-                            }
-                        }
-
-                        if (val['PROTOCOL_OUTSIDE_LIS'] && val['PDF']) {
-                            dataProtocol += `<a class="protocol-link" href="/pdf/${val['ID']}/${val['PDF']}" 
-                                                    >
-                                                    ${val['NUMBER_AND_YEAR']}
-                                                </a>`
-                        }
-                    }
-                } else {
-                    if(item['NO_BITRIX']) {
-                        dataProtocol += `<a class="protocol-link" href="/pdf/${item['PDF']}" >
-                                                ${item['PDF'] && item['NUM_P_TABLE'] ? item['NUM_P_TABLE'] : ''}
-                                            </a>`
-                    } else if (item['b_actual_ver']) {
-                        dataProtocol += `<a class="protocol-link" href="/protocol_generator/archive/${item['b_id']}${item['YEAR_ACT']}/${item['b_actual_ver']}.docx?1&1" >
-                                                ${item['RESULTS'] && item['NUM_P_TABLE'] ? item['NUM_P_TABLE'] : ''}
-                                            </a>`
+                        dataProtocol += `<a class="protocol-link" href="${val['FILES']}" >
+                                            ${val['number']}
+                                        </a>`
                     }
                 }
+
                 dataProtocol += `</div>`
 
                 return dataProtocol
             },
-        },
-        {
-            data: 'MANUFACTURER_TITLE',
-            class: 'text-nowrap',
-            render: $.fn.dataTable.render.ellipsis(25, true)
         },
         {
             data: 'DEADLINE_TABLE',
@@ -246,7 +219,6 @@ $(function ($) {
         <th scope="col" class="text-nowrap">Дата опл</th>
         <th scope="col" class="text-nowrap">Рез-ты исп</th>
         <th scope="col" class="text-nowrap">Протокол</th>
-        <th scope="col" class="text-nowrap">Фото исп</th>
         <th scope="col" class="text-nowrap">Cрок до</th>
     </tr>
     <tr class="header-search">
@@ -268,7 +240,7 @@ $(function ($) {
         </th>
         <th scope="col">
             <select class="form-control search">
-                <option value=""></option>
+                <option value="">Все</option>
                 <option value="n">Не подписано</option>
                 <option value="y">Подписано</option>
             </select>
@@ -290,9 +262,6 @@ $(function ($) {
         </th>
         <th scope="col">
             <input type="text" class="form-control search" disabled>
-        </th>
-        <th scope="col">
-            <input type="text" class="form-control search">
         </th>
         <th scope="col">
             <input type="text" class="form-control search">
@@ -338,7 +307,7 @@ $(function ($) {
         </th>
         <th scope="col">
             <select class="form-control search">
-                <option value=""></option>
+                <option value="">Все</option>
                 <option value="n">Не подписано</option>
                 <option value="y">Подписано</option>
             </select>
@@ -403,7 +372,7 @@ $(function ($) {
         },
         {
             data: 'ASSIGNED',
-            orderable: false,
+            orderable: true,
             render: $.fn.dataTable.render.ellipsis(40, true)
         },
         {
@@ -525,48 +494,6 @@ $(function ($) {
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()
-    })
-
-    /*journal buttons*/
-    let container = $('body').find('div.dataTables_scrollBody'),
-        scroll = $journalTable.width()
-
-    $('.btnRightTable, .arrowRight').hover(function() {
-        container.animate(
-            {
-                scrollLeft: scroll
-            },
-            {
-                duration: 4000, queue: false
-            }
-        )
-    },
-    function() {
-        container.stop();
-    })
-
-    $('.btnLeftTable, .arrowLeft').hover(function() {
-        container.animate(
-            {
-                scrollLeft: -scroll
-            },
-            {
-                duration: 4000, queue: false
-            }
-        )
-    },
-    function() {
-        container.stop();
-    })
-
-    $(document).scroll(function() {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height()
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
-            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
-        }
     })
 
     /*journal modal window*/
@@ -816,6 +743,8 @@ $(function ($) {
 
                 journalDataTable = getJournalDataTable($journalTable, columnsGovJournal)
             }
+               
+            initTableScrollNavigation()
 
             window.history.replaceState({}, 'Журнал заявок', addr.href)
 

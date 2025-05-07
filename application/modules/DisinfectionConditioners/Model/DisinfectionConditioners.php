@@ -108,12 +108,13 @@ class DisinfectionConditioners extends Model
 
     public function getFromSQL(string $name, array  $filters = null): array
     {
+        $organizationId = App::getOrganizationId();
         $namesTable = [
             'allRecord' => 'disinfection_conditioners'
         ];
         $response = [];
         if (isset($namesTable[$name])) {
-            $requestFromSQL = $this->DB->Query("SELECT * from {$namesTable[$name]}");
+            $requestFromSQL = $this->DB->Query("SELECT * FROM {$namesTable[$name]} WHERE organization_id = {$organizationId}");
         }
 
         if ($name == 'getList') {
@@ -126,16 +127,14 @@ class DisinfectionConditioners extends Model
                        DATE_FORMAT(dc.date_sol,'%d.%m.%Y') AS date_sol_dateformat, 
                        dc.date_sol,
                        dc.user_id, 
-                       r.NUMBER, 
+                       concat(r.NAME, ' ', r.NUMBER) as NUMBER, 
                        TRIM(CONCAT_WS(' ', bu.NAME, bu.LAST_NAME)) as global_assigned_name 
                 FROM disinfection_conditioners AS dc
-
-                LEFT JOIN ROOMS r
-                ON dc.room_id = r.ID
+                    
+                LEFT JOIN ROOMS as r ON dc.room_id = r.ID
  
-                LEFT JOIN b_user as bu
-                ON dc.global_assigned = bu.ID
-                 
+                LEFT JOIN b_user as bu ON dc.global_assigned = bu.ID
+                WHERE dc.organization_id = {$organizationId}
                 HAVING {$filters['having']}
                 ORDER BY {$filters['order']}
                 {$filters['limit']}

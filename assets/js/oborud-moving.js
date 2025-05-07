@@ -126,7 +126,7 @@ $(function ($) {
 
     journalDataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {  
@@ -152,5 +152,39 @@ $(function ($) {
     $('.filter-btn-reset').on('click', function () {
         const cleanPath = window.location.pathname.replace(/\/\d+$/, '')
         window.location.href = cleanPath
-    });
+    })
+
+    $('#add-moving-modal-form').on('submit', function (e) {
+        const $form = $(this)
+        const $button = $form.find(`button[type="submit"]`)
+        const btnHtml = $button.html()
+
+        $button.html(`<i class="fa-solid fa-arrows-rotate spinner-animation"></i>`)
+        $button.addClass('disabled')
+
+        $.ajax({
+            url: "/ulab/oborud/addOborudMovingAjax/",
+            data: $form.serialize(),
+            dataType: "json",
+            async: true,
+            method: "POST",
+            complete: function () {
+                journalDataTable.ajax.reload()
+
+                $button.html(btnHtml)
+                $button.removeClass('disabled')
+
+                // возвращаем значения по умолчанию
+                $form.find('input[type="text"]').val('')
+                $form.find('input[type="checkbox"]').prop('checked', false)
+                $form.find('textarea').val('')
+                $form.find('select').val(null).trigger('change')
+                $form.find('#place-moving-block').show()
+
+                $.magnificPopup.close()
+            }
+        })
+
+        return false
+    })
 })

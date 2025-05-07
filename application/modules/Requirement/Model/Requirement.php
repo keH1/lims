@@ -14,7 +14,11 @@ class Requirement extends Model
         'OSK' => 58
     ];
 
-
+    // Тип заявки для гос. работ
+    const GOVERNMENT_TYPE = 9;
+    // Регулярное выражение для извлечения числа из строки
+    const NUM_REGEX = "/(\d+)$/";
+ 
     /**
      * @param int $dealId
      * @return array
@@ -478,7 +482,16 @@ class Requirement extends Model
 
     public function getActBase($dealId)
     {
-        $result = $this->DB->Query("SELECT * FROM `ACT_BASE` WHERE `ID_Z` = {$dealId}")->Fetch();
+        $organizationId = App::getOrganizationId();
+
+        $result = $this->DB->Query("
+            SELECT 
+                   act.* 
+                FROM ACT_BASE AS act 
+                INNER JOIN ba_tz AS b ON act.ID_Z = b.ID_Z 
+                WHERE act.`ID_Z` = {$dealId} AND b.organization_id = {$organizationId}
+        ")->Fetch();
+
         $date = strtotime($result['ACT_DATE']);
         $result['date_ru'] = StringHelper::dateRu($result['ACT_DATE']);
         $result['year'] = (int)date("Y", $date)%10 ? substr(date("Y", $date), -2) : date("Y", $date);
@@ -557,8 +570,7 @@ class Requirement extends Model
 
             $row['add_info'] = json_decode($row['add_info'])?? [];
 
-            $regx = "/(\d+)$/";
-            preg_match($regx, $row['DOGOVOR_NUM'], $match);
+            preg_match(self::NUM_REGEX, $row['DOGOVOR_NUM'], $match);
             $row['DOGOVOR_NUM'] = $match[1] ?? '';
 
             if ( !empty($row['PRICE']) ) {
@@ -603,9 +615,10 @@ class Requirement extends Model
 
             $row['add_info'] = json_decode($row['add_info'])?? [];
 
-            $regx = "/(\d+)$/";
-            preg_match($regx, $row['DOGOVOR_NUM'], $match);
-            $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            if ((string)$row['TYPE_ID'] !== (string)self::GOVERNMENT_TYPE) {
+                preg_match(self::NUM_REGEX, $row['DOGOVOR_NUM'], $match);
+                $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            }
 
             $price = 0;
             if ( !empty($row['PRICE']) ) {
@@ -934,18 +947,15 @@ class Requirement extends Model
 
         $results = $this->DB->Query(
             "select 
-                ugtp.measuring_sheet, ugtp.material_to_request_id, ugtp.gost_number,  ugtp.actual_value as ugtp_actual_value, 
-                utr.actual_value as utr_actual_value, 
+                ugtp.measuring_sheet, ugtp.material_to_request_id, ugtp.gost_number,  ugtp.actual_value as ugtp_actual_value,
                 umtr.deal_id 
             from ulab_gost_to_probe as ugtp
-            inner join ulab_material_to_request as umtr on umtr.id = ugtp.material_to_request_id 
-            left join ulab_trial_results as utr on utr.gost_to_probe_id = ugtp.id 
+            inner join ulab_material_to_request as umtr on umtr.id = ugtp.material_to_request_id
             where ugtp.id = {$ugtpId}"
         )->Fetch();
 
-        $value = json_decode($results['utr_actual_value'], true);
         $sheet = json_decode($results['measuring_sheet'], true);
-        $actualValue = $results['deal_id'] >= DEAL_NEW_RESULT ? $results['ugtp_actual_value'] : $value[0];
+        $actualValue = $results['ugtp_actual_value'];
 
         if ( $actualValue != '' || $sheet ) {
             return [
@@ -965,9 +975,9 @@ class Requirement extends Model
 
         $sql = $this->DB->Query(
             "select id 
-                    from ulab_gost_to_probe 
-                    where material_to_request_id = {$results['material_to_request_id']} and gost_number > {$results['gost_number']} 
-                    order by gost_number asc"
+            from ulab_gost_to_probe 
+            where material_to_request_id = {$results['material_to_request_id']} and gost_number > {$results['gost_number']} 
+            order by gost_number asc"
         );
 
         $i = $results['gost_number'];
@@ -1859,6 +1869,21 @@ class Requirement extends Model
         $data['TAKEN_SERT_ISP'] = $data['tests_for'] == 'certification' || isset($data['TAKEN_SERT_ISP']) ? 1 : 0;
         $data['add_info'] = json_encode($data['add_info']);
 
+        $tzInfo = $this->getTzByTzId($tzId);
+        if ( empty($tzInfo) ) {
+            $tzInfo['DATE_SOZD'] = date('Y-m-d H:i:s');
+        }
+        if ( $data['DAY_TO_TEST'] < 0 ) {
+            $data['DAY_TO_TEST'] = 0;
+        }
+        if ( $data['type_of_day'] == 'work_day' ) {
+            $data['DEADLINE_TABLE'] = DateHelper::addWorkingDays($tzInfo['DATE_SOZD'], $data['DAY_TO_TEST']);
+        } else if ( $data['type_of_day'] == 'day' ) {
+            $data['DEADLINE_TABLE'] =  date('Y-m-d', strtotime("{$tzInfo['DATE_SOZD']} +{$data['DAY_TO_TEST']} day"));
+        } else if ( $data['type_of_day'] == 'month' ) {
+            $data['DEADLINE_TABLE'] =  date('Y-m-d', strtotime("{$tzInfo['DATE_SOZD']} +{$data['DAY_TO_TEST']} month"));
+        }
+
         $sqlData = $this->prepearTableData('ba_tz', $data);
 
         $where = "WHERE ID = {$tzId}";
@@ -1941,6 +1966,8 @@ class Requirement extends Model
                 $gostNumber = -1;
             }
 
+
+
             foreach ($data as $item) {
                 $sqlData = [
                     'material_to_request_id' => $probeId,
@@ -1955,6 +1982,7 @@ class Requirement extends Model
                 ];
 
                 $sqlData = $this->prepearTableData('ulab_gost_to_probe', $sqlData);
+
                 $this->DB->Insert('ulab_gost_to_probe', $sqlData);
             }
         }
@@ -2497,6 +2525,21 @@ class Requirement extends Model
         $result = [];
 
         while ($row = $sql->Fetch()) {
+            // если файл есть в базе, но не найден в файловой системе, считаем, что файла нет
+            if (
+                !empty($row['file_name_result']) &&
+                !is_file(UPLOAD_DIR . "/request/{$dealId}/government_work/{$row['id']}/result/{$row['file_name_result']}")
+            ) {
+                $row['file_name_result'] = '';
+            }
+            if (
+                !empty($row['file_name_protocol']) &&
+                !is_file(UPLOAD_DIR . "/request/{$dealId}/government_work/{$row['id']}/protocol/{$row['file_name_protocol']}")
+            ) {
+                $row['file_name_protocol'] = '';
+                $row['date_protocol'] = '';
+            }
+
             if ( !empty($row['date_protocol']) ) {
                 $row['date_protocol'] = date('d.m.Y H:i:s', strtotime($row['date_protocol']));
             }
@@ -2518,15 +2561,15 @@ class Requirement extends Model
     {
         $materialModel = new Material();
         $dealId = intval($data['deal_id']);
-
+        $materialId = intval($data['material_id']);
 
 
         $sqlData = $this->prepearTableData('government_work', $data);
 
-        $id = $this->DB->Insert('government_work', $sqlData);
+        $id = (int)$this->DB->Insert('government_work', $sqlData);
 
         if ( !empty($id) ) {
-            $resultFile = $this->addFilesWork($id, $data['deal_id'], $files);
+            $resultFile = $this->addFilesWork($id, $dealId, $files);
 
             if ( $resultFile['success'] ) {
                 $data['date_protocol'] = $resultFile['data']['date_protocol'];
@@ -2535,7 +2578,7 @@ class Requirement extends Model
             }
 
             $maxMaterial = $this->DB->Query(
-                "select max(material_number) as max_number from ulab_material_to_request where deal_id = {$dealId} and material_id = {$data['material_id']}"
+                "select max(material_number) as max_number from ulab_material_to_request where deal_id = {$dealId} and material_id = {$materialId}"
             )->Fetch();
 
             $material = $materialModel->getById($data['material_id']);
@@ -2573,12 +2616,12 @@ class Requirement extends Model
 
     /**
      * загружает файлы на сервер, добавляет информацию в таблицу
-     * @param $workId
-     * @param $dealId
+     * @param int $workId
+     * @param int $dealId
      * @param $files
      * @return array|false[]
      */
-    public function addFilesWork($workId, $dealId, $files)
+    public function addFilesWork(int $workId, int $dealId, $files)
     {
         $dataFiles = [];
         $data = [];
@@ -2653,6 +2696,11 @@ class Requirement extends Model
     public function getWorkProtocolFiles(int $dealId): array
     {
         $result = [];
+        // Максимальная длина имени файла для отображения
+        $maxFilenameDisplayLength = 35;
+        // Максимальная длина имени файла для отображения в таблице
+        $maxDisplayNameLength = 32;
+        $ellipsisLength = 4;
 
         $sql = $this->DB->Query(
             "SELECT gw.id, gw.name
@@ -2690,11 +2738,19 @@ class Requirement extends Model
                     
                     $lastDotIndex = strrpos($filename, '.');
                     $nameWithoutExt = ($lastDotIndex !== false) ? substr($filename, 0, $lastDotIndex) : $filename;
+
+                    $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
+                    $filenameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+                    $result[$inc]['display_extension'] = $fileExtension;
                     
-                    if (mb_strlen($filename) > 35) {
-                        $result[$inc]['display_name'] = mb_substr($filename, 0, 32) . '...';
+                    if (mb_strlen($filename) > $maxFilenameDisplayLength) {
+                        $maxFilenameLength = $maxDisplayNameLength - mb_strlen($fileExtension) - $ellipsisLength;
+                        $trimmedFilename = mb_substr($filenameWithoutExt, 0, $maxFilenameLength) . '...';
+                        
+                        $result[$inc]['display_name'] = $trimmedFilename;
+
                     } else {
-                        $result[$inc]['display_name'] = $filename;
+                        $result[$inc]['display_name'] = $filenameWithoutExt;
                     }
                 }
             }

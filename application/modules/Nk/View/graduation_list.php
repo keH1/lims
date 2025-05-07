@@ -2,7 +2,7 @@
     <nav class="header-menu">
         <ul class="nav">
             <li class="nav-item me-1">
-                <a class="nav-link" href="<?=URI?>/nk/graduation/" title="Добавить градуировочную зависимось">
+                <a class="nav-link" href="<?=URI?>/nk/graduation/" title="Добавить лист измерений градуировочной зависимости">
                     <i class="fa-solid fa-plus"></i>
                 </a>
             </li>
@@ -14,12 +14,12 @@
 <div class="filters mb-4">
     <div class="row">
         <div class="col">
-            <input type="date" id="inputDateStart" class="form-control filter filter-date-start bg-transparent"
-                   value="<?= $this->data['date_start'] ?>" placeholder="Введите дату начала:">
+            <input type="date" id="inputDateStart" class="form-control filter filter-date-start"
+                   value="" placeholder="Введите дату начала:">
         </div>
         <div class="col">
-            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end bg-transparent"
-                   value="<?= $this->data['date_end'] ?>" placeholder="Введите дату окончания:">
+            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"
+                   value="" placeholder="Введите дату окончания:">
         </div>
 
         <div class="col-auto">

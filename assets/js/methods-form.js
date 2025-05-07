@@ -4,6 +4,7 @@ $(function () {
     $('.select2').select2({
         theme: 'bootstrap-5',
         width: 'resolve',
+        placeholder: $(this).data('placeholder')
     })
 
     $( window ).on( "resize", function() {
@@ -335,7 +336,7 @@ $(function () {
                         <button
                                 type="button"
                                 class="btn btn-danger btn-square remove_oborud"
-                                title="Удалить оборутование">
+                                title="Удалить оборудование">
                             <i class="fa-solid fa-minus icon-fix"></i>
                         </button>
                     </td>
@@ -393,6 +394,7 @@ $(function () {
     $('#select-lab').change(function () {
         let $optionList = $('#select-lab').find('option:selected')
         let idList = []
+        const $selectRoom = $('#select-room')
 
         $.each($optionList, function (i, item) {
             idList.push($(item).val())
@@ -415,12 +417,21 @@ $(function () {
                         }
                     })
 
+                    $selectRoom.data('placeholder', 'Выберите помещение')
                     $('#select-room ~ .select2-container').find('#select2-select-room-container').html('')
-                    $('#select-room').html(html)
+
+                    $selectRoom.html(html).select2({
+                        theme: 'bootstrap-5',
+                        placeholder: $(this).data('placeholder')
+                    })
                 }
             })
         } else {
-            $('#select-room').html('<option value="" disabled>Сначала выберите лаборатории</option>')
+            $selectRoom.data('placeholder', 'Сначала выберите лаборатории')
+            $selectRoom.html('<option value="" disabled>Сначала выберите лабораторию</option>').select2({
+                theme: 'bootstrap-5',
+                placeholder: $(this).data('placeholder')
+            })
         }
     })
 })

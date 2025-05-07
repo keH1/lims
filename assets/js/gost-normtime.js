@@ -216,12 +216,15 @@ $(function () {
         buttons: dataTablesSettings.buttonPrint,
         bSortCellsTop: true,
         scrollX:       true,
-        fixedHeader:   true,
+        fixedHeader:   false,
     });
+
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
 
     journalDataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {

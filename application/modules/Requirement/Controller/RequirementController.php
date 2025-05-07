@@ -356,7 +356,6 @@ class RequirementController extends Controller
             $this->redirect('/request/list/');
         }
 
-
         $contractData = $requirementModel->getContractByDealId($dealId);
         $actData = $requirementModel->getActBase($dealId);
 
@@ -381,7 +380,8 @@ class RequirementController extends Controller
 
         //// общая информация
         // Основание для проведения испытаний (договор)
-        $this->data['contract_number'] = $contractData['NUMBER'] ?? '';
+        // $this->data['contract_number'] = $contractData['NUMBER'] ?? '';
+        $this->data['contract_number'] = $tzData['DOGOVOR_NUM'] ?? '';
         $this->data['contract_date'] = $contractData['DATE'] ?? '';
         $this->data['contract_type'] = $contractData['CONTRACT_TYPE'] ?? 'Договор';
         $this->data['deal_id'] = $dealId;
@@ -414,7 +414,7 @@ class RequirementController extends Controller
         $this->data['check_state'] = $requirementModel->getStateConfirm($dealId);
 
         if ( !isset($this->data['check_state']) || $this->data['check_state'] == CHECK_TZ_NOT_SENT ) {
-            $this->showWarningMessage("Техническое задание еще не передано для проверки руководителям лабораторий");
+//            $this->showWarningMessage("Техническое задание еще не передано для проверки руководителям лабораторий");
         } elseif ( $this->data['check_state'] == CHECK_TZ_NOT_APPROVE ) {
             $desc = $requirementModel->getDescConfirmTzNotApprove($tzId);
             $msg = '';
@@ -433,26 +433,10 @@ class RequirementController extends Controller
 
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/rowreorder/rowReorder.dataTables.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-        $this->addJS("/assets/plugins/DataTables/rowreorder/dataTables.rowReorder.js");
-        $this->addJS("/assets/plugins/DataTables/rowreorder/rowReorder.dataTables.js");
-
         $this->addJS("/assets/plugins/sticksy/sticksy.min.js");
 
         $this->addJs('/assets/js/requirement_new_new.js?v=' . rand());
-        $this->view('form_new_new');
+        $this->view('form_new_new', '', 'template_journal');
     }
 
 

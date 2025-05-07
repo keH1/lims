@@ -83,7 +83,7 @@ $(function ($) {
 
     mainTable.columns().every(function () {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function () {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function () {
@@ -189,7 +189,7 @@ $(function ($) {
             success: function (json) {
                 let data = JSON.parse(json)
 
-                $('[name^="toSQL[' + whichSelectID[0] + ']"]').each(function () {
+                $('[name^="reactive[' + whichSelectID[0] + ']"]').each(function () {
                         let name = $(this).attr("name")
                         let type = $(this).prop('tagName')
 

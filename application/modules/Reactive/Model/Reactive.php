@@ -77,6 +77,8 @@ class Reactive extends Model
 
     public function addToSQL(array $data, string $typeName = null): int
     {
+        $organizationId = App::getOrganizationId();
+
         $libraryReactive = [
             'reactive' => 1,
             'gso' => 2,
@@ -88,6 +90,7 @@ class Reactive extends Model
         } elseif ($typeName == 'addReactiveModelNoUnitMeasurement') {
             $dataAdd['reactive_model'] = $data['reactive_model'];
             $dataAdd['reactive_model']['id_unit_of_quantity'] = $data['reactive_model']['id_aggregate_state'];
+            $dataAdd['reactive_model']['organization_id'] = $organizationId;
             return $this->insertToSQL($dataAdd);
         } elseif ($typeName == 'addReactive') {
             $dataFirstAdd['library_reactive']['id_library_reactive_table_name'] = $libraryReactive['reactive'];
@@ -96,7 +99,8 @@ class Reactive extends Model
                 return 0;
             }
             $dataSecondAdd['reactive'] = $data['reactive'];
-            $dataSecondAdd['reactive'] ['id_library_reactive'] = $idFirstAdd;
+            $dataSecondAdd['reactive']['id_library_reactive'] = $idFirstAdd;
+            $dataSecondAdd['reactive']['organization_id'] = $organizationId;
             return $this->insertToSQL($dataSecondAdd);
         } else {
             throw new InvalidArgumentException("Неизвестный аргумент $typeName в функции addToSQL");
@@ -106,11 +110,13 @@ class Reactive extends Model
 
     private function getFromSQL(string $typeName, array $filters = null): array
     {
+        $organizationId = App::getOrganizationId();
+
         if ($typeName == 'getList') {
 
             $request = "
                 SELECT CONCAT(reactive.number,IFNULL(CONCAT('-',reactive_receive.number),'' )) AS number, 
-                        reactive_model.name,                       
+                        reactive_model.name, reactive_model.organization_id,                       
                         CONCAT( aggregate_state.name,' (',unit_of_quantity.name,')  ') as aggregate_name,
                         reactive_pure.short_name,
                         reactive.doc_name,
@@ -124,16 +130,17 @@ class Reactive extends Model
                         reactive.id,
                         reactive_model.is_precursor,
                         IF(reactive_receive.date_expired<CURDATE(),1,0) AS is_expired
-            FROM reactive_model
-            LEFT JOIN reactive ON reactive.id_reactive_model = reactive_model.id
+            FROM reactive_model 
+            LEFT JOIN reactive ON reactive.id_reactive_model = reactive_model.id AND reactive.organization_id = {$organizationId}
             LEFT JOIN reactive_pure ON reactive.id_pure = reactive_pure.id           
-            LEFT JOIN reactive_receive ON reactive_receive.id_reactive = reactive.id
+            LEFT JOIN reactive_receive ON reactive_receive.id_reactive = reactive.id AND reactive_receive.organization_id = {$organizationId}
             LEFT JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity= unit_of_quantity.id
             LEFT JOIN aggregate_state ON reactive_model.id_aggregate_state = aggregate_state.id
-            LEFT JOIN b_user ON  reactive_receive.global_assigned =b_user.ID
-            HAVING id {$filters['idWhichFilter']}             
-                 AND                   {$filters['having']}
-                ORDER BY {$filters['order']}
+            LEFT JOIN b_user ON  reactive_receive.global_assigned =b_user.ID 
+            WHERE reactive_model.organization_id = {$organizationId} 
+            HAVING id {$filters['idWhichFilter']}     
+                 AND {$filters['having']} 
+                ORDER BY {$filters['order']} 
                 {$filters['limit']}    
         ";
 
@@ -155,7 +162,7 @@ class Reactive extends Model
                 SELECT aggregate_state.id,
                         CONCAT (aggregate_state.name,' - ',unit_of_quantity.name) AS name
                         FROM aggregate_state 
-                        JOIN unit_of_quantity ON unit_of_quantity.id=aggregate_state.id             
+                        JOIN unit_of_quantity ON unit_of_quantity.id=aggregate_state.id
              ";
                 } elseif ($typeName == 'reactive_type') {
                     $request = "
@@ -163,7 +170,8 @@ class Reactive extends Model
                     CONCAT( reactive_model.name,'- ',aggregate_state.name,' (',unit_of_quantity.name,')  ') AS name
                     FROM reactive_model 
                     JOIN aggregate_state ON reactive_model.id_aggregate_state  = aggregate_state .id 
-                    JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity = unit_of_quantity.id           
+                    JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity = unit_of_quantity.id 
+                    WHERE reactive_model.organization_id = {$organizationId}
              ";
                 } elseif ($typeName == 'reactive') {
                     $request = "
@@ -178,16 +186,17 @@ class Reactive extends Model
                     FROM reactive_model
                              JOIN aggregate_state ON reactive_model.id_aggregate_state = aggregate_state.id
                              JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity = unit_of_quantity.id
-                             JOIN reactive ON reactive.id_reactive_model = reactive_model.id
+                             JOIN reactive ON reactive.id_reactive_model = reactive_model.id AND reactive.organization_id = {$organizationId} 
                              JOIN reactive_pure ON reactive_pure.id = reactive.id_pure
-                             LEFT JOIN reactive_receive ON reactive.id = reactive_receive.id_reactive
+                             LEFT JOIN reactive_receive ON reactive.id = reactive_receive.id_reactive 
+                             WHERE reactive_model.organization_id = {$organizationId} 
                     GROUP BY reactive.id                 
              ";
                 } elseif ($typeName == 'pure') {
                     $request = "
                     SELECT reactive_pure.id,
                            CONCAT(reactive_pure.name,' (',reactive_pure.short_name,')') AS name
-                        FROM reactive_pure      
+                        FROM reactive_pure   
              ";
                 } elseif ($typeName == 'unit_of_quantity') {
                     $request = "
@@ -195,7 +204,8 @@ class Reactive extends Model
             CONCAT( reactive_model.name,'- ',aggregate_state.name,' (',unit_of_quantity.name,')  ') AS name
             FROM reactive_model 
             JOIN aggregate_state ON reactive_model.id_aggregate_state  = aggregate_state .id 
-            JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity = unit_of_quantity.id           
+            JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity = unit_of_quantity.id 
+            WHERE reactive_model.organization_id = {$organizationId} 
              ";
                 } elseif ($typeName == 'reactive_receive') {
                     $request = "
@@ -212,7 +222,7 @@ class Reactive extends Model
                          LEFT JOIN reactive_receive ON reactive.id = reactive_receive.id_reactive
                          LEFT JOIN reactive_model ON reactive.id_reactive_model = reactive_model.id
                          LEFT JOIN reactive_pure ON reactive_pure.id = reactive.id_pure
-                             ";
+                         WHERE reactive.organization_id = {$organizationId}";
                 }
             } else {
                 throw new InvalidArgumentException("Неизвестный аргумент {$this->selectInList[$typeName][0]} в константе selectInList");

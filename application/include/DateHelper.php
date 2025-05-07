@@ -33,25 +33,38 @@ class DateHelper {
         return $dateArr[2] . "." . $dateArr[1] . "." . $dateArr[0];
     }
 
-    public static function addWorkingDays($date, $dayQuantity)
-    {
-        $year = intval(date("Y", strtotime($date)));
-        $jsonDir = "https://raw.githubusercontent.com/d10xa/holidays-calendar/master/json/consultant";
-        $holidays = json_decode(file_get_contents("{$jsonDir}{$year}.json"), true)["holidays"];
 
-        for ($i = 0; $i < $dayQuantity; $i++) {
-            if ($date == $year . "-12-31") {
-                $year++;
-                $holidays = json_decode(file_get_contents("{$jsonDir}{$year}.json"), true)["holidays"];
+    /**
+     * добавляет рабочих дней к дате
+     * @param $date - дата отсчета
+     * @param $dayQuantity - количество дней
+     * @param bool $isWeekend - учитывать выходные дни?
+     * @return string
+     */
+    public static function addWorkingDays(string $date, int $dayQuantity, bool $isWeekend = true): string
+    {
+        $currentDate = new DateTime($date);
+        $daysAdded = 0;
+
+        while ($daysAdded < $dayQuantity) {
+            $currentDate->modify('+1 day');
+            $dayOfWeek = (int)$currentDate->format('w');
+
+            if ($isWeekend) {
+                if ($dayOfWeek === 0) { // Воскресенье
+                    $currentDate->modify('+1 day');
+                } elseif ($dayOfWeek === 6) { // Суббота
+                    $currentDate->modify('+2 days');
+                }
             }
 
-            $date = date('Y-m-d', strtotime($date . ' +1 day'));
-
-            if (in_array($date, $holidays)) {
-                $dayQuantity++;
+            // Проверяем, что после корректировки мы не попали на выходной
+            $newDayOfWeek = (int)$currentDate->format('w');
+            if (!$isWeekend || ($newDayOfWeek !== 0 && $newDayOfWeek !== 6)) {
+                $daysAdded++;
             }
         }
 
-        return $date;
+        return $currentDate->format('Y-m-d');
     }
 }

@@ -11,8 +11,8 @@ $(function ($) {
         ajax: {
             type : 'POST',
             data: function ( d ) {
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01"
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31"
                 d.everywhere = $('#filter_everywhere').val()
             },
             url : '/ulab/order/getListProcessingAjax/',
@@ -95,20 +95,10 @@ $(function ($) {
         fixedHeader:   false,
     });
 
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
 
-    journalDataTable.columns().every(function() {
-        let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
-            clearTimeout(timeout)
-            const searchValue = this.value
-            timeout = setTimeout(function() {
-                journalDataTable
-                    .column($(this).parent().index())
-                    .search(searchValue)
-                    .draw()
-            }.bind(this), 1000)
-        })
-    })
+    window.setupDataTableColumnSearch(journalDataTable)
 
     /*journal filters*/
     $('.filter-btn-search').on('click', function () {
@@ -129,58 +119,5 @@ $(function ($) {
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()
-    })
-
-    /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $journal.width()
-
-    $('.btnRightTable, .arrowRight').hover(function() {
-        container.animate(
-            {
-                scrollLeft: scroll
-            },
-            {
-                duration: 4000, queue: false
-            }
-        )
-    },
-    function() {
-        container.stop();
-    })
-
-    $('.btnLeftTable, .arrowLeft').hover(function() {
-        container.animate(
-            {
-                scrollLeft: -scroll
-            },
-            {
-                duration: 4000, queue: false
-            }
-        )
-    },
-    function() {
-        container.stop();
-    })
-
-    let $body = $("body")
-    let $containerScroll = $body.find('.dataTables_scroll')
-    let $thead = $('.journal thead tr:first-child')
-
-    $(document).scroll(function() {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height(),
-            positionTop = $containerScroll.offset().top
-
-        if ( positionScroll >= positionTop ) {
-            $thead.attr('style', 'position:fixed;top:0;z-index:99')
-        } else {
-            $thead.attr('style', '')
-        }
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
-            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
-        }
     })
 })

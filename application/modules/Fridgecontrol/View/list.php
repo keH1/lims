@@ -17,11 +17,11 @@
 
         <div class="col-auto">
             <input type="date" id="inputDateStart" class="form-control filter filter-date-start"
-                   value="<?= date("Y") . '-01-01' ?>" title="Введите дату начала">
+                   value="" title="Введите дату начала">
         </div>
         <div class="col-auto">
             <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"
-                   value="<?= date("Y-m-d") ?>" title="Введите дату окончания">
+                   value="" title="Введите дату окончания">
         </div>
 
         <div class="col-auto">
@@ -83,7 +83,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Выберите холодильник </label>
-            <select name="toSQL[fridge_control][id_fridge]" class="form-control  h-auto"
+            <select name="fridge_control[id_fridge]" class="form-control  h-auto"
                     required>
                 <option value="" selected disabled></option>
                 <?php
@@ -98,7 +98,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Дата</label>
-            <input name="toSQL[fridge_control][date_time]" type="datetime-local"
+            <input name="fridge_control[date_time]" type="datetime-local"
                    class="form-control "
                    value="<?= $this->data['current_date'] ?>">
         </div>
@@ -108,7 +108,7 @@
         <div class="col">
             <label class="form-label">Количество</label>
             <div class="input-group">
-                <input type="number" name="toSQL[fridge_control][temperature]" step="0.01" min="-100" max="100"
+                <input type="number" name="fridge_control[temperature]" step="0.01" min="-100" max="100"
                        class="form-control bg-white" required>
                 <span class="input-group-text">°C</span>
             </div>

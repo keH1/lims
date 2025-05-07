@@ -3,8 +3,8 @@ $(function ($) {
         ajax: {
             type : 'POST',
             data: function (d) {
-                d.dateStart = $('#inputDateStart:visible').val()
-                d.dateEnd = $('#inputDateEnd:visible').val()
+                d.dateStart = $('#inputDateStart:visible').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd:visible').val() || "9999-12-31";
             },
             url : '/ulab/history/getListProcessingAjax/',
             dataSrc: function (json) {
@@ -37,12 +37,10 @@ $(function ($) {
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[3, "desc"]],
-        colReorder: true,
         dom: 'frt<"bottom"lip>',
-        fixedHeader: true,
-        scrollX: true
     })
-
+    
+    // window.adjustmentColumnsTable(journalDataTable)
     window.setupDataTableColumnSearch(journalDataTable);
     window.setupJournalFilters(journalDataTable);
 })

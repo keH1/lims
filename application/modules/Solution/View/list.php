@@ -22,12 +22,12 @@
         <div class="col-auto">
             <input type="date" id="inputDateStart"
                    class="form-control filter filter-date-start"
-                   value="<?= date("Y") . '-01-01' ?>" title="Введите дату начала">
+                   value="" title="Введите дату начала">
         </div>
         <div class="col-auto">
             <input type="date" id="inputDateEnd"
                    class="form-control filter filter-date-end"
-                   value="<?= date("Y-m-d") ?>" title="Введите дату окончания">
+                   value="" title="Введите дату окончания">
         </div>
         <div class="col-auto">
             <button type="button" class="btn btn-outline-secondary filter-btn-reset"
@@ -92,14 +92,14 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Имя реактива</label>
-            <input type="text" name="toSQL[name]"
+            <input type="text" name="solution[name]"
                    class="form-control name-solution"
                    value="" required>
         </div>
         <div class="col">
             <label class="form-label">Дата приготовления раствора</label>
             <input type="date" class="form-control probe-date bg-white"
-                   name="toSQL[date_preparation]"
+                   name="solution[date_preparation]"
                    value="<?= date('Y-m-d') ?>" required>
         </div>
     </div>
@@ -107,7 +107,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Выберите рецепт </label>
-            <select name="toSQL[id_recipe_model]"
+            <select name="solution[id_recipe_model]"
                     class="form-control select-recipe h-auto"
                     data-placeholder="Выберите рецепт"
                     required>

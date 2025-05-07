@@ -11,8 +11,8 @@ $(function ($) {
             type: 'POST',
             data: function (d) {
                 d.idWhichFilter = -1
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
             },
             url: '/ulab/solution/getListProcessingAjax/',
             dataSrc: function (json) {
@@ -74,7 +74,7 @@ $(function ($) {
     })
 
     solutionJournal.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function () {
             solutionJournal
                 .column($(this).parent().index())
                 .search(this.value)

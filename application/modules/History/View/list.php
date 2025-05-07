@@ -3,14 +3,14 @@
         <div class="col">
             <input type="date" id="inputDateStart"
                    class="form-control filter filter-date-start"
-                   value="<?=date('Y-m-d', strtotime('-1 year'))?>"
+                   value=""
                    placeholder="Введите дату начала:">
         </div>
 
         <div class="col">
             <input type="date" id="inputDateEnd"
                    class="form-control filter filter-date-end"
-                   value="<?=date('Y-m-d')?>" placeholder="Введите дату окончания:">
+                   value="" placeholder="Введите дату окончания:">
         </div>
 
         <div class="col-auto">

@@ -17,36 +17,14 @@ class NormDocGostController extends Controller
 
     protected function form()
     {
-        /** @var Methods $methodsModel */
-        $methodsModel = $this->model('Methods');
-
-//        $this->data['unit_list'] = $methodsModel->getUnitList();
-//        $this->data['test_method_list'] = $methodsModel->getTestMethodList();
-
-
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
-		$this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-		$this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-		$this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
 
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-		$this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-		$this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-		$this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-		$this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-		$this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-		$this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-		$this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-		$this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-		$this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-		$this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
 
         $this->addJS("/assets/js/norm-doc-gost-form.js?v=". rand());
 
-        $this->view('form');
+        $this->view('form', '', 'template_journal');
     }
 
 
@@ -69,13 +47,19 @@ class NormDocGostController extends Controller
     {
         $this->data['title'] = 'Редактирование нормативной документации';
 
-        /** @var NormDocGost $normDocGost */
-        $normDocGost = $this->model('NormDocGost');
+        /** @var NormDocGost $normDocGostModel */
+        $normDocGostModel = $this->model('NormDocGost');
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
+        $normDocGost = $normDocGostModel->getGost($id);
+        if (empty($normDocGost)) {
+            $this->showErrorMessage("Нормативной документации с ИД {$id} не существует");
+            $this->redirect('/normDocGost/list/');
+        }
+
         $this->data['id'] = $id;
-        $this->data['form'] = $normDocGost->getGost($id);
+        $this->data['form'] = $normDocGost;
 
         $this->data['methods_list'] = $methodsModel->getListByGostId($id);
 
@@ -91,15 +75,21 @@ class NormDocGostController extends Controller
     {
         $this->data['title'] = 'Редактирование Методики';
 
-        /** @var NormDocGost $normDocGost */
-        $normDocGost = $this->model('NormDocGost');
+        /** @var NormDocGost $normDocGostModel */
+        $normDocGostModel = $this->model('NormDocGost');
         /** @var Material $materialModel */
         $materialModel = $this->model('Material');
         /** @var Methods $methodsModel */
         $methodsModel = $this->model('Methods');
 
+        $normDocGost = $normDocGostModel->getMethod($id);
+        if (empty($normDocGost)) {
+            $this->showErrorMessage("Методики с ИД {$id} не существует");
+            $this->redirect('/normDocGost/list/');
+        }
+
         //// данные методики
-        $this->data['form'] = $normDocGost->getMethod($id);
+        $this->data['form'] = $normDocGost;
 
 //        if ( !$this->data['form']['is_confirm'] ) {
 //            $this->showWarningMessage('Методика не проверена отделом метрологии');
@@ -237,8 +227,8 @@ class NormDocGostController extends Controller
      */
     public function copyGost($gostId)
     {
-        /** @var Gost $normDocGost */
-        $normDocGost = $this->model('Gost');
+        /** @var NormDocGost $normDocGost */
+        $normDocGost = $this->model('NormDocGost');
 
         $newId = $normDocGost->copy($gostId);
 

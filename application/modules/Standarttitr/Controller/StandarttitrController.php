@@ -13,7 +13,7 @@ class StandarttitrController extends Controller
      */
     public function list()
     {
-        $this->data['title'] = 'Стандарт-титры';
+        $this->data['title'] = 'Журнал стандарт-титры';
 
         /** @var  Recipe $usedModel */
         $usedModel = $this->model($this->nameModel);
@@ -28,26 +28,9 @@ class StandarttitrController extends Controller
         $this->addCSS("/assets/plugins/select2/css/select2-bootstrap-5-theme.min.css");
         $this->addJs("/assets/plugins/select2/js/select2.min.js");
 
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-
-        $this->addJS("/assets/plugins/DataTables/Responsive-2.4.0/dataTables.responsive.js");
-
         $this->addJs("/assets/js/standarttitr-journal.js" . $version);
 
-        $this->view('list');
+        $this->view('list', '', 'template_journal');
     }
 
     /**
@@ -90,7 +73,8 @@ class StandarttitrController extends Controller
         $unsuccessfulMsg = 'Не удалось сохранить производителя';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd['standart_titr_manufacturer']= $_POST['standart_titr_manufacturer'];
+        $newAdd['standart_titr_manufacturer']['organization_id'] = App::getOrganizationId();
 
         $isAdd = $usedModel->addToSQL($newAdd);
 
@@ -113,7 +97,7 @@ class StandarttitrController extends Controller
         $usedModel = $this->model($this->nameModel);
 
         $newAdd['standart_titr'] = $_POST['standart_titr'];
-
+        $newAdd['standart_titr']['organziation_id'] = App::getOrganizationId();
         $isAdd = $usedModel->addToSQL($newAdd, 'standartTitr');
 
         if (!$isAdd) {
@@ -135,6 +119,7 @@ class StandarttitrController extends Controller
         $usedModel = $this->model($this->nameModel);
 
         $newAdd['standart_titr_receive'] = $_POST['receive'];
+        $newAdd['standart_titr_receive']['organziation_id'] = App::getOrganizationId();
         $isAdd = $usedModel->addToSQL($newAdd);
 
         if (!$isAdd) {
@@ -174,6 +159,7 @@ class StandarttitrController extends Controller
         $usedModel = $this->model($this->nameModel);
 
         $newAdd['standart_titr'] = $_POST['standart_titr'];
+        $newAdd['standart_titr']['organization_id'] = App::getOrganizationId();
 
         $isAdd = $usedModel->newUpdateSQL($newAdd);
 
@@ -192,6 +178,7 @@ class StandarttitrController extends Controller
         $usedModel = $this->model($this->nameModel);
 
         $newAdd['standart_titr_receive'] = $_POST['receive'];
+        $newAdd['standart_titr_receive']['organization_id'] = App::getOrganizationId();
         $isAdd = $usedModel->newUpdateSQL($newAdd);
 
         $this->checkAndShowSuccessOrErrorMessage($isAdd, $successMsg, $unsuccessfulMsg);

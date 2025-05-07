@@ -8,8 +8,8 @@ $(function ($) {
 		ajax: {
 			type : 'POST',
 			data: function ( d ) {
-				d.dateStart = $('#inputDateStart').val()
-				d.dateEnd = $('#inputDateEnd').val()
+				d.dateStart = $('#inputDateStart').val() || "0001-01-01"
+				d.dateEnd = $('#inputDateEnd').val() || "9999-12-31"
 				d.lab = $('#selectLab option:selected').val()
 				d.everywhere = $('#filter_everywhere').val()
 			},
@@ -112,7 +112,7 @@ $(function ($) {
 	});
 
 	journalDataTable.columns().every( function () {
-		$(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
+		$(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'input', function () {
 			journalDataTable
 				.column( $(this).parent().index() )
 				.search( this.value )

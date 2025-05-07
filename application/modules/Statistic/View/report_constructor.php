@@ -3,6 +3,11 @@
         <div class="col">
             <select id="select_entities" class="form-control">
                 <?php foreach ($this->data['entities'] as $key => $entity): ?>
+                    <?php 
+                        if ($key != 'request' &&
+                            $key != 'users' &&
+                            $key != 'lab') { continue; }
+                    ?>
                     <option value="<?=$key?>"><?=$entity['title']?></option>
                 <?php endforeach; ?>
             </select>
@@ -12,25 +17,6 @@
             <button id="generate_journal" type="button" class="btn btn-outline-secondary">Сгенерировать</button>
         </div>
 
-    </div>
-</div>
-
-<div class="d-none">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div id="select_columns_block" class="row">
-                <?php foreach ($this->data['entities'][array_key_first($this->data['entities'])]['columns'] as $key => $column): ?>
-                    <div class="col-4">
-                        <div class="form-check">
-                            <input class="form-check-input select_columns" type="checkbox" value="<?=$key?>" id="flexCheckDefault<?=$key?>" checked>
-                            <label class="form-check-label" for="flexCheckDefault<?=$key?>">
-                                <?=$column['title']?>
-                            </label>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -52,11 +38,11 @@
 <div class="filters mb-4">
     <div class="row">
         <div class="col">
-            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="2023-01-01">
+            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="">
         </div>
 
         <div class="col">
-            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="<?=date('Y-m-d')?>">
+            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="">
         </div>
 
         <div class="col-auto">

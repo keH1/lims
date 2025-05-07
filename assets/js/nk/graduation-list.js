@@ -13,8 +13,8 @@ $(function () {
         ajax: {
             type: 'POST',
             data: function (d) {
-                d.dateStart = $('#inputDateStart').val();
-                d.dateEnd = $('#inputDateEnd').val();
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
                 d.everywhere = $('#filter_everywhere').val();
             },
             url: '/ulab/nk/getGraduationJournalAjax/',
@@ -24,12 +24,12 @@ $(function () {
         },
         columns: [
             {
-                data: 'id',
+                data: 'number',
                 render: function (data, type, item) {
                     // if (item.is_can_edit) {
                         return `<a class="request-link"
                                href="/ulab/nk/graduation/${item.id}">
-                               ${item.id}
+                               ${item.number}
                             </a>`
                     // } else {
                     //     return `<span>${item.id}</span>`;
@@ -62,7 +62,7 @@ $(function () {
 
     journalDataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {

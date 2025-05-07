@@ -12,6 +12,8 @@ class Request extends Model
     //ID Сделки с которого начинается рефакторинг Результатов испытания (TODO: Для новых лабораторий удалить или добавить если производится рефакторинг результатов испытаний, так же убрать из карточки card.php, tz_show.php, probe.php)
     const RESULT_REFACTORING_START_ID = 8846;
 
+    // Кастомное поле в сделке, содержит ID организации
+    const DEAL_CUSTOM_FIELD_ORGANIZATION_ID = "UF_CRM_1745839051";
 
     /**
      * получает текст типа заявки по ид типа.
@@ -163,7 +165,13 @@ class Request extends Model
             return $result;
         }
 
-        $ba_contr = $this->DB->Query("SELECT * FROM `DOGOVOR` WHERE `CLIENT_ID` = {$companyId}");
+        $organizationId = App::getOrganizationId();
+
+        $ba_contr = $this->DB->Query(
+            "SELECT d.* 
+                FROM `DOGOVOR` AS d 
+                INNER JOIN `ba_tz` AS tz ON tz.`ID` = d.`TZ_ID` 
+                WHERE d.`CLIENT_ID` = {$companyId} AND tz.`organization_id` = {$organizationId}");
 
         while ($row = $ba_contr->Fetch()) {
             $row['DATE'] = date("d.m.Y", strtotime($row['DATE']));
@@ -203,9 +211,11 @@ class Request extends Model
             $probe = unserialize($row['PROBE']);
             $row['PROBE'] = $probe;
 
-            $regx = "/(\d+)$/";
-            preg_match($regx, $row['DOGOVOR_NUM'], $match);
-            $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            if ($row['TYPE_ID'] != 9) {
+                $regx = "/(\d+)$/";
+                preg_match($regx, $row['DOGOVOR_NUM'], $match);
+                $row['DOGOVOR_NUM'] = $match[1] ?? '';
+            }
 
 			$row['price_ru'] = StringHelper::priceFormatRus($row['price_discount']);
             $row['act_information'] = json_decode($row['act_information'], true);
@@ -364,13 +374,17 @@ class Request extends Model
      */
     public function updateTz($dealId, $data)
     {
+        if ($data['STAGE_ID'] == "PREPARATION") {
+            $data['dateEnd'] = 'NULL';
+        }
+
         $sqlData = $this->prepearTableData('ba_tz', $data);
 
         $where = "WHERE ID_Z = {$dealId}";
         return $this->DB->Update('ba_tz', $sqlData, $where);
     }
 
-    public function getCountDeal($type = '')
+    public function getCountDeal($type = '', $organizationId)
     {
         $curYear = date("Y");
         
@@ -379,27 +393,28 @@ class Request extends Model
                 ['DATE_CREATE' => 'DESC'], 
                 [
                     '>DATE_CREATE' => "01.01.{$curYear} 00:00:00",
-                    'TYPE_ID' => "'9'"
+                    'TYPE_ID' => 9,
+                    self::DEAL_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId
                 ]
             );
+            
             return $deals->SelectedRowsCount();
         }
         
-        $filter = ['>DATE_CREATE' => "01.01.{$curYear} 00:00:00"];
+        $filter = [
+            '>DATE_CREATE' => "01.01.{$curYear} 00:00:00",
+            self::DEAL_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId
+        ];
         
         if (!empty($type)) {
-            $filter['TYPE_ID'] = "'{$type}'";
+            $filter['TYPE_ID'] = $type;
         } else {
             $filter['!TYPE_ID'] = [1, 9];
         }
         
         $deals = CCrmDeal::GetList(['DATE_CREATE' => 'DESC'], $filter);
 
-        // TODO: разобраться
         $count = $deals->SelectedRowsCount();
-        if ($curYear == 2022) {
-            $count += 22;
-        }
 
         return $count;
     }
@@ -415,30 +430,21 @@ class Request extends Model
      */
     public function create($data)
     {
+        $organizationId = App::getOrganizationId();
         $year = $this->getCurrentY();
-        $countDeal = $this->getCountDeal($data['type']) + 1;
+        $countDeal = $this->getCountDeal($data['type'], $organizationId) + 1;
 
         $newDeal = new CCrmDeal;
 
-        // TODO: убрать костыль
-        while (1) {
-            $typeRus = $this->DB->ForSql(trim(strip_tags($data['type_rus'])));
-            $title = "{$typeRus} №{$countDeal}/{$year}";
-
-            $tmp = $this->DB->Query("SELECT ID FROM `b_crm_deal` WHERE `TITLE` = '{$title}'")->Fetch();
-
-            if (empty($tmp)) {
-                break;
-            } else {
-                $countDeal++;
-            }
-        }
+        $typeRus = $this->DB->ForSql(trim(strip_tags($data['type_rus'])));
+        $title = "{$typeRus} №{$countDeal}/{$year}";
 
         $arFields = [
             "TITLE" => $title,
             "COMPANY_ID" => $data['company_id'],
             "TYPE_ID" => $data['type'],
             "ASSIGNED_BY_ID" => $data['assigned'],
+            self::DEAL_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId
         ];
 
         $result = $newDeal->Add($arFields);
@@ -503,6 +509,7 @@ class Request extends Model
             'STAGE_ID' => $stage,
             'STAGE_NUMBER' => $stageNumber
         ];
+
         $this->updateTz($dealId, $data);
 
         if ($stage == 2) {
@@ -560,7 +567,7 @@ class Request extends Model
     {
         $result = [];
 
-        $protocols = $this->DB->Query("SELECT * FROM `PROTOCOLS` WHERE `ID_TZ` = {$tzId}");
+        $protocols = $this->DB->Query("SELECT *, year(`DATE`) as `YEAR` FROM `PROTOCOLS` WHERE `ID_TZ` = {$tzId}");
 
         while ($row = $protocols->Fetch()) {
             $result[] = $row;
@@ -813,6 +820,7 @@ class Request extends Model
 
         $having = "";
         $where = "";
+        $whereType = '';
         $limit = "";
         $order = [
             'by' => 'b.ID',
@@ -862,9 +870,9 @@ class Request extends Model
                 }
                 // Тип заявки
                 if ( isset($filter['search']['TYPE_ID']) ) {
-                    $where .= "b.TYPE_ID = '9' AND ";
+                    $whereType = "b.TYPE_ID = '9' AND ";
                 } else {
-                    $where .= "b.TYPE_ID <> '9' AND ";
+                    $whereType = "b.TYPE_ID <> '9' AND ";
                 }
                 // Счет
                 if ( isset($filter['search']['ACCOUNT']) ) {
@@ -877,11 +885,8 @@ class Request extends Model
                     $having .= "MATERIAL LIKE '%{$text}%' AND ";
                 }
                 // Ответственный
-                if ( isset($filter['search']['ASSIGNED']) ) {
-                    $where .=
-                        "(usr.NAME LIKE '%{$filter['search']['ASSIGNED']}%' or 
-                        usr.LAST_NAME LIKE '%{$filter['search']['ASSIGNED']}%' or
-                        CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) LIKE '%{$filter['search']['ASSIGNED']}%') AND ";
+                if (isset($filter['search']['ASSIGNED'])) {
+                    $having .= "ASSIGNED LIKE '%{$filter['search']['ASSIGNED']}%' AND ";
                 }
                 // Акт ПП
                 if ( isset($filter['search']['NUM_ACT_TABLE']) ) {
@@ -920,7 +925,7 @@ class Request extends Model
                 }
                 // Лаборатории
                 if ( isset($filter['search']['lab']) ) {
-                    $where .= "b.LABA_ID LIKE '%{$filter['search']['lab']}%' AND ";
+                    $where .= "uts_usr.UF_DEPARTMENT LIKE '%:{$filter['search']['lab']};%' AND ";
                 }
                 // Протокол
                 if ( isset($filter['search']['PROTOCOLS']) && !empty($filter['search']['PROTOCOLS']) ) {
@@ -936,7 +941,7 @@ class Request extends Model
                             $where .= "b.STAGE_ID IN ('NEW', 'PREPARATION', 'PREPAYMENT_INVOICE', 'EXECUTING', 'FINAL_INVOICE') AND IF(b.ACT_NUM, TRUE, FALSE) = TRUE AND ";
                             break;
                         case 3: // Проводятся испытания
-                            $where .= "b.STAGE_ID = 1 AND ";
+                            $where .= "b.STAGE_ID IN (1, 'FINAL_INVOICE') and ";
                             break;
                         case 4: // Испытания завершены
                             $where .= "b.STAGE_ID IN ('2', '3', '4') AND ";
@@ -1006,6 +1011,9 @@ class Request extends Model
                     case 'MATERIAL':
                         $order['by'] = "group_concat(distinct mater.NAME SEPARATOR ', ')";
                         break;
+                    case 'ASSIGNED':
+                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.LAST_NAME, usr.NAME, usr.SECOND_NAME)) SEPARATOR ', '), 1)";
+                        break;
                     case 'NUM_ACT_TABLE':
                         $order['by'] = 'YEAR(ACT_DATE) DESC, a.ACT_NUM';
                         break;
@@ -1064,7 +1072,7 @@ class Request extends Model
                         count(c.id) c_count, count(c.date_return) с_date_return, k.ID k_id , d.IS_ACTION, CONCAT(d.CONTRACT_TYPE, ' ', d.NUMBER, ' от ', DATE_FORMAT(d.DATE, '%d.%m.%Y')) as DOGOVOR_TABLE,
                         tzdoc.pdf tz_pdf,
                         gw.departure_date, gw.object as object_gov,
-                        group_concat(distinct CONCAT(SUBSTRING(usr.NAME, 1, 1), '. ', usr.LAST_NAME) SEPARATOR ', ') as ASSIGNED,
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.LAST_NAME, usr.NAME, usr.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED,
                         group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
@@ -1075,13 +1083,14 @@ class Request extends Model
                     LEFT JOIN DOGOVOR d ON d.ID=dtc.ID_CONTRACT 
                     LEFT JOIN AKT_VR act ON act.TZ_ID=b.ID 
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
-                    LEFT JOIN b_user usr ON ass.user_id = usr.ID 
+                    LEFT JOIN b_user as usr ON ass.user_id = usr.ID 
+                    left join b_uts_user as uts_usr on usr.ID = uts_usr.VALUE_ID
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID 
                     LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
                     left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
                     left join MATERIALS as mater on umtr.material_id = mater.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$whereType} {$where}
                     GROUP BY b.ID
                     HAVING {$having} 
                     ORDER BY {$order['by']} {$order['dir']} {$limit}"
@@ -1098,11 +1107,12 @@ class Request extends Model
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
+                    WHERE {$whereType} b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
-            "SELECT b.ID val, group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL
+            "SELECT b.ID val, group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL, 
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.LAST_NAME, usr.NAME, usr.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED 
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ AS c ON b.ID=c.tz_id
@@ -1112,14 +1122,23 @@ class Request extends Model
                     LEFT JOIN AKT_VR act ON act.TZ_ID=b.ID 
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
+                    left join b_uts_user as uts_usr on usr.ID = uts_usr.VALUE_ID
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID    
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
                     left join MATERIALS as mater on umtr.material_id = mater.ID
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
+                    LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$whereType} {$where}
                     GROUP BY b.ID
                     HAVING {$having} "
         )->SelectedRowsCount();
+
+        // Генерация возможных путей файлов протокола
+        $filePatterns = [
+            "/protocol_generator/archive/%s%s/%s/%s.pdf",
+            "/protocol_generator/archive/%s%s/%s/%s.docx",
+            "/pdf/%s/%s.pdf",
+        ];
 
         while ($row = $data->Fetch()) {
             $row['start_new_area'] = DEAL_START_NEW_AREA;
@@ -1132,7 +1151,6 @@ class Request extends Model
             $row['REQUEST_TITLE'] = $crmDeal['TITLE'];
 
             $protocolsData = [];
-            $firstProtocol = [];
             $mangoClass = '';
             $greenClass = '';
 
@@ -1193,30 +1211,27 @@ class Request extends Model
 
             $row['linkName'] = $row['b_id'] && $row['ACT_NUM'] ? 'Открыть' : '';
 
-            if (count($protocols) > 0) {
-                $firstProtocol = current($protocols);
-                foreach ($protocols as $key => $value) {
-                    $numberAndYear = !empty($value['NUMBER_AND_YEAR']) ? $value['NUMBER_AND_YEAR'] : '';
-                    $protocolsData[$key] = [
-                        'ID' => $value['ID'],
-                        'NUMBER_AND_YEAR' => $numberAndYear,
-                        'ACTUAL_VERSION' => unserialize($value['ACTUAL_VERSION']),
-                        'PDF' => $value['PDF'],
-                        'PROTOCOL_OUTSIDE_LIS' => $value['PROTOCOL_OUTSIDE_LIS'],
-                        'YEAR' => !empty($value['DATE']) ? date('Y', strtotime($value['DATE'])) : ''
+            foreach ($protocols as $key => $value) {
+                if ( !empty($value['NUMBER_AND_YEAR']) ) {
+                    // Параметры для подстановки в пути
+                    $pathParams = [
+                        [$row['b_id'], $value['YEAR'], $value['ID'], $value['ACTUAL_VERSION']],
+                        [$row['b_id'], $value['YEAR'], $value['ID'], $value['ACTUAL_VERSION']],
+                        [$value['ID'], $value['ACTUAL_VERSION']],
                     ];
 
-                    if (empty($value['PDF'])) {
-                        $files = scandir($_SERVER['DOCUMENT_ROOT'] . '/protocol_generator/archive/' . $row['b_id'] . $protocolsData[$key]['YEAR'] . '/' . $protocolsData[$key]['ID'] . '/');
+                    foreach ($filePatterns as $index => $pattern) {
+                        $relativePath = vsprintf($pattern, $pathParams[$index]);
+                        $fullPath = $_SERVER['DOCUMENT_ROOT'] . $relativePath;
 
-                        $protocolsData[$key]['FILES'] = !empty($files) ? $files : [];
-                    } else {
-                        $protocolsData[$key]['FILES'] = [];
+                        if (is_file($fullPath)) {
+                            $protocolsData[$key]['FILES'] = $relativePath;
+                            $protocolsData[$key]['number'] = $value['NUMBER_AND_YEAR'];
+                            break;
+                        }
                     }
                 }
             }
-
-            $row['firstProtocolId'] = $firstProtocol['ID'] ?? null;
 
             $row['PROTOCOLS'] = $protocolsData;
 
@@ -1550,10 +1565,10 @@ class Request extends Model
                 }
                 // Дата
                 if ( isset($filter['search']['DATE_ACT']) ) {
-                    $where .= "LOCATE('{$filter['search']['DATE_ACT']}', DATE_FORMAT(a.ACT_DATE, '%d.%m.%Y')) > 0 AND ";
+                    $where .= "LOCATE('{$filter['search']['DATE_ACT']}', DATE_FORMAT(b.DATE_ACT, '%d.%m.%Y')) > 0 AND ";
                 }
                 if ( isset($filter['search']['dateStart']) ) {
-                    $where .= "(a.ACT_DATE >= '{$filter['search']['dateStart']}' AND a.ACT_DATE <= '{$filter['search']['dateEnd']}') AND ";
+                    $where .= "(b.DATE_ACT >= '{$filter['search']['dateStart']}' AND b.DATE_ACT <= '{$filter['search']['dateEnd']}') AND ";
                 }
                 // Клиент
                 if ( isset($filter['search']['COMPANY_TITLE']) ) {
@@ -1702,7 +1717,7 @@ class Request extends Model
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
-            $row['DATE_ACT'] = !empty($row['DATE_ACT']) ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
+            $row['DATE_ACT'] = (!empty($row['DATE_ACT']) && $row['DATE_ACT'] !== '0000-00-00') ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
 
             $arrNameLabs = [];
             $labs = [];
@@ -1739,6 +1754,7 @@ class Request extends Model
      */
     public function getDatatoJournalInvoice(array $filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $having = "";
         $limit = "";
@@ -1886,7 +1902,7 @@ class Request extends Model
             }
         }
 
-        $where .= "1";
+        $where .= "b.organization_id = {$organizationId}";
         $having .= "1";
 
         $result = [];
@@ -1916,7 +1932,7 @@ class Request extends Model
                     FROM `ba_tz` b 
                     INNER JOIN `INVOICE` i ON b.ID=i.TZ_ID 
                     LEFT JOIN `AKT_VR` a ON b.ID=a.TZ_ID
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''
+                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
@@ -1990,12 +2006,18 @@ class Request extends Model
      */
     public function getConfirmNotAccountTz()
     {
+        $organizationId = App::getOrganizationId();
         $year = date("Y", time())%10 ? substr(date("Y", time()), -2) : date("Y", time());
 
         $smtp = $this->DB->Query(
             "SELECT b.ID_Z, b.ID, b.REQUEST_TITLE, b.COMPANY_TITLE 
                     FROM ba_tz b, `CHECK_TZ` ch 
-                    WHERE b.ACCOUNT IS NULL AND ch.tz_id = b.ID AND ch.confirm = 1 AND b.REQUEST_TITLE LIKE '%/{$year}' GROUP BY b.ID ORDER BY b.ID DESC");
+                    WHERE b.ACCOUNT IS NULL 
+                      AND ch.tz_id = b.ID 
+                      AND ch.confirm = 1 
+                      AND b.REQUEST_TITLE LIKE '%/{$year}' 
+                      AND b.organization_id = {$organizationId}
+                    GROUP BY b.ID ORDER BY b.ID DESC");
 
         $result = [];
 
@@ -2040,14 +2062,16 @@ class Request extends Model
 
 	public function getTakenDealByDealId($dealId)
 	{
-		$takenDeal = $this->DB->Query("SELECT TAKEN_ID_DEAL FROM ba_tz WHERE ID_Z = {$dealId}")->Fetch();
+        $organizationId = App::getOrganizationId();
+		$takenDeal = $this->DB->Query("SELECT TAKEN_ID_DEAL FROM ba_tz WHERE ID_Z = {$dealId} AND organization_id = {$organizationId}")->Fetch();
 
 		return $takenDeal['TAKEN_ID_DEAL'];
 	}
 
     public function updateDealScheme($dealId, $schemeId)
     {
-        $this->DB->Query("UPDATE ba_tz SET scheme_id = '{$schemeId}' WHERE ID_Z = {$dealId}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("UPDATE ba_tz SET scheme_id = '{$schemeId}' WHERE ID_Z = {$dealId} AND organization_id = {$organizationId}");
     }
 
     public function getDealScheme($schemeId)
@@ -2117,9 +2141,21 @@ class Request extends Model
         }
         
         $addedFiles = 0;
-        foreach ($data['filePaths'] as $filePath) {
+        $fileNameMap = [];
+        
+        foreach ($data['filePaths'] as $index => $filePath) {
             $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filePath;
-            $fileName = basename($filePath);
+            $originalFileName = basename($filePath);
+            
+            if (isset($fileNameMap[$originalFileName])) {
+                $fileNameMap[$originalFileName]++;
+                $fileExt = pathinfo($originalFileName, PATHINFO_EXTENSION);
+                $fileNameWithoutExt = pathinfo($originalFileName, PATHINFO_FILENAME);
+                $fileName = $fileNameWithoutExt . '_' . $fileNameMap[$originalFileName] . '.' . $fileExt;
+            } else {
+                $fileNameMap[$originalFileName] = 0;
+                $fileName = $originalFileName;
+            }
             
             if (file_exists($fullPath)) {
                 $zip->addFile($fullPath, $fileName);
@@ -2135,11 +2171,12 @@ class Request extends Model
             }
             return;
         }
-        
+
+        $archiveName = rawurlencode($zipFileName);
         if (file_exists($zipPath)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/zip');
-            header('Content-Disposition: attachment; filename=' . $zipFileName);
+            header('Content-Disposition: attachment; filename="' . $archiveName . '"; filename*=UTF-8\'\'' . $archiveName);
             header('Content-Transfer-Encoding: binary');
             header('Expires: 0');
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -2151,5 +2188,164 @@ class Request extends Model
             unlink($zipPath);
             exit;
         }
+    }
+
+    /**
+     * Обновляет статус заявки
+     * @param string $stage
+     * @param int $tzId
+     */
+    public function updateApplicationStage(string $stageId, int $tzId)
+    {
+        $stageNumber = 0;
+        $text = null;
+        
+        switch ($stageId) {
+            case 'NEW':
+            case 'PREPARATION':
+            case 'PREPAYMENT_INVOICE':
+            case 'EXECUTING':
+                $stageNumber = 0;
+                break;
+            case 'FINAL_INVOICE':
+                $stageNumber = 1;
+                break;
+            case '1':
+                $stageNumber = 2;
+                break;
+            case '2':
+                $stageNumber = 3;
+                break;
+            case '4':
+                $stageNumber = 4;
+                break;
+            case 'WON':
+                $stageNumber = 6;
+                $text = 'Акты получены сделка завершена!';
+                break;
+            case 'LOSE':
+                $stageNumber = 7;
+                $text = 'Сделка не состоялась!';
+                break;
+            case '5':
+                $stageNumber = 9;
+                $text = 'Не устроила цена!';
+                break;
+            case '6':
+                $stageNumber = 9;
+                $text = 'Заказчик не выходит на связь!';
+                break;
+            case '7':
+                $stageNumber = 9;
+                $text = 'Не проводим подобные испытания!';
+                break;
+            case '8':
+                $stageNumber = 9;
+                $text = 'Создана другая заявка по данному запросу!';
+                break;
+            case '9':
+                $stageNumber = 9;
+                $text = 'Заказчик выбрал лабораторию в своем городе!';
+                break;
+            case '10':
+                $stageNumber = 9;
+                $text = 'Заказчик решил не проводить испытания!';
+                break;
+            case '11':
+                $stageNumber = 9;
+                $text = 'Отказались сами - большая загруженность!';
+                break;
+            case '12':
+                $stageNumber = 9;
+                $text = 'Судебная экспертиза!';
+                break;
+            case '13':
+                $stageNumber = 9;
+                $text = 'Участие в тендере!';
+                break;
+        }
+        
+        $resultSelectTz = $this->DB->Query("SELECT * FROM `ba_tz` WHERE `ID` = " . $tzId)->Fetch();
+        
+        $dealEdited = [];
+        if (!empty($resultSelectTz['ID_Z'])) {
+            $dealEdited = $this->getDealById($resultSelectTz['ID_Z']);
+        }
+        
+        if ($resultSelectTz && !empty($resultSelectTz['ACT_NUM']) && 
+            ($dealEdited['STAGE_ID'] == 'NEW' || 
+             $dealEdited['STAGE_ID'] == 'PREPARATION' || 
+             $dealEdited['STAGE_ID'] == 'PREPAYMENT_INVOICE' || 
+             $dealEdited['STAGE_ID'] == 'EXECUTING')) {
+            $stageNumber = 1;
+        }
+        
+        if ($resultSelectTz && !empty($resultSelectTz['PRICE']) && 
+            !empty($resultSelectTz['RESULTS']) && 
+            (empty($resultSelectTz['OPLATA']) || $resultSelectTz['OPLATA'] < $resultSelectTz['PRICE']) && 
+            $dealEdited['STAGE_ID'] == '2') {
+            $stageNumber = 5;
+        }
+        
+        $resUpd = '';
+        if (!empty($resultSelectTz['ID_Z'])) {
+            if (CModule::IncludeModule('crm')) {
+                $deal = new CCrmDeal;
+                $arDealUpdate = array('STAGE_ID' => $stageId);
+                $resUpd = $deal->Update($resultSelectTz['ID_Z'],
+                    $arDealUpdate,
+                    true,
+                    true,
+                    array('DISABLE_USER_FIELD_CHECK' => true)
+                );
+            }
+        }
+        
+        if ($stageId === 'WON') {
+            $actVr = $this->DB->Query("SELECT * FROM `AKT_VR` WHERE `TZ_ID`= {$tzId}")->Fetch();
+
+            if ($actVr && !empty($resultSelectTz['ID_Z'])) {
+                $dealId = $resultSelectTz['ID_Z'];
+               
+                $completedActRecord = $this->DB->Query("SELECT * FROM `CompletedAct` WHERE `request_id` = {$dealId}")->Fetch();
+
+                $data = [
+                    'act_number' => $actVr['NUMBER'],
+                    'request_id' => $dealId,
+                    'date_act'   => $actVr['DATE']
+                ];
+                $sqlData = $this->prepearTableData('CompletedAct', $data);
+                
+                if ($completedActRecord) {
+                    $this->DB->Update('CompletedAct', $sqlData, "WHERE request_id = {$dealId}");
+                } else {
+                    $this->DB->Insert('CompletedAct', $sqlData);
+                }
+                
+                $_SESSION['message_success'] = "Сделка успешно завершена";
+            }
+        }
+
+        $data = [
+            'STAGE_ID' => $stageId,
+            'STAGE_NUMBER' => $stageNumber
+        ];
+        $sqlData = $this->prepearTableData('ba_tz', $data);
+        $this->DB->Update('ba_tz', $sqlData, "WHERE ID = {$tzId}");
+
+        return $resUpd;
+    }
+
+    /**
+     * Обновляет статус протокола
+     * @param int $dealId
+     */
+    public function updateProtocolStatus(int $dealId)
+    {
+        $sqlData = [
+            'PROTOCOL_SEND_DATE' => date('Y-m-d')
+        ];
+        $sqlData = $this->prepearTableData('ba_tz', $sqlData);
+        $this->DB->Update('ba_tz', $sqlData, "WHERE ID_Z = {$dealId}");
     }
 }

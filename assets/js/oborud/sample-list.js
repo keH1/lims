@@ -50,13 +50,13 @@ $(function () {
                     return $components;
                 }
             },
-            {
-                data: 'HISTORY',
-                orderable: false,
-                render: function (data, type, item) {
-                    return `<a href="#" data-id="${item.ID}" class="control-samples-history"><i class="fa-regular fa-clock"></i></a>`;
-                }
-            },
+            // {
+            //     data: 'HISTORY',
+            //     orderable: false,
+            //     render: function (data, type, item) {
+            //         return `<a href="#" data-id="${item.ID}" class="control-samples-history"><i class="fa-regular fa-clock"></i></a>`;
+            //     }
+            // },
         ],
         language: dataTablesSettings.language,
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
@@ -67,9 +67,12 @@ $(function () {
         scrollX:       true,
     });
 
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     journalDataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {
@@ -105,7 +108,7 @@ $(function () {
     $body.on('click', '.control-samples-history', function () {
         const id = $(this).data('id');
         const $form = $('#history-modal-form');
-console.log('click');
+
         $form.find('.title').empty();
         $form.find('.history-info').empty();
 
@@ -115,7 +118,6 @@ console.log('click');
             dataType: "json",
             method: "POST",
             success: function (data) {
-                console.log('data', data);
                 $form.find('.title').text(`История образца контроля ${data.info.NUMBER}`);
 
                 let html = ``;

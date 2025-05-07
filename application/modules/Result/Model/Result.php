@@ -261,6 +261,7 @@ class Result extends Model
     public function getProtocolById(?int $protocolId): array
     {
         $response = [];
+        $organizationId = App::getOrganizationId();
 
         if (empty($protocolId) || $protocolId < 0) {
             return $response;
@@ -270,7 +271,9 @@ class Result extends Model
             (select COUNT(*) from ulab_material_to_request where protocol_id = p.ID) probe_count 
             FROM PROTOCOLS p 
             LEFT JOIN ulab_protocol_invalid upi ON upi.protocol_id = p.ID 
-            where p.ID = {$protocolId}")->Fetch();
+            where p.ID = {$protocolId}
+            AND p.ORGANIZATION_ID = {$organizationId}
+        ")->Fetch();
 
         if (!empty($result)) {
             $result['view_number'] = (int)$result['NUMBER'] ?: 'Номер не присвоен';
@@ -412,13 +415,9 @@ class Result extends Model
      */
     public function addProtocols(array $data): int
     {
-        foreach ($data as $key => $item) {
-            if (is_string($item)) {
-                $data[$key] = $this->quoteStr($this->DB->ForSql(trim($item)));
-            }
-        }
+        $sqlData = $this->prepearTableData('PROTOCOLS', $data);
 
-        $result = $this->DB->Insert('PROTOCOLS', $data);
+        $result = $this->DB->Insert('PROTOCOLS', $sqlData);
 
         return intval($result);
     }
@@ -652,7 +651,7 @@ class Result extends Model
         $methodsModel = new Methods;
         $labModel = new Lab;
         $protocolModel = new Protocol;
-        $techConditionModel = new TechCondition;
+        $normDocModel = new NormDocGost();
         $user = new User;
 
         $response = [];
@@ -667,22 +666,24 @@ class Result extends Model
         }
 
         $result = $this->DB->Query("SELECT *, 
-                umtr.id umtr_id, umtr.name_for_protocol, 
-                m.ID m_id, m.NAME m_mame, 
-                ugtp.id ugtp_id, ugtp.method_id ugtp_method_id, ugtp.assigned_id,
+                umtr.id umtr_id, umtr.name_for_protocol, umtr.material_number, umtr.probe_number,
+                m.ID m_id, m.NAME m_mame,
+                ugtp.id ugtp_id, ugtp.method_id ugtp_method_id, ugtp.assigned_id, ugtp.norm_doc_method_id, ugtp.protocol_id,
+                ugtp.normative_val, ugtp.actual_value, ugtp.match, ugtp.is_confirm_oa,
                 g.reg_doc g_reg_doc, 
                 um.name um_name, um.decimal_places um_decimal_places, um.definition_range_1 um_definition_range_1, 
                 um.definition_range_2 um_definition_range_2, um.definition_range_type um_definition_range_type,   
-                um.is_text_norm um_is_text_norm, 
-                mg.name as group_name, mgt.*
-            FROM ulab_material_to_request umtr 
+                um.is_text_norm um_is_text_norm, um.measurement_id, um.in_field, um.is_text_fact,
+                mg.name as group_name, 
+                d.unit_rus
+            FROM ulab_material_to_request as umtr 
             INNER JOIN MATERIALS as m ON m.ID = umtr.material_id 
             INNER JOIN ulab_gost_to_probe as ugtp ON ugtp.material_to_request_id = umtr.id 
             LEFT JOIN ulab_methods as um ON um.id = ugtp.method_id 
             LEFT JOIN ulab_gost as g ON g.id = um.gost_id 
             LEFT JOIN ulab_dimension as d on d.id = um.unit_id
             LEFT JOIN materials_groups as mg on mg.id = umtr.group 
-            LEFT JOIN materials_groups_tu as mgt on mg.id = mgt.materials_groups_id and mgt.tu_id = ugtp.conditions_id
+            LEFT JOIN materials_groups_tu as mgt on mg.id = mgt.materials_groups_id and mgt.norm_doc_method_id = ugtp.norm_doc_method_id
             WHERE umtr.deal_id = {$dealId} AND um.is_selection <> 1 {$where} ORDER BY umtr.id, ugtp.gost_number");//, umtr.material_number, umtr.probe_number
 
         $prevMaterialNumber = 0;
@@ -694,7 +695,7 @@ class Result extends Model
             $row['protocol'] = !empty($row['protocol_id']) ? $protocolModel->getProtocolById($row['protocol_id']) : [];
             $row['measurement'] = $this->getMeasurement($row['measurement_id']);
             $row['trial_results'] = $this->getTrialResult($row['ugtp_id']);
-            $row['tech'] = $techConditionModel->get($row['conditions_id']);
+            $row['tech'] = $normDocModel->getMethod($row['norm_doc_method_id']);
 
             if (!empty($row['assigned_id'])) {
                 $row['tester'] = $user->getUserShortById($row['assigned_id']);
@@ -813,16 +814,11 @@ class Result extends Model
     public function getMethodProbeJournal($dealId, $filter)
     {
         $methodModel = new Methods();
-        $tuModel = new TechCondition();
         $protocolModel = new Protocol();
         $normDocModel = new NormDocGost();
 
         $where = "";
         $limit = "";
-        $order = [
-            'by' => 'b.ID',
-            'dir' => 'DESC'
-        ];
 
         if ( !empty($filter) ) {
             // из $filter собирать строку $where тут
@@ -919,11 +915,6 @@ class Result extends Model
             $row['um_definition_range_type'] = $methodInfo['definition_range_type'];
             $row['um_definition_range_1'] = $methodInfo['definition_range_1'];
             $row['um_definition_range_2'] = $methodInfo['definition_range_2'];
-
-//            $tuInfo = $tuModel->get($row['tech_condition_id']);
-//            $row['utc_definition_range_type'] = $tuInfo['definition_range_type'];
-//            $row['utc_definition_range_1'] = $tuInfo['definition_range_1'];
-//            $row['utc_definition_range_2'] = $tuInfo['definition_range_2'];
 
             $ndInfo = $normDocModel->getMethod($row['nd_method_id']);
 
@@ -1025,6 +1016,36 @@ class Result extends Model
         }
         $result['recordsTotal'] = $dataTotal;
         $result['recordsFiltered'] = $dataFiltered;
+
+        return $result;
+    }
+
+
+    public function getMaterialsGostsByDelaId($dealId)
+    {
+        $methodModel = new Methods();
+
+        $sql = $this->DB->Query(
+            "SELECT 
+                        gtp.*, 
+                        mtr.*, mtr.id as mtr_id, 
+                        m.NAME as material_name
+                    FROM ulab_material_to_request as mtr
+                    inner join MATERIALS as m ON m.ID = mtr.material_id
+                    inner join ulab_gost_to_probe as gtp on gtp.material_to_request_id = mtr.id
+                    WHERE mtr.deal_id = {$dealId}
+                    group by gtp.id, mtr.id
+                    ORDER BY mtr.material_number asc, mtr.probe_number asc, gtp.gost_number asc"
+        );
+
+        $result = [];
+
+        while ($row = $sql->Fetch()) {
+            $methodInfo = $methodModel->get($row['method_id']);
+            $row['view_gost'] = $methodInfo['view_gost'];
+
+            $result[] = $row;
+        }
 
         return $result;
     }
@@ -1209,186 +1230,6 @@ class Result extends Model
         return $response;
     }
 
-    /**
-     * получает данные материалов, методик и тех.условий
-     * @param int $dealId
-     * @return array
-     */
-    public function getMaterialGostDataByDealId(int $dealId): array
-    {
-        $user = new User();
-
-        $response = [];
-
-        if (empty($dealId)) {
-            return $response;
-        }
-
-        $result = $this->DB->Query("SELECT
-                umtr.id umtr_id, umtr.deal_id, umtr.probe_number, umtr.cipher, umtr.protocol_id,
-                m.ID m_id, m.NAME m_mame,
-                ugtp.id ugtp_id, ugtp.method_id, ugtp.conditions_id, ugtp.gost_number, ugtp.assigned_id,
-                bgm.GOST bgm_gost, bgm.IN_OA bgm_in_oa, bgm.IN_OUT bgm_in_out,
-                bgm.IN_OUT bgm_in_out, bgm.GOST_PUNKT bgm_punkt, bgm.NORM_TEXT bgm_norm_text,
-                bgm.NORM1_TEXT bgm_norm1_text, bgm.NORM2_TEXT bgm_norm2_text, bgm.NORM1 bgm_norm1,
-                bgm.NORM2 bgm_norm2, bgm.GOST_TYPE bgm_gost_type,
-                bgm.SPECIFICATION bgm_specification, bgm.ED bgm_ed, bgm.ED_INDEX bgm_ed_index, bgm.RES_TEXT bgm_res_text,
-                bgm.LFHI bgm_lfhi, bgm.ACCURACY bgm_accuracy,
-                bgc.GOST bgc_gost, bgc.SPECIFICATION bgc_specification, bgc.NORM_DOP bgc_norm_dop, bgc.GOST_TYPE bgc_gost_type,
-                bgc.MATCH_MANUAL bgc_match_manual, bgc.NORM_COMMENT bgc_norm_comment, bgc.VALUE_DOP bgc_value_dop,
-                utr.match, utr.actual_value, utr.normative_value, utr.average_value,
-                p.NUMBER p_number, p.EDIT_RESULTS p_edit_results, p.EDIT_RESULTS p_edit_results, p.GROUP_MAT p_group_mat
-            FROM ulab_material_to_request umtr
-            INNER JOIN MATERIALS m ON m.ID = umtr.material_id
-            INNER JOIN ulab_gost_to_probe ugtp ON ugtp.material_to_request_id = umtr.id
-            INNER JOIN ba_gost bgm ON bgm.ID = ugtp.method_id
-            INNER JOIN ba_gost bgc ON bgc.ID = ugtp.conditions_id
-            LEFT JOIN ulab_trial_results utr ON utr.gost_to_probe_id = ugtp.id
-            LEFT JOIN PROTOCOLS p ON p.ID = umtr.protocol_id
-            WHERE umtr.deal_id = {$dealId} AND bgm.GOST_TYPE <> 'metodic_otbor'");
-
-        while ($row = $result->Fetch()) {
-            if (empty($row['bgm_in_oa']) && $row['bgm_gost_type'] !== 'metodic_otbor' &&
-                !in_array($row['method_id'], [2875, 3376]) && !empty($row['protocol_id'])) {
-                $row['no_oa'][$row['protocol_id']] = 1;
-            }
-
-            if (!empty($row['assigned_id'])) {
-                $row['tester'] = $user->getUserShortById($row['assigned_id']);
-            }
-
-
-
-            //Единицы измерения
-            $row['units'] = $row['bgm_ed'] . ($row['bgm_ed_index'] ? "<sup>{$row['bgm_ed_index']}</sup>" : '');
-
-
-            //Фактическое значение
-            $row['actual_value'] = json_decode($row['actual_value'], true);
-
-
-            //Нормативное значение
-            $bgcNormDop = !empty($row['bgc_norm_dop']) ? unserialize($row['bgc_norm_dop']) : [];
-            $numGroupMat = explode('-', $row['p_group_mat'])[1] ?? null;
-            $norms = "от {$bgcNormDop[$numGroupMat][0]} до {$bgcNormDop[$numGroupMat][1]}";
-
-            if ($row['bgc_gost_type'] === 'TU_group') { //Методика определения группы материала
-                $row['view_normative_value'] = $norms;
-            } elseif ($row['bgc_gost_type'] === 'TU_research') { //Методика исследования по группе материала
-                $row['view_normative_value'] = $row['normative_value'];
-            } else {
-                $row['view_normative_value'] = $row['bgc_norm_comment'] ?: '';
-            }
-
-
-            //Фактическое значение
-            $row['bgm_norm_1'] = $row['bgm_norm_text'] ? $row['bgm_norm1_text'] : $row['bgm_norm1'];
-            $row['bgm_norm_2'] = $row['bgm_norm_text'] ? $row['bgm_norm2_text'] : $row['bgm_norm2'];
-            $row['actual_value'][0] = isset($row['actual_value'][0]) ? str_replace(',', '.', $row['actual_value'][0]) : null;
-            $row['out_range'] = '';
-
-
-            if (!empty($row['bgm_lfhi']) && isset($row['actual_value'][0]) && is_numeric($row['actual_value'][0]) &&
-                is_numeric($row['bgm_norm_1']) && is_numeric($row['bgm_norm_2'])) {
-                if (!empty($row['bgm_in_out'])) {
-                    if ($row['actual_value'][0] < $row['bgm_norm_1']) {
-                        $row['out_range'] = 'менее ' . $row['bgm_norm_1'];
-                    } elseif ($row['actual_value'][0] > $row['bgm_norm_2']) {
-                        $row['out_range'] = 'болee ' . $row['bgm_norm_2'];
-                    }
-                } else {
-                    if ($row['actual_value'][0] > $row['bgm_norm_1']) {
-                        $row['out_range'] = 'более ' . $row['bgm_norm_1'];
-                    } elseif ($row['actual_value'][0] < $row['bgm_norm_2']) {
-                        $row['out_range'] = 'менее ' . $row['bgm_norm_2'];
-                    }
-                }
-            }
-
-
-            //Среднее значение
-            if (in_array($row['bgm_gost_type'], ['TU_sred5', 'TU_sred4', 'TU_sred3', 'TU_sred2', 'TU_sred'])) {
-                $row['view_average_value'] = is_nan($row['average_value']) ? '-' : number_format($row['average_value'], $row['bgm_accuracy'], ',', '');
-            } else {
-                $row['view_average_value'] = 'Не рассчитывается';
-            }
-
-
-            //Соответствие требованиям
-//            if ($row['bgm_res_text']) {
-//                $actualValue = preg_replace("/[^,.0-9]/", '', $row['actual_value'][0]);
-//
-//                if (($actualValue < $row['bgm_norm1'] || $actualValue > $row['bgm_norm2']) && $row['bgm_in_out']) {
-//                    $row['match_message'] = 'Внимание! Значение вне области!';
-//
-//                    if (!empty($row['bgm_in_oa']) && !empty($row['protocol_id'])) {
-//                        $row['no_oa'][$row['protocol_id']] = 1;
-//                    }
-//                } elseif (($actualValue > $row['bgm_norm1'] || $actualValue < $row['bgm_norm2']) && empty($row['bgm_in_out'])) {
-//                    $row['match_message'] = 'Внимание! Значение вне области!';
-//
-//                    if (!empty($row['bgm_in_oa']) && !empty($row['protocol_id'])) {
-//                        $row['no_oa'][$row['protocol_id']] = 1;
-//                    }
-//                }
-//            } else {
-            if (empty($row['bgm_norm_text']) && $row['average_value'] !== null) {
-                if ($row['method_id'] === 6402) {
-                    //TODO: а если несколько фактических значений ?
-                    $row['average_value'] = explode('F', $row['actual_value'][0])[1];
-                }
-
-                if (($row['average_value'] < $row['bgm_norm1'] || $row['average_value'] > $row['bgm_norm2']) && $row['bgm_in_out']) {
-                    $row['match_message'] = 'Внимание! Значение вне области!';
-
-                    if (!empty($row['bgm_in_oa']) && !empty($row['protocol_id'])) {
-                        $row['no_oa'][$row['protocol_id']] = 1;
-                    }
-                } elseif (($row['average_value'] > $row['bgm_norm1'] || $row['average_value'] < $row['bgm_norm2'])
-                    && empty($row['bgm_in_out'])) {
-                    $row['match_message'] = 'Внимание! Значение вне области!';
-
-                    if (!empty($row['bgm_in_oa']) && !empty($row['protocol_id'])) {
-                        $row['no_oa'][$row['protocol_id']] = 1;
-                    }
-                }
-            }
-//            }
-
-
-            switch ($row['match']) {
-                case 0:
-                    $row['match_view'] = 'Не соответствует';
-                    break;
-                case 1:
-                    $row['match_view'] = 'Соответствует';
-                    break;
-                case 2:
-                    $row['match_view'] = '-';
-                    break;
-                case 3:
-                    $row['match_view'] = 'Не нормируется';
-                    break;
-                default:
-                    $row['match_view'] = '';
-            }
-
-
-            //ОА (Если "Входящий диапазон" то "от - до")
-            $row['range_title'] = $row['bgm_in_out'] ?
-                'от ' . ($row['bgm_norm_1'] ?: '-') . ' до ' . ($row['bgm_norm_2'] ?: '-') :
-                'до ' . ($row['bgm_norm_1'] ?: '-') . ' и от ' . ($row['bgm_norm_2'] ?: '-');
-
-            if (!empty($row['bgm_in_out']) && empty($row['bgm_in_oa']) && !empty($row['protocol_id'])) {
-                $row['no_oa'][$row['protocol_id']] = 1;
-            }
-
-
-            $response[$row['umtr_id']][$row['ugtp_id']] = $row;
-        }
-
-        return $response;
-    }
 
     /**
      * NEW
@@ -2131,6 +1972,15 @@ class Result extends Model
 
         if ( in_array($stateLastAction['state'], ['complete']) ) {
             $errors = ["Не удалось завершить испытание для методики {$anchor}, испытание уже завершено"];
+            return [
+                'success' => false,
+                'errors' => $errors,
+                'data' => '',
+            ];
+        }
+
+        if (empty($stateLastAction['state'])) {
+            $errors = ["Испытание для методики {$anchor} не было начато"];
             return [
                 'success' => false,
                 'errors' => $errors,
@@ -3081,7 +2931,7 @@ class Result extends Model
 
                 // Соответствие требованиям
                 $match = $data['match'][$umtrId][$ugtpId] ?? null;
-                $matchData= $resultModel->getMatchData($methodData, $match);
+                $matchData = $resultModel->getMatchData($methodData, $match);
                 $matchValue = $matchData['match'];
 
                 // Проверка метода и значений в аттестованном диапазоне
@@ -3168,6 +3018,7 @@ class Result extends Model
         return $response;
     }
 
+
     /**
      * Прикрепляем пробы к протоколу
      * @param int $dealId
@@ -3177,13 +3028,11 @@ class Result extends Model
      */
     public function attachProbe(int $dealId, int $protocolId, array $data): array
     {
-        $requirementModel = new Requirement;
         $protocolModel = new Protocol;
 
-        $sampleChecked = [];
-        $probe = [];
         $response = ['success' => true];
-        $mtrData = ['protocol_id' => $protocolId];
+
+        $isNewProbe = false;
 
         if (empty($dealId) || empty($protocolId) || (empty($data['probe_checkbox']) && empty($data['gost_check']))) {
             return [
@@ -3192,59 +3041,27 @@ class Result extends Model
             ];
         }
 
-        $tz = $requirementModel->getTzByDealId($dealId);
-
-        $dateProbe = $data['DATE_PROBE'] ?: null;
-        $dateProbeRu = !empty($dateProbe) ? date("d.m.Y", strtotime($data['DATE_PROBE'])) : '-';
-        $placeProbe = !empty($data['PLACE_PROBE']) ? $data['PLACE_PROBE'] : '-';
-
-        foreach ($data['probe_checkbox'] as $umtrId => $val) {
-            $umtrId = (int)$umtrId;
-            $umtr = $this->materialToRequestData($umtrId);
-
-            if (!empty($umtr['protocol_id']) && (int)$umtr['protocol_id'] !== $protocolId) {
-                continue;
-            }
-
-            $result = $this->updateMaterialToRequest($umtrId, $mtrData);
-
-            if ($result !== 1) {
-                $response = [
-                    'success' => false,
-                    'errors' => "Не все пробы удалось прикрепить к протоколу"
-                ];
-            }
-
-            //TODO: (Выбор проб) Временные массивы данных, сохраняет сериализованные данные, для работы остальных скриптов до их рефакторинга
-            $numberProbe[$umtr['probe_number'] - 1] = $tz['PROBE'][$umtr['material_number']]['number_probe'][$umtr['probe_number'] - 1] ?: [];
-            $shNumber[$umtr['probe_number'] - 1] = $tz['PROBE'][$umtr['material_number']]['sh_number'][$umtr['probe_number'] - 1] ?: [];
-            $probe[$umtr['material_number']] = $tz['PROBE'][$umtr['material_number']];
-            $probe[$umtr['material_number']]['number_probe'] = $numberProbe;
-            $probe[$umtr['material_number']]['sh_number'] = $shNumber;
-            $probe[$umtr['material_number']]['mesto_data'] = $placeProbe . '; ' . $dateProbeRu;
-
-            $sampleChecked[$umtr['material_number'] - 1][0][$umtr['probe_number']][0] = $val;
-        }
-
         foreach ($data['gost_check'] as $ugtpId => $val) {
             $ugtpId = (int)$ugtpId;
-            $ugtp = $this->DB->Query("select * from ulab_gost_to_probe where id = {$ugtpId}")->Fetch();
+            $ugtp = $this->DB->Query("select `protocol_id` from ulab_gost_to_probe where id = {$ugtpId}")->Fetch();
 
             if ( !empty($ugtp['protocol_id']) ) {
                 continue;
             }
 
+            $isNewProbe = true;
+
             $this->DB->Update('ulab_gost_to_probe', ['protocol_id' => $protocolId], "where id = {$ugtpId}");
         }
 
-        $data = [
-            'SAMPLE_CHECKED' => serialize($sampleChecked),
-            'PROBE' => serialize($probe)
-        ];
-        $protocolModel->update($protocolId, $data);
+        // если была добавлена пробы - обнуляем сохраненные даты у протокола, чтобы взять их из даты начала/конца испытаний
+        if ( $isNewProbe ) {
+            $protocolModel->update($protocolId, ['DATE_BEGIN' => '', 'DATE_END' => '']);
+        }
 
         return $response;
     }
+
 
     /**
      * @param $protocolId

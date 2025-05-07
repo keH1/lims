@@ -39,9 +39,10 @@ class User extends Model
      */
     public function getUsers()
     {
+        $organizationId = App::getOrganizationId();
         $order = 'ASC';
         $by='ID';
-        $filter = ['ACTIVE' => 'Y'];
+        $filter = ['ACTIVE' => 'Y','UF_ORG_ID' => $organizationId];
         $tmp = 'sort';
         $users = CUser::GetList($by, $order, $filter);
 
@@ -70,6 +71,8 @@ class User extends Model
     public function getUserList($order = ['LAST_NAME' => 'asc'], $bitrixFilter = [], $bitrixParams = [], $customFilter = []): array
     {
         $tmp = [];
+        $organizationId = App::getOrganizationId();
+        $bitrixFilter['UF_ORG_ID'] = $organizationId;
         $users = CUser::GetList($order, $tmp, $bitrixFilter, $bitrixParams);
 
         $result = [];
@@ -101,6 +104,8 @@ class User extends Model
     public function getAssignedUserList($isMain = false): array
     {
         $filter['ACTIVE'] = 'Y';
+        
+        $filter['UF_ORG_ID'] = App::getOrganizationId();
 
 //        if ($isMain) {
 //            $filter['GROUPS_ID'] = [25, 23];
@@ -120,6 +125,7 @@ class User extends Model
         foreach ($users as &$user) {
             $user['NAME'] = trim($user['NAME']);
             $user['LAST_NAME'] = trim($user['LAST_NAME']);
+            $user['SECOND_NAME'] = trim($user['SECOND_NAME']);
         }
 
         return $users;
@@ -189,6 +195,9 @@ class User extends Model
 
         $isFirst = true;
         foreach ($dataList as $item) {
+            if (empty($item)) {
+                continue;
+            }
             $data = [
                 'deal_id' => $dealId,
                 'user_id' => $item,
@@ -306,6 +315,7 @@ class User extends Model
     }
 
 	/**
+     * @deprecated
 	 * @param $id
 	 * @return string
 	 */
@@ -494,27 +504,45 @@ class User extends Model
      * @param $dep
      * @return array
      */
-    public function checkHeader($dep)
+    public function checkHeader($dep) :array
     {
-        $res = $this->DB->Query("SELECT *  FROM `b_uts_iblock_5_section` lab, `b_user` u 
-						WHERE lab.`VALUE_ID` = {$dep} AND 
-						lab.`UF_HEAD` = u.`ID`")->Fetch();
+        $entity = \Bitrix\Iblock\Model\Section::compileEntityByIblock('Departments');
 
-        if ( empty($res) ) { return []; }
+        $arrSection = $entity::getRow([
+            'filter' => ['ACTIVE' => 'Y','!USER.ID'=>false,'=ID'=>$dep],
+            'select' => [
+                'ID',
+                'NAME',
+                'UF_HEAD',
+                'USER_NAME'=>'USER.NAME',
+                'USER_LAST_NAME'=>'USER.LAST_NAME',
+                'USER_SECOND_NAME'=>'USER.SECOND_NAME',
+                'USER_WORK_POSITION'=>'USER.WORK_POSITION',
+            ],
+            'runtime' => [
+                new \Bitrix\Main\Entity\ReferenceField('USER', \Bitrix\Main\UserTable::class, ['=this.UF_HEAD' => 'ref.ID']),
+            ]
+        ]);
 
-        $name = trim($res['NAME']);
-        $lastName = trim($res['LAST_NAME']);
-        $secondName = trim($res['SECOND_NAME']);
-        $shortName = StringHelper::getInitials($name).' '. StringHelper::getInitials($secondName).' '.$lastName;
-        $work_position =  trim($res['WORK_POSITION']);
+        if (!$arrSection) {
+            return [];
+        }
+
+        $arrSection = array_map('trim',$arrSection);
+
+        $shortName = sprintf("%s %s %s",
+            StringHelper::getInitials($arrSection['USER_NAME']),
+            StringHelper::getInitials($arrSection['USER_SECOND_NAME']),
+            $arrSection['USER_LAST_NAME']
+        );
 
         $result = [
-            'user_id'       => $res['ID'],
-            'name'          => trim($res['NAME']),
-            'last_name'     => trim($res['LAST_NAME']),
-            'user_name'     => "{$name} {$lastName}",
+            'user_id'       => $arrSection['UF_HEAD'],
+            'name'          => $arrSection['USER_NAME'],
+            'last_name'     => $arrSection['USER_LAST_NAME'],
+            'user_name'     => "{$arrSection['USER_NAME']} {$arrSection['USER_LAST_NAME']}",
             'short_name'    => $shortName,
-            'work_position' => $work_position
+            'work_position' => $arrSection['USER_WORK_POSITION']
         ];
 
         return $result;
@@ -559,10 +587,15 @@ class User extends Model
     public function getUserList1($order = ['LAST_NAME' => 'asc'], $bitrixFilter = [], $bitrixParams = [], $customFilter = []): array
     {
         $tmp = [];
+        $organizationId = App::getOrganizationId();
+
+        $bitrixFilter = [
+            'UF_ORG_ID' => $organizationId,
+            'ACTIVE' => 'Y'
+        ];
         $users = CUser::GetList($order, $tmp, $bitrixFilter, $bitrixParams);
 
         $result = [];
-
 
         while ($row = $users->Fetch()) {
             $name = trim($row['NAME']);
@@ -600,6 +633,7 @@ class User extends Model
 
     public function getDepartmentsList()
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         $res = $this->DB->Query("
@@ -615,7 +649,7 @@ class User extends Model
             FROM
                 ba_laba bl
             LEFT JOIN b_user bu ON bl.HEAD_ID = bu.ID
-            where bl.id_dep is not null
+            where bl.organization_id = {$organizationId} AND bl.id_dep is not null 
             GROUP BY
                 bl.id_dep,
                 bl.ID,

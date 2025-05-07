@@ -14,8 +14,8 @@ $(function ($) {
         ajax: {
             type : 'POST',
             data: function ( d ) {
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";   
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
                 d.lab = $('#selectLab option:selected').val()
                 d.stage = $('#selectStage option:selected').val()
             },
@@ -88,9 +88,12 @@ $(function ($) {
         ],
     });
 
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     journalDataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {
@@ -114,47 +117,5 @@ $(function ($) {
 
     $('.filter-btn-reset').on('click', function () {
         location.reload()
-    })
-
-    /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $journal.width()
-
-    $('.btnRightTable, .arrowRight').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
-
-    $('.btnLeftTable, .arrowLeft').hover(function() {
-            container.animate(
-                {
-                    scrollLeft: -scroll
-                },
-                {
-                    duration: 4000, queue: false
-                }
-            )
-        },
-        function() {
-            container.stop();
-        })
-
-    $(document).scroll(function() {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height()
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform',`translateY(${positionScroll-260}px)`);
-            $('.arrowLeft').css('transform',`translateY(${positionScroll-250}px)`);
-        }
     })
 })

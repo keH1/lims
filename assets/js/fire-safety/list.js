@@ -46,8 +46,8 @@ $(function ($) {
         ajax: {
             type: 'POST',
             data: function (d) {
-                d.dateStart = $('#inputDateStart').val();
-                d.dateEnd = $('#inputDateEnd').val();
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
                 
                 if (sortMode === 'maxDate') {
                     d.sortByMaxDate = 1
@@ -99,6 +99,9 @@ $(function ($) {
         pageLength: 25,
     });
 
+    journalDataTable
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     journal.on('order.dt', function() {
         if (sortMode === 'maxDate') {
             sortMode = 'normal'
@@ -107,7 +110,7 @@ $(function ($) {
 
     journalDataTable.columns().every(function () {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function () {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function () {

@@ -126,7 +126,7 @@
                                         <th class="border-0">Номер протокола</th>
                                         <th class="border-0">Дата протокола</th>
                                         <th class="border-0">Информация по протоколу</th>
-                                        <th class="border-0">Вне ЛИС</th>
+                                        <th class="border-0">Вне системы</th>
                                         <th class="border-0">PDF-версия</th>
                                         <th class="border-0">Сформировать протокол</th>
                                         <th class="border-0">Скачать протокол</th>
@@ -252,12 +252,12 @@
                                                                     <use xlink:href="<?= URI ?>/assets/images/icons.svg#upload"/>
                                                                 </svg>
                                                                 <input class="d-none" id="uploadPdf" type="file"
-                                                                       name="upload_pdf" onchange="form.submit()">
+                                                                       name="upload_pdf" accept=".pdf, application/pdf" onchange="form.submit()">
                                                             </label>
                                                         </form>
                                                     <?php endif; ?>
                                                 <?php else: ?>
-                                                    <span title="Для загрузки PDF-версии, в протоколе отмете 'Протокол выдается вне ЛИС'">
+                                                    <span title="Для загрузки PDF-версии, в протоколе отмете 'Протокол выдается вне системы'">
                                                         <svg class="icon icon-disabled" width="30" height="30">
                                                             <use xlink:href="<?= URI ?>/assets/images/icons.svg#upload"/>
                                                         </svg>
@@ -871,7 +871,7 @@
 
                     <div class="row">
                         <div class="col">
-                            <div>Протокол выдается вне ЛИС</div>
+                            <div>Протокол выдается вне системы</div>
                             <label class="switch">
                                 <input class="form-check-input protocol-outside-lis"
                                        name="protocol[PROTOCOL_OUTSIDE_LIS]" type="checkbox" value="1">
@@ -911,6 +911,7 @@
         <div class="line-dashed-small"></div>
 
         <input name="deal_id" value="<?=$this->data['deal_id']?>" type="hidden">
+        <input name="selected_protocol_id" value="<?=$this->data['selected_protocol']?>" type="hidden">
 
         <div class="gost_room_container">
 

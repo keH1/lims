@@ -49,8 +49,8 @@ class OborudController extends Controller
         $organizationId = App::getOrganizationId();
 
         $this->data['table_list'] = [
-            'journal_end' => 'Оборудование с истёкшим сроком проверки',
-            'journal_close_end' => 'Оборудование у которого истекает срок проверки',
+            'journal_end' => 'Оборудование с истёкшим сроком поверки',
+            'journal_close_end' => 'Оборудование у которого истекает срок поверки',
             'journal_need_check' => 'Требует проверки отделом метрологии',
         ];
 
@@ -134,22 +134,26 @@ class OborudController extends Controller
 
 
     /**
-     *
+     * @desc добавляет перемещение оборудования
      */
-    // public function addOborudMoving()
-    // {
-    //     /** @var Oborud $oborudModel */
-    //     $oborudModel = $this->model('Oborud');
+     public function addOborudMoving()
+     {
+         /** @var Oborud $oborudModel */
+         $oborudModel = $this->model('Oborud');
 
-    //     $oborudModel->addOborudMoving($_POST['form']);
+         $oborudModel->addOborudMoving($_POST['form']);
 
-    //     if ( isset($_POST['journal_page']) ) {
-    //         $this->redirect("/oborud/movingJournal/{$_POST['form']['oborud_id']}");
-    //     } else {
-    //         $this->redirect("/oborud/edit/{$_POST['form']['oborud_id']}#moving-block");
-    //     }
-    // }
+         if ( isset($_POST['journal_page']) ) {
+             $this->redirect("/oborud/movingJournal/{$_POST['form']['oborud_id']}");
+         } else {
+             $this->redirect("/oborud/edit/{$_POST['form']['oborud_id']}#moving-block");
+         }
+     }
 
+
+    /**
+     * @desc добавляет перемещение оборудования аяксом
+     */
     public function addOborudMovingAjax()
     {
         global $APPLICATION;
@@ -181,7 +185,7 @@ class OborudController extends Controller
      */
     public function movingJournal($oborudId)
     {
-        $this->data['title'] = 'Журнал движения оборудования';
+        $this->data['title'] = 'Журнал перемещения оборудования';
 
         /** @var Oborud $oborudModel */
         $oborudModel = $this->model('Oborud');
@@ -198,28 +202,10 @@ class OborudController extends Controller
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
 
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-
-        $this->addCDN('https://cdn.datatables.net/rowreorder/1.5.0/js/dataTables.rowReorder.js');
-        $this->addCDN('https://cdn.datatables.net/rowreorder/1.5.0/js/rowReorder.dataTables.js');
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-
         $r = rand();
         $this->addJs("/assets/js/oborud-moving.js?v={$r}");
 
-        $this->view('movingJournal');
+        $this->view('movingJournal', '', 'template_journal');
     }
 
 

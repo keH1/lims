@@ -19,15 +19,10 @@
 						class="btn btn-primary popup-first btn-add-entry w-100 mw-100 mt-0 btn-reactive">
 					Добавить реактив
 				</button>
-<!--				<button type="button" name="add_entry"-->
-<!--						class="btn btn-primary popup-second btn-add-entry w-100 mw-100 mt-0 btn-reactive">-->
-<!--					Провести реактив-->
-<!--				</button>-->
 			</div>
 		</div>
 	</div>
 </div>
-<!--./filters-->
 
 <table id="reactive_journal" class="table table-striped text-center  ">
 	<thead>
@@ -86,13 +81,13 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label" for="nameReactive">Название</label>
-			<input type="text" name="toSQL[reactive_model][name]" class="form-control" id="nameReactive" required>
+			<input type="text" name="reactive_model[name]" class="form-control" id="nameReactive" required>
 		</div>
 	</div>
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Реактив / расходник</label>
-			<select name="toSQL[reactive_model][is_reactive]" class="form-control bg-white" required>
+			<select name="reactive_model[is_reactive]" class="form-control bg-white" required>
 				<option value="1" selected>Реактив</option>
 				<option value="2">Расходник</option>
 			</select>
@@ -101,7 +96,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Агрегатное состояние</label>
-			<select name="toSQL[reactive_model][id_aggregate_state]" class="form-control bg-white" required>
+			<select name="reactive_model[id_aggregate_state]" class="form-control bg-white" required>
 				<option value="" selected disabled></option>
 				<?php
 				foreach ($this->data['aggregate'] as $val): ?>
@@ -114,7 +109,7 @@
 	<div class="line-dashed-red"></div>
 	<div class="row mb-3">
 		<div class="col">
-			<input name="toSQL[reactive_model][is_precursor]" class="form-check-input" type="checkbox" value="1"
+			<input name="reactive_model[is_precursor]" class="form-check-input" type="checkbox" value="1"
 				   id="is_precursor">
 			<label class="form-check-label" for="is_precursor">
 				Реактив является прекурсором или подлежит особому контролю
@@ -125,7 +120,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Нормативный документ реактива</label>
-			<input type="text" name="toSQL[reactive][doc_name]" class="form-control name-recipe"
+			<input type="text" name="reactive[doc_name]" class="form-control name-recipe"
 				   required>
 		</div>
 	</div>
@@ -133,7 +128,7 @@
 		<div class="row mb-3">
 			<div class="col">
 				<label class="form-label">Квалификация</label>
-				<select name="toSQL[reactive][id_pure]" class="form-control " required>
+				<select name="reactive[id_pure]" class="form-control " required>
 					<option value="" selected disabled></option>
 					<?php
 					foreach ($this->data['pure'] as $val): ?>
@@ -146,7 +141,7 @@
 		<div class="row mb-3">
 			<div class="col">
 				<label class="form-label">Лаборатория</label>
-				<select name="toSQL[reactive][laba_id]" class="form-control bg-white" required>
+				<select name="reactive[laba_id]" class="form-control bg-white" required>
 					<?php foreach ($this->data['laboratory'] as $val):?>
 						<option value="<?=$val['id_dep']?>"><?=$val['short_name']?></option>
 					<?php endforeach;?>
@@ -163,17 +158,17 @@
 		Редактирования
 	</div>
 	<div class="line-dashed-small"></div>
-	<input type="hidden" name="toSQL[reactive_model][id]" id="reactive-id">
+	<input type="hidden" name="reactive_model[id]" id="reactive-id">
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label" for="nameReactiveEdit">Название</label>
-			<input type="text" name="toSQL[reactive_model][name]" class="form-control" id="nameReactiveEdit" required>
+			<input type="text" name="reactive_model[name]" class="form-control" id="nameReactiveEdit" required>
 		</div>
 	</div>
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Реактив / расходник</label>
-			<select name="toSQL[reactive_model][is_reactive]" class="form-control bg-white" id="reactive-type" required>
+			<select name="reactive_model[is_reactive]" class="form-control bg-white" id="reactive-type" required>
 				<option value="1" selected>Реактив</option>
 				<option value="2">Расходник</option>
 			</select>
@@ -182,7 +177,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Агрегатное состояние</label>
-			<select name="toSQL[reactive_model][id_aggregate_state]" class="form-control bg-white" required id="agregate-select">
+			<select name="reactive_model[id_aggregate_state]" class="form-control bg-white" required id="agregate-select">
 				<option value="" selected disabled></option>
 				<?php
 				foreach ($this->data['aggregate'] as $val): ?>
@@ -195,7 +190,7 @@
 	<div class="line-dashed-red"></div>
 	<div class="row mb-3">
 		<div class="col">
-			<input name="toSQL[reactive_model][is_precursor]" class="form-check-input" type="checkbox" value="1"
+			<input name="reactive_model[is_precursor]" class="form-check-input" type="checkbox" value="1"
 				   id="is_precursorEdit">
 			<label class="form-check-label" for="is_precursor">
 				Реактив является прекурсором или подлежит особому контролю
@@ -206,7 +201,7 @@
 	<div class="row mb-3">
 		<div class="col">
 			<label class="form-label">Нормативный документ реактива</label>
-			<input type="text" name="toSQL[reactive][doc_name]" class="form-control name-recipe" id="nd-doc"
+			<input type="text" name="reactive[doc_name]" class="form-control name-recipe" id="nd-doc"
 				   required>
 		</div>
 	</div>
@@ -214,7 +209,7 @@
 		<div class="row mb-3">
 			<div class="col">
 				<label class="form-label">Квалификация</label>
-				<select name="toSQL[reactive][id_pure]" class="form-control" required id="qualityEdit">
+				<select name="reactive[id_pure]" class="form-control" required id="qualityEdit">
 					<option value="" selected disabled></option>
 					<?php
 					foreach ($this->data['pure'] as $val): ?>
@@ -227,7 +222,7 @@
 		<div class="row mb-3">
 			<div class="col">
 				<label class="form-label">Лаборатория</label>
-				<select name="toSQL[reactive][laba_id]" class="form-control bg-white" id="laba-select" required>
+				<select name="reactive[laba_id]" class="form-control bg-white" id="laba-select" required>
 					<?php foreach ($this->data['laboratory'] as $val):?>
 						<option value="<?=$val['id_dep']?>"><?=$val['short_name']?></option>
 					<?php endforeach;?>

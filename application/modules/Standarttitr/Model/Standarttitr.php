@@ -102,6 +102,7 @@ class Standarttitr extends Model
 
     public function getFromSQL(string $typeName, array $filters = null): array
     {
+        $organizationId = App::getOrganizationId();
         if ($typeName == 'getList') {
             $request = "
             SELECT CONCAT('СТ-', standart_titr.number, IFNULL
@@ -134,24 +135,23 @@ class Standarttitr extends Model
                                         $this->dayInYear DAY) < CURDATE(), 1,
                       0)                               AS is_expired
             FROM standart_titr
-                     JOIN standart_titr_receive
+                     left JOIN standart_titr_receive
                           ON standart_titr_receive.id_standart_titr = standart_titr.id
-                     JOIN standart_titr_manufacturer
+                     left JOIN standart_titr_manufacturer
                           ON standart_titr_receive.id_standart_titr_manufacturer =
                              standart_titr_manufacturer.id
-                     LEFT JOIN b_user ON standart_titr_receive.global_assigned = b_user.id  
+                     LEFT JOIN b_user ON standart_titr_receive.global_assigned = b_user.id
+           WHERE standart_titr.organization_id = {$organizationId}
             HAVING  id {$filters['idWhichFilter']}             
                      AND                   {$filters['having']}
                     ORDER BY date_receive IS NULL DESC, {$filters['order']}
-                    {$filters['limit']} 
-        ";
+                    {$filters['limit']}";
         } elseif ($typeName == 'data_for_update') {
             $request = "
                 SELECT *                   
                 FROM {$filters['type']}   
-                WHERE id = {$filters['id']}                  
-                             ";
-        }elseif ($typeName == 'standart_titr_receive_for_update') {
+                WHERE id = {$filters['id']}";
+        } elseif ($typeName == 'standart_titr_receive_for_update') {
             $request = "
             SELECT standart_titr_receive.*
                  , standart_titr.number AS standart_titr_number
@@ -159,13 +159,11 @@ class Standarttitr extends Model
             FROM standart_titr_receive
             LEFT JOIN standart_titr ON standart_titr.id_library_reactive =
                                     standart_titr_receive.id_library_reactive  
-                WHERE standart_titr_receive.id = {$filters['id']}                  
+                WHERE standart_titr_receive.id = {$filters['id']} AND standart_titr_receive.organization_id = {$organizationId}                  
                              ";
         } elseif (array_key_exists($typeName, $this->selectInList)) {
             if ($this->selectInList[$typeName][0] == 1) {
-                $request = "
-                SELECT * FROM $typeName
-             ";
+                $request = "SELECT * FROM {$typeName}";
             } elseif ($this->selectInList[$typeName][0] == 0) {
                 if ($typeName == 'standart_titr_full_name') {
                     $request = "
@@ -177,6 +175,7 @@ class Standarttitr extends Model
                     FROM standart_titr
                              LEFT JOIN standart_titr_receive
                                        ON standart_titr.id = standart_titr_receive.id_standart_titr
+                    where standart_titr.organization_id = {$organizationId}
                     GROUP BY standart_titr.id       
              ";
                 } elseif ($typeName == 'standart_titr_receive') {
@@ -193,7 +192,8 @@ class Standarttitr extends Model
                          , standart_titr_receive.id AS id_receive
                     FROM standart_titr
                              LEFT JOIN standart_titr_receive
-                                       ON standart_titr.id = standart_titr_receive.id_standart_titr                               
+                                       ON standart_titr.id = standart_titr_receive.id_standart_titr   
+                    where standart_titr.organization_id = {$organizationId}
                              ";
                 }
             } else {
@@ -204,8 +204,7 @@ class Standarttitr extends Model
         return $this->requestFromSQL($request);
     }
 
-    public
-    function getByID(string $name, $ID): string
+    public function getByID(string $name, $ID): string
     {
         $getFrom = [
             'reactiveName' => 'IDReactiveName'

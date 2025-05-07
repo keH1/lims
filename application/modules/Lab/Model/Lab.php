@@ -52,15 +52,20 @@ class Lab extends Model
      */
     public function getLabAndUser($labId = 0)
     {
+        $organizationId = App::getOrganizationId();
         $userModel = new User();
 
-        $where = "1";
+        $where = "organization_id = {$organizationId}";
 
-        if ( $labId > 0 ) {
-            $where = "l.id = {$labId}";
+        if ($labId > 0) {
+            $where .= " AND l.id = {$labId}";
         }
 
-        $sql = $this->DB->Query("select l.* from ba_laba as l where {$where}");
+        $sql = $this->DB->Query(
+           "SELECT l.*
+            FROM ba_laba AS l
+            WHERE {$where}
+        ");
 
         $result = [];
         while ($row = $sql->Fetch()) {
@@ -68,8 +73,10 @@ class Lab extends Model
                 "select utsu.VALUE_ID 
                         from b_uts_user as utsu
                         inner join b_user as u on u.ID = utsu.VALUE_ID
-                        where utsu.UF_DEPARTMENT like '%:{$row['id_dep']};%' and u.ACTIVE = 'Y'"
-            );
+                        where utsu.UF_DEPARTMENT like '%:{$row['id_dep']};%' and u.ACTIVE = 'Y'
+                        and utsu.UF_ORG_ID = {$organizationId}
+            ");
+
             $result[$row['id_dep']]['short_name'] = $row['short_name'];
             $result[$row['id_dep']]['lab_id'] = $row['ID'];
 
@@ -89,7 +96,6 @@ class Lab extends Model
                 }
             }
         }
-
         return $result;
     }
 
@@ -99,9 +105,9 @@ class Lab extends Model
      */
     public function getList(): array
     {
+        $organizationId = App::getOrganizationId();
         $results = [];
-
-        $laboratories = $this->DB->Query("SELECT * FROM `ba_laba` where id_dep is not null");
+        $laboratories = $this->DB->Query("SELECT * FROM `ba_laba` where organization_id = {$organizationId} and id_dep is not null");
 
         while ($row = $laboratories->Fetch()) {
             $row['DEPARTMENT'] = $row['id_dep'];
@@ -118,9 +124,31 @@ class Lab extends Model
      */
     public function get($labId)
     {
+        $organizationId = App::getOrganizationId();
         if (empty($labId)) { return []; }
 
-        return $this->DB->Query("select * from ba_laba where ID = {$labId}")->Fetch();
+        return $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and ID = {$labId}")->Fetch();
+    }
+
+
+    /**
+     * получает лабораторию по ид битриксового департамента
+     * @param $bitrixDepartmentId
+     * @return array
+     * @throws Exception
+     */
+    public function getLabByBitrixDepartmentId($bitrixDepartmentId)
+    {
+        $organizationId = App::getOrganizationId();
+        if (empty($bitrixDepartmentId)) { return []; }
+
+        $sqlLab = $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and id_dep = {$bitrixDepartmentId}")->Fetch();
+
+        if ( empty($sqlLab) ) {
+            return [];
+        }
+
+        return $sqlLab;
     }
 
 
@@ -130,9 +158,10 @@ class Lab extends Model
 	 */
 	public function getLabaById($id)
 	{
+        $organizationId = App::getOrganizationId();
 		if (empty($id)) { return []; }
 
-		$result = $this->DB->Query("select * from ba_laba where ID = {$id}")->Fetch();
+		$result = $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and ID = {$id}")->Fetch();
 
 		return $result['short_name'];
 	}
@@ -144,9 +173,10 @@ class Lab extends Model
      */
     public function getLabByDepartment($departmentId)
     {
+        $organizationId = App::getOrganizationId();
         if (empty($departmentId)) { return []; }
 
-        return $this->DB->Query("select * from ba_laba where `id_dep` = {$departmentId}")->Fetch();
+        return $this->DB->Query("select * from ba_laba where organization_id = {$organizationId} and `id_dep` = {$departmentId}")->Fetch();
     }
 
 
@@ -155,18 +185,19 @@ class Lab extends Model
      */
     public function getLabaRoom($labIdList = [])
     {
-        $where = '1';
+        $organizationId = App::getOrganizationId();
+        $where = 'l.ID = r.LAB_ID AND l.organization_id = ' . $organizationId;
 
         if ( !empty($labIdList) ) {
             $labIdList = array_map('intval', $labIdList);
             $str = implode(',', $labIdList);
-            $where = "l.ID IN ({$str})";
+            $where .= " AND l.ID IN ({$str})";
         }
 
         $laboratories = $this->DB->Query(
             "SELECT l.NAME laba_name, r.LAB_ID, r.NUMBER, r.ID room_id, r.NAME room_name, r.PLACEMENT 
                 FROM `ba_laba` as l, ROOMS as r 
-                WHERE l.ID = r.LAB_ID AND {$where}
+                WHERE {$where}
                 ORDER BY r.LAB_ID"
         );
 
@@ -203,7 +234,14 @@ class Lab extends Model
      */
     public function getRooms()
     {
-        $smtp = $this->DB->Query("SELECT * FROM `ROOMS`");
+        $organizationId = App::getOrganizationId();
+
+        $smtp = $this->DB->Query("
+            SELECT r.* FROM `ROOMS` as r
+            INNER JOIN ba_laba AS l
+             ON r.LAB_ID = l.ID
+            WHERE l.organization_id = {$organizationId}
+        ");
 
         $result = [];
 
@@ -221,6 +259,8 @@ class Lab extends Model
      */
     public function getRoomByLabId($labID)
     {
+        $organizationId = App::getOrganizationId();
+
         if ( empty($labID) ) {
             return [];
         }
@@ -229,9 +269,10 @@ class Lab extends Model
         }
 
         $smtp = $this->DB->Query(
-            "SELECT * 
-                FROM ROOMS 
-                WHERE LAB_ID IN ({$labID})
+            "SELECT r.* 
+                FROM ROOMS as r 
+                INNER JOIN ba_laba AS l ON r.LAB_ID = l.ID
+                WHERE LAB_ID IN ({$labID}) AND l.organization_id = {$organizationId}
                 ORDER BY LAB_ID"
         );
 
@@ -253,6 +294,8 @@ class Lab extends Model
      */
     public function getJournalCondition($filter = [])
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -335,7 +378,7 @@ class Lab extends Model
             }
         }
 
-        $where .= "1 ";
+        $where .= "u_c.organization_id = {$organizationId}";
 
         $result = [];
 
@@ -352,7 +395,7 @@ class Lab extends Model
             "SELECT u_c.*, u_c.id u_c_id
                     FROM ulab_conditions u_c 
                     LEFT JOIN ROOMS AS r ON r.ID = u_c.room_id 
-                    WHERE 1"
+                    WHERE u_c.organization_id = {$organizationId}"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
@@ -412,7 +455,10 @@ class Lab extends Model
             return $response;
         }
 
-        $result = $this->DB->Query("SELECT * FROM ulab_conditions WHERE id = {$id}")->Fetch();
+        $organizationId = App::getOrganizationId();
+
+        $result = $this->DB->Query(
+            "SELECT * FROM ulab_conditions WHERE id = {$id} AND organization_id = {$organizationId}")->Fetch();
 
         if (!empty($result)) {
             $result['room_id'] = $result['room_id'] + 100;
@@ -431,6 +477,7 @@ class Lab extends Model
      */
     public function addConditions(array $data): int
     {
+        $data['organization_id'] = App::getOrganizationId();
         $sqlData = $this->prepearTableData('ulab_conditions', $data);
 
         $result = $this->DB->Insert('ulab_conditions', $sqlData);
@@ -446,9 +493,11 @@ class Lab extends Model
      */
     public function updateConditions(int $id, array $data)
     {
+        $organizationId = App::getOrganizationId();
+
         $sqlData = $this->prepearTableData('ulab_conditions', $data);
 
-        $where = "WHERE id = {$id}";
+        $where = "WHERE id = {$id} AND organization_id = {$organizationId}";
         return $this->DB->Update('ulab_conditions', $sqlData, $where);
     }
 
@@ -458,14 +507,16 @@ class Lab extends Model
      */
     public function removeConditionById(int $id)
     {
-        $this->DB->Query("DELETE FROM ulab_conditions WHERE id = {$id}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("DELETE FROM ulab_conditions WHERE id = {$id} AND organization_id = {$organizationId}");
     }
 
 
 	public function getLabList()
 	{
+        $organizationId = App::getOrganizationId();
 		$result = [];
-		$res = $this->DB->Query("SELECT * FROM ba_laba WHERE ID <> 6");
+		$res = $this->DB->Query("SELECT * FROM ba_laba WHERE organization_id = {$organizationId}");
 
 		while ($row = $res->Fetch()) {
 			$result[] = $row;
@@ -485,6 +536,8 @@ class Lab extends Model
         if ( empty($protocolId) || $protocolId < 0) {
             return $response;
         }
+
+        $organizationId = App::getOrganizationId();
 
         $ustSql = $this->DB->Query(
             "SELECT ust.* 
@@ -530,7 +583,7 @@ class Lab extends Model
                 FROM ulab_gost_to_probe ugtp 
                     INNER JOIN ulab_gost_room ugr on ugr.ugtp_id = ugtp.id 
                     INNER JOIN ulab_conditions uc on uc.room_id = ugr.room_id 
-                    WHERE {$where}"
+                    WHERE {$where} AND uc.organization_id = {$organizationId}"
         )->Fetch();
 
         if ( !empty($conditionsSql) ) {
@@ -695,6 +748,7 @@ class Lab extends Model
     {
         $response = [];
         $where = "";
+        $organizationId = App::getOrganizationId();
 
         if ( empty($roomId) || $roomId < 0 || (empty($dateStart) && empty($dateEnd)) )  {
             return $response;
@@ -714,7 +768,7 @@ class Lab extends Model
 
         $result = $this->DB->Query(
             "SELECT DATE_FORMAT(DATE(created_at), '%d.%m.%Y') grouped_date FROM ulab_conditions
-                WHERE room_id = {$roomId} {$where} GROUP BY DATE(created_at)"
+                WHERE room_id = {$roomId} AND organization_id = {$organizationId} {$where} GROUP BY DATE(created_at)"
         );
 
         while ($row = $result->Fetch()) {
@@ -787,6 +841,7 @@ class Lab extends Model
     {
         $response = [];
         $where = "";
+        $organizationId = App::getOrganizationId();
 
         if ( empty($roomId) || $roomId < 0 || (empty($dateStart) && empty($dateEnd)) )  {
             return $response;
@@ -806,7 +861,7 @@ class Lab extends Model
 
         $result = $this->DB->Query(
             "SELECT COUNT(*) amount, MIN(temp) min_temp, MAX(temp) max_temp, MIN(humidity) min_humidity, MAX(humidity) max_humidity FROM ulab_conditions 
-                WHERE room_id = {$roomId} {$where}"
+                WHERE room_id = {$roomId} AND organization_id = {$organizationId} {$where} "
         )->Fetch();
 
         if (!empty($result)) {
@@ -981,13 +1036,34 @@ class Lab extends Model
 
     /**
      * @param $roomId
-     * @return array|false
+     * @return array
      */
     public function getConditionsRoomToday($roomId)
     {
-        $now = date("Y-m-d");
+        $roomId = (int)$roomId;
+        $response = [];
 
-        return $this->DB->Query("select * from ulab_conditions where room_id = {$roomId} and DATE(created_at) = DATE('{$now}') order by id desc ")->Fetch();
+        if ($roomId <= 0) {
+            return $response;
+        }
+
+        $organizationId = App::getOrganizationId();
+
+        $result = $this->DB->Query("
+            SELECT *
+            FROM ulab_conditions
+            WHERE room_id = {$roomId}
+                AND organization_id = {$organizationId}
+                AND created_at >= CURRENT_DATE()
+                AND created_at <  CURRENT_DATE() + INTERVAL 1 DAY
+            ORDER BY id DESC
+        ")->Fetch();
+
+        if (!empty($result) && is_array($result)) {
+            $response = $result;
+        }
+
+        return $response;
     }
 
     /**
@@ -1310,7 +1386,9 @@ class Lab extends Model
     }
 
     public function assignRoomToLab($roomId, $deptId) {
-        return $this->DB->Query("INSERT INTO rooms_to_labs (id_lab, id_room) VALUES ($deptId, $roomId);");
+        $sqlData = $this->prepearTableData('rooms_to_labs', ['id_lab' => $deptId, 'id_room' => $roomId]);
+
+        return $this->DB->Insert('rooms_to_labs', $sqlData);
     }
 
     /**
@@ -1351,12 +1429,15 @@ class Lab extends Model
         return $deleteDone;
     }
 
+
     /**
      * @param array $filter
      * @return array
      */
     public function getRoomsListForLab($filter = [])
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -1364,73 +1445,70 @@ class Lab extends Model
             'dir' => 'DESC'
         ];
 
-        if (!empty($filter)) {
-            // из $filter собирать строку $where тут
-            // формат такой: $where .= "что-то = чему-то AND ";
-            // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
-            // слева без пробела, справа всегда AND пробел
 
-            // работа с фильтрами
-            if (!empty($filter['search'])) {
-                // Лаборатория
-                if ( isset($filter['search']['laboratory']) ) {
-                    $where .= "r.LAB_ID = '{$filter['search']['laboratory']}' AND ";
-                }
-                // Номер
-                if ( isset($filter['search']['NUMBER']) ) {
-                    $where .= "r.NUMBER = '{$filter['search']['NUMBER']}' AND ";
-                }
-                // Наименование
-                if ( isset($filter['search']['NAME']) ) {
-                    $where .= "r.NAME LIKE '%{$filter['search']['NAME']}%' AND ";
-                }
-                // Тип
-                if ( isset($filter['search']['SPEC']) ) {
-                    $searchValue = mb_strtolower($filter['search']['SPEC']);
-                    
-                    if (mb_strpos('специальное', $searchValue) !== false) {
-                        $where .= "r.SPEC = 0 AND ";
-                    } else if (mb_strpos('приспособленное', $searchValue) !== false) {
-                        $where .= "r.SPEC = 1 AND ";
-                    } else {
-                        $where .= "1=0 AND ";
-                    }
-                }
-                // Назначение
-                if ( isset($filter['search']['PURPOSE']) ) {
-                    $where .= "r.PURPOSE LIKE '%{$filter['search']['PURPOSE']}%' AND ";
-                }
-                // Площадь
-                if ( isset($filter['search']['AREA']) ) {
-                    $where .= "r.AREA LIKE '%{$filter['search']['AREA']}%' AND ";
-                }
-                // Контролируемые параметры
-                if ( isset($filter['search']['PARAMS']) ) {
-                    $where .= "r.PARAMS LIKE '%{$filter['search']['PARAMS']}%' AND ";
-                }
-                // Специальное оборудование
-                if ( isset($filter['search']['SPEC_EQUIP']) ) {
-                    $where .= "r.SPEC_EQUIP LIKE '%{$filter['search']['SPEC_EQUIP']}%' AND ";
-                }
-                // Право собственности
-                if ( isset($filter['search']['DOCS']) ) {
-                    $where .= "r.DOCS LIKE '%{$filter['search']['DOCS']}%' AND ";
-                }
-                // Местонахождение
-                if ( isset($filter['search']['PLACEMENT']) ) {
-                    $where .= "r.PLACEMENT = '%{$filter['search']['PLACEMENT']}%' AND ";
-                }
-                // Примечание
-                if ( isset($filter['search']['COMMENT']) ) {
-                    $where .= "r.COMMENT = '%{$filter['search']['COMMENT']}%' AND ";
-                }
+        // из $filter собирать строку $where тут
+        // формат такой: $where .= "что-то = чему-то AND ";
+        // или такой:    $where .= "что-то LIKE '%чему-то%' AND ";
+        // слева без пробела, справа всегда AND пробел
 
-                $where .= "1 ";
-            } 
-            else {
-                $where .= "1=0 ";
+        // работа с фильтрами
+        if (!empty($filter['search'])) {
+            // Лаборатория
+            if ( isset($filter['search']['laboratory']) ) {
+                $where .= "r.LAB_ID = '{$filter['search']['laboratory']}' AND ";
+            }
+            // Номер
+            if ( isset($filter['search']['NUMBER']) ) {
+                $where .= "r.NUMBER = '{$filter['search']['NUMBER']}' AND ";
+            }
+            // Наименование
+            if ( isset($filter['search']['NAME']) ) {
+                $where .= "r.NAME LIKE '%{$filter['search']['NAME']}%' AND ";
+            }
+            // Тип
+            if ( isset($filter['search']['SPEC']) ) {
+                $searchValue = mb_strtolower($filter['search']['SPEC']);
+
+                if (mb_strpos('специальное', $searchValue) !== false) {
+                    $where .= "r.SPEC = 0 AND ";
+                } else if (mb_strpos('приспособленное', $searchValue) !== false) {
+                    $where .= "r.SPEC = 1 AND ";
+                } else {
+                    $where .= "0 AND ";
+                }
+            }
+            // Назначение
+            if ( isset($filter['search']['PURPOSE']) ) {
+                $where .= "r.PURPOSE LIKE '%{$filter['search']['PURPOSE']}%' AND ";
+            }
+            // Площадь
+            if ( isset($filter['search']['AREA']) ) {
+                $where .= "r.AREA LIKE '%{$filter['search']['AREA']}%' AND ";
+            }
+            // Контролируемые параметры
+            if ( isset($filter['search']['PARAMS']) ) {
+                $where .= "r.PARAMS LIKE '%{$filter['search']['PARAMS']}%' AND ";
+            }
+            // Специальное оборудование
+            if ( isset($filter['search']['SPEC_EQUIP']) ) {
+                $where .= "r.SPEC_EQUIP LIKE '%{$filter['search']['SPEC_EQUIP']}%' AND ";
+            }
+            // Право собственности
+            if ( isset($filter['search']['DOCS']) ) {
+                $where .= "r.DOCS LIKE '%{$filter['search']['DOCS']}%' AND ";
+            }
+            // Местонахождение
+            if ( isset($filter['search']['PLACEMENT']) ) {
+                $where .= "r.PLACEMENT LIKE '%{$filter['search']['PLACEMENT']}%' AND ";
+            }
+            // Примечание
+            if ( isset($filter['search']['COMMENT']) ) {
+                $where .= "r.COMMENT LIKE '%{$filter['search']['COMMENT']}%' AND ";
             }
         }
+
+        $where .= "lab.organization_id = {$organizationId} ";
+
         // работа с сортировкой
         if (!empty($filter['order'])) {
             if ($filter['order']['dir'] === 'asc') {
@@ -1482,20 +1560,24 @@ class Lab extends Model
         $result = [];
 
         $data = $this->DB->Query(
-            "SELECT * 
+            "SELECT r.* 
              FROM ROOMS AS r
+             join ba_laba as lab on lab.ID = r.LAB_ID
              WHERE {$where}
              ORDER BY {$order['by']} {$order['dir']} {$limit}
         ");
 
         $dataTotal = $this->DB->Query(
-            "SELECT * 
-             FROM ROOMS AS r
+            "SELECT r.ID 
+            FROM ROOMS AS r
+            join ba_laba as lab on lab.ID = r.LAB_ID
+            where lab.organization_id = {$organizationId}
         ")->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT * 
+            "SELECT r.ID 
              FROM ROOMS AS r
+             join ba_laba as lab on lab.ID = r.LAB_ID
              WHERE {$where}
         ")->SelectedRowsCount();
 

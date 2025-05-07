@@ -13,11 +13,11 @@
 <div class="filters mb-4">
     <div class="row">
         <div class="col view-comm" style="<?=$this->data['type_request'] == 'gov'? 'display: none': ''?>">
-            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="<?= $this->data['date_start'] ?? '' ?>" placeholder="Введите дату начала:">
+            <input type="date" id="inputDateStart" class="form-control filter filter-date-start" value="" placeholder="Введите дату начала:">
         </div>
 
         <div class="col view-comm" style="<?=$this->data['type_request'] == 'gov'? 'display: none': ''?>">
-            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="<?= date('Y-m-d') ?>" placeholder="Введите дату окончания:">
+            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end" value="" placeholder="Введите дату окончания:">
         </div>
 
         <div class="col view-comm" style="<?=$this->data['type_request'] == 'gov'? 'display: none': ''?>">
@@ -64,17 +64,6 @@
 <tbody>
 </tbody>
 </table>
-
-<div class='arrowLeft'>
-    <svg class="bi" width="40" height="40">
-        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-left"/>
-    </svg>
-</div>
-<div class='arrowRight'>
-    <svg class="bi" width="40" height="40">
-        <use xlink:href="<?=URI?>/assets/images/icons.svg#arrow-right"/>
-    </svg>
-</div>
 
 <?php if ( !empty($this->data['tz_under_consideration']) || !empty($this->data['probe_in_lab']) ): ?>
     <div id="notify_leader" class="bg-light mfp-hide col-xl-8 col-lg-9 m-auto p-3 position-relative">

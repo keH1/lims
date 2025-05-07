@@ -1,0 +1,39 @@
+[mysqld]
+
+# General settings
+default-time-zone="+03:00"
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+bind-address=0.0.0.0
+sql_mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+
+# InnoDB settings
+innodb_file_per_table=1
+innodb_flush_log_at_trx_commit=2
+innodb_flush_method=O_DIRECT
+innodb_buffer_pool_size=10G
+innodb_log_file_size=1G
+innodb_thread_concurrency=0
+
+# Binary logging
+sync_binlog=1000
+binlog_cache_size=1M
+
+# Transaction settings
+transaction-isolation=READ-COMMITTED
+
+# Performance settings
+join_buffer_size=2M
+read_rnd_buffer_size=1M
+tmp_table_size=64M
+max_heap_table_size=64M
+thread_cache_size=50
+table_open_cache=4000
+
+# MariaDB-specific settings
+aria_pagecache_buffer_size=256M
+
+# Logging for optimization
+slow_query_log=1
+slow_query_log_file=/var/log/mysql/slow.log
+long_query_time=1

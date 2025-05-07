@@ -12,6 +12,7 @@ class Reference extends Model
      */
     public function getDataToJournalMeasuredProperties($filter)
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         $where = "";
@@ -72,7 +73,7 @@ class Reference extends Model
                 }
             }
         }
-        $where .= "1 ";
+        $where .= "organization_id = {$organizationId}";
 
 
         $data = $this->DB->Query(
@@ -85,7 +86,7 @@ class Reference extends Model
         $dataTotal = $this->DB->Query(
             "SELECT count(*) val
                     FROM ulab_measured_properties
-                    WHERE 1"
+                    WHERE organization_id = {$organizationId}"
         )->Fetch();
         $dataFiltered = $this->DB->Query(
             "SELECT count(*) val
@@ -177,7 +178,6 @@ class Reference extends Model
         }
         $where .= "1 ";
 
-
         $data = $this->DB->Query(
             "SELECT `id`, `fsa_id`, `unit_rus`, `name`, `is_used`, `is_actual`
                     FROM ulab_dimension
@@ -187,8 +187,7 @@ class Reference extends Model
 
         $dataTotal = $this->DB->Query(
             "SELECT count(*) val
-                    FROM ulab_dimension
-                    WHERE 1"
+                    FROM ulab_dimension"
         )->Fetch();
         $dataFiltered = $this->DB->Query(
             "SELECT count(*) val
@@ -212,7 +211,8 @@ class Reference extends Model
      */
     public function changeUsedMeasuredProperties($id)
     {
-        $this->DB->Query("update `ulab_measured_properties` set `is_used` = ! `is_used` where id = {$id}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("update `ulab_measured_properties` set `is_used` = ! `is_used` where id = {$id} and organization_id = {$organizationId}");
     }
 
 
@@ -221,7 +221,8 @@ class Reference extends Model
      */
     public function changeUsedUnits($id)
     {
-        $this->DB->Query("update `ulab_dimension` set `is_used` = ! `is_used` where id = {$id}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("update `ulab_dimension` set `is_used` = ! `is_used` where id = {$id} and organization_id = {$organizationId}");
     }
 
 
@@ -230,6 +231,7 @@ class Reference extends Model
      */
     public function syncMeasuredPropertiesFsa()
     {
+        $organizationId = App::getOrganizationId();
         $array = array(
             'pageSize'   => 100000,
         );
@@ -275,7 +277,7 @@ class Reference extends Model
         $nonActualTotal = $this->DB->Query(
             "SELECT count(*) val
                     FROM ulab_measured_properties
-                    WHERE is_actual = 0"
+                    WHERE is_actual = 0 and organization_id = {$organizationId}"
         )->Fetch();
 
         return ['success' => true, 'msg' => "Синхронизация прошла успешно. Обновлено: {$countUpdate}. Добавлено: {$countInsert}. Неактуально: {$nonActualTotal['val']}"];
@@ -288,6 +290,7 @@ class Reference extends Model
     public function syncMeasuredProperties()
     {
         try {
+            $organizationId = App::getOrganizationId();
             $ch = curl_init('https://ulab.niistrom.pro/API/getMeasuredProperties.php');
 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -319,11 +322,11 @@ class Reference extends Model
                 }
                 $name = $this->quoteStr($this->DB->ForSql(trim($item['name'])));
                 $isActual = $item['is_actual']? 1 : 0;
-                $updateAffected = $this->DB->Update('ulab_measured_properties', ['is_actual' => $isActual, 'name' => $name], "where fsa_id = {$item['fsa_id']}");
+                $updateAffected = $this->DB->Update('ulab_measured_properties', ['is_actual' => $isActual, 'name' => $name,'organization_id' => $organizationId], "where fsa_id = {$item['fsa_id']}");
 
                 if ( !$updateAffected ) {
                     $countInsert++;
-                    $this->DB->Insert('ulab_measured_properties', ['fsa_id' => $item['fsa_id'], 'name' => $name, 'is_actual' => $isActual]);
+                    $this->DB->Insert('ulab_measured_properties', ['fsa_id' => $item['fsa_id'], 'name' => $name, 'is_actual' => $isActual,'organization_id' => $organizationId]);
                 } else {
                     $countUpdate++;
                 }
@@ -332,7 +335,7 @@ class Reference extends Model
             $nonActualTotal = $this->DB->Query(
                 "SELECT count(*) val
                         FROM ulab_measured_properties
-                        WHERE is_actual = 0"
+                        WHERE is_actual = 0 and organization_id = {$organizationId}"
             )->Fetch();
         } catch (Exception $e) {
             return [
@@ -350,6 +353,7 @@ class Reference extends Model
      */
     public function syncUnitsFsa()
     {
+        $organizationId = App::getOrganizationId();
         $array = array(
             'pageSize'   => 100000,
         );
@@ -415,7 +419,7 @@ class Reference extends Model
         $nonActualTotal = $this->DB->Query(
             "SELECT count(*) val
                     FROM ulab_dimension
-                    WHERE is_actual = 0"
+                    WHERE is_actual = 0 and organization_id = {$organizationId}"
         )->Fetch();
 
         return ['success' => true, 'msg' => "Синхронизация прошла успешно. Обновлено: {$countUpdate}. Добавлено: {$countInsert}. Неактуально: {$nonActualTotal['val']}"];

@@ -71,7 +71,7 @@ body.noscroll {
 a.no-decoration {
     text-decoration: none;
 }
-a.disabled, input.disabled, select.disabled {
+a.disabled, input.disabled, select.disabled, label.disabled {
     cursor: not-allowed;
     opacity: 0.5;
     pointer-events: none;
@@ -639,7 +639,6 @@ button.dt-button.buttons-print:focus {
 }
 
 /*journal filters*/
-
 #journal_requests_filter {
     display: none;
 }
@@ -691,8 +690,17 @@ div.dt-buttons {
 }
 
 .arrowRight,
-.arrowLeft {
+.arrowLeft,
+.arrow {
     stroke: #cccccc;
+}
+
+.right-0 {
+    right: 0!important;
+}
+
+.right--0-95 {
+    right: -0.95rem !important;
 }
 
 .trial-results-wrapper .arrowRight {
@@ -1505,10 +1513,6 @@ table.fixedHeader-floating thead tr {
 }
 .table-hover .bg-pele-green:hover {
     background-color: #87eab799 !important;
-}
-
-.measurement_content .content-wrapper {
-    margin-bottom: 3rem;
 }
 
 .btn-gradient {

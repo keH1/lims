@@ -1108,13 +1108,14 @@ class ResultController extends Controller
             $this->redirect('/request/list/');
         }
 
-
         /** @var Result $result */
         $result = $this->model('Result');
         /** @var Requirement $requirement */
         $requirement = $this->model('Requirement');
         /** @var Request $request */
         $request = $this->model('Request');
+
+        $organizationId = App::getOrganizationId();
 
 
         $dealId = (int)$_POST['deal_id'];
@@ -1136,16 +1137,15 @@ class ResultController extends Controller
 
         $tzId = $tz['ID'] ?: null;
 
-
         $protocolData = [
             'ID_TZ' => $tzId,
             'DEAL_ID' => $dealId,
             'DATE' => date('Y-m-d'), //Записывается при присвоении номера TODO: Записывать 2 раза?
-            'DATE_END' => date('Y-m-d')
+            'DATE_END' => date('Y-m-d'),
+            'organization_id' => $organizationId
         ];
 
         $protocolId = $result->addProtocols($protocolData);
-
 
         if (empty($protocolId)) {
             $this->showErrorMessage("Не удалось создать протокол");
@@ -1659,10 +1659,10 @@ class ResultController extends Controller
             $umtr = $result->getMaterialToRequestByProtocolId((int)$_POST['selected_protocol_id']);
         }
         $protocolData = $result->getProtocolById($protocolId);
+
         $currentUserId = $user->getCurrentUserId();
         $currentUser = $user->getCurrentUser();
         $protocolsCount = $protocol->getProtocolsCount();
-
 
         $tzId = $tz['ID'] ?: null;
         $currentDate = date('Y-m-d');
@@ -1771,7 +1771,9 @@ class ResultController extends Controller
 
         $this->showSuccessMessage("Данные записаны");
 
-        $this->redirect("/result/card_oati/" . (int)$_POST['deal_id']);
+        $selectedProtocol = empty($_POST['selected_protocol_id'])? '' : "?protocol_id={$_POST['selected_protocol_id']}";
+
+        $this->redirect("/result/card_oati/" . (int)$_POST['deal_id'] . $selectedProtocol);
     }
 
 
@@ -2464,6 +2466,14 @@ class ResultController extends Controller
             $tz = !empty($dealId) ? $requirementModel->getTzByDealId($dealId) : [];
             $umtr = $resultModel->getMaterialToRequestByProtocolId($protocolId);
             $deal = $requestModel->getDealById($dealId);
+
+            // если у протокола уже сохранена дата начала/конца испытаний - используем её
+            if ( !empty($response['protocol']['DATE_BEGIN']) && $response['protocol']['DATE_BEGIN'] !== '0000-00-00' ) {
+                $response['dates_trials']['date_begin'] = $response['protocol']['DATE_BEGIN'];
+            }
+            if ( !empty($response['protocol']['DATE_END']) && $response['protocol']['DATE_END'] !== '0000-00-00' ) {
+                $response['dates_trials']['date_end'] = $response['protocol']['DATE_END'];
+            }
 
             // Если checkbox "Изменить условия испытаний" не отмечен и тип заявки не НК, то берём данные из "Журнала условий"
             if ( empty($response['protocol']['CHANGE_TRIALS_CONDITIONS']) && $deal['TYPE_ID'] != TYPE_DEAL_NK) {

@@ -13,8 +13,10 @@ const conditionerRoom = {
 }
 
 $(function ($) {
+    let $journal = $('#fridge_journal');
+
     /*recipe journal*/
-    let fridgejournal = $('#fridge_journal').DataTable({
+    let fridgejournal = $journal.DataTable({
         processing: true,
         serverSide: true,
         bAutoWidth: false,
@@ -66,9 +68,12 @@ $(function ($) {
         fixedHeader: false,
     })
 
+    fridgejournal
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     fridgejournal.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {

@@ -6,6 +6,7 @@
         <input type="hidden" name="form_data[<?=$this->data['ugtp_id']?>][sheet_name_ru]"
                value="<?= $this->data['sheet']['name_ru'] ?>" readonly>
         <input type="hidden" name="form_data[<?=$this->data['ugtp_id']?>][type]" value="concrete_strength_17624_7">
+        <input type="hidden" name="form_data[<?=$this->data['ugtp_id']?>][ugtp_id]" class="ugtp-id" value="<?=$this->data['ugtp_id']?>">
 
         <div class="row mb-3">
             <div class="col-auto">
@@ -34,7 +35,7 @@
                         <?php foreach ($this->data['measuring_property']['graduations'] as $key => $val): ?>
                             <option value="<?= $val['id'] ?>"
                                 <?= $val['id'] === $this->data['measuring']['measurement_id'] ? 'selected' : '' ?>
-                                    data-scheme="<?= $this->data['measuring']['scheme'] ?>">№ <?= $val['id'] ?> - <?= $val['object'] ?>, от <?= $val['ru_date'] ?></option>
+                                    data-scheme="<?= $this->data['measuring']['scheme'] ?>">№ <?= $val['number'] ?> - <?= $val['object'] ?>, от <?= $val['ru_date'] ?></option>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </select>
@@ -50,6 +51,8 @@
                        value="<?= $this->data['measuring']['cipher'] ?>">
             </div>
         </div>
+
+        <div class="line-dashed-small"></div>
 
         <div id="calculationDataWrapper">
             <?php if ($this->data['measuring_property']['is_data_v']): ?>
@@ -255,7 +258,7 @@
                                            step="any" value="<?= $this->data['measuring']['S1'] ?>" readonly>
                                 </td>
                                 <td>
-                                    <input type="number" class="form-control bg-light-secondary" name="form_data[<?=$this->data['ugtp_id']?>][S3]"
+                                    <input type="number" class="form-control bg-light-secondary do-not-clean" name="form_data[<?=$this->data['ugtp_id']?>][S3]"
                                            step="any" value="<?= $this->data['measuring_property']['S'] ?>" readonly>
                                 </td>
                                 <td>

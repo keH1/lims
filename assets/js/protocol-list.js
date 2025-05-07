@@ -3,13 +3,20 @@ $(function ($) {
 
     /*journal requests*/
     let journalDataTable = $journal.DataTable({
+        bAutoWidth: false,
+        autoWidth: false,
+        fixedColumns: false,
         processing: true,
         serverSide: true,
+        bSortCellsTop: true,
+        scrollX: true,
+        fixedHeader: false,
+        colReorder: true,
         ajax: {
             type : 'POST',
             data: function ( d ) {
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
                 d.stage = $('#selectStage option:selected').val()
                 d.lab = $('#selectLab option:selected').val()
             },
@@ -91,7 +98,7 @@ $(function ($) {
                     if ( item['DOC'] !== '' ) {
                         return `<a class="results-link"
                                href="${item['DOC']}" >
-                               PDF
+                               Скачать
                             </a>`
                     }
 
@@ -109,17 +116,13 @@ $(function ($) {
         lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
         order: [[ 2, "desc" ]],
-        colReorder: true,
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttonPrint,
-        bSortCellsTop: true,
-        scrollX:       true,
-        fixedHeader:   true,
     });
 
     journalDataTable.columns().every(function () {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function () {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function () {

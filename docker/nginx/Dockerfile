@@ -1,10 +1,10 @@
-FROM nginx:1.20.2-alpine
+FROM nginx:1.26.0-alpine
 
-COPY nginx.conf /etc/nginx/
-COPY default.conf /etc/nginx/conf.d/
-COPY upstream.conf /etc/nginx/conf.d/
+COPY docker/nginx/nginx.conf /etc/nginx/
+COPY docker/nginx/default.conf /etc/nginx/conf.d/
+COPY docker/nginx/upstream.conf /etc/nginx/conf.d/
 
-RUN usermod -u 1000 www-data
+RUN adduser -D -u 1000 -G www-data www-data
 
 CMD ["nginx"]
 

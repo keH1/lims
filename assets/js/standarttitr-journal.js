@@ -1,9 +1,10 @@
 $(function ($) {
 
-    let $body = $("body")
+    let $body = $("body"),
+        $journal = $('#recipe_journal')
 
     /*recipe journal*/
-    let recipeJournal = $('#recipe_journal').DataTable({
+    let recipeJournal = $journal.DataTable({
         processing: true,
         serverSide: true,
         ajax: {
@@ -84,9 +85,12 @@ $(function ($) {
         }
     })
 
+    recipeJournal
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     recipeJournal.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {
@@ -133,7 +137,7 @@ $(function ($) {
 
     $body.on('change', '.reactive-update', function () {
         let number = $('option:selected', this).data('number')
-        let numberReceive = $('option:selected', this).data('numberreceive')
+        let numberReceive = $('option:selected', this).data('number-receive')
         let idLibraryReactive = $(".all-reactive option:selected").data('idlibraryreactive')
         if (number != 'undefined') {
             $('.number-reactive').html(number + " -");

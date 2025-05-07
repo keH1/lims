@@ -28,13 +28,13 @@
         <div class="col-auto">
             <input type="date" id="inputDateStart"
                    class="form-control filter filter-date-start"
-                   value="<?= date("Y") . '-01-01' ?>" title="Введите дату начала">
+                   value="" title="Введите дату начала">
         </div>
 
         <div class="col-auto">
             <input type="date" id="inputDateEnd"
                    class="form-control filter filter-date-end"
-                   value="<?= date("Y-m-d") ?>"
+                   value=""
                    title="Введите дату окончания">
         </div>
 
@@ -127,7 +127,7 @@
 
     <div class="row mb-3">
         <div class="col">
-            <select name="toSQL[dcon_on][rb_eq_dcon_pntr_id]"
+            <select name="dcon_on[rb_eq_dcon_pntr_id]"
                     class="form-control"
                     required>
                 <option hidden>Выберите обеззараживатель</option>
@@ -143,12 +143,12 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Дата учета</label>
-            <input type="date" name="toSQL[dcon_on][date]"
+            <input type="date" name="dcon_on[date]"
                    class="form-control" value="" required>
         </div>
         <div class="col">
             <label class="form-label">Время включения</label>
-            <input type="time" name="toSQL[dcon_on][time]"
+            <input type="time" name="dcon_on[time]"
                    class="form-control" value="" required>
         </div>
     </div>
@@ -170,7 +170,7 @@
 
     <div class="row mb-3">
         <div class="col">
-            <select name="toSQL[dcon_off][jn_morg_dcon_on_id]"
+            <select name="dcon_off[jn_morg_dcon_on_id]"
                     class="form-control"
                     required>
                 <option hidden>Выберите обеззараживатель</option>
@@ -188,7 +188,7 @@
             <div class="col">
                 <label class="form-label">Обработка 70% спиртом</label>
             </div>
-            <input name="toSQL[dcon_off][is_disinfected]"
+            <input name="dcon_off[is_disinfected]"
                    class="form-check-input" type="checkbox" value="1"
                    id="is_disinfected">
             <label class="form-check-label" for="is_disinfected">
@@ -197,7 +197,7 @@
         </div>
         <div class="col">
             <label class="form-label">Время выключение</label>
-            <input type="time" name="toSQL[dcon_off][time]"
+            <input type="time" name="dcon_off[time]"
                    class="form-control" value="" required>
         </div>
     </div>

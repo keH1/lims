@@ -153,6 +153,8 @@ class Methods extends Model
     {
         $userMethod = new User();
 
+        $organizationId = App::getOrganizationId();
+
         $methodSql = $this->DB->Query(
             "select 
                     m.*, 
@@ -165,7 +167,7 @@ class Methods extends Model
                 left join `ulab_dimension` as d on d.id = m.unit_id
                 left join ulab_measured_properties as p on p.id = m.measured_properties_id 
                 left join ulab_measurement as ml on ml.id = m.measurement_id 
-                where 1
+                where g.organization_id = {$organizationId}
                 order by m.is_actual desc, m.gost_id asc, m.clause asc"
         );
 
@@ -350,6 +352,12 @@ class Methods extends Model
     {
         $this->DB->Query("delete from ulab_methods_lab where method_id = {$idMethod}");
 
+        if ( empty($data) ) {
+            return;
+        }
+
+        $data = array_unique($data, SORT_NUMERIC);
+
         foreach ($data as $item) {
             $this->DB->Insert('ulab_methods_lab', ['method_id' => $idMethod, 'lab_id' => (int)$item]);
         }
@@ -383,6 +391,12 @@ class Methods extends Model
     public function updateRoom($idMethod, $data)
     {
         $this->DB->Query("delete from ulab_methods_room where method_id = {$idMethod}");
+
+        if ( empty($data) ) {
+            return;
+        }
+
+        $data = array_unique($data, SORT_NUMERIC);
 
         foreach ($data as $item) {
             $this->DB->Insert('ulab_methods_room', ['method_id' => $idMethod, 'room_id' => (int)$item]);
@@ -519,11 +533,11 @@ class Methods extends Model
                 }
                 // В области аккредитации?
                 if ( isset($filter['search']['in_field']) ) {
-                    $where .= "m.in_field = '%{$filter['search']['in_field']}%' AND ";
+                    $where .= "m.in_field = '{$filter['search']['in_field']}' AND ";
                 }
                 // Расширенная область?
                 if ( isset($filter['search']['is_extended_field']) ) {
-                    $where .= "m.is_extended_field = '%{$filter['search']['is_extended_field']}%' AND ";
+                    $where .= "m.is_extended_field = '{$filter['search']['is_extended_field']}' AND ";
                 }
                 // Цена
                 if ( isset($filter['search']['price']) && is_numeric($filter['search']['price']) ) {
@@ -624,13 +638,12 @@ class Methods extends Model
             }
         }
 
-        $where .= "g.organization_id = {$organizationId} AND ";
-        $where .= "1 ";
+        $where .= "g.organization_id = {$organizationId} ";
 
         $result = [];
 
         $data = $this->DB->Query(
-            "SELECT distinct 
+            "SELECT 
                         m.*, m.id method_id,
                         g.*, g.id gost_id,  
                         tm.name test_method, 
@@ -644,11 +657,12 @@ class Methods extends Model
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
                     WHERE {$where}
+                    group by m.id, g.id 
                     ORDER BY {$order['by']} {$order['dir']} {$limit}
         ");
 
         $dataTotal = $this->DB->Query(
-            "SELECT distinct *
+            "SELECT m.id
                     FROM ulab_gost g
                     LEFT JOIN ulab_methods m ON g.id = m.gost_id 
                     LEFT JOIN ulab_dimension d ON d.id = m.unit_id 
@@ -656,11 +670,12 @@ class Methods extends Model
                     LEFT JOIN ulab_test_method tm ON tm.id = m.test_method_id 
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
-                    WHERE m.is_actual = 1 AND g.organization_id = {$organizationId}"
+                    WHERE g.organization_id = {$organizationId}
+                    group by m.id, g.id"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT distinct *
+            "SELECT m.id
                     FROM ulab_gost g
                     LEFT JOIN ulab_methods m ON g.id = m.gost_id 
                     LEFT JOIN ulab_dimension d ON d.id = m.unit_id
@@ -668,7 +683,8 @@ class Methods extends Model
                     LEFT JOIN ulab_test_method tm ON tm.id = m.test_method_id 
                     LEFT JOIN ulab_methods_room as r ON r.method_id = m.id 
                     LEFT JOIN ulab_methods_lab as l ON l.method_id = m.id 
-                    WHERE {$where}"
+                    WHERE {$where}
+                    group by m.id, g.id"
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
@@ -939,11 +955,11 @@ class Methods extends Model
             ON l.method_id = m.id
 
             INNER JOIN ulab_gost_to_probe AS gtp
-            ON gtp.new_method_id = m.id
+            ON gtp.new_method_id = m.id 
+                AND gtp.protocol_id > 0 
 
             INNER JOIN ulab_material_to_request AS mater
             ON gtp.material_to_request_id = mater.id
-                AND mater.protocol_id > 0
 
             INNER JOIN ulab_start_trials AS st
             ON st.ugtp_id = gtp.id
@@ -967,11 +983,11 @@ class Methods extends Model
             ON l.method_id = m.id 
 
             INNER JOIN ulab_gost_to_probe AS gtp
-            ON gtp.new_method_id = m.id
+            ON gtp.new_method_id = m.id 
+                AND gtp.protocol_id > 0 
 
             INNER JOIN ulab_material_to_request AS mater
-            ON gtp.material_to_request_id = mater.id
-                AND mater.protocol_id > 0
+            ON gtp.material_to_request_id = mater.id 
 
             INNER JOIN ulab_start_trials AS st
             ON st.ugtp_id = gtp.id
@@ -994,11 +1010,11 @@ class Methods extends Model
             ON l.method_id = m.id
 
             INNER JOIN ulab_gost_to_probe AS gtp
-            ON gtp.new_method_id = m.id
+            ON gtp.new_method_id = m.id 
+                AND gtp.protocol_id > 0 
 
             INNER JOIN ulab_material_to_request AS mater
-            ON gtp.material_to_request_id = mater.id
-                AND mater.protocol_id > 0
+            ON gtp.material_to_request_id = mater.id 
 
             INNER JOIN ulab_start_trials AS st
             ON st.ugtp_id = gtp.id
@@ -1055,6 +1071,7 @@ class Methods extends Model
      */
     public function getJournalMatrixList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $labModel = new Lab();
 
         $labId = 0;
@@ -1099,9 +1116,10 @@ class Methods extends Model
                     $where .= "m.is_extended_field = '%{$filter['search']['is_extended_field']}%' AND ";
                 }
 
-                // Лаба Комната
-                if ( isset($filter['search']['lab']) ) {
+                // Лаборатория
+                if (isset($filter['search']['lab'])) {
                     $labId = $filter['search']['lab'];
+                    $where .= "l.lab_id = '{$labId}' AND ";
                 }
 
                 // Статус
@@ -1124,7 +1142,6 @@ class Methods extends Model
                 } else {
                     $where .= "m.is_actual = 1 AND ";
                 }
-
             }
         }
 
@@ -1169,36 +1186,46 @@ class Methods extends Model
             }
         }
 
-        $where .= "1 ";
+        $where .= "g.organization_id = {$organizationId}";
 
         $result = [];
 
         $data = $this->DB->Query(
-            "SELECT distinct 
-                        m.*, m.id method_id,
-                        g.*, g.id gost_id,
-                        p.fsa_id mp_fsa_id, p.name mp_name
-                    FROM ulab_gost g
-                    LEFT JOIN ulab_methods as m ON g.id = m.gost_id 
-                    LEFT JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id  
-                    WHERE {$where}
-                    ORDER BY  {$order['by']} {$order['dir']} {$limit}"
-        );
+           "SELECT DISTINCT 
+                m.*, m.id method_id,
+                g.*, g.id gost_id,
+                p.fsa_id mp_fsa_id, p.name mp_name
+            FROM ulab_gost g
+
+            LEFT JOIN ulab_methods AS m
+            ON g.id = m.gost_id
+
+            LEFT JOIN ulab_measured_properties AS p
+            ON p.id = m.measured_properties_id
+            
+            LEFT JOIN ulab_methods_lab AS l 
+            ON l.method_id = m.id
+
+            WHERE {$where}
+            ORDER BY {$order['by']} {$order['dir']} {$limit}
+        ");
 
         $dataTotal = $this->DB->Query(
-            "SELECT distinct *
-                    FROM ulab_gost g
-                    LEFT JOIN ulab_methods m ON g.id = m.gost_id 
-                    LEFT JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id 
-                    WHERE 1"
-        )->SelectedRowsCount();
+            "SELECT DISTINCT *
+                FROM ulab_gost g
+                LEFT JOIN ulab_methods m ON g.id = m.gost_id 
+                LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id
+                LEFT JOIN ulab_methods_lab AS l ON l.method_id = m.id
+                WHERE g.organization_id = {$organizationId}
+        ")->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT distinct *
-                    FROM ulab_gost g
-                    LEFT JOIN ulab_methods m ON g.id = m.gost_id 
-                    LEFT JOIN ulab_measured_properties as p ON p.id = m.measured_properties_id 
-                    WHERE {$where}"
+            "SELECT DISTINCT *
+                FROM ulab_gost g
+                LEFT JOIN ulab_methods m ON g.id = m.gost_id 
+                LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id 
+                LEFT JOIN ulab_methods_lab AS l ON l.method_id = m.id
+                WHERE {$where}"
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {

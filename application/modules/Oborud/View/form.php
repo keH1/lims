@@ -3,7 +3,7 @@
         <ul class="nav">
             <li class="nav-item me-2">
                 <a class="nav-link" href="/ulab/oborud/list/" title="Вернуться к списку">
-                    <i class="fa-solid fa-list"></i>
+                    <i class="fa-solid fa-arrow-left-long"></i>
                 </a>
             </li>
             <?php if (!empty($this->data['id'])): ?>
@@ -59,11 +59,11 @@
                     </div>
                 </li>
             <?php endif; ?>
-            <li class="nav-item me-2">
-                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Equipment_card/Equipment_card.html" title="Техническая поддержка">
-                    <i class="fa-solid fa-question"></i>
-                </a>
-            </li>
+<!--            <li class="nav-item me-2">-->
+<!--                <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Equipment_card/Equipment_card.html" title="Техническая поддержка">-->
+<!--                    <i class="fa-solid fa-question"></i>-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
     </nav>
 </header>
@@ -642,11 +642,18 @@
                 <div class="col-sm-8">
                     <div class="input-group">
                         <span class="input-group-text">от</span>
-                        <input type="text" class="form-control" name="oborud[OVV_EX]" value="<?=$this->data['oborud']['OVV_EX'] ?? ''?>">
+                        <input type="number" step="any" class="form-control" name="oborud[OVV_EX]"
+                               value="<?=$this->data['oborud']['OVV_EX'] ?? ''?>"
+                        >
                         <span class="input-group-text">до</span>
-                        <input type="text" class="form-control" name="oborud[OVV_EX2]" value="<?=$this->data['oborud']['OVV_EX2'] ?? ''?>">
+                        <input type="number" step="any" class="form-control" name="oborud[OVV_EX2]"
+                               value="<?=$this->data['oborud']['OVV_EX2'] ?? ''?>"
+                        >
                         <div class="input-group-text">
-                            <input id="ch1" class="form-check-input mt-0 me-1" type="checkbox" value="1" name="oborud[HUMIDITY]" <?=$this->data['oborud']['HUMIDITY'] == 1 ? 'checked' : ''?>>
+                            <input id="ch1" class="form-check-input mt-0 me-1" type="checkbox"
+                                   value="1" name="oborud[HUMIDITY]"
+                                   <?=$this->data['oborud']['HUMIDITY'] == 1 ? 'checked' : ''?>
+                            >
                             <label class="form-check-label" for="ch1">
                                 Не нормируется
                             </label>
@@ -663,11 +670,18 @@
                 <div class="col-sm-8">
                     <div class="input-group">
                         <span class="input-group-text">от</span>
-                        <input type="text" class="form-control" name="oborud[TOO_EX]" value="<?=$this->data['oborud']['TOO_EX'] ?? ''?>">
+                        <input type="number" step="any" class="form-control" name="oborud[TOO_EX]"
+                               value="<?=$this->data['oborud']['TOO_EX'] ?? ''?>"
+                        >
                         <span class="input-group-text">до</span>
-                        <input type="text" class="form-control" name="oborud[TOO_EX2]" value="<?=$this->data['oborud']['TOO_EX2'] ?? ''?>">
+                        <input type="number" step="any" class="form-control" name="oborud[TOO_EX2]"
+                               value="<?=$this->data['oborud']['TOO_EX2'] ?? ''?>"
+                        >
                         <div class="input-group-text">
-                            <input id="ch2" class="form-check-input mt-0 me-1" type="checkbox" value="1" name="oborud[TEMPERATURE]" <?=$this->data['oborud']['TEMPERATURE'] == 1 ? 'checked' : ''?>>
+                            <input id="ch2" class="form-check-input mt-0 me-1" type="checkbox"
+                                   value="1" name="oborud[TEMPERATURE]"
+                                   <?=$this->data['oborud']['TEMPERATURE'] == 1 ? 'checked' : ''?>
+                            >
                             <label class="form-check-label" for="ch2">
                                 Не нормируется
                             </label>
@@ -684,9 +698,13 @@
                 <div class="col-sm-8">
                     <div class="input-group">
                         <span class="input-group-text">от</span>
-                        <input type="text" class="form-control" name="oborud[AD_EX]" value="<?=$this->data['oborud']['AD_EX'] ?? ''?>">
+                        <input type="number" step="any" class="form-control" name="oborud[AD_EX]"
+                               value="<?=$this->data['oborud']['AD_EX'] ?? ''?>"
+                        >
                         <span class="input-group-text">до</span>
-                        <input type="text" class="form-control" name="oborud[AD_EX2]" value="<?=$this->data['oborud']['AD_EX2'] ?? ''?>">
+                        <input type="number" step="any" class="form-control" name="oborud[AD_EX2]"
+                               value="<?=$this->data['oborud']['AD_EX2'] ?? ''?>"
+                        >
                         <div class="input-group-text">
                             <input id="ch3" class="form-check-input mt-0 me-1" type="checkbox" value="1" name="oborud[PRESSURE]" <?=$this->data['oborud']['PRESSURE'] == 1 ? 'checked' : ''?>>
                             <label class="form-check-label" for="ch3">

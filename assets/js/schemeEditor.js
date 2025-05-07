@@ -21,8 +21,8 @@ $(document).ready(function () {
             url: '/ulab/schemeEditor/getListProcessingAjax/',
             data: function (d) {
                 d.type = $("#filter-type").val(),
-                    d.dateStart = $("#dateStart").val(),
-                    d.dateEnd = $("#dateEnd").val()
+                    d.dateStart = $("#dateStart").val() || "0001-01-01",
+                    d.dateEnd = $("#dateEnd").val() || "9999-12-31"
             },
             dataSrc: function (json) {
                 return json.data
@@ -90,7 +90,7 @@ $(document).ready(function () {
     });
 
     journalRequests.columns().every(function () {
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function () {
             journalRequests
                 .column($(this).parent().index())
                 .search(this.value)

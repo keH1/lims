@@ -1,13 +1,10 @@
 let methodList = null
 let conditionList = null
-let quarryList = null
 let normDocList = null
 
 let $strTotal = null
 let $inputTotal = null
 let $inputDiscount = null
-
-let methodInfo = null
 
 $.ajax({
     method: 'POST',
@@ -24,15 +21,6 @@ $.ajax({
     dataType: 'json',
     success: function (data) {
         conditionList = data
-    }
-})
-
-$.ajax({
-    method: 'POST',
-    url: '/ulab/requirement/getQuarryAjax',
-    dataType: 'json',
-    success: function (data) {
-        quarryList = data
     }
 })
 
@@ -270,13 +258,17 @@ $(function ($) {
         buttons: dataTablesSettings.buttons,
     })
 
-
-    journalDataTable.columns().every( function () {
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'keyup change clear', function () {
-            journalDataTable
-                .column( $(this).parent().index() )
-                .search( this.value )
-                .draw();
+    journalDataTable.columns().every(function() {
+        let timeout
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function() {
+            clearTimeout(timeout)
+            const searchValue = this.value
+            timeout = setTimeout(function() {
+                journalDataTable
+                    .column($(this).parent().index())
+                    .search(searchValue)
+                    .draw()
+            }.bind(this), 1000)
         })
     })
 
@@ -284,8 +276,12 @@ $(function ($) {
         $('#journal_material_2').DataTable().columns.adjust()
     })
 
+    let tmpTimeout = 0
     $body.on('input', '.filter, .work_radio', function () {
-        journalDataTable.ajax.reload()
+        clearTimeout(tmpTimeout)
+        tmpTimeout = setTimeout(function() {
+            journalDataTable.ajax.reload()
+        }.bind(this), 1000)
 
         let $btnGroupEdit = $('.btn-group-edit')
         let $btnAddMethods = $('.btn-add-methods')
@@ -329,6 +325,10 @@ $(function ($) {
 
         $('#price_discount').val(discountPrice.toFixed(2))
         $strTotal.text(discountPrice.toFixed(2) + ' руб.')
+    })
+
+    $('#form_requirement').on('submit', function () {
+        $('.discount-apply').trigger('click')
     })
 
     $body.on('click', '.popup-edit-probe-form', function (e) {
@@ -560,7 +560,7 @@ $(function ($) {
         if ( id > 0 ) {
             $(this).parents('.method-block').find('.tu-link')
                 .removeClass('disabled')
-                .attr('href', `/ulab/normDocGost/edit/${id}`)
+                .attr('href', `/ulab/normDocGost/method/${id}`)
         } else {
             $(this).parents('.method-block').find('.tu-link')
                 .addClass('disabled')
@@ -762,6 +762,7 @@ $(function ($) {
 
                 $button.html(btnHtml)
                 $button.removeClass('disabled')
+                $('.btn-add-methods').addClass('disabled')
 
                 $.magnificPopup.close()
             }
@@ -789,7 +790,11 @@ $(function ($) {
             method: "POST",
             success: function (json) {
                 if ( !json.success ) {
-                    showErrorMessage(json.error)
+                    showErrorMessage(json.error, '#error-message')
+
+                    $button.removeClass('disabled')
+
+                    $.magnificPopup.close()
                 }
 
                 if ( json.type === 'delete' ) {
@@ -859,13 +864,13 @@ $(function ($) {
                     </form>`
                 let textDateProtocol = ``
 
-                if ( json?.data?.file_name_result !== undefined ) {
+                if (json?.data?.file_name_result) {
                     linkFileResult =
                         `<a href="/ulab/upload/request/${dealId}/government_work/${json.data.work_id}/result/${json.data.file_name_result}">
                             ${json.data.file_name_result}
                         </a>`
                 }
-                if ( json?.data?.file_name_protocol !== undefined ) {
+                if (json?.data?.file_name_protocol) {
                     linkFileProtocol =
                         `<a href="/ulab/upload/request/${dealId}/government_work/${json.data.work_id}/protocol/${json.data.file_name_protocol}">
                             ${json.data.file_name_protocol}
@@ -907,10 +912,6 @@ $(function ($) {
                 `)
             },
             complete: function () {
-                $form.find('input[type="text"]').val('')
-                $form.find('input[type="file"]').val('')
-                $form.find('input[type="number"]').val(1)
-
                 journalDataTable.ajax.reload()
 
                 $button.html(btnHtml)
@@ -980,6 +981,7 @@ $(function ($) {
 function getHtmlMethod(methodList, normDocList, gostNumber = 0, defaultMethod = 0, defaultTu = 0) {
     let optionMethod = getHtmlOptionsMethod(methodList, defaultMethod)
     let optionCondition = getHtmlOptionsNormDoc(normDocList, defaultTu)
+    let typeRequest = $('#type_id').val()
 
     return `<div class="row justify-content-between method-block mb-2" data-gost_number="${gostNumber}">
                 <div class="col-4">
@@ -1008,7 +1010,7 @@ function getHtmlMethod(methodList, normDocList, gostNumber = 0, defaultMethod = 
                         <option value="">Исполнитель</option>
                     </select>
                 </div>
-                <div class="col">
+                <div class="col ${typeRequest == 9? 'd-none' : ''}">
                     <div class="input-group">
                         <input class="form-control price-input" name="form[${gostNumber}][price]" type="number" min="0" step="0.01" value="0">
                         <span class="input-group-text">₽</span>
@@ -1182,6 +1184,7 @@ function getHtmlOptionGost(gostList, defaultId) {
 function createChild(row) {
     // row — исходный объект данных
     let rowData = row.data()
+    let typeRequest = $('#type_id').val()
 
     let probeId = []
     const dealId = rowData.deal_id
@@ -1198,7 +1201,7 @@ function createChild(row) {
                 <th scope="col">Методика испытаний</th>
                 <th scope="col">Нормативная документация</th>
                 <th scope="col">Исполнитель</th>
-                <th scope="col">Цена</th>
+                <th scope="col" class="${typeRequest == 9? 'd-none' : ''}">Цена</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -1288,13 +1291,28 @@ function createChild(row) {
             },
         ],
         language: dataTablesSettings.language,
-    })
+        initComplete: function (settings) {
+            let api = this.api()
 
-    // Инициализация поиска для каждой колонки
-    table.find('.search').each(function (index) {
-        $(this).on('keyup', function () {
-            journal.column(index + 1).search($(this).val()).draw()
-        })
+            if ( typeRequest == 9 ) { // 9 - ид гос заявок
+                let column = api.column(4)
+                column.visible(false)
+            }
+
+            api.columns().every(function () {
+                let timeout
+                $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on( 'input', function () {
+                    clearTimeout(timeout)
+                    const searchValue = this.value
+                    timeout = setTimeout(function () {
+                        api
+                            .column($(this).parent().index())
+                            .search(searchValue)
+                            .draw()
+                    }.bind(this), 1000)
+                })
+            })
+        }
     })
 
     // двигаем строки
@@ -1324,8 +1342,7 @@ function createChild(row) {
 
 
     // удалить методику
-    $('body').off('click', '.delete-method')
-    $('body').on('click', '.delete-method', function () {
+    journal.on('click', '.delete-method', function () {
         if ( confirm("Подтвердите удаление методики.\nВнимание, методика, у которой есть результат испытания, не удалится.") ) {
             const id = $(this).data('gtp_id')
             const tzId = $('#tz_id').val()
@@ -1353,12 +1370,13 @@ function createChild(row) {
                 }
             })
         }
+
+        return false
     })
 
 
     // редактируем ячейку
-    $('body').off('click', 'td.edit-cell')
-    $('body').on('click', 'td.edit-cell', function (e) {
+    journal.on('click', 'td.edit-cell', function (e) {
 
         const $thisCell = $(this)
 
@@ -1388,8 +1406,7 @@ function createChild(row) {
 
 
     // сохраняем изменения в ячейке
-    $('body').off('change', 'td.save-cell select, td.save-cell input')
-    $('body').on('change', 'td.save-cell select, td.save-cell input', function () {
+    journal.on('change', 'td.save-cell select, td.save-cell input', function () {
         const tzId = $('#tz_id').val()
         let $thisCell = $(this).closest('td')
         let $thisRow = $(this).closest('tr')

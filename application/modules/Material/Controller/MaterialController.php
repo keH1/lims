@@ -123,11 +123,15 @@ class MaterialController extends Controller
         /** @var NormDocGost $normDocGostModel */
         $normDocGostModel = $this->model('NormDocGost');
 
+        $data = $materialModel->getById($matID);
+        if (empty($data)) {
+            $this->showErrorMessage("Материал с ИД {$id} не существует");
+            $this->redirect('/material/list/');
+        }
+
         $this->data['title'] = "Карточка материала";
 
         $this->data['id'] = $matID;
-
-        $data = $materialModel->getById($matID);
 
         $this->data['groups'] = $materialModel->getGroupMaterial($matID);
 
@@ -565,5 +569,19 @@ class MaterialController extends Controller
         $materialModel->deleteNewSchemeMethods((int)$_POST['id']);
 
         echo json_encode([], JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @desc Устанавливает новое имя материала
+     */
+    public function setNewNameAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        /** @var  Material $materialModel */
+        $materialModel = $this->model('Material');
+
+        $materialModel->setNewName((int)$_POST['id_material'], $_POST['name']);
     }
 }

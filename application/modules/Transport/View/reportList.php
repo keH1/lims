@@ -6,21 +6,8 @@
                 Добавить отчет
             </button>
         </div>
-
-<!--        <div class="col col-md-2">-->
-<!--            <input type="date" id="inputDateStart" class="form-control filter filter-date-start"-->
-<!--                   value="" placeholder="Введите дату начала:">-->
-<!--        </div>-->
-<!---->
-<!--        <div class="col col-md-2">-->
-<!--            <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"-->
-<!--                   value="" placeholder="Введите дату окончания:">-->
-<!--        </div>-->
     </div>
-
-
 </div>
-<!--./filters-->
 
 <input id="currentUser" class="d-none" type="number" value="<?= $this->data["currentUser"] ?>">
 
@@ -77,30 +64,25 @@
 
     <div data-js-report-wrap>
         <div class="line-dashed-small"></div>
-        <table id="gsm-report-table" class="table table-bordered"
-        <thead>
-        <tr>
-            <th class="text-center align-middle w150">Дата</th>
-            <th class="text-center align-middle w100">Время выезда</th>
-            <th class="text-center align-middle w100">Время возвращения</th>
-            <th class="text-center align-middle w100">Км</th>
-            <th class="text-center align-middle w100">ГСМ, л.</th>
-            <th class="text-center align-middle w100">Цена, р.</th>
-            <th class="text-center align-middle">Объект</th>
-            <th class="text-center align-middle w100"></th>
-        </tr>
-        </thead>
-
+        <table id="gsm-report-table" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center align-middle w150">Дата</th>
+                    <th class="text-center align-middle w100">Время выезда</th>
+                    <th class="text-center align-middle w100">Время возвращения</th>
+                    <th class="text-center align-middle w100">Км</th>
+                    <th class="text-center align-middle w100">ГСМ, л.</th>
+                    <th class="text-center align-middle w100">Цена, р.</th>
+                    <th class="text-center align-middle">Объект</th>
+                    <th class="text-center align-middle w100"></th>
+                </tr>
+            </thead>
         </table>
         <div class="d-flex justify-content-center">
             <button id="gsm-report-add" type="button" class="btn btn-primary rounded fa-solid fa-plus"></button>
         </div>
     </div>
-
-
-
-
-
+    
     <div class="line-dashed-small"></div>
 
     <button type="button"

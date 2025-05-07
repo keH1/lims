@@ -141,7 +141,9 @@ class RecipeController extends Controller
         $unsuccessfulMsg = 'Не удалось сохранить реактив';
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'reactive_lab' => $_POST['reactive_lab']
+        ];
 
         $isAdd = $usedModel->addToSQL($newAdd, 'solutionAsReactive');
 

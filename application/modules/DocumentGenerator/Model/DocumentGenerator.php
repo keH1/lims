@@ -54,13 +54,15 @@ class DocumentGenerator extends Model
 		$userModel = new User();
 		$gostModel = new Gost();
 
+        $organizationId = App::getOrganizationId();
+
 		$companyInformation = $companyModel->getRequisiteByDealId($dealID);
 
 		$dealInformation = $requestModel->getTzByDealId($dealID);
 
 		$TZ_ID = $dealInformation['ID'];
 
-		$res_kp = $this->DB->Query("SELECT * FROM `KP` WHERE `TZ_ID`=" . $TZ_ID)->Fetch();
+		$res_kp = $this->DB->Query("SELECT * FROM `KP` WHERE `TZ_ID`=" . $TZ_ID . " AND `ORGANIZATION_ID`=" . $organizationId)->Fetch();
 
 		$date = date('Y-m-d H:i:s');
 
@@ -73,7 +75,19 @@ class DocumentGenerator extends Model
 			$this->DB->Query("UPDATE `KP` SET `DATE`= NOW(), `ACTUAL_VER` ='" . $curdate . "' WHERE `TZ_ID`=" . $TZ_ID);
 			$str_type = 'Обновление коммерческого предложения';
 		} else {
-			$this->DB->Query("INSERT INTO `KP` (`DATE`, `TZ_ID`, `ACTUAL_VER`) VALUES (NOW(), " . $TZ_ID . ", '" . $curdate . "')");
+            $countCommercialOffer = $this->DB->Query("SELECT COUNT(*) AS COUNT FROM `KP` WHERE `ORGANIZATION_ID` = " . $organizationId)->Fetch()['COUNT'];
+            $number = $countCommercialOffer + 1;
+
+            $data = [
+                'DATE' => date('Y-m-d H:i:s'),
+                'NUMBER' => $number,
+                'TZ_ID' => $TZ_ID,
+                'ACTUAL_VER' => $curdate,
+                'ORGANIZATION_ID' => $organizationId,
+            ];
+            $sqlData = $this->prepearTableData('KP', $data);
+            $this->DB->Insert('KP', $sqlData);
+
 			$str_type = 'Формирование коммерческого предложения';
 		}
 
@@ -92,7 +106,7 @@ class DocumentGenerator extends Model
 
 		$str_num_request = !empty($dealInformation['REQUEST_TITLE']) ? explode(' ', $dealInformation['REQUEST_TITLE'])[1] : '';
 
-        $res_kp = $this->DB->Query("SELECT * FROM `KP` WHERE `TZ_ID`=" . $TZ_ID)->Fetch();
+        $res_kp = $this->DB->Query("SELECT * FROM `KP` WHERE `TZ_ID`=" . $TZ_ID . " AND `ORGANIZATION_ID`=" . $organizationId)->Fetch();
 
 		$CommInformation = [
 			'id' => $dealID,
@@ -101,7 +115,7 @@ class DocumentGenerator extends Model
 			'curDate' => $curdate,
 			'curDateEn' => $curdateEng,
 			'SUM' => $dealInformation['price_discount'],
-			'NUM_KP' => $res_kp['ID'],
+			'NUM_KP' => $res_kp['NUMBER'],
 			'NUM_DATE' => date('d.m.Y', strtotime($res_kp['DATE'])),
 			'NUM_REQUEST' => !empty($str_num_request) ? 'ПО ЗАЯВКЕ ' . $str_num_request : '',
 			'CLIENT_NAME' => $companyInformation['NAME'],
@@ -162,7 +176,7 @@ class DocumentGenerator extends Model
 
         $historyModel->addHistory($history);
 
-        if($dealInformation['DAY_TO_TEST']){
+        if ($dealInformation['DAY_TO_TEST']) {
             $cur = date('d.m.Y'); //текущая дата
             switch ($dealInformation['type_of_day']) {
                 case 'day':
@@ -178,7 +192,7 @@ class DocumentGenerator extends Model
 
             $day_to_test_text = "Сроки проведения испытаний составляет " . $current_day . " с момента поступления проб (образцов) в ИЦ, подписания договора и оплаты испытаний.";
             $day_to_test_note = 'Сроки являются ориентировочными и могут быть скорректированы по согласованию сторон.';
-        }else{
+        } else{
             $day_to_test_text = '';
             $day_to_test_note = '';
         }
@@ -187,7 +201,7 @@ class DocumentGenerator extends Model
 
         $res_tz = $this->DB->Query("SELECT * FROM `TZ_DOC` WHERE `TZ_ID`=" . $TZ_ID)->Fetch();
 
-        $dogovor_num = $orderModel->getOrderByDealId($dealID);
+        $dogovor_num = $orderModel->getOrderByDealId($dealID, true);
 
         $actProbe = $requirementModel->getActBase($dealID);
 
@@ -2584,7 +2598,7 @@ class DocumentGenerator extends Model
 		$phpWord = new \PhpOffice\PhpWord\PhpWord();
 		$template = new \PhpOffice\PhpWord\TemplateProcessor($templateDoc);
 
-		$interimPath = "interim_archive_{$type}/".$info['id']."/".$info['curDateEn'].".docx";
+        $interimPath = "interim_archive_{$type}/".$info['id']."/".$info['curDateEn'].".docx";
 		$interimPathPDF = "interim_archive_{$type}/".$info['id']."/".$info['curDateEn'].".PDF";
 		$outputFile = $info['curDate'].".pdf";
 		$outputPath = "archive_{$type}/".$info['id']."/";
@@ -2604,13 +2618,16 @@ class DocumentGenerator extends Model
 
 		$template->saveAs($file);
 
-		if ($type === 'kp') {
-		    $name_file = 'КП';
-        } elseif ($type === 'tz') {
-            $name_file = 'ТЗ';
-        } elseif ($type === 'dog') {
-            $name_file = 'CO';
-        }
+        $fileMap = [
+            'kp' => ['name_file' => 'КП', 'number_file' => 'NUM_KP'],
+            'tz' => ['name_file' => 'ТЗ', 'number_file' => 'id'],
+            'dog' => ['name_file' => 'CO', 'number_file' => 'id'],
+            'fallback' => ['name_file' => 'Документ', 'number_file' => ''],
+        ];
+
+        $config = $fileMap[$type] ?? $fileMap['fallback'];
+        $nameFile = $config['name_file'];
+        $numberFile = $info[$config['number_file']] ?? '';
 
         $newDirectory = $_SERVER['DOCUMENT_ROOT'] ."/protocol_generator/archive_{$type}/" . $info['id'];
 
@@ -2618,7 +2635,7 @@ class DocumentGenerator extends Model
             mkdir($newDirectory, 0777, true);
         }
 
-        file_put_contents($newDirectory.'/'.$info['curDate'].".docx", $file);
+        copy($file, $newDirectory.'/'.$info['curDate'].".docx");
 
         try {
             $fullPathDocx = $_SERVER['DOCUMENT_ROOT'] .'/protocol_generator/'.$interimPath;
@@ -2631,7 +2648,7 @@ class DocumentGenerator extends Model
         }
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-		header('Content-Disposition: attachment; filename="' . $name_file . ' №' . $info['id'] . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
+		header('Content-Disposition: attachment; filename="' . $nameFile . ' №' . $numberFile . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
 		readfile($file);
 	}
 
@@ -2858,6 +2875,86 @@ class DocumentGenerator extends Model
 
 	}
 
+    public function generateSamplingAct(int $dealId): void
+    {
+        $requirementModel = new Requirement();
+        $organizationId = App::getOrganizationId();
+
+        $actBase = $requirementModel->getActBase($dealId);
+        $dateReceivedRu = $actBase['date_ru'] ?? ''; // Дата поступления проб
+
+        $dealIdInt = (int)$dealId;
+        $sql = "
+            SELECT
+                umtr.cipher AS cipher,
+                umtr.name_for_protocol AS marker,
+                COALESCE(lab.short_name, lab.NAME) AS laboratory
+            FROM ba_tz as b 
+            INNER JOIN ulab_material_to_request as umtr on b.ID_Z = umtr.deal_id 
+            LEFT JOIN ulab_gost_to_probe ugtp ON umtr.id = ugtp.material_to_request_id 	     
+            LEFT JOIN ulab_methods um ON ugtp.new_method_id = um.id	
+            LEFT JOIN ulab_methods_lab as uml on um.id = uml.method_id  
+            LEFT JOIN ba_laba as lab on uml.lab_id = lab.ID 
+            WHERE b.organization_id = {$organizationId} AND umtr.deal_id = {$dealIdInt} AND umtr.in_act = 1   
+            ORDER BY umtr.cipher ASC 
+        ";
+        $probeResult = $this->DB->Query($sql);
+        $probeRows = [];
+        while ($r = $probeResult->Fetch()) {
+            $probeRows[] = [
+                'cipher'     => $r['cipher'],
+                'marker'     => $r['marker'],
+                'laboratory' => $r['laboratory'],
+            ];
+        }
+
+        $templatePath = TEMPLATE_DIR . '/word/SamplingAct.docx';
+        if (!is_readable($templatePath)) {
+            throw new \RuntimeException("Шаблон не найден: $templatePath");
+        }
+        $template = new \PhpOffice\PhpWord\TemplateProcessor($templatePath);
+
+        $template->setValue('dateReceived', $dateReceivedRu);
+
+        $styleTable = ['alignment' => 'center', 'borderSize' => 5, 'borderColor' => '000000', 'width' => '100%'];
+        $headerStyle = ['size' => 10,'bold' => true];
+        $cellCenter = ['align'=>'center','valign'=>'center'];
+
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $section = $phpWord->addSection();
+        $table = $section->addTable($styleTable);
+
+        // Заголовки
+        $table->addRow(null, array('tblHeader' => true));
+        $table->addCell(self::percentToTwips(30))->addText('Шифр пробы', $headerStyle, $cellCenter);
+        $table->addCell(self::percentToTwips(35))->addText('Маркировка', $headerStyle, $cellCenter);
+        $table->addCell(self::percentToTwips(35))->addText('Лаборатория',$headerStyle, $cellCenter);
+
+        // Строки
+        foreach ($probeRows as $row) {
+            $table->addRow();
+            $table->addCell(self::percentToTwips(30))->addText($row['cipher'], ['size' => 11], $cellCenter);
+            $table->addCell(self::percentToTwips(35))->addText($row['marker'], ['size' => 11], $cellCenter);
+            $table->addCell(self::percentToTwips(35))->addText($row['laboratory'], ['size' => 11], $cellCenter);
+        }
+
+        // Вставляем таблицу в шаблон
+        $template->setComplexBlock('table', $table);
+
+        $outputDir = UPLOAD_DIR . "/sampling_act/{$dealId}/";
+        if (!is_dir($outputDir)) {
+            mkdir($outputDir, 0777, true);
+        }
+        $fileName  = "Акт_отбора_проб_{$dealId}_" . date('Y-m-d_H-i-s') . ".docx";
+        $outputPath = $outputDir . $fileName;
+
+        $template->saveAs($outputPath);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Disposition: attachment; filename="'.$fileName.'"');
+        readfile($outputPath);
+        exit;
+    }
+
     /**
      * @param $year
      * @param $type
@@ -3029,11 +3126,9 @@ class DocumentGenerator extends Model
 
 
         $res = $this->DB->Query("SELECT bo.id, bo.NAME, bo.IDENT, FACTORY_NUMBER, REG_NUM, OBJECT, TYPE_OBORUD, place_of_installation_or_storage as lab_id, 
-										ID_ASSIGN1, bl.short_name,concat(u.LAST_NAME, ' ', left(u.NAME, 1), '.', left(u.SECOND_NAME, 1)) as assigna, u.WORK_POSITION 
+										ID_ASSIGN1, bl.short_name
        									from ba_oborud as bo
 										left join ba_laba as bl on bo.place_of_installation_or_storage = bl.ID
-										left join b_uts_iblock_5_section as lab on lab.VALUE_ID = bl.id_dep
-										left join b_user as u on lab.UF_HEAD = u.ID
 										where `IDENT` IN ('SI','VO','IO') and (SPISANIE is null or SPISANIE = '') and
 										LONG_STORAGE = 0 and bo.place_of_installation_or_storage != '' {$in_oa} 
 										and bo.is_vagon = 0
@@ -3041,8 +3136,8 @@ class DocumentGenerator extends Model
         $i = 1;
         while ($row = $res->fetch()) {
             $result[$row['lab_id']]['lab_name'] = $row['short_name'];
-            $result[$row['lab_id']]['boss_name'] = $row['assigna'];
-            $result[$row['lab_id']]['boss_position'] = $row['WORK_POSITION'];
+//            $result[$row['lab_id']]['boss_name'] = $row['assigna'];
+//            $result[$row['lab_id']]['boss_position'] = $row['WORK_POSITION'];
             $result[$row['lab_id']][] = $row;
         }
 

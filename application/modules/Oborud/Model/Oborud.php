@@ -9,7 +9,7 @@ class Oborud extends Model {
     /**
      * @var int
      */
-    protected $poverkaTime = 5184000;
+    protected $poverkaTime = 7776000; // 90 дней в секундах
 
     /**
      * @param $data
@@ -52,6 +52,8 @@ class Oborud extends Model {
             'by' => 'b.ID',
             'dir' => 'DESC'
         ];
+
+        $whereTotal = '';
 
         if ( !empty($filter) ) {
             // из $filter собирать строку $where тут
@@ -97,7 +99,7 @@ class Oborud extends Model {
                 if ( isset($filter['search']['stage']) ) {
                     $stage = [
                         // Все статусы
-                        'all' => "b.LONG_STORAGE = 0 AND b.`is_decommissioned` = 0 AND ",
+                        'all' => " ",
                         // Нет замечаний
                         'norm' => "b.CHECKED = 1 and b.LONG_STORAGE = 0 and (b.NO_METR_CONTROL = 1 or (c.is_actual = 1 and (c.date_end - interval 90 day) > '{$currentDate}')) and b.is_decommissioned = 0 and ",
                         // Не заполнено
@@ -105,9 +107,9 @@ class Oborud extends Model {
                         // Не проверено
                         'unchecked' => "b.`CHECKED` = 0 AND b.`LONG_STORAGE` = 0 AND b.`is_decommissioned` = 0 AND ",
                         // Истекает срок поверки
-                        'poverka' => "b.LONG_STORAGE = 0 and b.is_decommissioned = 0 and NO_METR_CONTROL <> 1 and c.is_actual = 1 and (c.date_end - interval 90 day) <= '{$currentDate}' and c.date_end > '{$currentDate}' AND ",
+                        'poverka' => "b.LONG_STORAGE = 0 and b.is_decommissioned = 0 and NO_METR_CONTROL <> 1 and c.is_actual = 1 and (c.date_end - interval 90 day) <= '{$currentDate}' and c.date_end >= '{$currentDate}' AND ",
                         // Истек срок поверки
-                        'poverka_alarm' => "NO_METR_CONTROL <> 1 and c.is_actual = 1 and b.LONG_STORAGE = 0 and b.is_decommissioned = 0 and c.date_end < '{$currentDate}' AND ",
+                        'poverka_alarm' => "NO_METR_CONTROL <> 1 and b.LONG_STORAGE = 0 and b.is_decommissioned = 0 and (select max(date_end) from ba_oborud_certificate where is_actual = 1 and oborud_id = b.ID) < '{$currentDate}' AND ",
                         // Нет сертификатов
                         'no_certificate' => "NO_METR_CONTROL <> 1 and c.id is null and b.LONG_STORAGE = 0 and b.is_decommissioned = 0 AND ",
                         // Архив
@@ -119,6 +121,10 @@ class Oborud extends Model {
                     ];
 
                     $where .= $stage[$filter['search']['stage']];
+
+                    if ( isset($filter['search']['metrolog']) ) {
+                        $whereTotal = $stage[$filter['search']['stage']];
+                    }
                 }
 
                 // Лаба Комната
@@ -220,7 +226,7 @@ class Oborud extends Model {
                     FROM ba_oborud b
                     LEFT JOIN ba_laba l ON l.ID = b.place_of_installation_or_storage
                     left join ba_oborud_certificate as c on c.oborud_id = b.ID
-                    WHERE b.organization_id = {$organizationId}
+                    WHERE {$whereTotal} b.organization_id = {$organizationId}
                     group by b.ID"
         )->SelectedRowsCount();
 
@@ -272,20 +278,26 @@ class Oborud extends Model {
 
             $row['IDENT'] = $ident;
 
-            if ( !empty($row['date_start']) ) {
+            if ( !empty($row['date_start']) && $row['date_start'] !== '0000-00-00' ) {
                 $row['date_start'] = date('d.m.Y', strtotime($row['date_start']));
             } else {
                 $row['date_start'] = '';
             }
 
-            if ( !empty($row['date_end']) ) {
+            if ( !empty($row['date_end']) && $row['date_end'] !== '0000-00-00' ) {
                 $row['date_end'] = date('d.m.Y', strtotime($row['date_end']));
             } else {
                 $row['date_end'] = '';
             }
 
             $row['certificate'] = '';
-            $row['god_vvoda_expluatation'] = date("d.m.Y", strtotime($row['god_vvoda_expluatation']));
+
+            if ( !empty($row['god_vvoda_expluatation']) && $row['god_vvoda_expluatation'] !== '0000-00-00' ) {
+                $row['god_vvoda_expluatation'] = date("d.m.Y", strtotime($row['god_vvoda_expluatation']));
+            } else {
+                $row['god_vvoda_expluatation'] = '';
+            }
+
 
             $room = $labModel->getRoomById($row['roomnumber']);
             $row['room'] = $room['name'];
@@ -330,23 +342,24 @@ class Oborud extends Model {
                 return $result;
             }
 
-            foreach ($certificateList as $certificate) {
-                if ($certificate['is_actual']) {
-                    $poverka = strtotime($certificate['date_end']) - time();
+            // берем сертификат с максимальной датой окончания
+            $certificate = $certificateList[0];
 
-                    if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
-                        $result['bgStage'] = 'bg-light-green';
-                        $result['titleStage'] = 'Нет замечаний';
-                    } else if (($poverka <= 0) && !$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
-                        $result['bgStage'] = 'bg-red';
-                        $result['titleStage'] = 'Истек срок поверки!';
-                    } else if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] == '0' && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
-                        $result['bgStage'] = 'bg-light-blue';
-                        $result['titleStage'] = 'Оборудование не проверено отделом метрологии!';
-                    } else if (!$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
-                        $result['bgStage'] = 'bg-yellow';
-                        $result['titleStage'] = 'До истечения срока поверки осталось менее 90 дней!';
-                    }
+            if ($certificate['is_actual']) {
+                $poverka = strtotime($certificate['date_end']) - strtotime(date("d.m.Y"));
+
+                if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
+                    $result['bgStage'] = 'bg-light-green';
+                    $result['titleStage'] = 'Нет замечаний';
+                } else if (($poverka < 0) && !$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
+                    $result['bgStage'] = 'bg-red';
+                    $result['titleStage'] = 'Истек срок поверки!';
+                } else if (($poverka > $this->poverkaTime || $data['NO_METR_CONTROL']) && $data['CHECKED'] == '0' && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
+                    $result['bgStage'] = 'bg-light-blue';
+                    $result['titleStage'] = 'Оборудование не проверено отделом метрологии!';
+                } else if (!$data['NO_METR_CONTROL'] && !($data['LONG_STORAGE'] || !empty($data['is_decommissioned']))) {
+                    $result['bgStage'] = 'bg-yellow';
+                    $result['titleStage'] = 'До истечения срока поверки осталось менее 90 дней!';
                 }
             }
         } else {
@@ -441,7 +454,7 @@ class Oborud extends Model {
         $where .= "b.organization_id = '{$organizationId}'";
 
         $data = $this->DB->Query(
-            "SELECT *, 
+            "SELECT *, b.ID,  
                         CASE
                             WHEN TRIM(CONCAT_WS(' ', ur.NAME, ur.LAST_NAME)) = '' THEN '--'
                             ELSE TRIM(CONCAT_WS(' ', ur.NAME, ur.LAST_NAME))
@@ -459,7 +472,7 @@ class Oborud extends Model {
         );
 
         $dataTotal = $this->DB->Query(
-            "SELECT b.id
+            "SELECT b.ID
                     FROM ba_oborud b
                     LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID 
                     LEFT JOIN b_user AS ur ON ur.ID = m.responsible_user_id 
@@ -468,7 +481,7 @@ class Oborud extends Model {
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
-            "SELECT b.id
+            "SELECT b.ID
                     FROM ba_oborud b
                     LEFT JOIN ba_oborud_moving m ON m.oborud_id = b.ID 
                     LEFT JOIN b_user ur ON ur.ID = m.responsible_user_id 
@@ -569,7 +582,7 @@ class Oborud extends Model {
             $where = "and is_actual = 1";
         }
 
-        $sql = $this->DB->Query("select * from ba_oborud_certificate where oborud_id = {$oborudId} {$where} order by is_actual desc, id desc");
+        $sql = $this->DB->Query("select * from ba_oborud_certificate where oborud_id = {$oborudId} {$where} order by is_actual desc, date_end desc");
 
         $result = [];
 
@@ -864,18 +877,14 @@ class Oborud extends Model {
      * @param $roomIdList
      * @return array
      */
-    public function getOborutByRooms($roomIdList)
+    public function getOborutByRooms($roomIdList = [])
     {
-//        if ( empty($roomIdList) ) {
-//            return [];
-//        }
-//
-//        $str = implode(',', $roomIdList);
+        $organizationId = App::getOrganizationId();
 
         $sql = $this->DB->Query(
             "SELECT distinct *
                     FROM ba_oborud
-                    WHERE 1 "); //or `roomnumber` IN ({$str})
+                    WHERE organization_id = {$organizationId}");
 
         $result = [];
 
@@ -1008,9 +1017,9 @@ class Oborud extends Model {
             INNER JOIN ulab_methods_oborud mo ON mo.method_id = ugtp.method_id 
             INNER JOIN ba_oborud b_o ON b_o.ID = mo.id_oborud
             left join ba_oborud_certificate boc on b_o.ID = boc.oborud_id and boc.is_actual = 1     
-            INNER JOIN ulab_methods m ON m.id = mo.method_id 
+            INNER JOIN ulab_methods m ON m.id = mo.method_id
             WHERE ugtp.protocol_id = {$protocolId}
-                AND (b_o.IDENT IS NULL OR b_o.IDENT NOT IN ('VO', 'TS', 'REACT')) 
+                AND (b_o.IDENT IS NULL OR b_o.IDENT NOT IN ('KO', 'SO', 'TS', 'REACT')) 
                 AND b_o.is_decommissioned = 0 AND (b_o.LONG_STORAGE = 0 OR b_o.LONG_STORAGE IS NULL)
                 AND b_o.organization_id = {$organizationId}
             ORDER BY b_o.OBJECT");
@@ -1122,14 +1131,15 @@ class Oborud extends Model {
 
         $result = $this->DB->Query(
             "SELECT 
-                        toc.ID as toc_id, boc.date_end as POVER,
-                        b_o.ID as b_o_id, b_o.*
-                    FROM TZ_OB_CONNECT toc 
-                    INNER JOIN ba_oborud b_o ON b_o.ID = toc.ID_OB
-					left join ba_oborud_certificate boc on b_o.ID = boc.oborud_id and boc.is_actual = 1 
-                    WHERE PROTOCOL_ID = {$protocolId}
-                    AND b_o.organization_id = {$organizationId}
-                    ");
+                toc.ID as toc_id, boc.date_end as POVER,
+                b_o.ID as b_o_id, b_o.*
+            FROM TZ_OB_CONNECT toc 
+            INNER JOIN ba_oborud b_o ON b_o.ID = toc.ID_OB
+            left join ba_oborud_certificate boc on b_o.ID = boc.oborud_id and boc.is_actual = 1
+            WHERE PROTOCOL_ID = {$protocolId}
+            AND b_o.IDENT NOT IN ('KO', 'SO', 'TS', 'REACT')
+            AND b_o.organization_id = {$organizationId}
+        ");
 
         while ($row = $result->Fetch()) {
 
@@ -1202,11 +1212,14 @@ class Oborud extends Model {
      */
     public function getList()
     {
+        $organizationId = App::getOrganizationId();
+
         $result = [];
 
         $stmt = $this->DB->Query("
             SELECT *
             FROM ba_oborud
+            where organization_id = {$organizationId}
             order by is_decommissioned asc, LONG_STORAGE asc, OBJECT asc
         ");
 
@@ -1259,7 +1272,7 @@ class Oborud extends Model {
         $sql = $this->DB->Query(
             "SELECT mo.method_id, o.id o_id, o.IDENT, o.REG_NUM, o.OBJECT, o.TYPE_OBORUD, m.clause, g.id g_id, g.reg_doc   
                 FROM ba_oborud o, ulab_methods_oborud mo, ulab_methods m, ulab_gost g 
-                WHERE o.IDENT NOT IN ('VO', 'TS', 'REACT') AND o.ID = mo.id_oborud AND mo.method_id = m.id 
+                WHERE o.IDENT NOT IN ('KO', 'SO', 'TS', 'REACT') AND o.ID = mo.id_oborud AND mo.method_id = m.id 
                 AND m.gost_id = g.id AND o.organization_id = {$organizationId} ORDER BY o.OBJECT"
         );
 
@@ -1490,6 +1503,7 @@ class Oborud extends Model {
      */
     public function getSampleList($filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -1596,7 +1610,7 @@ class Oborud extends Model {
             }
         }
 
-        $where .= "1 ";
+        $where .= "organization_id = {$organizationId}";
 
         $result = [];
 
@@ -1654,13 +1668,14 @@ class Oborud extends Model {
      */
     public function getSample($sampleId)
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
 
         if (empty($sampleId) || $sampleId < 0) {
             return $response;
         }
 
-        $result = $this->DB->Query("SELECT * FROM ST_SAMPLE WHERE ID = {$sampleId}")->Fetch();
+        $result = $this->DB->Query("SELECT * FROM ST_SAMPLE WHERE ID = {$sampleId} AND organization_id = {$organizationId}")->Fetch();
 
         if (!empty($result)) {
             $response = $result;
@@ -1676,6 +1691,7 @@ class Oborud extends Model {
      */
     public function addSample($data)
     {
+        $organizationId = App::getOrganizationId();
         // Дата выпуска
         if (empty($data['MANUFACTURE_DATE'])) {
             unset($data['MANUFACTURE_DATE']);
@@ -1687,7 +1703,7 @@ class Oborud extends Model {
 
         // Срок годности не ограничен (1 - срок годности не ограничен)
         $data['UNLIMITED_EXPIRY'] = $data['UNLIMITED_EXPIRY'] ?? 0;
-
+        $data['organization_id'] = $organizationId;
         $sqlData = $this->prepearTableData('ST_SAMPLE', $data);
 
         return $this->DB->Insert('ST_SAMPLE', $sqlData);
@@ -1700,6 +1716,7 @@ class Oborud extends Model {
      */
     public function updateSample($id, $data)
     {
+        $organizationId = App::getOrganizationId();
         if (empty($data['MANUFACTURE_DATE'])) {
             unset($data['MANUFACTURE_DATE']);
         }
@@ -1708,10 +1725,10 @@ class Oborud extends Model {
         }
 
         $data['UNLIMITED_EXPIRY'] = $data['UNLIMITED_EXPIRY'] ?? 0;
-
+        $data['organization_id'] = $organizationId;
         $sqlData = $this->prepearTableData('ST_SAMPLE', $data);
 
-        $where = "WHERE ID = {$id}";
+        $where = "WHERE ID = {$id} AND organization_id = {$organizationId}";
         return $this->DB->Update('ST_SAMPLE', $sqlData, $where);
     }
 
@@ -1722,7 +1739,8 @@ class Oborud extends Model {
      */
     public function updateFieldSample($sampleId, $field, $value)
     {
-        $this->DB->Update('ST_SAMPLE', [$field => $this->quoteStr($this->DB->ForSql($value))], "WHERE ID = {$sampleId}");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Update('ST_SAMPLE', [$field => $this->quoteStr($this->DB->ForSql($value))], "WHERE ID = {$sampleId} AND organization_id = {$organizationId}");
     }
 
     /**
@@ -1746,6 +1764,7 @@ class Oborud extends Model {
      */
     public function getSampleHistory($sampleId)
     {
+        $organizationId = App::getOrganizationId();
         $result = [];
 
         if (empty($sampleId) || $sampleId < 0) {
@@ -1754,7 +1773,10 @@ class Oborud extends Model {
 
         $userModel = new User();
 
-        $sql = $this->DB->Query("SELECT * FROM ulab_st_samples_history WHERE st_sample_id = {$sampleId} order by id asc");
+        $sql = $this->DB->Query("
+                SELECT * FROM ulab_st_samples_history as sh
+                INNER JOIN ST_SAMPLE as s ON s.ID = sh.st_sample_id
+                WHERE sh.st_sample_id = {$sampleId} AND s.organization_id = {$organizationId} order by sh.id asc");
 
         while ($row = $sql->Fetch()) {
             $user = $userModel->getUserData($row['user_id']);
@@ -1898,9 +1920,10 @@ class Oborud extends Model {
      */
     public function getStSamples()
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
 
-        $result = $this->DB->Query("SELECT * FROM ST_SAMPLE");
+        $result = $this->DB->Query("SELECT * FROM ST_SAMPLE WHERE organization_id = {$organizationId}");
 
         while ($row = $result->Fetch()) {
             $response[] = $row;
@@ -1914,6 +1937,7 @@ class Oborud extends Model {
      */
     public function getValidComponents()
     {
+        $organizationId = App::getOrganizationId();
         $response = [];
 
         $result = $this->DB->Query(
@@ -1924,7 +1948,9 @@ class Oborud extends Model {
                     FROM ulab_component uc 
                     INNER JOIN ST_SAMPLE ss ON ss.ID = uc.st_sample_id 
                     LEFT JOIN ulab_dimension as udc on udc.id = uc.certified_unit_id
-                    WHERE ss.IS_ACTUAL = 1 AND IF (ss.UNLIMITED_EXPIRY, 1, ss.EXPIRY_DATE > CURDATE())"
+                    WHERE ss.IS_ACTUAL = 1 AND IF (ss.UNLIMITED_EXPIRY, 1, ss.EXPIRY_DATE > CURDATE())
+                    AND ss.organization_id = {$organizationId}
+                    "
         );
 
         while ($row = $result->Fetch()) {
@@ -1987,7 +2013,8 @@ class Oborud extends Model {
 
     public function deleteOborud($oborudId)
     {
-        $this->DB->Query("DELETE FROM ba_oborud WHERE ID = '{$oborudId}'");
+        $organizationId = App::getOrganizationId();
+        $this->DB->Query("DELETE FROM ba_oborud WHERE ID = '{$oborudId}' AND organization_id = {$organizationId}");
     }
 
     public function getOborudByStorageRoom(string $roomId = ''): array
@@ -2050,16 +2077,30 @@ class Oborud extends Model {
      */
     public function getStatisticsCounts(int $organizationId)
     {
-        return $this->DB->Query(
+        $curDate = date("Y-m-d");
+
+        $sql = $this->DB->Query(
             "select 
-                count(o.ID) as all_oborud,
-                count(CASE WHEN o.CHECKED = 0 THEN 1 end) as need_check,
-                count(CASE WHEN o.LONG_STORAGE = 1 THEN 1 end) as long_storage,
-                count(CASE WHEN o.NO_METR_CONTROL <> 1 and c.is_actual = 1 and o.LONG_STORAGE = 0 and o.is_decommissioned = 0 and c.date_end < NOW() THEN 1 end) as end_verification
+                count(distinct o.ID) as all_oborud,
+                count(CASE WHEN o.CHECKED = 0 AND o.`LONG_STORAGE` = 0 AND o.`is_decommissioned` = 0 THEN 1 end) as need_check,
+                count(CASE WHEN o.LONG_STORAGE <> 0 AND o.`is_decommissioned` = 0 THEN 1 end) as long_storage
             from ba_oborud as o
-            left join ba_oborud_certificate as c on c.oborud_id = o.ID and c.is_actual = 1
-            where o.organization_id = {$organizationId}
-            "
+            where o.organization_id = {$organizationId}"
         )->Fetch();
+
+        $sql2 = $this->DB->Query(
+            "select 
+                count(o.ID) as end_verification
+            from ba_oborud as o
+            where o.organization_id = {$organizationId} and o.NO_METR_CONTROL <> 1 and o.LONG_STORAGE = 0 and o.is_decommissioned = 0 and 
+            (select max(date_end) from ba_oborud_certificate where is_actual = 1 and oborud_id = o.ID) < '{$curDate}'"
+        )->Fetch();
+
+        return [
+            'all_oborud' => $sql['all_oborud'],
+            'need_check' => $sql['need_check'],
+            'long_storage' => $sql['long_storage'],
+            'end_verification' => $sql2['end_verification'],
+        ];
     }
 }

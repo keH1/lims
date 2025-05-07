@@ -14,28 +14,43 @@
     <header class="header-requirement mb-4 pt-0">
         <nav class="header-menu">
             <ul class="nav">
-                <li class="nav-item me-3">
-                    <a class="nav-link fa-solid icon-nav fa-arrow-left disabled" id="back-button" style="font-size: 22px;" title="Назад" data-bs-toggle="tooltip">
-                    </a>
-                </li>
-                <li class="nav-item me-3">
-                    <a class="nav-link fa-solid icon-nav fa-rectangle-list" href="<?= URI ?>/import/list" style="font-size: 22px;" title="Профиль лаборатории" data-bs-toggle="tooltip">
-                    </a>
-                </li>
-                <li class="nav-item me-2">
-                    <a class="nav-link fa-solid icon-nav fa-flask" href="<?=URI?>/import/lab/" title="Отделы" data-bs-toggle="tooltip" style="font-size: 22px; margin: 2px 0 0 1px;">
-                    </a>
-                </li>
-                <li class="nav-item me-2">
-                    <a class="nav-link fa-solid icon-nav fa-door-closed disabled" href="<?=URI?>/import/rooms/" title="Помещения" data-bs-toggle="tooltip" style="font-size: 22px; margin: 2px 0 0 1px;">
-                    </a>
-                </li>
+<!--                <li class="nav-item me-3">-->
+<!--                    <a class="nav-link fa-solid icon-nav fa-arrow-left disabled" id="back-button" style="font-size: 22px;" title="Назад" data-bs-toggle="tooltip">-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li class="nav-item me-3">-->
+<!--                    <a class="nav-link fa-solid icon-nav fa-rectangle-list" href="--><?//= URI ?><!--/import/list" style="font-size: 22px;" title="Профиль лаборатории" data-bs-toggle="tooltip">-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li class="nav-item me-2">-->
+<!--                    <a class="nav-link fa-solid icon-nav fa-flask" href="--><?//=URI?><!--/import/lab/" title="Отделы" data-bs-toggle="tooltip" style="font-size: 22px; margin: 2px 0 0 1px;">-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li class="nav-item me-2">-->
+<!--                    <a class="nav-link fa-solid icon-nav fa-door-closed disabled" href="--><?//=URI?><!--/import/rooms/" title="Помещения" data-bs-toggle="tooltip" style="font-size: 22px; margin: 2px 0 0 1px;">-->
+<!--                    </a>-->
+<!--                </li>-->
 
-            <?php if (!empty($this->data['lab_id'])): ?>
-                <li class="nav-item ms-auto">
-                    <button class="btn btn-gradient popup-with-form rounded" type="button" title="Добавить новое помещение" data-bs-toggle="tooltip" style="text-transform: none">Добавить помещение</button>
+                <li class="nav-item ms-auto d-flex gap-2">
+                    <?php if (!empty($this->data['form_room'])): ?>
+                        <a class="btn btn-gradient rounded"
+                           href="/ulab/import/dowloadForm/<?= $this->data['lab_id'] ?>?type=form"
+                           title="Скачать форму № 6"
+                           style="text-transform: none;">
+                            Скачать форму №6
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (!empty($this->data['lab_id'])): ?>
+                        <button class="btn btn-gradient popup-with-form rounded"
+                                type="button"
+                                title="Добавить новое помещение"
+                                data-bs-toggle="tooltip"
+                                style="text-transform: none;">
+                            Добавить помещение
+                        </button>
+                    <?php endif; ?>
                 </li>
-            <?php endif; ?>
 
              </ul>
         </nav>
@@ -46,7 +61,7 @@
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <header class="panel-heading">
-                        Отдел
+                        Лаборатория
                         <span class="tools float-end">
                                 <a href="javascript:;" class="fa fa-star-of-life bg-transparent text-danger d-none"></a>
                                 <a href="#" class="fa fa-chevron-up"></a>
@@ -57,13 +72,13 @@
                             <div class="col">
                                 <?php if ( !empty($this->data['labs']) ): ?>
                                     <select class="form-select filter filter-lab" id="labs">
-                                        <option value="" style="color: #878787">Выберите отдел</option>
+                                        <option value="--">Выберите лабораторию</option>
                                         <?php foreach ($this->data['labs'] as $lab): ?>
                                             <option value="<?= $lab['ID'] ?>" <?= $this->data['lab_id'] == $lab['ID'] ? 'selected' : '' ?>><?= $lab['NAME'] ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 <?php else: ?>
-                                    <div>Отсутствуют отделы, создайте отдел для привязки помещений к отделам</div>
+                                    <div>Отсутствуют лаборатории, создайте лаборатори. для привязки помещений к лабораториям</div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -84,16 +99,16 @@
                     </span>
                 </header>
                 <div class="panel-body">
-                    <?php if (!empty($this->data['form_room'])): ?>
-                        <div class="d-flex justify-content-end mb-3">
-                            <a class="btn btn-gradient rounded" href="/ulab/import/dowloadForm/<?= $this->data['lab_id'] ?>?type=form"
-                                title="Скачать форму № 6"
-                                style="text-transform: none;"
-                            >
-                                Скачать форму №6
-                            </a>
-                        </div>
-                    <?php endif; ?>
+<!--                    --><?php //if (!empty($this->data['form_room'])): ?>
+<!--                        <div class="d-flex justify-content-end mb-3">-->
+<!--                            <a class="btn btn-gradient rounded" href="/ulab/import/dowloadForm/--><?//= $this->data['lab_id'] ?><!--?type=form"-->
+<!--                                title="Скачать форму № 6"-->
+<!--                                style="text-transform: none;"-->
+<!--                            >-->
+<!--                                Скачать форму №6-->
+<!--                            </a>-->
+<!--                        </div>-->
+<!--                    --><?php //endif; ?>
 
                     <div class="table-responsive">
                         <table id="rooms-table" class="table table-striped journal">
@@ -166,7 +181,7 @@
     </div>
 
     <form id="room-modal-form" class="bg-light mfp-hide col-md-5 m-auto p-3 position-relative">
-        <div class="title mb-3 h-2">
+        <div id="title-type" class="title mb-3 h-2">
             Редактировать помещение
         </div>
 
@@ -200,6 +215,21 @@
                 </option>
             </select>
         </div>
+
+        <div class="mb-3 select_lab_block">
+            <label class="form-label mb-1" for="select_lab">Лаборатория <span class="redStars">*</span></label>
+            <?php if ( !empty($this->data['labs']) ): ?>
+                <select class="form-control" id="select_lab" name="form_room[LAB_ID]" required>
+                    <option value="">Выберите лабораторию</option>
+                    <?php foreach ($this->data['labs'] as $lab): ?>
+                        <option value="<?= $lab['ID'] ?>" <?= $this->data['lab_id'] == $lab['ID'] ? 'selected' : '' ?>><?= $lab['NAME'] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            <?php else: ?>
+                <div>Отсутствуют лаборатории, создайте лабораторию для привязки помещений к лабораториям</div>
+            <?php endif; ?>
+        </div>
+
 
         <div class="mb-3">
             <label class="form-label mb-1">Назначение <span class="redStars">*</span></label>

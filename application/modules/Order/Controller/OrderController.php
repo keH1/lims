@@ -98,7 +98,7 @@ Class OrderController extends Controller
 
 
     /**
-     * @desc Получает данные для журнала договоров
+     * @desc Получает данные для журнала сверки
      */
     public function getReviseDataJournalAjax()
     {
@@ -170,6 +170,11 @@ Class OrderController extends Controller
         $this->data['title'] = "Карточка договора";
 
         $contract = $order->getContractById($contractID);
+        if (empty($contract)) {
+            $this->showErrorMessage("Договора с ИД {$contractID} не существует");
+            $this->redirect('/order/list');
+        }
+
         $requisite = $company->getRequisiteByCompanyId($contract['CLIENT_ID']);
         $company = $company->getById($contract['CLIENT_ID']);
         $requestByOrder = $order->getDealToContractByContractId($contractID);
@@ -226,31 +231,10 @@ Class OrderController extends Controller
         $this->data['dealID'] = $dealInfo;
         $this->data['tz_id'] = $contract['TZ_ID'];
 
-        // $this->data['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
-
-        $this->addCSS("/assets/plugins/magnific-popup/magnific-popup.css");
-
-        $this->addJs('/assets/plugins/magnific-popup/jquery.magnific-popup.min.js');
-
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-
         $r = rand();
         $this->addJs("/assets/js/order.js?v={$r}");
 
-        $this->view('card');
+        $this->view('card', '', 'template_journal');
     }
 
 

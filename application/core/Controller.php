@@ -237,24 +237,26 @@ class Controller
     }
 
     /**
-     * @param $assigneds
+     * @param array $rawAssignedUsers
      * @return array
      */
-    protected function validateAssigned(array $assigneds): array
+    protected function sanitizeAssignedUsers(array $rawAssignedUsers): array
     {
-        $inputArray = array_count_values($assigneds);
+        $filtered = array_filter($rawAssignedUsers, function(string $item): bool {
+            return $item !== '' && $item !== '0' && !is_null($item);
+        });
 
-        foreach ($inputArray as $value) {
-            if (trim($value) > 1) {
-                $duplicateValues = true;
-                break;
-            }
-        }
-        if (@$duplicateValues) {
-            return $this->response(false, [], "В поле Ответственный не могут быть два одинаковых ответственных. Заявка не сохранена");
+        $uniqueList = array_values(array_unique($filtered));
+
+        if (empty($uniqueList)) {
+            return $this->response(
+                false,
+                [],
+                'Пожалуйста, укажите хотя бы одного ответственного'
+            );
         }
 
-        return $this->response(true);
+        return $this->response(true, $uniqueList);
     }
 
 
@@ -275,13 +277,12 @@ class Controller
         ];
     }
 
-
     /**
      * @param $path
      */
     protected function addJS($path)
     {
-        $this->addedJS[] = $path;
+        $this->addedJS[] = $this->addHashToPath($path);
     }
 
 	/**
@@ -289,18 +290,29 @@ class Controller
 	 */
 	protected function addCDN($path)
 	{
-		$this->addedCDN[] = $path;
+		$this->addedCDN[] = $this->addHashToPath($path);
 	}
-
 
     /**
      * @param $path
      */
     protected function addCSS($path)
     {
-        $this->addedCSS[] = $path;
+        $this->addedCSS[] = $this->addHashToPath($path);
     }
 
+    protected function addHashToPath($path)
+    {
+        $parsedUrl = parse_url($path);
+        $queryParams = [];
+        if (isset($parsedUrl['query'])) {
+            parse_str($parsedUrl['query'], $queryParams);
+        }
+        $queryParams['hash'] = rand();
+        $newPath = $parsedUrl['path'];
+        $newPath .= '?' . http_build_query($queryParams);
+        return $newPath;
+    }
 
     /**
      * @param $href
@@ -315,7 +327,6 @@ class Controller
             'icon_class' => $iconClass,
         ];
     }
-
 
     /**
      * @return array

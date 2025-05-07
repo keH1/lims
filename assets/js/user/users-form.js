@@ -28,9 +28,8 @@ $(function () {
 
                     if (userModalForm.find('#userId').val() != '') {
                         userModalForm.find('#userId').val('');
-                        userModalForm.find('#userId').val('');
-                        userModalForm.find('#name').val('');
-                        userModalForm.find('#lastName').val('');
+                        userModalForm.find('#name').val('').prop('required', true);
+                        userModalForm.find('#lastName').val('').prop('required', true);
                         userModalForm.find('#secondName').val('');
                         userModalForm.find('#email').val('');
                         userModalForm.find('#login').val('');

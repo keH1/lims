@@ -336,7 +336,7 @@
     </div>
     <div class="row mb-3">
         <div class="col">
-            <label class="form-label" ">Закупочная документация №</label>
+            <label class="form-label">Закупочная документация №</label>
             <input type="text" name="receive[doc_receive_name]"
                    class="form-control">
         </div>
@@ -501,7 +501,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Производитель</label>
-            <input type="text" name="toSQL[gso_manufacturer][name]"
+            <input type="text" name="gso_manufacturer[name]"
                    class="form-control" required>
         </div>
     </div>

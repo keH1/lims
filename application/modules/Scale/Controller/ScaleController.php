@@ -99,7 +99,9 @@ class ScaleController extends Controller
 		/** @var  ScaleCalibration $usedModel*/
         $usedModel = $this->model($this->nameModel);
 
-        $newAdd = $_POST['toSQL'];
+        $newAdd = [
+            'scale_calibration' => $_POST['scale_calibration']
+        ];
         $isAdd = $usedModel->addToSQL($newAdd);
 
         if (!$isAdd) {

@@ -375,7 +375,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Лаборатории</label>
                 <div class="col-sm-8">
-                    <select id="select-lab" class="form-control select2" name="form[lab][]" multiple="multiple">
+                    <select id="select-lab" class="form-control select2" name="form[lab][]" multiple="multiple" data-placeholder="Выберите лабораторию">
                         <?php foreach ($this->data['lab_list'] as $item): ?>
                             <option value="<?=$item['ID']?>" <?=in_array($item['ID'], $this->data['lab'])? 'selected' : ''?>><?=$item['NAME']?></option>
                         <?php endforeach; ?>
@@ -386,7 +386,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Помещения</label>
                 <div class="col-sm-8">
-                    <select id="select-room" class="form-control select2" name="form[room][]" multiple="multiple">
+                    <select id="select-room" class="form-control select2" name="form[room][]" multiple="multiple" data-placeholder="<?=(empty($this->data['lab'])? 'Сначала выберите лабораторию' : '')?>">
                         <?php if (empty($this->data['room_list'])): ?>
                             <option value="" disabled>Сначала выберите лаборатории</option>
                         <?php endif; ?>
@@ -742,7 +742,7 @@
                         <button
                                 type="button"
                                 class="btn btn-danger btn-square remove_uncertainty"
-                                title="Удалить Неопределенность">
+                                title="Удалить неопределенность">
                             <i class="fa-solid fa-minus icon-fix"></i>
                         </button>
                     </div>
@@ -828,7 +828,7 @@
                         <button
                                 type="button"
                                 class="btn btn-danger btn-square remove_oborud"
-                                title="Удалить оборутование">
+                                title="Удалить оборудование">
                             <i class="fa-solid fa-minus icon-fix"></i>
                         </button>
                     </td>

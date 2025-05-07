@@ -19,7 +19,10 @@ class Nk extends Model {
             return $response;
         }
 
-        $result = $this->DB->Query("SELECT * FROM ulab_graduation WHERE id = {$id}")->Fetch();
+        $organizationId = App::getOrganizationId();
+
+        $result = $this->DB->Query(
+            "SELECT * FROM `ulab_graduation` WHERE id = {$id} AND `organization_id` = {$organizationId}")->Fetch();
 
         if (!empty($result)) {
             $result['data_json'] = $result['data'];
@@ -38,7 +41,9 @@ class Nk extends Model {
     {
         $response = [];
 
-        $result = $this->DB->Query("SELECT * FROM ulab_graduation");
+        $organizationId = App::getOrganizationId();
+
+        $result = $this->DB->Query("SELECT * FROM ulab_graduation WHERE organization_id = {$organizationId}");
 
         while ($row = $result->Fetch()) {
             $row['data_json'] = $row['data'];
@@ -57,8 +62,18 @@ class Nk extends Model {
      */
     public function addGraduation($data)
     {
+        $orgId = App::getOrganizationId();
+        $data['organization_id'] = $orgId;
         $data['data'] = json_encode($data, JSON_UNESCAPED_UNICODE);
         $data['date'] = $data['date'] ?: date('Y-m-d');
+
+        $nextNumber = (int)$this->DB->Query(
+            "SELECT COALESCE(MAX(`number`), 0) + 1 AS next_num
+                FROM ulab_graduation
+                WHERE organization_id = {$orgId}"
+        )->Fetch()['next_num'];
+
+        $data['number'] = $nextNumber;
 
         $sqlData = $this->prepearTableData('ulab_graduation', $data);
 
@@ -73,12 +88,13 @@ class Nk extends Model {
      */
     public function updateGraduation($id, $data)
     {
+        $organizationId = App::getOrganizationId();
         $data['data'] = json_encode($data, JSON_UNESCAPED_UNICODE);
         $data['date'] = $data['date'] ?: date('Y-m-d');
 
         $sqlData = $this->prepearTableData('ulab_graduation', $data);
 
-        $where = "WHERE id = {$id}";
+        $where = "WHERE id = {$id} AND organization_id = {$organizationId}";
         return $this->DB->Update('ulab_graduation', $sqlData, $where);
     }
 
@@ -92,18 +108,20 @@ class Nk extends Model {
         /** @var Permission $permissionModel */
         $permissionModel = new Permission;
 
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
-            'by' => 'ug.id',
+            'by' => 'ug.number',
             'dir' => 'DESC'
         ];
 
         if (!empty($filter)) {
             if (!empty($filter['search'])) {
                 // Номер
-                if (isset($filter['search']['id'])) {
-                    $where .= "ug.id LIKE '%{$filter['search']['id']}%' AND ";
+                if (isset($filter['search']['number'])) {
+                    $where .= "ug.number LIKE '%{$filter['search']['number']}%' AND ";
                 }
                 // дата
                 if (isset($filter['search']['date'])) {
@@ -133,8 +151,8 @@ class Nk extends Model {
             }
 
             switch ($filter['order']['by']) {
-                case 'id':
-                    $order['by'] = 'ug.id';
+                case 'number':
+                    $order['by'] = 'ug.number';
                     break;
                 case 'date':
                     $order['by'] = 'ug.date';
@@ -159,7 +177,7 @@ class Nk extends Model {
             }
         }
 
-        $where .= "1 ";
+        $where .= "ug.organization_id = {$organizationId}";
 
         $result = [];
 
@@ -172,7 +190,7 @@ class Nk extends Model {
 
         $dataTotal = $this->DB->Query(
             "SELECT *
-                    FROM ulab_graduation ug"
+                    FROM ulab_graduation ug WHERE ug.organization_id = {$organizationId}"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
             "SELECT distinct *

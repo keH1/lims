@@ -22,6 +22,8 @@ class Order extends Model {
      */
     public function getDataToJournal($filter)
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -107,14 +109,17 @@ class Order extends Model {
                 }
             }
         }
-        $where .= "1 ";
+        $where .= "b.organization_id = {$organizationId}";
+
+        $whereBase = "b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND d.NUMBER <> '' AND d.NUMBER IS NOT NULL";
 
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.STAGE_ID, b.ID_Z, b.COMPANY_TITLE, b.DOGOVOR_TABLE, 
                         d.ID d_id, d.NUMBER, d.DATE, d.PDF, d.ACTUAL_VER, d.IS_ACTION, d.CONTRACT_TYPE 
                     FROM ba_tz b
                     INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}
+                    WHERE {$whereBase} 
+                    AND {$where}
                     ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
@@ -122,14 +127,16 @@ class Order extends Model {
             "SELECT count(*) val
                     FROM ba_tz b
                     INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> ''"
+                    WHERE {$whereBase} 
+                    AND b.organization_id = {$organizationId}"
         )->Fetch();
 
         $dataFiltered = $this->DB->Query(
             "SELECT count(*) val
                     FROM ba_tz b
                     INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$where}"
+                    WHERE {$whereBase} 
+                    AND {$where}"
         )->Fetch();
 
         $result = [];
@@ -178,6 +185,8 @@ class Order extends Model {
      */
     public function getReviseDataToJournal($filter)
     {
+        $organizationId = App::getOrganizationId();
+
         $where = "";
         $limit = "";
         $order = [
@@ -232,7 +241,8 @@ class Order extends Model {
                 }
             }
         }
-        $where .= "1 ";
+
+        $where .= "tz.organization_id = {$organizationId}";
 
         $data = $this->DB->Query(
             "select 
@@ -255,7 +265,7 @@ class Order extends Model {
             from DOGOVOR as d
             inner join DEALS_TO_CONTRACTS as dtc on dtc.ID_CONTRACT = d.ID
             inner join ba_tz as tz on dtc.ID_DEAL = tz.ID_Z
-            group by d.ID"
+            where tz.organization_id = {$organizationId} group by d.ID"
         )->SelectedRowsCount();
 
         $dataFiltered = $this->DB->Query(
@@ -538,7 +548,15 @@ class Order extends Model {
      */
     public function getContractById(int $orderId)
     {
-        return $this->DB->Query("SELECT *, CONCAT(CONTRACT_TYPE, ' №', NUMBER, ' от ', DATE_FORMAT(`DATE`, '%d.%m.%Y')) AS cont FROM `DOGOVOR` WHERE ID = {$orderId}")->Fetch();
+        $organizationId = App::getOrganizationId();
+
+        return $this->DB->Query(
+            "SELECT d.*, 
+                        CONCAT(d.`CONTRACT_TYPE`, ' №', d.`NUMBER`, ' от ', DATE_FORMAT(d.`DATE`, '%d.%m.%Y')) AS cont 
+                    FROM `DOGOVOR` AS d 
+                    INNER JOIN `ba_tz` AS tz ON tz.`ID` = d.`TZ_ID` 
+                    WHERE d.`ID` = {$orderId} AND tz.`organization_id` = {$organizationId}"
+        )->Fetch();
     }
 
     /**
@@ -580,6 +598,8 @@ class Order extends Model {
             'by' => 'b.ID',
             'dir' => 'DESC'
         ];
+
+        $requirement = new Requirement();
 
         if ( !empty($filter) ) {
             // из $filter собирать строку $where тут
@@ -669,7 +689,10 @@ class Order extends Model {
 
         $i = 0;
         while ($row = $data->Fetch()) {
+            $isExistTz = $requirement->isExistTz((int)$row['ID_Z']);
+
             $row['num'] = ++$i;
+            $row['check_tz'] = !empty($row['ID']) && $isExistTz;
             // $row['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
 
             $row['date'] = StringHelper::dateRu($row['DATE_CREATE']);
@@ -851,7 +874,7 @@ class Order extends Model {
      * @param $dealId
      * @return false|string
      */
-    public function getOrderByDealId($dealId)
+    public function getOrderByDealId($dealId, $isGetCutContractString = false)
     {
         global $DB;
         $result = $DB->Query("SELECT DOGOVOR_NUM FROM `ba_tz` WHERE ID_Z = {$dealId} ")->Fetch();
@@ -869,12 +892,14 @@ class Order extends Model {
         }
 
         $contract = $DB->Query("SELECT * FROM `DOGOVOR` WHERE ID = '{$idDogovor}'")->Fetch();
-        if (!empty($contract)) {
+
+        if (!empty($contract) && !$isGetCutContractString) {
             return $contract['CONTRACT_TYPE'] . ' №' . $contract['NUMBER'] . ' от ' . date('d.m.Y', strtotime($contract['DATE']));
+        } else if (!empty($contract) && $isGetCutContractString) {
+            return $contract['NUMBER'] . ' от ' . date('d.m.Y', strtotime($contract['DATE']));
         } else {
             return false;
         }
-
     }
 
     public function changeOrderByHeadRequest($idHeadRequest, $dealId)

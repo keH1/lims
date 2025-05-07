@@ -16,8 +16,8 @@ class Model
         'limit' => "",
         'order' => "id DESC", // Запрос к БД ORDER BY 'order' Задается значение по умолчанию
         'idWhichFilter' => '>0',
-        'dateStart' => "'0000-00-00'",
-        'dateEnd' => "'  2222-12-12'"
+        'dateStart' => "'0001-01-01'",
+        'dateEnd' => "'9999-12-31'"
     ];
 
 
@@ -317,12 +317,14 @@ class Model
 
         if ($userID) {
             $dataAdd['global_assigned'] = (int)$userID;
+            $dataAdd['user_id'] = (int)$userID;
         } else {
             $dataAdd['global_assigned'] = App::getUserId();
+            $dataAdd['user_id'] = App::getUserId();
         }
+        $dataAdd['organization_id'] = App::getOrganizationId();
 
         $dataAdd['global_entry_date'] = date("Y-m-d H:i:s");
-        $this->checkAndAddGlobal($nameTable, $dataAdd);
 
         $dataAdd = $this->prepearTableData($nameTable, $dataAdd);
         return $this->DB->Insert($nameTable, $dataAdd);
@@ -458,9 +460,8 @@ class Model
                 $transformedFilter['having'] = $having;
             }
             if ($typeTransform == "havingDateId") {
-
-                $transformedFilter['dateStart'] = "'{$filter['dateStart']}-01' ";
-                $transformedFilter['dateEnd'] = "LAST_DAY('{$filter['dateEnd']}-01') ";
+                $transformedFilter['dateStart'] = !empty($filter['dateStart']) ? "'{$filter['dateStart']}'" : "{$this->filtersForGetListDefault['dateStart']}";
+                $transformedFilter['dateEnd'] = !empty($filter['dateEnd']) ? "'{$filter['dateEnd']}'" : "{$this->filtersForGetListDefault['dateEnd']}";
 
                 if ($filter['idWhichFilter'] == -1) {
                     $transformedFilter['idWhichFilter'] = '>0';
@@ -483,6 +484,7 @@ class Model
         } else {
             throw new InvalidArgumentException("Неизвестный аргумент $typeTransform в функции transformFilter");
         }
+
         return $transformedFilter;
     }
 

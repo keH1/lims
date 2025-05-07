@@ -23,11 +23,11 @@
         </div>
         <div class="col-auto">
             <input type="date" id="inputDateStart" class="form-control filter filter-date-start"
-                   value="<?= date("Y") . '-01-01' ?>" title="Введите дату начала">
+                   value="" title="Введите дату начала">
         </div>
         <div class="col-auto">
             <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"
-                   value="<?= date("Y-m-d")?>" title="Введите дату окончания">
+                   value="" title="Введите дату окончания">
         </div>
         <div class="col-auto">
             <button type="button" class="btn btn-outline-secondary filter-btn-reset" title="Сбросить фильтр">Сбросить
@@ -120,7 +120,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Выберите реактив </label>
-            <select name="toSQL[reactive_remain][id_library_reactive]" class="form-control  select-reactive h-auto"
+            <select name="reactive_remain[id_library_reactive]" class="form-control  select-reactive h-auto"
                     required>
                 <option value="" selected disabled></option>
                 <?php
@@ -137,7 +137,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Дата</label>
-            <input name="toSQL[reactive_remain][date]" type="date"
+            <input name="reactive_remain[date]" type="date"
                    class="form-control select-month"
                    value="">
         </div>
@@ -147,7 +147,7 @@
         <div class="col">
             <label class="form-label">Количество</label>
             <div class="input-group">
-                <input type="number" name="toSQL[reactive_remain][quantity]" step="0.01" min="0" max="10000"
+                <input type="number" name="reactive_remain[quantity]" step="0.01" min="0" max="10000"
                        class="form-control bg-white" required>
                 <span class="input-group-text quantity-reactive"></span>
             </div>
@@ -164,7 +164,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Выберите реактив </label>
-            <select name="toSQL[reactive_consume][id_library_reactive]" class="form-control  select-reactive h-auto"
+            <select name="reactive_consume[id_library_reactive]" class="form-control  select-reactive h-auto"
                     required>
                 <option value="" selected disabled></option>
                 <?php
@@ -181,7 +181,7 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Дата</label>
-            <input name="toSQL[reactive_consume][date]" type="date"
+            <input name="reactive_consume[date]" type="date"
                    class="form-control "
                    value="">
         </div>
@@ -189,14 +189,14 @@
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Назначение расхода</label>
-            <input type="text" name="toSQL[reactive_consume][type]" class="form-control" required>
+            <input type="text" name="reactive_consume[type]" class="form-control" required>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col">
             <label class="form-label">Количество</label>
             <div class="input-group">
-                <input type="number" name="toSQL[reactive_consume][quantity]" step="0.01" min="0" max="10000"
+                <input type="number" name="reactive_consume[quantity]" step="0.01" min="0" max="10000"
                        class="form-control bg-white" required>
                 <span class="input-group-text quantity-reactive"></span>
             </div>

@@ -41,25 +41,24 @@ class App
 
         // если нет доступа
         $homePage = '';
-//        if ( !$this->checkPermission($_SESSION['SESS_AUTH']['USER_ID'], $controllerName, $this->method, $homePage) ) {
-//            $_SESSION['message_danger'] = "Недостаточно прав для просмотра или действия";
-//            //TODO: перенаправление
-//            if (isset($_SESSION['last_uri'])) {
-//                $lastUri = $_SESSION['last_uri'];
-//                unset($_SESSION['last_uri']);
-//
-////                header("Location: {$lastUri}");
-//                header("Location: " . URI . $homePage);
-//            } else {
-//                header("Location: " . URI . $homePage);
-//            }
-//        } else {
-//            // сохраняем текущую страницу
-//            $_SESSION['last_uri'] = $_SERVER['REQUEST_URI'];
-//
-//            call_user_func([$this->controller, $this->method], $this->id);
-//        }
-		call_user_func([$this->controller, $this->method], $this->id);
+        if ( !$this->checkPermission($_SESSION['SESS_AUTH']['USER_ID'], $controllerName, $this->method, $homePage) ) {
+            $_SESSION['message_danger'] = "Недостаточно прав для просмотра или действия";
+            //TODO: перенаправление
+            if (isset($_SESSION['last_uri'])) {
+                $lastUri = $_SESSION['last_uri'];
+                unset($_SESSION['last_uri']);
+
+//                header("Location: {$lastUri}");
+                header("Location: " . URI . $homePage);
+            } else {
+                header("Location: " . URI . $homePage);
+            }
+        } else {
+            // сохраняем текущую страницу
+            $_SESSION['last_uri'] = $_SERVER['REQUEST_URI'];
+
+            call_user_func([$this->controller, $this->method], $this->id);
+        }
     }
 
     protected function parseUrl()
@@ -133,14 +132,17 @@ class App
         }
 
         $userId = self::bitrixUser()->GetID();
-        $by = "ID";
-        $order = "DESC";
-        $arFilter = ["ID" => $userId];
-        $arParams["SELECT"] = ["UF_ORG_ID"];
-        $arRes = CUser::GetList($by, $order, $arFilter, $arParams);
-        if ($res = $arRes->Fetch()) {
-            $organizationId = (int)$res["UF_ORG_ID"];
-        }
+        $user = \Bitrix\Main\UserTable::getList([
+            'filter' => [
+                '=ID' => $userId,
+                '!UF_ORG_ID'=>false
+            ],
+            'select' => [
+                'UF_ORG_ID'
+            ]
+        ])->fetch();
+
+        $organizationId = (int)$user["UF_ORG_ID"];
 
         return $organizationId;
     }
@@ -170,7 +172,7 @@ class App
             "SELECT p.* 
                     FROM `ulab_permission` as p  
                     LEFT JOIN `ulab_user_permission` as u ON p.id = u.permission_id
-                    WHERE u.user_id = {$userId} OR p.id = 1",
+                    WHERE u.user_id = {$userId} OR p.id = 1 order by id desc",
         )->Fetch();
 
         $row['permission'] = json_decode($row['permission'], true);
@@ -183,7 +185,7 @@ class App
 
 		$_SESSION['SESS_AUTH']['ROLE'] = $row['id'];
 
-//		return isset($row['permission'][$controller][$method]);
-		return true;
+		return isset($row['permission'][$controller][$method]);
+//		return true;
     }
 }

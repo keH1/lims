@@ -21,14 +21,9 @@ class Electric extends Model
         $result['recordsTotal'] = count($this->getFromSQL('getList', $filtersForGetList));
         //всю допфильтрацию вставлять после $result['recordsTotal'] = ... до $result['recordsFiltered'] = ...
 
-        if (isset($filter['order']['by']) && $filter['order']['by'] === 'global_assigned_name') {
-            $filter['order']['by'] = "LEFT(TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)), 1)";
-        }
-
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'havingDateId'));
         //Дальше допфильтрацию не вставлять
         $result['recordsFiltered'] = count($this->getFromSQL('getList', $filtersForGetList));
-
         $filtersForGetList = array_merge($filtersForGetList, $this->transformFilter($filter, 'orderLimit'));
 
         return array_merge($result, $this->getFromSQL('getList', $filtersForGetList));
@@ -56,11 +51,13 @@ class Electric extends Model
 
     public function addToSQL(array $data, string $typeName = null): int
     {
+        $organizationId = App::getOrganizationId();
         if ($typeName == null) {
             $dataAdd = $data;
         } elseif ($typeName == 'addMeasurement') {
             $dataAdd['electric_control'] = $data['electric_control'];
             $dataAdd['electric_control']['id_electric_norm'] = $this->getFromSQL("lastElectricNorm")[0]['id'];
+            $dataAdd['electric_control']['organization_id'] = $organizationId;
         } else {
             throw new InvalidArgumentException("Неизвестный аргумент $typeName в функции addToSQL");
         }
@@ -69,6 +66,8 @@ class Electric extends Model
 
     private function getFromSQL(string $typeName, array $filters = null): array
     {
+        $organizationId = App::getOrganizationId();
+
         if ($typeName == 'getList') {
             $request = "
             SELECT DATE_FORMAT(electric_control.date, '%d.%m.%Y') AS date_dateformat, 
@@ -98,19 +97,20 @@ class Electric extends Model
                                 AND electric_control.frequency >= electric_norm.frequency_min, 
                              0, 1) AS frequency_conclusion
                   FROM electric_control
-                  JOIN electric_norm ON electric_control.id_electric_norm = electric_norm.id) AS electric_control
+                  JOIN electric_norm ON electric_control.id_electric_norm = electric_norm.id
+                  WHERE electric_control.organization_id = {$organizationId}
+                  ) AS electric_control
             JOIN ROOMS ON ROOMS.id = electric_control.id_room
-            JOIN b_user ON b_user.id = electric_control.global_assigned                  
-            HAVING id_room {$filters['idWhichFilter']} AND
-                date BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']} 
-                 AND {$filters['having']}
+            JOIN b_user ON b_user.id = electric_control.global_assigned
+                AND id_room {$filters['idWhichFilter']} 
+                AND date BETWEEN {$filters['dateStart']} AND {$filters['dateEnd']}
+            HAVING  {$filters['having']}
             ORDER BY {$filters['order']}
                 {$filters['limit']}
             ";
 
         } elseif ($typeName == 'lastElectricNorm') {
-            $request = "SELECT *, MAX(electric_norm.global_entry_date) AS max
-                FROM electric_norm            
+            $request = "SELECT *, MAX(electric_norm.global_entry_date) AS max FROM electric_norm         
             ";
         } elseif (array_key_exists($typeName, $this->selectInList)) {
             if ($this->selectInList[$typeName][0] == 1) {
@@ -120,9 +120,11 @@ class Electric extends Model
             } elseif ($this->selectInList[$typeName][0] == 0) {
                 if ($typeName == 'room') {
                     $request = "
-                SELECT id AS id,
-                CONCAT(number,' - ', name) AS name
-                FROM ROOMS                
+                SELECT r.ID AS id,
+                CONCAT(r.number,' - ', r.name) AS name
+                FROM ROOMS as r
+                JOIN ba_laba as lab ON r.LAB_ID = lab.ID
+                WHERE lab.organization_id = {$organizationId}        
              ";
                 }
             } else {
@@ -136,13 +138,14 @@ class Electric extends Model
 
     public function autoFill($dateStart, $dateEnd, $autoFrom, $autoTo, $holiday)
     {
+        $organizationId = App::getOrganizationId();
         $rooms = [];
         $userModel = new User();
 
 
 //        $sql = $this->DB->Query("SELECT * FROM ROOMS");
         // Пожелание ТЭ помещение только электрощитовая
-        $sql = $this->DB->Query("SELECT * FROM ROOMS WHERE ID = 19");
+        $sql = $this->DB->Query("SELECT * FROM ROOMS WHERE ID = 19 AND organization_id = {$organizationId}");
         while ($row = $sql->Fetch()) {
             $rooms[] = $row;
         }
@@ -186,7 +189,7 @@ class Electric extends Model
                 $randDate = rand($minDate, $maxDate);
                 $resultDate = date('Y-m-d H:i:s', $randDate);
 
-                $data = $this->DB->Query("select * from electric_control where id_room = {$value['ID']} and `date` like '{$date}'")->Fetch();
+                $data = $this->DB->Query("select * from electric_control where id_room = {$value['ID']} and `date` like '{$date}' and organization_id = {$organizationId}")->Fetch();
 
 
 
@@ -202,6 +205,7 @@ class Electric extends Model
                         'global_assigned' => $user,
                         'global_entry_date' => "'{$resultDate}'",
                         'id_electric_norm' => 1,
+                        'organization_id' => $organizationId,
                     ];
 
                     $this->DB->Insert('electric_control', $dateInsert);

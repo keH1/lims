@@ -131,12 +131,12 @@
     <div class="filters mb-4">
         <div class="row">
             <div class="col">
-                <input type="date" id="inputDateStart" class="form-control filter filter-date-start bg-transparent"
-                       value="<?= $this->data['date_start'] ?>" placeholder="Введите дату начала:">
+                <input type="date" id="inputDateStart" class="form-control filter filter-date-start"
+                       value="" placeholder="Введите дату начала:">
             </div>
             <div class="col">
-                <input type="date" id="inputDateEnd" class="form-control filter filter-date-end bg-transparent"
-                       value="<?= $this->data['date_end'] ?>" placeholder="Введите дату окончания:">
+                <input type="date" id="inputDateEnd" class="form-control filter filter-date-end"
+                       value="" placeholder="Введите дату окончания:">
             </div>
             <div class="col">
                 <select name="select_room" id="selectRoom" class="form-control filter-room filter">
@@ -145,7 +145,7 @@
                         <?php if ($item['id'] < 100): ?>
                             <option class="font-bold" value="<?= $item['id'] ?>" disabled><?= $item['name'] ?></option>
                         <?php else: ?>
-                            <option value="<?= $item['id'] ?>" <?//= $item['id'] === $this->data['room'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>">
                                 -- <?= $item['name'] ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>
@@ -203,7 +203,7 @@
         <input id="conditionsId" type="hidden" value="<?= $this->data['id'] ?>" name="id">
 
         <div class="title mb-3 h-2">
-            Данные условий
+            Добавление данных об условиях
         </div>
 
         <div class="line-dashed-small"></div>

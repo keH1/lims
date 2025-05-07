@@ -1,23 +1,22 @@
----
 services:
   cadvisor:
-    image: dockerhub.mos.ru/cadvisor:v0.33.0
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
     container_name: cadvisor
     ports:
-      - '${EXPOSE_CADVISOR_PORT}:8080'
+      - "${EXPOSE_CADVISOR_PORT:-8081}:8080"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     environment:
-      TZ: ${TZ}  
+      TZ: ${TZ}
     depends_on:
       - php
       - webserver
       - promtail
     networks:
-      - lims-ulab  
+      - lims-ulab
 
   php:
     container_name: php
@@ -25,16 +24,19 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     volumes:
-      - web_data:/var/www/bitrix
+      - bitrix_data:/var/www/bitrix
+      - web_data:/var/www/bitrix/ulab
     environment:
       TZ: ${TZ}
     networks:
       - lims-ulab
     restart: unless-stopped
     depends_on:
-      db: 
+      db:
         condition: service_started
-      init:
+      bitrix:
+        condition: service_completed_successfully
+      lims-ulab:
         condition: service_completed_successfully
 
   webserver:
@@ -45,13 +47,16 @@ services:
     depends_on:
       php:
         condition: service_started
-      init:
+      bitrix:
+        condition: service_completed_successfully
+      lims-ulab:
         condition: service_completed_successfully
     volumes:
-      - web_data:/var/www/bitrix
+      - bitrix_data:/var/www/bitrix
+      - web_data:/var/www/bitrix/ulab
       - web_server_bitrix_logs:/var/log/nginx
     ports:
-      - '${EXPOSE_NGINX_PORT}:80'
+      - "${INTERFACE:-127.0.0.1}:${EXPOSE_NGINX_PORT:-80}:80"
     environment:
       TZ: ${TZ}
     networks:
@@ -60,9 +65,9 @@ services:
 
   memcached:
     container_name: memcached
-    image: dockerhub.mos.ru/memcached:1.6-alpine     
+    image: memcached:1.6.24-alpine
     ports:
-      - '${INTERFACE}:${EXPOSE_MEMCACHED_PORT}:11211'
+      - "${INTERFACE:-127.0.0.1}:${EXPOSE_MEMCACHED_PORT:-11211}:11211"
     environment:
       TZ: ${TZ}
     networks:
@@ -70,7 +75,7 @@ services:
     restart: unless-stopped
 
   promtail:
-    image: dockerhub.mos.ru/grafana/promtail:main-d5c04e3
+    image: grafana/promtail:main-d5c04e3
     container_name: promtail
     user: "nobody"
     volumes:
@@ -86,30 +91,40 @@ services:
 
   db:
     container_name: db
-    build: 
+    build:
       context: .
       dockerfile: docker/mysql/Dockerfile
     volumes:
       - mysql:/var/lib/mysql
     ports:
-      - '${INTERFACE}:${EXPOSE_MYSQL_PORT}:3306'
+      - "${INTERFACE:-127.0.0.1}:${EXPOSE_MYSQL_PORT:-3306}:3306"
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      TZ: ${TZ}
-    command: mysqld --user=root --sql-mode=""
+      TZ: ${TZ} 
     restart: unless-stopped
     networks:
       - lims-ulab
 
-  init:
-    image: dockerhub.mos.ru/alpine
-    volumes:
-      - ./app:/source
+  bitrix:  
+    container_name: bitrix  
+    image: ${IMAGE_TAG_BITRIX:-reg.gitlab.itnap.ru/loki/infra:main}  
+    volumes:  
+      - bitrix_data:/target  
+    command: sh -c "cp -r /app/. /target/ && chown -R 1000:33 /target"  
+    networks:  
+      - lims-ulab  
+
+  lims-ulab:  
+    container_name: lims_ulab  
+    image: ${IMAGE_TAG:-reg.gitlab.itnap.ru/loki/lims:dev}  
+    volumes:  
       - web_data:/target
-    command: sh -c "cp -a /source/. /target/ && chown -R 1000:33 /target"
+    command: sh -c "cp -r /app/. /target/ && chown -R 1000:33 /target"      
+    networks:  
+      - lims-ulab  
 
 networks:
   lims-ulab:
@@ -117,9 +132,5 @@ networks:
 volumes:
   mysql:
   web_server_bitrix_logs:
+  bitrix_data:
   web_data:
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   o: bind
-    #   device: ${PWD}/app

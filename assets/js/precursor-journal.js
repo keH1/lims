@@ -1,14 +1,16 @@
 $(function ($) {
+    $journal = $('#precursor_journal');
+
     /*recipe journal*/
-    let precursorJournal = $('#precursor_journal').DataTable({
+    let precursorJournal = $journal.DataTable({
         processing: true,
         serverSide: true,
         ajax: {
             type: 'POST',
             data: function (d) {
                 d.idWhichFilter = $('#inputIdWhichFilter').val()
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
             },
             url: '/ulab/precursor/getListProcessingAjax/',
             dataSrc: function (json) {
@@ -82,9 +84,12 @@ $(function ($) {
 
     })
 
+    precursorJournal
+        .on('init.dt draw.dt', () => initTableScrollNavigation())
+
     precursorJournal.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {
@@ -94,38 +99,6 @@ $(function ($) {
                     .draw()
             }.bind(this), 1000)
         })
-    })
-    
-    /*journal buttons*/
-    let container = $('div.dataTables_scrollBody'),
-        scroll = $('#precursor_journal').width()
-
-
-    let $body = $("body")
-    let $containerScroll = $body.find('.dataTables_scroll')
-    let $thead = $('.journal thead tr:first-child')
-
-    $(document).scroll(function () {
-        let positionScroll = $(window).scrollTop(),
-            tableScrollBody = container.height(),
-            positionTop = $containerScroll.offset().top
-
-        if (positionScroll >= positionTop) {
-            $thead.attr('style', 'position:fixed;top:0;z-index:99')
-        } else {
-            $thead.attr('style', '')
-        }
-
-        if (positionScroll > 265 && positionScroll < tableScrollBody) {
-            $('.arrowRight').css('transform', `translateY(${positionScroll - 260}px)`)
-            $('.arrowLeft').css('transform', `translateY(${positionScroll - 250}px)`)
-        }
-    })
-    $("body").on('change', '.select-reactive', function () {
-        let unit = $('.select-reactive option:selected').data('unit')
-        let lastdate = $('.select-reactive option:selected').data('lastdate').slice(0, 7)
-        $('.quantity-reactive').html(unit);
-        $('.select-month').val(lastdate);
     })
 
     /** modal */

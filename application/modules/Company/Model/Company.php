@@ -5,20 +5,25 @@ use Bitrix\Crm\EntityRequisite;
 use Bitrix\Crm\EntityBankDetail;
 use Bitrix\Main\Loader;
 use Bitrix\Socialservices;
+use Bitrix\Main\Application;
+use Bitrix\Crm\CompanyTable;
 
 class Company extends Model
 {
+    // Кастомное поле в компании, содержит ID организации
+    const COMPANY_CUSTOM_FIELD_ORGANIZATION_ID = "UF_CRM_1745830382";
+
     /**
      * @return array
      */
     public function getList(): array
     {
         $result = [];
-
         try {
             if ( Loader::IncludeModule('crm') ) {
                 $arOrder  = ['ID' => 'ASC'];
-                $arFilter = [];
+                $arFilter[self::COMPANY_CUSTOM_FIELD_ORGANIZATION_ID] = App::getOrganizationId();
+                
                 $arSelect = [];
                 $companies = CCrmCompany::GetList( $arOrder, $arFilter, $arSelect );
                 while ( $row = $companies->fetch() ) {
@@ -28,6 +33,7 @@ class Company extends Model
             }
         } catch (Exception $e) {
             // замалчивание...
+            return [];
         }
 
         return $result;
@@ -84,6 +90,10 @@ class Company extends Model
     {
         $requisite = new EntityRequisite();
         $bankObj = new EntityBankDetail();
+        $application = Application::getInstance();
+        $connection = $application->getConnection();
+
+        $customFieldData = [];
 
         $reqArr = $requisite->getList(["filter" => ["ENTITY_ID" => $id]])->fetch();
 
@@ -96,12 +106,21 @@ class Company extends Model
         $bankReq = $bankObj->getList($params)->fetch();
         $address['address'] = EntityRequisite::getAddresses($reqArr['ID']);
 
+        // Получение пользовательского поля Компании Должность руководителя в родительном падеже
+        $res = CompanyTable::getRow([
+            'select' => ['*', 'UF_*'],
+            'filter' => ['=ID' => $id]
+        ]);
+        if ($res && isset($res['UF_CRM_1746347570098'])) {
+            $customFieldData['POSIT_LEADS'] = $res['UF_CRM_1746347570098'];
+        }
+
         if ( empty($bankReq) && !empty($reqArr) && !empty($address) ) {
-            return array_merge($reqArr, $address);
+            return array_merge($reqArr, $address, $customFieldData);
         }
 
         if ( !empty($bankReq) && !empty($reqArr) && !empty($address) ) {
-            return array_merge($bankReq, $reqArr, $address);
+            return array_merge($bankReq, $reqArr, $address, $customFieldData);
         }
 
         return [];
@@ -170,6 +189,16 @@ class Company extends Model
         ];
     }
 
+    public function setCustomFieldByCompanyId($id, $data)
+    {
+        $application = Application::getInstance();
+        $context = $application->getContext();
+
+        $result = CompanyTable::update($id, [
+            'UF_CRM_1746347570098' => $data['PositionGenitive']
+        ]);
+    }
+
     /**
      * @param $name
      * @return false|int
@@ -178,7 +207,12 @@ class Company extends Model
     {
         $newComp = new CCrmCompany;
 
-        $data = ['TITLE' => $name];
+        $organizationId = App::getOrganizationId();
+
+        $data = [
+            'TITLE' => $name,
+            self::COMPANY_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId
+        ];
 
         return $newComp->Add($data);
     }

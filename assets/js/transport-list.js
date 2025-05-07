@@ -11,6 +11,7 @@ $(function ($) {
         scrollX: true,
         fixedHeader: false,
         colReorder: true,
+        scrollCollapse: false, // Автоматическая смена высоты
         ajax: {
             type : 'POST',
             data: function ( d ) {
@@ -23,7 +24,7 @@ $(function ($) {
         },
         columns: [
             {
-                data: 'id'
+                data: 'local_id'
             },
             {
                 data: 'model'
@@ -52,7 +53,7 @@ $(function ($) {
                 orderable: false,
                 render: function (data, type, item) {
                     return `<div class="btn-group">
-                                <button data-js-update="${item.id}" class="btn"><i class="fa-solid fa-pen"></i></button>
+<!--                                <button data-js-update="${item.id}" class="btn"><i class="fa-solid fa-pen"></i></button>-->
                                 <button data-js-delete="${item.id}" class="btn"><i class="fa-solid fa-trash-can"></i></button>
                            </div>`
                 }
@@ -69,7 +70,7 @@ $(function ($) {
 
     transportJournal.columns().every(function () {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function () {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function () {
@@ -153,27 +154,38 @@ $(function ($) {
 
     })
 
-    $("#add-entry-modal-btn").click(function (e) {
+    $('#add-entry-modal-form').on('submit', function(e) {
+        e.preventDefault();
 
+        const $form = $(this);
         let check = true;
 
-        $("[data-js]").each(function (index) {
-            if ($(this).val() == "") {
-                $(this).css("background", "#F08080")
+        const fieldsToValidate = [
+            { $el: $form.find('#model'), message: 'Модель обязательна' },
+            { $el: $form.find('#number'), message: 'Номер обязателен' },
+            { $el: $form.find('#owner'), message: 'Владелец обязателен' },
+            { $el: $form.find('#fuel'), message: 'Топливо обязательно' },
+            { $el: $form.find('#consumption_rate'), message: 'Расход обязателен' },
+        ];
+
+        // Сброс предыдущих ошибок
+        fieldsToValidate.forEach(({ $el }) => clearElementError($el));
+
+        // Проверка на пустоту
+        fieldsToValidate.forEach(({ $el, message }) => {
+            if ($.trim($el.val()) === '') {
+                showElementError($el, message);
                 check = false;
-            } else {
-                $(this).css("background", "#FFF")
             }
-        })
+        });
 
         if (check) {
             $.ajax({
                 url: '/ulab/transport/addTransportAjax/',
-                data: $("#add-entry-modal-form").serialize(),
+                data: $form.serialize(),
                 method: 'POST',
                 dataType: 'json',
                 success: function (data) {
-                    console.log(data)
                     if (data) {
                         transportJournal.ajax.reload()
                         $('.mfp-close').click();
