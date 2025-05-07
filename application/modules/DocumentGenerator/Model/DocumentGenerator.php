@@ -3239,12 +3239,12 @@ class DocumentGenerator extends Model
 
             // Выполнение команды
             exec($command, $output, $returnCode);
-        } catch (Exception $e) {
+         } catch (Exception $e) {
             return [
                 'success' => false,
                 'error' => 'Не удалось изменить документ: ' . $e->getMessage()
             ];
-        }
+         }
 
         $tempPdfPath = $protocolInfo['full_protocol_path'] . 'signed.pdf';
 
