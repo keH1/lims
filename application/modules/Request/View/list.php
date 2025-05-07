@@ -47,7 +47,7 @@
                 <option value='0' selected>Bсе лаборатории</option>
                 <?php if ($this->data['lab']): ?>
                     <?php foreach ($this->data['lab'] as $lab): ?>
-                        <option value="<?= $lab['DEPARTMENT'] ?? '' ?>"><?= $lab['NAME'] ?? '' ?></option>
+                        <option value="<?= $lab['ID'] ?? '' ?>"><?= $lab['NAME'] ?? '' ?></option>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>

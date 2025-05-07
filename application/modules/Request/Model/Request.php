@@ -925,7 +925,13 @@ class Request extends Model
                 }
                 // Лаборатории
                 if ( isset($filter['search']['lab']) ) {
-                    $where .= "uts_usr.UF_DEPARTMENT LIKE '%:{$filter['search']['lab']};%' AND ";
+                    $labId = (int)$filter['search']['lab'];
+
+                    if (isset($filter['search']['TYPE_ID']) && $filter['search']['TYPE_ID'] == 9) {
+                        $where .= "gw.lab_id = {$labId} AND ";
+                    } else {
+                        $where .= "ml.lab_id = {$labId} AND ";
+                    }
                 }
                 // Протокол
                 if ( isset($filter['search']['PROTOCOLS']) && !empty($filter['search']['PROTOCOLS']) ) {
@@ -1084,12 +1090,13 @@ class Request extends Model
                     LEFT JOIN AKT_VR act ON act.TZ_ID=b.ID 
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user as usr ON ass.user_id = usr.ID 
-                    left join b_uts_user as uts_usr on usr.ID = uts_usr.VALUE_ID
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID 
                     LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
-                    left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
-                    left join MATERIALS as mater on umtr.material_id = mater.ID 
+                    LEFT JOIN ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z 
+                    LEFT JOIN MATERIALS as mater on umtr.material_id = mater.ID 
+                    LEFT JOIN ulab_gost_to_probe as ugtp ON ugtp.material_to_request_id = umtr.id 
+                    LEFT JOIN ulab_methods_lab as ml on ugtp.method_id = ml.method_id 
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$whereType} {$where}
                     GROUP BY b.ID
                     HAVING {$having} 
@@ -1124,8 +1131,10 @@ class Request extends Model
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID    
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
-                    left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
-                    left join MATERIALS as mater on umtr.material_id = mater.ID
+                    LEFT JOIN ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
+                    LEFT JOIN MATERIALS as mater on umtr.material_id = mater.ID 
+                    LEFT JOIN ulab_gost_to_probe as ugtp ON ugtp.material_to_request_id = umtr.id 
+                    LEFT JOIN ulab_methods_lab as ml on ugtp.method_id = ml.method_id 
                     LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
                     WHERE b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND {$whereType} {$where}
                     GROUP BY b.ID
@@ -1591,7 +1600,7 @@ class Request extends Model
                 }
                 // Лаборатории
                 if ( isset($filter['search']['lab']) ) {
-                    $where .= "b.LABA_ID LIKE '%{$filter['search']['lab']}%' AND ";
+                    $where .= "ml.lab_id = {$filter['search']['lab']} AND ";
                 }
                 if ( isset($filter['search']['LAB']) ) {
                     $sql = $this->DB->Query(
@@ -1685,7 +1694,9 @@ class Request extends Model
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
-                    LEFT JOIN b_user as u ON u.ID = ass.user_id
+                    LEFT JOIN b_user as u ON u.ID = ass.user_id 
+                    LEFT JOIN ulab_gost_to_probe as ugtp ON ugtp.material_to_request_id = umtr.id 
+                    LEFT JOIN ulab_methods_lab as ml on ugtp.method_id = ml.method_id 
                     WHERE b.TYPE_ID != '3' AND {$where}
                     GROUP BY b.ID 
                     HAVING {$having} 
@@ -1709,7 +1720,9 @@ class Request extends Model
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
-                    LEFT JOIN b_user as u ON u.ID = ass.user_id
+                    LEFT JOIN b_user as u ON u.ID = ass.user_id 
+                    LEFT JOIN ulab_gost_to_probe as ugtp ON ugtp.material_to_request_id = umtr.id 
+                    LEFT JOIN ulab_methods_lab as ml on ugtp.method_id = ml.method_id 
                     WHERE b.TYPE_ID != '3' AND {$where}
                     GROUP BY b.ID 
                     HAVING {$having}"
