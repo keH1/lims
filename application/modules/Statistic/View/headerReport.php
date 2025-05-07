@@ -36,7 +36,13 @@
                             <td>
                                 <?=$field?>
                             </td>
-                            <td><?=$this->data['protocols']["all_{$key}"]?></td>
+                            <td nowrap>
+                                <?php if ($key == 'price'): ?>
+                                    <?=number_format($this->data['protocols']["all_{$key}"], 2, ',', ' ')?>
+                                <?php else: ?>
+                                    <?=$this->data['protocols']["all_{$key}"]?>
+                                <?php endif; ?>
+                            </td>
                             <?php foreach ($this->data['lab_list'] as $lab): ?>
                                 <td>
                                     <?php if (isset($this->data['protocols']['dep'][$lab['id_dep']][$key])): ?>
