@@ -730,7 +730,7 @@ class User extends Model
     public function insertUser($data)
     {
         $user = new CUser;
-         $groupId = [1, 12];
+         $groupId = [1,12];
 //        $groupId = [1];
 
         $fields = [
