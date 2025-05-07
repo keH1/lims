@@ -395,4 +395,22 @@ class Controller
             $this->showErrorMessage($unsuccessfulMsg);
         } else $this->showSuccessMessage($successMsg);
     }
+
+    /**
+     * @desc Выводит сообщение о недостаточности прав для просмотра данного раздела
+     */
+    protected function redirectToAccessDenied()
+    {
+        $this->data['title'] = "Доступ запрещен";
+        $this->contentView = APP_PATH . "views/access_denied.php";
+
+        require(APP_PATH . "views/template_view.php");
+        
+        unset($this->data);
+        unset($this->addedCSS);
+        unset($this->addedJS);
+        
+        require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php");
+        exit;
+    }
 }

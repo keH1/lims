@@ -13,6 +13,38 @@ class ImportController extends Controller
     const WORKING_WITH_DEPARTMENTS = 26;// Работает с подразделениями
     const USERS_EDIT_ONBOARDING = [1];// Редактирует онбординг
     const MODULE_UPLOAD_DIR = "/../../../upload/"; // UPLOAD_DIR;
+    const USER_ADMIN_ROLE_ID = 2;
+
+    /**
+     * Проверяет права доступа пользователя и выполняет перенаправление при необходимости
+     * @return array Массив с данными пользователя и инициализированными моделями
+     */
+    private function checkAccessAndRedirect($id = null)
+    {
+        $orgModel = new Organization();
+        $userModel = new User();
+        $permissionModel = new Permission();
+
+        $userId = App::getUserId();
+        $dataUser = $orgModel->getAffiliationUserInfo($userId);
+        $isAdmin = $permissionModel->getUserRole($userId) == self::USER_ADMIN_ROLE_ID ? true : false;
+
+        if ($id == null) {
+            if (!$isAdmin && empty($dataUser['lab_id'])) {
+                $this->redirectToAccessDenied();
+            } else if ($isAdmin && empty($dataUser['lab_id'])) {
+                $this->redirect('/import/organization/' . $dataUser['org_id']);
+            }
+        }
+
+        return [
+            'dataUser' => $dataUser,
+            'isAdmin' => $isAdmin,
+            'orgModel' => $orgModel,
+            'userModel' => $userModel,
+            'permissionModel' => $permissionModel
+        ];
+    }
 
     /**
      * @desc Перенаправляет пользователя на страницу «Профиль лаборатории»
@@ -74,7 +106,6 @@ class ImportController extends Controller
 
     /**
      * @desc Перенаправляет пользователя на страницу «Профиль организации»
-     * @param $id - ид организации
      */
     public function organization()
     {
@@ -85,17 +116,12 @@ class ImportController extends Controller
 
         if ( !App::isAdmin()) {
             $data = $orgModel->getAffiliationUserInfo(App::getUserId());
-
-//            if (empty($data['org_id'])) {
-//                $this->redirect('/request/list/');
-//            }
-
             $this->data['is_show_btn'] = false;
         } else {
             $this->data['is_show_btn'] = true;
         }
 
-        $orgId = (int) $id;
+        $orgId = (int)$id;
 
         $this->data['title'] = 'Профиль организации';
 
@@ -114,27 +140,17 @@ class ImportController extends Controller
 
     /**
      * @desc Перенаправляет пользователя на страницу «Профиль департамента»
-     * @param $id - ид департамента
      */
-    public function branch($id)
+    public function branch($id = null)
     {
-        if ( empty($id) ) {
-            $this->redirect('/request/list/');
-        }
+        $result = $this->checkAccessAndRedirect($id);
 
-        $orgModel = new Organization();
-        $userModel = new User();
+        $dataUser = $result['dataUser'];
+        $isAdmin = $result['isAdmin'];
+        $orgModel = $result['orgModel'];
+        $userModel = $result['userModel'];
 
-        // TODO: пока убираю ограничения, надо лучше продумать
-//        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-//            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
-//
-//            if (empty($data['org_id'])) {
-//                $this->redirect('/request/list/');
-//            }
-//        }
-
-        $branchId = (int) $id;
+        $branchId = empty($id) ? (int)$dataUser['branch_id'] : (int)$id;
 
         $this->data['title'] = 'Профиль департамента';
 
@@ -154,28 +170,16 @@ class ImportController extends Controller
 
     /**
      * @desc Перенаправляет пользователя на страницу «Профиль отдела»
-     * @param $id - ид отдела
      */
-    public function dep($id)
+    public function dep($id = null)
     {
-        if ( empty($id) ) {
-            $this->redirect('/request/list/');
-        }
+        $result = $this->checkAccessAndRedirect($id);
+        $dataUser = $result['dataUser'];
+        $orgModel = $result['orgModel'];
+        $userModel = $result['userModel'];
 
-        $orgModel = new Organization();
-        $userModel = new User();
-
-        // TODO: пока убираю ограничения, надо лучше продумать
-//        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-//            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
-//
-//            if (empty($data['org_id'])) {
-//                $this->redirect('/request/list/');
-//            }
-//        }
-
-        $depId = (int) $id;
-
+        $depId = empty($id) ? (int)$dataUser['dep_id'] : (int)$id;
+        
         $this->data['title'] = 'Профиль отдела';
 
         $this->data['users'] = $userModel->getUsers();
@@ -195,28 +199,16 @@ class ImportController extends Controller
 
     /**
      * @desc Перенаправляет пользователя на страницу «Профиль лабооратории»
-     * @param $id - ид лаборатории
      */
-    public function labProfile($id)
+    public function labProfile($id = null)
     {
-        if ( empty($id) ) {
-            $this->redirect('/request/list/');
-        }
+        $result = $this->checkAccessAndRedirect($id);
+        $dataUser = $result['dataUser'];
+        $orgModel = $result['orgModel'];
+        $userModel = $result['userModel'];
 
-        $orgModel = new Organization();
-        $userModel = new User();
-
-        // TODO: пока убираю ограничения, надо лучше продумать
-//        if ( !in_array($_SESSION['SESS_AUTH']['USER_ID'], USER_ADMIN) ) {
-//            $data = $orgModel->getAffiliationUserInfo((int)$_SESSION['SESS_AUTH']['USER_ID']);
-//
-//            if (empty($data['org_id'])) {
-//                $this->redirect('/request/list/');
-//            }
-//        }
-
-        $labId = (int) $id;
-
+        $labId = empty($id) ? (int)$dataUser['lab_id'] : (int)$id;
+        
         $this->data['title'] = 'Профиль лаборатории';
 
         $this->data['users'] = $userModel->getUsers();
