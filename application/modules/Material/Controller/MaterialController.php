@@ -392,7 +392,7 @@ class MaterialController extends Controller
 
     /**
      * @deprecated
-     * @desc Получает данные группы материала [deprecated]
+     * Получает данные группы материала [deprecated]
      */
     public function getGroupMaterialAjax()
     {

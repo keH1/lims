@@ -136,7 +136,8 @@ class Permission extends Model
             'company',
             'result',
             'requirement',
-            'protocol'
+            'protocol',
+            'permission'
         ];
 
 
@@ -160,6 +161,9 @@ class Permission extends Model
             $resultMethods = [];
             foreach ($methods as $method) {
                 $descMethod = $this->getDescFromDocDocumentByObject($reflector->getMethod($method));
+                if (empty($descMethod)) {
+                    continue;
+                }
                 $resultMethods[] = [
                     'name' => $method,
                     'desc' => $descMethod,

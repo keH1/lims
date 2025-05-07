@@ -893,7 +893,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Получает данные для «Журнала заявок» [deprecated]
+     * Получает данные для «Журнала заявок» [deprecated]
      */
     public function getListAjax()
     {
