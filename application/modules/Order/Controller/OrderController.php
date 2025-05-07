@@ -182,20 +182,18 @@ Class OrderController extends Controller
         $dealInfo = $request->getDealIdByTzId($contract['TZ_ID']);
 
         $totalCost = 0;
-        $SumPayment = 0;
-        foreach ($requestByOrder as $item) {
-            $SumPayment += $item['OPLATA'];
-//            if ($item['status'] == 'work') {
+        $sumPayment = 0;
+        $contractRequestCost = 0;
 
+        foreach ($requestByOrder as $item) {
+            $sumPayment += $item['OPLATA'];
             $totalCost += $item['price_discount'];
-//            }
-        }
 
-        $contractRequestCoast = 0;
+            if ($item['ID_DEAL'] == $contract['head_request'] || $item['status'] == 'lose') {
+                continue;
+            }
 
-        foreach ($requestByOrder as $item) {
-            if ($item['ID_DEAL'] == $contract['head_request'] || $item['status'] == 'lose') continue;
-            $contractRequestCoast += $request->getTzByDealId($item['ID_DEAL'])['price_discount'];
+            $contractRequestCost += $request->getTzByDealId($item['ID_DEAL'])['price_discount'];
         }
 
         $this->data['history'] = $order->getFinanceHistory($contractID);
@@ -222,12 +220,12 @@ Class OrderController extends Controller
         $this->data['request'] = $requestByOrder;
         $this->data['order']['payment']['sum'] = $paymentOnContract['data'];
         $this->data['Cost'] = StringHelper::priceFormatRus($totalCost);
-        $this->data['cost_contract'] = StringHelper::priceFormatRus($contractRequestCoast);
-        $this->data['debt_contract'] = StringHelper::priceFormatRus($contract['SUMM'] - $contractRequestCoast);
+        $this->data['cost_contract'] = StringHelper::priceFormatRus($contractRequestCost);
+        $this->data['debt_contract'] = StringHelper::priceFormatRus($contract['SUMM'] - $contractRequestCost);
         $this->data['Payment'] = StringHelper::priceFormatRus($paymentOnContract['paymentSum']);
         $this->data['Debt_Dog'] = StringHelper::priceFormatRus($contract['SUMM'] - $paymentOnContract['paymentSum']);
         $this->data['Debt_Dog_modal'] = $contract['SUMM'] - $paymentOnContract['paymentSum'];
-        $this->data['Debt'] = StringHelper::priceFormatRus($totalCost - $SumPayment);
+        $this->data['Debt'] = StringHelper::priceFormatRus($totalCost - $sumPayment);
         $this->data['dealID'] = $dealInfo;
         $this->data['tz_id'] = $contract['TZ_ID'];
 

@@ -315,10 +315,10 @@
 
 			<?php if ($this->data['order']['longterm'] == 1):?>
 				<div class="mb-3">
-					Общая расчетная сумма по заявкам: <b><?= $this->data['cost_contract'] ?></b>
+					Общая расчетная сумма по заявкам: <b><?= $this->data['Cost'] ?></b>
 				</div>
 				<div class="mb-3">
-					Остаток по договору (без заявок ИЦ): <b><?= $this->data['debt_contract'] ?></b>
+					Остаток по договору: <b><?= $this->data['Debt'] ?></b>
 				</div>
 			<?php else:?>
 				<div class="mb-3">
