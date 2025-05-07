@@ -17,6 +17,7 @@ Class ProtocolController extends Controller
 
 
     /**
+     * @desc Страница электронной подписи
      * @param string $protocolId
      */
     public function sig($protocolId = '')
@@ -56,22 +57,6 @@ Class ProtocolController extends Controller
         $this->addJS("/assets/js/protocol-sig.js?v=" . rand());
 
         $this->view('sig');
-    }
-
-
-    /**
-     * route /protocol/results/
-     */
-    public function results()
-    {
-        $this->data['title'] = 'Результаты испытаний';
-
-        /**
-         * @var Protocol $protocol
-         */
-        $protocol = $this->model('Protocol');
-
-        $this->view('results');
     }
 
 
