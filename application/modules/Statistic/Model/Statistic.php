@@ -1653,22 +1653,22 @@ class Statistic extends Model
             while ($departmentRow = $departmentIdSql->Fetch()) {
                 $departmentId = $departmentRow['id_dep'];
 
-                if ( !isset($result[$departmentId]['count']) ) {
+                if ( !isset($result['dep'][$departmentId]['count']) ) {
                     $result['dep'][$departmentId]['count'] = 0;
                 }
-                if ( !isset($result[$departmentId]['price']) ) {
+                if ( !isset($result['dep'][$departmentId]['price']) ) {
                     $result['dep'][$departmentId]['price'] = 0;
                 }
-                if ( !isset($result[$departmentId]['won']) ) {
+                if ( !isset($result['dep'][$departmentId]['won']) ) {
                     $result['dep'][$departmentId]['won'] = 0;
                 }
-                if ( !isset($result[$departmentId]['in_work']) ) {
+                if ( !isset($result['dep'][$departmentId]['in_work']) ) {
                     $result['dep'][$departmentId]['in_work'] = 0;
                 }
-                if ( !isset($result[$departmentId]['won_methods']) ) {
+                if ( !isset($result['dep'][$departmentId]['won_methods']) ) {
                     $result['dep'][$departmentId]['won_methods'] = 0;
                 }
-                if ( !isset($result[$departmentId]['methods']) ) {
+                if ( !isset($result['dep'][$departmentId]['methods']) ) {
                     $result['dep'][$departmentId]['methods'] = 0;
                 }
 
