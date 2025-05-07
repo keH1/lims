@@ -2704,6 +2704,10 @@ class ImportController extends Controller
     }
 
 
+    /**
+     * @desc Удаление связи пользователя организации, департаменту, отделу или лаборатории
+     * @return void
+     */
     public function deleteAffiliationUserAjax()
     {
         global $APPLICATION;

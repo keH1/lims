@@ -181,7 +181,7 @@ class OborudController extends Controller
 
 
     /**
-     *
+     * @desc Журнал перемещения оборудования
      */
     public function movingJournal($oborudId)
     {
@@ -210,7 +210,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc журнал перемещения оборудования
+     * @desc Данные для журнала перемещения оборудования
      */
     public function getOborudMovingJournal()
     {
@@ -245,6 +245,10 @@ class OborudController extends Controller
     }
 
 
+    /**
+     * @desc Добавление/редактирование оборудования
+     * @return void
+     */
     public function insertUpdate()
     {
         $isEdit = isset($_POST['id']);
@@ -468,7 +472,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc списание оборудования
+     * @desc оборудование на длительное хранение
      */
     // public function setLongStorage()
     // {
@@ -508,7 +512,7 @@ class OborudController extends Controller
 
 
     /**
-     *
+     * @desc Данные для журнала оборудования
      */
     public function getListProcessingAjax()
     {

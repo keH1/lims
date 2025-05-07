@@ -559,6 +559,11 @@ class LabController extends Controller
 		return $results ?? [];
 	}
 
+
+    /**
+     * @desc Получает список лабораторий Аяксом
+     * @return void
+     */
     public function getLabListAjax()
     {
         global $APPLICATION;
