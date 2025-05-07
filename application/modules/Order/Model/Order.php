@@ -559,6 +559,7 @@ class Order extends Model {
         )->Fetch();
     }
 
+
     /**
      * @param $dealId
      * @return array|false
