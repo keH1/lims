@@ -1831,8 +1831,7 @@ class RequestController extends Controller
                     empty($protocol['NUMBER']) ||
                     empty($protocol['ACTUAL_VERSION']) || 
                         (empty($requestData['OPLATA']) &&
-                         empty($requestData['TAKEN_ID_DEAL']) &&
-                         $_SESSION['SESS_AUTH']['USER_ID'] != 9),
+                         empty($requestData['TAKEN_ID_DEAL'])),
                 'is_enable_ecp'  =>
                     !empty($protocol['ID'])
                     && !empty($protocol['NUMBER'])
