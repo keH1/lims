@@ -644,9 +644,13 @@ $(function ($) {
 
         // Показываем только для помещений (ID < 0)
         if (roomId < 0) {
-            navItemDropdown.removeClass('d-none').addClass('d-block');
+            if (!navItemDropdown.hasClass('d-none')) {
+                navItemDropdown.removeClass('d-none').addClass('d-block');
+            }
         } else {
-            navItemDropdown.removeClass('d-block').addClass('d-none');
+            if (!navItemDropdown.hasClass('d-block')) {
+                navItemDropdown.removeClass('d-block').addClass('d-none');
+            }
         }
     });
 
