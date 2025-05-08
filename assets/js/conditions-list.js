@@ -644,11 +644,11 @@ $(function ($) {
 
         // Показываем только для помещений (ID < 0)
         if (roomId < 0) {
-            if (!navItemDropdown.hasClass('d-none')) {
+            if (!navItemDropdown.hasClass('d-block')) {
                 navItemDropdown.removeClass('d-none').addClass('d-block');
             }
         } else {
-            if (!navItemDropdown.hasClass('d-block')) {
+            if (!navItemDropdown.hasClass('d-none')) {
                 navItemDropdown.removeClass('d-block').addClass('d-none');
             }
         }
