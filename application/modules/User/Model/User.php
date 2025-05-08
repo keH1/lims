@@ -71,7 +71,8 @@ class User extends Model
     public function getUserList($order = ['LAST_NAME' => 'asc'], $bitrixFilter = [], $bitrixParams = [], $customFilter = []): array
     {
         $tmp = [];
-
+        $organizationId = App::getOrganizationId();
+        $bitrixFilter['UF_ORG_ID'] = $organizationId;
         $users = CUser::GetList($order, $tmp, $bitrixFilter, $bitrixParams);
 
         $result = [];
@@ -124,6 +125,7 @@ class User extends Model
         foreach ($users as &$user) {
             $user['NAME'] = trim($user['NAME']);
             $user['LAST_NAME'] = trim($user['LAST_NAME']);
+            $user['SECOND_NAME'] = trim($user['SECOND_NAME']);
         }
 
         return $users;
@@ -585,10 +587,15 @@ class User extends Model
     public function getUserList1($order = ['LAST_NAME' => 'asc'], $bitrixFilter = [], $bitrixParams = [], $customFilter = []): array
     {
         $tmp = [];
+        $organizationId = App::getOrganizationId();
+
+        $bitrixFilter = [
+            'UF_ORG_ID' => $organizationId,
+            'ACTIVE' => 'Y'
+        ];
         $users = CUser::GetList($order, $tmp, $bitrixFilter, $bitrixParams);
 
         $result = [];
-
 
         while ($row = $users->Fetch()) {
             $name = trim($row['NAME']);
@@ -723,8 +730,8 @@ class User extends Model
     public function insertUser($data)
     {
         $user = new CUser;
-        // $groupId = [12];
-        $groupId = [1];
+         $groupId = [1,12];
+//        $groupId = [1];
 
         $fields = [
             "NAME" => $data['NAME'],

@@ -7,14 +7,6 @@ function initDataTable(selector, options) {
         fixedHeader: false,
         colReorder: true,
         fixedColumns: false,
-        // bAutoWidth: false,
-        // autoWidth: false,
-
-        // processing: true,
-        // serverSide: true,
-        // scrollX: true,
-        // bSortCellsTop: true,
-        // fixedHeader: false
     }
     
     const tableOptions = $.extend(true, {}, defaultOptions, options)
@@ -22,21 +14,8 @@ function initDataTable(selector, options) {
 
     setupTableResizeHandlers()
     
-    // dataTable.on('column-visibility.dt', function(e, settings, column, state) {
-    //     dataTable.columns().every(function() {
-    //         if (this.visible()) {
-    //             $(this.header()).css('width', $(this.header()).width() + 'px')
-    //             $(this.footer()).css('width', $(this.header()).width() + 'px')
-    //         }
-    //     })
-        
-    //     dataTable.columns.adjust().draw()
-    // })
-   
     return dataTable
 }
-
-// window.initDataTable = initDataTable
 
 /**
  * Настройка поиска по колонкам в DataTable
@@ -45,7 +24,7 @@ function initDataTable(selector, options) {
 window.setupDataTableColumnSearch = function(dataTable) {
     dataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {
@@ -556,7 +535,7 @@ $(function ($) {
                         $('input[name="CONTACT"]').val(data.RQ_NAME)
                         $('input[name="KPP"]').val(data.RQ_KPP)
                         $('input[name="Position2"]').val(data.RQ_COMPANY_REG_DATE)
-                        $('input[name="PositionGenitive"]').val('')
+                        $('input[name="PositionGenitive"]').val(data.POSIT_LEADS)
                         $('input[name="DirectorFIO"]').val(data.RQ_DIRECTOR)
                         $('input[name="RaschSchet"]').val(data.RQ_ACC_NUM)
                         $('input[name="KSchet"]').val(data.RQ_COR_ACC_NUM)

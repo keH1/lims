@@ -11,8 +11,8 @@ $(function ($) {
         ajax: {
             type : 'POST',
             data: function ( d ) {
-                d.dateStart = $('#inputDateStart').val()
-                d.dateEnd = $('#inputDateEnd').val()
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01"
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31"
                 d.everywhere = $('#filter_everywhere').val()
             },
             url : '/ulab/order/getListProcessingAjax/',
@@ -98,19 +98,7 @@ $(function ($) {
     journalDataTable
         .on('init.dt draw.dt', () => initTableScrollNavigation())
 
-    journalDataTable.columns().every(function() {
-        let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
-            clearTimeout(timeout)
-            const searchValue = this.value
-            timeout = setTimeout(function() {
-                journalDataTable
-                    .column($(this).parent().index())
-                    .search(searchValue)
-                    .draw()
-            }.bind(this), 1000)
-        })
-    })
+    window.setupDataTableColumnSearch(journalDataTable)
 
     /*journal filters*/
     $('.filter-btn-search').on('click', function () {

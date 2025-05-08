@@ -1,5 +1,5 @@
 <?php
-
+use Bitrix\Main\Loader;
 /**
  * Модель для работы с ГОСТами
  * Class Statistic
@@ -117,7 +117,7 @@ class Statistic extends Model
                     'select' => "ba_oborud.OBJECT as oborud",
                     'order' => "ba_oborud.OBJECT",
                     'filter' => "ba_oborud.OBJECT like '%{dataFilter}%'",
-                    'where' => false,
+                    'where' => "ba_oborud.organization_id = {organizationId}",
                     'group' => false,
                 ],
                 'reg_num' => [
@@ -206,7 +206,7 @@ class Statistic extends Model
                     'select' => 'count(DISTINCT ba_oborud.ID) as count_total',
                     'order' => 'count(DISTINCT ba_oborud.ID)',
                     'filter' => false,
-                    'where' => false,
+                    'where' => "ba_oborud.organization_id = {organizationId}",
                     'group' => false,
                 ],
                 // "В наличии" - отмечен checkbox
@@ -215,7 +215,7 @@ class Statistic extends Model
                     'select' => 'COUNT(DISTINCT(case when ba_oborud.IN_STOCK = 1 then ba_oborud.ID end)) as in_stock',
                     'order' => 'count(DISTINCT ba_oborud.ID)',
                     'filter' => false,
-                    'where' => false,
+                    'where' => "ba_oborud.organization_id = {organizationId}",
                     'group' => false,
                 ],
                 'not_in_stock' => [
@@ -639,7 +639,7 @@ class Statistic extends Model
                     'filter' => "TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) like '%{dataFilter}%'",
                     'where' => false,
                     'group' => 'b_user.ID',
-                    'link' => '<a class="chart_link" data-id="{user_id}" data-entity="users" href="#">{user}</a>',
+                    'link' => '{user}',
                 ],
                 'active' => [
                     'title' => 'Действующий',
@@ -647,7 +647,7 @@ class Statistic extends Model
                     'order' => "IF(b_user.ACTIVE = 'Y', 'Да', 'Нет')",
                     'filter' => "IF(b_user.ACTIVE = 'Y', 'Да', 'Нет') like '%{dataFilter}%'",
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
                 'lab' => [
                     'title' => 'Лаборатория',
@@ -655,7 +655,7 @@ class Statistic extends Model
                     'order' => "ba_laba.NAME",
                     'filter' => "ba_laba.NAME like '%{dataFilter}%'",
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
                 'work_position' => [
                     'title' => 'Должность',
@@ -663,16 +663,16 @@ class Statistic extends Model
                     'order' => "b_user.WORK_POSITION",
                     'filter' => "b_user.WORK_POSITION like '%{dataFilter}%'",
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
                 'count_complete' => [
                     'title' => 'Кол-во выполненных методик',
-                    'select' => "sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as count_complete",
+                    'select' => "count(case when ulab_start_trials.state = 'complete' then 1 else NULL end) as count_complete",
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end)",
                     'filter' => false,
                     'default_order' => 'desc',
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
                 'methods_price' => [
                     'title' => 'Стоимость выполненных методик',
@@ -680,7 +680,7 @@ class Statistic extends Model
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end)",
                     'filter' => false,
                     'where' => false,
-                    'group' => 'b_user.ID',
+                    'group' => false,
                 ],
             ],
             'dependency' => [
@@ -694,10 +694,13 @@ class Statistic extends Model
                     'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = b_user.ID" // DEPARTMENT_ID
                 ],
                 'ulab_start_trials' => [
-                    'join' => "left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id"
+                    'join' => "LEFT JOIN ulab_start_trials
+                               ON ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
+                                AND ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'"
+
                 ],
             ],
-            'date_filter' => "ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'",
+            //'date_filter' => "ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'",
             'order' => 'b_user.ID',
             'chart' => [
                 'donut' => [
@@ -830,16 +833,16 @@ class Statistic extends Model
                     'filter' => "ba_laba.NAME like '%{dataFilter}%'",
                     'where' => false,
                     'group' => 'ba_laba.ID',
-                    'link' => '<a class="chart_link" data-id="{laba_id}" data-entity="lab" href="#">{lab}</a>',
+                    'link' => '{lab}',
                 ],
                 'count_complete' => [
                     'title' => 'Кол-во выполненных методик',
-                    'select' => "sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end) as count_complete",
+                    'select' => "COUNT(CASE WHEN ulab_start_trials.state = 'complete' THEN 1 ELSE NULL END) AS count_complete",
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then 1 else 0 end)",
                     'filter' => false,
                     'default_order' => 'desc',
-                    'where' => "ba_laba.id_dep IS NOT NULL",
-                    'group' => 'ba_laba.ID',
+                    'where' => "ba_laba.id_dep IS NOT NULL AND ba_laba.organization_id = {organizationId}",
+                    'group' => false,
                 ],
                 'count_probe' => [
                     'title' => 'Кол-во испытанных проб',
@@ -855,8 +858,8 @@ class Statistic extends Model
                     'select' => "sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end) as methods_price",
                     'order' => "sum(case when ulab_start_trials.state = 'complete' then ulab_gost_to_probe.price else 0 end)",
                     'filter' => false,
-                    'where' => "ba_laba.id_dep IS NOT NULL",
-                    'group' => 'ba_laba.ID',
+                    'where' => "ba_laba.id_dep IS NOT NULL AND ba_laba.organization_id = {organizationId}",
+                    'group' => false,
                 ],
                 'count_protocols' => [
                     'title' => 'Количество протоколов',
@@ -864,7 +867,7 @@ class Statistic extends Model
                     'order' => "count(distinct ulab_gost_to_probe.protocol_id)",
                     'filter' => false,
                     'where' => "",
-                    'group' => 'ba_laba.ID',
+                    'group' => false,
                 ],
             ],
             'dependency' => [
@@ -875,10 +878,12 @@ class Statistic extends Model
                     'join' => "left join ulab_gost_to_probe on ulab_gost_to_probe.assigned_id = ulab_user_affiliation.user_id"
                 ],
                 'ulab_start_trials' => [
-                    'join' => "left join ulab_start_trials on ulab_start_trials.ugtp_id = ulab_gost_to_probe.id"
+                    'join' => "LEFT JOIN ulab_start_trials
+                               ON ulab_start_trials.ugtp_id = ulab_gost_to_probe.id
+                                AND ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'"
                 ],
             ],
-            'date_filter' => "ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'",
+            //'date_filter' => "ulab_start_trials.date between '{dateStart}' AND '{dateEnd}'",
             'order' => 'ba_laba.ID',
             'chart' => [
                 'donut' => [
@@ -1137,11 +1142,13 @@ class Statistic extends Model
     {
         $organizationId = App::getOrganizationId();
         $where = "";
+        $whereOrgId = "";
         $limit = "";
         $order = [
             'by' => '',
             'dir' => 'DESC'
         ];
+        $fieldWhereOrgId = "";
 
         $entityData = $this->entities[$filter['entity']['key']];
 
@@ -1220,9 +1227,16 @@ class Statistic extends Model
                 $groups[] = $entityData['columns'][$key]['group'];
             }
 
+            // if ( isset($entityData['dependency']) ) {
+            //     foreach ($entityData['dependency'] as $table => $joinStr) {
+            //         $joins[$table] = $joinStr['join'];
+            //     }
+            // }
+
             if ( isset($entityData['dependency']) ) {
                 foreach ($entityData['dependency'] as $table => $joinStr) {
-                    $joins[$table] = $joinStr['join'];
+                    $joins[$table] = str_replace('{dateStart}', $filter['search']['dateStart'], $joinStr['join']);
+                    $joins[$table] = str_replace('{dateEnd}', $filter['search']['dateEnd'], $joins[$table]);
                 }
             }
 
@@ -1245,12 +1259,52 @@ class Statistic extends Model
             $groupBy = "group by {$strGroup}";
         }
 
+        if ($filter['entity']['key'] == 'users' ||
+            $filter['entity']['key'] == 'users_total' || 
+            $filter['entity']['key'] == 'company' ||
+            $filter['entity']['key'] == 'company_use') {
+
+                if ($filter['entity']['key'] == 'users' ||
+                    $filter['entity']['key'] == 'users_total') {
+                        $users = \Bitrix\Main\UserTable::getList([
+                            'filter' => [
+                                '=UF_ORG_ID' => $organizationId,
+                                '!UF_ORG_ID' => false,
+                            ],
+                            'select' => [
+                                'ID'
+                            ]
+                        ])->fetchAll();
+            
+                        $organizationUsers = array_column($users, 'ID');
+                        $organizationUsersStr = implode(",", $organizationUsers);
+            
+                        $whereOrgId = " AND b_user.ID IN ({$organizationUsersStr})";
+                }
+
+                $fieldWhereOrgId = "";
+        } else {
+            if ($filter['entity']['key'] == 'request') {
+                $alias = "ba_tz";
+            } else if ($filter['entity']['key'] == 'oborud' ||
+                       $filter['entity']['key'] == 'oborud_total' ||
+                       $filter['entity']['key'] == 'oborud_use') {
+                            $alias = "ba_oborud";
+            } else if ($filter['entity']['key'] == 'methods') {
+                $alias = "ulab_gost";
+            } else if ($filter['entity']['key'] == 'lab') {
+                $alias = "ba_laba";
+            }
+
+            $fieldWhereOrgId = "AND {$alias}.organization_id = {$organizationId}";
+        }
+
         $data = $this->DB->Query(
             "SELECT 
                 {$select}
             FROM {$from}
             {$join}
-            WHERE {$where}
+            WHERE {$where} {$whereOrgId}
             {$groupBy}
             ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
@@ -1260,7 +1314,7 @@ class Statistic extends Model
                 {$select}
             FROM {$from}
             {$join} 
-            WHERE 1
+            WHERE 1 {$whereOrgId} {$fieldWhereOrgId}
             {$groupBy}"
         )->SelectedRowsCount();
 
@@ -1269,7 +1323,7 @@ class Statistic extends Model
                 {$select}
             FROM {$from} 
             {$join}
-            WHERE {$where}
+            WHERE {$where} {$whereOrgId}
             {$groupBy}"
         )->SelectedRowsCount();
 
@@ -1575,51 +1629,58 @@ class Statistic extends Model
         while ($row = $protocolSql->Fetch()) {
             $methodsSql = $this->DB->Query("SELECT count(id) as `count` FROM `ulab_gost_to_probe` WHERE protocol_id = {$row['ID']}")->Fetch();
 
-            // ид пользователей, которые подписали протокол
-            $userVerify = unserialize($row['VERIFY']);
+            $departmentIdSql = $this->DB->Query(
+                "SELECT lab.id_dep 
+                FROM `ulab_gost_to_probe` as ugtp
+                join ulab_methods_lab as m_lab on m_lab.method_id = ugtp.new_method_id
+                join ba_laba as lab on lab.ID = m_lab.lab_id
+                WHERE protocol_id = {$row['ID']} and lab.id_dep is not null
+                group by lab.id_dep"
+            );
 
+            // выдано протоколов на сумму (сумма цены протоколов с номером)
             $price = $protocolModel->getPriceWonProtocol((int)$row['ID']);
             $allPrice += $price;
 
+            $allMethods += $methodsSql['count']?? 0;
             if ( !empty($row['NUMBER']) ) {
                 $allWon++;
                 $allWonMethods += $methodsSql['count']?? 0;
             } else {
                 $allInWork++;
-                $allMethods += $methodsSql['count']?? 0;
             }
 
-            foreach ($userVerify as $assign) {
-                $departmentId = $userModel->getDepartmentByUserId($assign);
+            while ($departmentRow = $departmentIdSql->Fetch()) {
+                $departmentId = $departmentRow['id_dep'];
 
-                if ( !isset($result[$departmentId]['count']) ) {
+                if ( !isset($result['dep'][$departmentId]['count']) ) {
                     $result['dep'][$departmentId]['count'] = 0;
                 }
-                if ( !isset($result[$departmentId]['price']) ) {
+                if ( !isset($result['dep'][$departmentId]['price']) ) {
                     $result['dep'][$departmentId]['price'] = 0;
                 }
-                if ( !isset($result[$departmentId]['won']) ) {
+                if ( !isset($result['dep'][$departmentId]['won']) ) {
                     $result['dep'][$departmentId]['won'] = 0;
                 }
-                if ( !isset($result[$departmentId]['in_work']) ) {
+                if ( !isset($result['dep'][$departmentId]['in_work']) ) {
                     $result['dep'][$departmentId]['in_work'] = 0;
                 }
-                if ( !isset($result[$departmentId]['won_methods']) ) {
+                if ( !isset($result['dep'][$departmentId]['won_methods']) ) {
                     $result['dep'][$departmentId]['won_methods'] = 0;
                 }
-                if ( !isset($result[$departmentId]['methods']) ) {
+                if ( !isset($result['dep'][$departmentId]['methods']) ) {
                     $result['dep'][$departmentId]['methods'] = 0;
                 }
 
-                $result[$departmentId]['count']++;
-                $result[$departmentId]['price'] += $price;
+                $result['dep'][$departmentId]['count']++;
+                $result['dep'][$departmentId]['price'] += $price;
 
+                $result['dep'][$departmentId]['methods'] += $methodsSql['count']?? 0;
                 if ( !empty($row['NUMBER']) ) {
                     $result['dep'][$departmentId]['won']++;
                     $result['dep'][$departmentId]['won_methods'] += $methodsSql['count']?? 0;
                 } else {
                     $result['dep'][$departmentId]['in_work']++;
-                    $result['dep'][$departmentId]['methods'] += $methodsSql['count']?? 0;
                 }
             }
         }
@@ -1635,6 +1696,12 @@ class Statistic extends Model
     }
 
 
+    /**
+     * финансовый отчет за месяц
+     * @param $dataReport
+     * @return array
+     * @throws Exception
+     */
     public function getFinReport($dataReport)
     {
         $organizationId = App::getOrganizationId();
@@ -1747,6 +1814,7 @@ class Statistic extends Model
      */
     public function getStatisticUserMethods($dataReport)
     {
+        $organizationId = App::getOrganizationId();
         $month = date('m', strtotime($dataReport));
         $year = date('Y', strtotime($dataReport));
 
@@ -1754,14 +1822,21 @@ class Statistic extends Model
 
         $sql = $this->DB->Query(
             "select 
-                sum(IF(strt.state = 'complete', 1, 0)) as complete, 
-                sum(IF(strt.state <> 'complete', 1, 0)) as incomplete,
+                sum(strt.state = 'complete') as complete, 
+                sum(strt.state <> 'complete') as incomplete,
                 ugtp.assigned_id, 
                 sum(IF(strt.state = 'complete', ugtp.price, 0)) as price
             from ulab_gost_to_probe as ugtp
+            inner join ulab_material_to_request as umtr on ugtp.material_to_request_id = umtr.id
+            inner join ba_tz as tz on tz.ID_Z = umtr.deal_id
             inner join ulab_start_trials as strt on strt.ugtp_id = ugtp.id
             inner join (select pi.id, MAX(pi.id) as maxpostid from ulab_start_trials as pi group by pi.ugtp_id) as p2 ON (strt.id = p2.maxpostid)
-            where year(strt.date) = {$year} and month(strt.date) = {$month} and strt.is_actual = 1 and ugtp.assigned_id > 0
+            where 
+                year(strt.date) = {$year} 
+                and month(strt.date) = {$month} 
+                and strt.is_actual = 1 
+                and ugtp.assigned_id > 0
+                and tz.organization_id = {$organizationId}
             group by ugtp.assigned_id"
         );
 
@@ -1787,6 +1862,222 @@ class Statistic extends Model
         }
 
         return $result;
+    }
+
+
+    /**
+     * отчет по мфц
+     * @param $dataReport
+     * @return int[]
+     * @throws Exception
+     */
+    public function getMfcReport($dataReport)
+    {
+        $companyMethod = new Company();
+        $userModel = new User();
+
+        $organizationId = App::getOrganizationId();
+        $month = date('m', strtotime($dataReport));
+        $year = date('Y', strtotime($dataReport));
+
+        $result = [
+            'new_company_count' => 0,
+        ];
+
+        $date = new DateTime("{$year}-{$month}-01");
+        $dateStart = $date->format('d.m.Y H:i:s');
+        $date->modify('+1 month');
+        $dateEnd = $date->format('d.m.Y H:i:s');
+
+        // Клиент
+        if ( Loader::IncludeModule('crm') ) {
+            $arOrder  = ['ID' => 'ASC'];
+            $arFilter = [
+                $companyMethod::COMPANY_CUSTOM_FIELD_ORGANIZATION_ID => $organizationId,
+                '>=DATE_CREATE' => "{$dateStart}",
+                '<DATE_CREATE' => "{$dateEnd}",
+            ];
+
+            $arSelect = [];
+            $companies = CCrmCompany::GetList( $arOrder, $arFilter, $arSelect );
+
+            $result['new_company_count'] = $companies->SelectedRowsCount();
+        }
+
+        // Заявка
+        $requestSql = $this->DB->Query(
+            "select 
+                count(*) as count_total_request, 
+                sum(STAGE_ID = 'WON') as count_won,
+                sum(STAGE_ID IN ('5', '6', '7', '8', '9', 'LOSE')) as count_lose
+            from ba_tz 
+            where 
+                organization_id = {$organizationId} 
+                and DATE_CREATE_TIMESTAMP >= '{$year}-{$month}-01' 
+                and DATE_CREATE_TIMESTAMP < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        )->Fetch();
+
+        $result['count_total_request'] = $requestSql['count_total_request'];
+        $result['count_won'] = $requestSql['count_won'];
+        $result['count_lose'] = $requestSql['count_lose'];
+
+        $sql = $this->DB->Query(
+            "select ID_Z 
+            from ba_tz 
+            where 
+                organization_id = {$organizationId}
+                and DATE_CREATE_TIMESTAMP >= '{$year}-{$month}-01' 
+                and DATE_CREATE_TIMESTAMP < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        );
+
+        $result['count_request_one_lab'] = 0;
+        $result['count_request_multi_lab'] = 0;
+        while ($row = $sql->Fetch()) {
+            $users = $userModel->getAssignedByDealId($row['ID_Z']);
+
+            $lab = [];
+            foreach ($users as $user) {
+                if ( $user['is_main'] ) {
+                    continue;
+                }
+
+                $depId = $userModel->getDepartmentByUserId($user['user_id']);
+                $lab[$depId] = $depId;
+            }
+
+            if ( count($lab) > 1 ) {
+                $result['count_request_multi_lab']++;
+            } else if ( count($lab) == 1 ) {
+                $result['count_request_one_lab']++;
+            }
+        }
+
+
+        // Акты приемки
+        $actSql = $this->DB->Query(
+            "SELECT 
+                count(act.ID) as act_total,
+                sum(tz.STAGE_ID = 'WON') as act_won,
+                sum(tz.STAGE_ID not in ('WON', 'LOSE', 5, 6, 7, 8, 9, 10, 11, 12)) as act_in_process
+            FROM ACT_BASE as act
+            JOIN ba_tz as tz ON act.ID_Z = tz.ID_Z
+            WHERE 
+                tz.organization_id = {$organizationId}
+                and act.ACT_DATE >= '{$year}-{$month}-01' 
+                and act.ACT_DATE < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        )->Fetch();
+
+        $result['act_total'] = $actSql['act_total'];
+        $result['act_won'] = $actSql['act_won'];
+        $result['act_in_process'] = $actSql['act_in_process'];
+
+        // Договоры
+        $contractSql = $this->DB->Query(
+            "SELECT 
+                count(dog.ID) as contracts_total,
+                sum(dog.PDF is not null) as contracts_signed,
+                sum(dog.PDF is null) as contracts_unsigned
+            FROM DOGOVOR as dog
+            JOIN ba_tz as tz ON dog.DEAL_ID = tz.ID_Z
+            WHERE 
+                tz.organization_id = {$organizationId}
+                and dog.DATE >= '{$year}-{$month}-01' 
+                and dog.DATE < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        )->Fetch();
+
+        $result['contracts_total'] = $contractSql['contracts_total'];
+        $result['contracts_signed'] = $contractSql['contracts_signed'];
+        $result['contracts_unsigned'] = $contractSql['contracts_unsigned'];
+
+        // Техническое задание
+        $contractSql = $this->DB->Query(
+            "SELECT 
+                dog.ID
+            FROM TZ_DOC as dog
+            JOIN ba_tz as tz ON dog.TZ_ID = tz.ID
+            WHERE 
+                tz.organization_id = {$organizationId}
+                and dog.DATE >= '{$year}-{$month}-01' 
+                and dog.DATE < '{$year}-{$month}-01' + INTERVAL 1 MONTH
+                and dog.SEND_DATE is not null"
+        );
+
+        $result['send_tz'] = $contractSql->SelectedRowsCount();
+
+        // Счета
+        $invoiceSql = $this->DB->Query(
+            "SELECT 
+                count(inv.ID) as invoice_count,
+                sum(tz.price_discount) as price,
+                sum(tz.OPLATA) as oplata
+            FROM INVOICE as inv
+            JOIN ba_tz as tz ON inv.TZ_ID = tz.ID
+            WHERE 
+                tz.organization_id = {$organizationId}
+                and inv.DATE >= '{$year}-{$month}-01' 
+                and inv.DATE < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
+        )->Fetch();
+
+        $result['invoice_count'] = $invoiceSql['invoice_count'];
+        $result['price'] = $invoiceSql['price'];
+        $result['oplata'] = $invoiceSql['oplata'];
+
+        return $result;
+    }
+
+
+    /**
+     * Отчет годовой
+     * @param $dataReport
+     * @return int[]
+     */
+    public function getYearReport($dataReport)
+    {
+        $organizationId = App::getOrganizationId();
+        $year = date('Y', strtotime($dataReport));
+        $startDate = "'{$year}-01-01'";
+        $endDate = "'{$year}-12-31'";
+
+        $queryRequests = "SELECT ID FROM ba_tz 
+                 WHERE DATE_SOZD BETWEEN {$startDate} AND {$endDate} AND organization_id = {$organizationId}";
+
+        $queryOrders = "SELECT d.ID FROM DOGOVOR as d 
+               JOIN ba_tz as tz ON d.TZ_ID = tz.ID
+               WHERE d.`DATE` BETWEEN {$startDate} AND {$endDate} AND tz.organization_id = {$organizationId}";
+
+        $queryOrdersAbonent = "SELECT d.ID FROM DOGOVOR as d 
+               JOIN ba_tz as tz ON d.TZ_ID = tz.ID
+               WHERE d.`DATE` BETWEEN {$startDate} AND {$endDate} AND d.LONGTERM = 1 and tz.organization_id = {$organizationId}";
+
+        $queryTests = "SELECT ugtp.id FROM ulab_gost_to_probe as ugtp 
+              JOIN ulab_material_to_request as umtr ON umtr.id = ugtp.material_to_request_id
+              JOIN ulab_start_trials as start ON ugtp.id = start.ugtp_id
+              JOIN ba_tz as tz ON umtr.deal_id = tz.ID_Z
+              WHERE start.date BETWEEN {$startDate} AND {$endDate} 
+              AND start.is_actual = 1 AND start.state = 'complete' 
+              AND tz.organization_id = {$organizationId}";
+
+        $queryProtocols = "SELECT p.ID FROM PROTOCOLS as p 
+                  JOIN ba_tz as tz ON p.DEAL_ID = tz.ID_Z
+                  WHERE p.date BETWEEN {$startDate} AND {$endDate} 
+                  AND p.NUMBER IS NOT NULL 
+                  AND tz.organization_id = {$organizationId}";
+
+        $queryProb = "SELECT umtr.id FROM ulab_material_to_request as umtr
+             JOIN ba_tz as tz ON umtr.deal_id = tz.ID_Z
+             JOIN ACT_BASE as act ON act.ID_Z = tz.ID_Z
+             WHERE act.ACT_DATE BETWEEN {$startDate} AND {$endDate} 
+             AND umtr.cipher <> '' 
+             AND tz.organization_id = {$organizationId}";
+
+        return [
+            'requests' => $this->DB->Query($queryRequests)->SelectedRowsCount(),
+            'orders' => $this->DB->Query($queryOrders)->SelectedRowsCount(),
+            'orders_abonent' => $this->DB->Query($queryOrdersAbonent)->SelectedRowsCount(),
+            'tests' => $this->DB->Query($queryTests)->SelectedRowsCount(),
+            'protocols' => $this->DB->Query($queryProtocols)->SelectedRowsCount(),
+            'prob' => $this->DB->Query($queryProb)->SelectedRowsCount(),
+        ];
     }
 
 

@@ -559,6 +559,7 @@ class Order extends Model {
         )->Fetch();
     }
 
+
     /**
      * @param $dealId
      * @return array|false
@@ -598,6 +599,8 @@ class Order extends Model {
             'by' => 'b.ID',
             'dir' => 'DESC'
         ];
+
+        $requirement = new Requirement();
 
         if ( !empty($filter) ) {
             // из $filter собирать строку $where тут
@@ -687,7 +690,10 @@ class Order extends Model {
 
         $i = 0;
         while ($row = $data->Fetch()) {
+            $isExistTz = $requirement->isExistTz((int)$row['ID_Z']);
+
             $row['num'] = ++$i;
+            $row['check_tz'] = !empty($row['ID']) && $isExistTz;
             // $row['is_show_finance'] = in_array($_SESSION["SESS_AUTH"]["USER_ID"], [88, 25]);
 
             $row['date'] = StringHelper::dateRu($row['DATE_CREATE']);

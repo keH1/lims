@@ -111,7 +111,6 @@ class Reference extends Model
      */
     public function getDataToJournalUnits($filter)
     {
-        $organizationId = App::getOrganizationId();
         $result = [];
 
         $where = "";
@@ -177,8 +176,7 @@ class Reference extends Model
                 }
             }
         }
-        $where .= "organization_id = {$organizationId} ";
-
+        $where .= "1 ";
 
         $data = $this->DB->Query(
             "SELECT `id`, `fsa_id`, `unit_rus`, `name`, `is_used`, `is_actual`
@@ -189,8 +187,7 @@ class Reference extends Model
 
         $dataTotal = $this->DB->Query(
             "SELECT count(*) val
-                    FROM ulab_dimension
-                    WHERE organization_id = {$organizationId}"
+                    FROM ulab_dimension"
         )->Fetch();
         $dataFiltered = $this->DB->Query(
             "SELECT count(*) val
@@ -294,24 +291,7 @@ class Reference extends Model
     {
         try {
             $organizationId = App::getOrganizationId();
-            $ch = curl_init('https://ulab.niistrom.pro/API/getMeasuredProperties.php');
-
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            $json = curl_exec($ch);
-
-            if (curl_errno($ch)) {
-                $msg = curl_error($ch);
-                curl_close($ch);
-
-                return [
-                    'success' => false,
-                    'error' => "Ошибка: {$msg}"
-                ];
-            }
-
-            curl_close($ch);
+            $json = '/ulab/api/measuringProperties.json';
 
             $result = json_decode($json, true);
 
@@ -435,25 +415,7 @@ class Reference extends Model
     public function syncUnits()
     {
         try {
-            $organizationId = App::getOrganizationId();
-            $ch = curl_init('https://ulab.niistrom.pro/API/getUnits.php');
-
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            $json = curl_exec($ch);
-
-            if (curl_errno($ch)) {
-                $msg = curl_error($ch);
-                curl_close($ch);
-
-                return [
-                    'success' => false,
-                    'error' => "Ошибка: {$msg}"
-                ];
-            }
-
-            curl_close($ch);
+            $json = '/ulab/api/measuringUnits.json';
 
             $result = json_decode($json, true);
 
@@ -500,7 +462,7 @@ class Reference extends Model
             $nonActualTotal = $this->DB->Query(
                 "SELECT count(*) val
                         FROM ulab_dimension
-                        WHERE is_actual = 0 and organization_id = {$organizationId}"
+                        WHERE is_actual = 0"
             )->Fetch();
         } catch (Exception $e) {
             return [

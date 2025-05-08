@@ -907,10 +907,10 @@ class DocumentGenerator extends Model
 		$oborudData = $oborudModel->getTzObConnectByProtocolId($protocolID);
 
 		//Выбор скртификата поверки
-		foreach ($oborudData as $k => $ob) {
-			$certificateOborud = $oborudModel->getCertificateByOborudId($k);
-			$oborudData[$k]['certificate'] = $certificateOborud;
-		}
+//		foreach ($oborudData as $k => $ob) {
+//			$certificateOborud = $oborudModel->getCertificateByOborudId($k);
+//			$oborudData[$k]['certificate'] = $certificateOborud;
+//		}
 
 		// Результаты испытаний
 		$results = [];
@@ -2618,13 +2618,16 @@ class DocumentGenerator extends Model
 
 		$template->saveAs($file);
 
-		if ($type === 'kp') {
-		    $name_file = 'КП';
-        } elseif ($type === 'tz') {
-            $name_file = 'ТЗ';
-        } elseif ($type === 'dog') {
-            $name_file = 'CO';
-        }
+        $fileMap = [
+            'kp' => ['name_file' => 'КП', 'number_file' => 'NUM_KP'],
+            'tz' => ['name_file' => 'ТЗ', 'number_file' => 'id'],
+            'dog' => ['name_file' => 'CO', 'number_file' => 'id'],
+            'fallback' => ['name_file' => 'Документ', 'number_file' => ''],
+        ];
+
+        $config = $fileMap[$type] ?? $fileMap['fallback'];
+        $nameFile = $config['name_file'];
+        $numberFile = $info[$config['number_file']] ?? '';
 
         $newDirectory = $_SERVER['DOCUMENT_ROOT'] ."/protocol_generator/archive_{$type}/" . $info['id'];
 
@@ -2645,7 +2648,7 @@ class DocumentGenerator extends Model
         }
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-		header('Content-Disposition: attachment; filename="' . $name_file . ' №' . $info['id'] . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
+		header('Content-Disposition: attachment; filename="' . $nameFile . ' №' . $numberFile . ' от ' . date('d.m.Y', strtotime($info['date'])) .'.docx"');
 		readfile($file);
 	}
 
@@ -3225,13 +3228,29 @@ class DocumentGenerator extends Model
             $newTemplate->setImageValue('image3.png', $pathFile2);
             $newTemplate->saveAs($protocolInfo['full_protocol_path'] . 'signed.docx'); // Сохранение документа
 
-            $converter = new  OfficeConverter($protocolInfo['full_protocol_path'] . 'signed.docx', $protocolInfo['full_protocol_path']);
-            $converter->convertTo($protocolInfo['pdf_name']); // генерирует pdf файл в том же каталоге
-        } catch (Exception $e) {
+//            $converter = new  OfficeConverter($protocolInfo['full_protocol_path'] . 'signed.docx', $protocolInfo['full_protocol_path']);
+//            $converter->convertTo($protocolInfo['pdf_name']); // генерирует pdf файл в том же каталоге
+
+            $docxPath = $protocolInfo['full_protocol_path'] . 'signed.docx';
+            $pdfPath = $protocolInfo['full_protocol_path'] . $protocolInfo['pdf_name'];
+
+            // Команда для конвертации через LibreOffice
+            $command = "libreoffice --headless --convert-to pdf --outdir " . escapeshellarg(dirname($pdfPath)) . " " . escapeshellarg($docxPath);
+
+            // Выполнение команды
+            exec($command, $output, $returnCode);
+         } catch (Exception $e) {
             return [
                 'success' => false,
                 'error' => 'Не удалось изменить документ: ' . $e->getMessage()
             ];
+         }
+
+        $tempPdfPath = $protocolInfo['full_protocol_path'] . 'signed.pdf';
+
+        // Переименовываем файл
+        if (file_exists($tempPdfPath)) {
+            rename($tempPdfPath, $pdfPath);
         }
 
         $base64 = $protocolModel->getBase64EncodeFile($protocolInfo['full_protocol_path'], $protocolInfo['pdf_name']);

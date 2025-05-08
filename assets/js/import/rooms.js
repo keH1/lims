@@ -85,7 +85,7 @@ $(function ($) {
 
     journalDataTable.columns().every(function() {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function() {
+        $(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function() {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function() {
@@ -432,6 +432,9 @@ $(function ($) {
             data: formData,
             dataType: "json",
             success: function(data) {
+                $(this).find('.form-button').removeClass('disabled');
+                $(this).find('.form-button').text('Сохранить помещение');
+
                 $.magnificPopup.close()
                 
                 if (data.success) {

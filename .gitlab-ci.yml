@@ -19,7 +19,7 @@ deploy_bitrix:
       ssh support@"${INSTANCE_IP}" bash -s << EOF
         set -euo pipefail
         cd /opt/lims-ulab
-        docker rm bitrix
+        docker rm bitrix || true
         COMPOSE_HTTP_TIMEOUT=360 IMAGE_TAG_BITRIX=${IMAGE_TAG_BITRIX} docker-compose up -d bitrix || { echo "Ошибка запуска docker compose"; exit 1; }
         echo "Деплой Bitrix успешно завершён"
       EOF
@@ -52,12 +52,15 @@ cleanup_and_push_job:
     - git clone $TARGET_REPO_URL target-repo
     - cp -r lims/. ./target-repo
     - cd target-repo
+    - if git show-ref --quiet refs/heads/mirror; then git branch -D mirror; fi
     - git checkout -b mirror
     - git add .
     - git commit -m "Автоматический пуш из CI"
-    - git push origin mirror
+    - git push -f origin mirror
     - tmux kill-session -t vpn_session || true
   tags:
     - vpn
   rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
     - when: manual

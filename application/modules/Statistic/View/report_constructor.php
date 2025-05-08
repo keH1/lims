@@ -3,6 +3,11 @@
         <div class="col">
             <select id="select_entities" class="form-control">
                 <?php foreach ($this->data['entities'] as $key => $entity): ?>
+                    <?php 
+                        if ($key != 'request' &&
+                            $key != 'users' &&
+                            $key != 'lab') { continue; }
+                    ?>
                     <option value="<?=$key?>"><?=$entity['title']?></option>
                 <?php endforeach; ?>
             </select>

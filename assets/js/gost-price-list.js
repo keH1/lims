@@ -69,40 +69,40 @@ $(function () {
         pageLength: 25,
         order: [[ 0, "desc" ]],
         colReorder: true,
-        dom: 'frtB<"bottom"lip>',
-        buttons: [
-            {
-                extend: 'colvis',
-                titleAttr: 'Выбрать'
-            },
-            {
-                extend: 'copy',
-                titleAttr: 'Копировать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'excel',
-                titleAttr: 'excel',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            },
-            {
-                extend: 'print',
-                titleAttr: 'Печать',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }
-        ],
+        dom: 'frt<"bottom"lip>',
+        // buttons: [
+        //     {
+        //         extend: 'colvis',
+        //         titleAttr: 'Выбрать'
+        //     },
+        //     {
+        //         extend: 'copy',
+        //         titleAttr: 'Копировать',
+        //         exportOptions: {
+        //             modifier: {
+        //                 page: 'current'
+        //             }
+        //         }
+        //     },
+        //     {
+        //         extend: 'excel',
+        //         titleAttr: 'excel',
+        //         exportOptions: {
+        //             modifier: {
+        //                 page: 'current'
+        //             }
+        //         }
+        //     },
+        //     {
+        //         extend: 'print',
+        //         titleAttr: 'Печать',
+        //         exportOptions: {
+        //             modifier: {
+        //                 page: 'current'
+        //             }
+        //         }
+        //     }
+        // ],
         bSortCellsTop: true,
         scrollX:       true,
         fixedHeader:   true,
@@ -110,7 +110,7 @@ $(function () {
 
     journalDataTable.columns().every(function () {
         let timeout
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
+        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function () {
             clearTimeout(timeout)
             const searchValue = this.value
             timeout = setTimeout(function () {

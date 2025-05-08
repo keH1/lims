@@ -24,7 +24,7 @@ class RequirementController extends Controller
      * для связки со старыми заявками
      * route /requirement/card/{$tzId}
      * @param $tzId
-     * @desc Страница технического задания [deprecated]
+     * Страница технического задания [deprecated]
      */
     public function card_old($tzId)
     {
@@ -166,7 +166,7 @@ class RequirementController extends Controller
     /**
      * route /requirement/card/{$tzId}
      * @param $tzId
-     * @desc Страница технического задания [deprecated]
+     * Страница технического задания [deprecated]
      */
     public function card($tzId)
     {
@@ -442,7 +442,7 @@ class RequirementController extends Controller
 
     /**
      * @deprecated
-     * @desc Сохраняет или обновляет данные тз [deprecated]
+     * Сохраняет или обновляет данные тз [deprecated]
      */
     public function insertUpdate()
     {

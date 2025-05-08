@@ -925,7 +925,7 @@ class Request extends Model
                 }
                 // Лаборатории
                 if ( isset($filter['search']['lab']) ) {
-                    $where .= "b.LABA_ID LIKE '%{$filter['search']['lab']}%' AND ";
+                    $where .= "uts_usr.UF_DEPARTMENT LIKE '%:{$filter['search']['lab']};%' AND ";
                 }
                 // Протокол
                 if ( isset($filter['search']['PROTOCOLS']) && !empty($filter['search']['PROTOCOLS']) ) {
@@ -941,7 +941,7 @@ class Request extends Model
                             $where .= "b.STAGE_ID IN ('NEW', 'PREPARATION', 'PREPAYMENT_INVOICE', 'EXECUTING', 'FINAL_INVOICE') AND IF(b.ACT_NUM, TRUE, FALSE) = TRUE AND ";
                             break;
                         case 3: // Проводятся испытания
-                            $where .= "b.STAGE_ID = 1 AND ";
+                            $where .= "b.STAGE_ID IN (1, 'FINAL_INVOICE') and ";
                             break;
                         case 4: // Испытания завершены
                             $where .= "b.STAGE_ID IN ('2', '3', '4') AND ";
@@ -1012,7 +1012,7 @@ class Request extends Model
                         $order['by'] = "group_concat(distinct mater.NAME SEPARATOR ', ')";
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', '), 1)";
+                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.LAST_NAME, usr.NAME, usr.SECOND_NAME)) SEPARATOR ', '), 1)";
                         break;
                     case 'NUM_ACT_TABLE':
                         $order['by'] = 'YEAR(ACT_DATE) DESC, a.ACT_NUM';
@@ -1072,7 +1072,7 @@ class Request extends Model
                         count(c.id) c_count, count(c.date_return) с_date_return, k.ID k_id , d.IS_ACTION, CONCAT(d.CONTRACT_TYPE, ' ', d.NUMBER, ' от ', DATE_FORMAT(d.DATE, '%d.%m.%Y')) as DOGOVOR_TABLE,
                         tzdoc.pdf tz_pdf,
                         gw.departure_date, gw.object as object_gov,
-                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', ') as ASSIGNED,
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.LAST_NAME, usr.NAME, usr.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED,
                         group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL
                     FROM ba_tz b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
@@ -1083,7 +1083,8 @@ class Request extends Model
                     LEFT JOIN DOGOVOR d ON d.ID=dtc.ID_CONTRACT 
                     LEFT JOIN AKT_VR act ON act.TZ_ID=b.ID 
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
-                    LEFT JOIN b_user usr ON ass.user_id = usr.ID 
+                    LEFT JOIN b_user as usr ON ass.user_id = usr.ID 
+                    left join b_uts_user as uts_usr on usr.ID = uts_usr.VALUE_ID
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID 
                     LEFT JOIN government_work as gw ON gw.deal_id = b.ID_Z 
@@ -1111,7 +1112,7 @@ class Request extends Model
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
             "SELECT b.ID val, group_concat(distinct mater.NAME SEPARATOR ', ') as MATERIAL, 
-                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.NAME, usr.LAST_NAME)) SEPARATOR ', ') as ASSIGNED 
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', usr.LAST_NAME, usr.NAME, usr.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED 
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID 
                     LEFT JOIN CHECK_TZ AS c ON b.ID=c.tz_id
@@ -1121,6 +1122,7 @@ class Request extends Model
                     LEFT JOIN AKT_VR act ON act.TZ_ID=b.ID 
                     LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
+                    left join b_uts_user as uts_usr on usr.ID = uts_usr.VALUE_ID
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID    
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     left join ulab_material_to_request as umtr on umtr.deal_id = b.ID_Z
@@ -1563,10 +1565,10 @@ class Request extends Model
                 }
                 // Дата
                 if ( isset($filter['search']['DATE_ACT']) ) {
-                    $where .= "LOCATE('{$filter['search']['DATE_ACT']}', DATE_FORMAT(a.ACT_DATE, '%d.%m.%Y')) > 0 AND ";
+                    $where .= "LOCATE('{$filter['search']['DATE_ACT']}', DATE_FORMAT(b.DATE_ACT, '%d.%m.%Y')) > 0 AND ";
                 }
                 if ( isset($filter['search']['dateStart']) ) {
-                    $where .= "(a.ACT_DATE >= '{$filter['search']['dateStart']}' AND a.ACT_DATE <= '{$filter['search']['dateEnd']}') AND ";
+                    $where .= "(b.DATE_ACT >= '{$filter['search']['dateStart']}' AND b.DATE_ACT <= '{$filter['search']['dateEnd']}') AND ";
                 }
                 // Клиент
                 if ( isset($filter['search']['COMPANY_TITLE']) ) {
@@ -1715,7 +1717,7 @@ class Request extends Model
         )->SelectedRowsCount();
 
         while ($row = $data->Fetch()) {
-            $row['DATE_ACT'] = !empty($row['DATE_ACT']) ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
+            $row['DATE_ACT'] = (!empty($row['DATE_ACT']) && $row['DATE_ACT'] !== '0000-00-00') ? date('d.m.Y',  strtotime($row['DATE_ACT'])) : '';
 
             $arrNameLabs = [];
             $labs = [];

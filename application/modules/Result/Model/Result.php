@@ -651,7 +651,7 @@ class Result extends Model
         $methodsModel = new Methods;
         $labModel = new Lab;
         $protocolModel = new Protocol;
-        $techConditionModel = new TechCondition;
+        $normDocModel = new NormDocGost();
         $user = new User;
 
         $response = [];
@@ -666,22 +666,24 @@ class Result extends Model
         }
 
         $result = $this->DB->Query("SELECT *, 
-                umtr.id umtr_id, umtr.name_for_protocol, 
-                m.ID m_id, m.NAME m_mame, 
-                ugtp.id ugtp_id, ugtp.method_id ugtp_method_id, ugtp.assigned_id,
+                umtr.id umtr_id, umtr.name_for_protocol, umtr.material_number, umtr.probe_number,
+                m.ID m_id, m.NAME m_mame,
+                ugtp.id ugtp_id, ugtp.method_id ugtp_method_id, ugtp.assigned_id, ugtp.norm_doc_method_id, ugtp.protocol_id,
+                ugtp.normative_val, ugtp.actual_value, ugtp.match, ugtp.is_confirm_oa,
                 g.reg_doc g_reg_doc, 
                 um.name um_name, um.decimal_places um_decimal_places, um.definition_range_1 um_definition_range_1, 
                 um.definition_range_2 um_definition_range_2, um.definition_range_type um_definition_range_type,   
-                um.is_text_norm um_is_text_norm, 
-                mg.name as group_name, mgt.*
-            FROM ulab_material_to_request umtr 
+                um.is_text_norm um_is_text_norm, um.measurement_id, um.in_field, um.is_text_fact,
+                mg.name as group_name, 
+                d.unit_rus
+            FROM ulab_material_to_request as umtr 
             INNER JOIN MATERIALS as m ON m.ID = umtr.material_id 
             INNER JOIN ulab_gost_to_probe as ugtp ON ugtp.material_to_request_id = umtr.id 
             LEFT JOIN ulab_methods as um ON um.id = ugtp.method_id 
             LEFT JOIN ulab_gost as g ON g.id = um.gost_id 
             LEFT JOIN ulab_dimension as d on d.id = um.unit_id
             LEFT JOIN materials_groups as mg on mg.id = umtr.group 
-            LEFT JOIN materials_groups_tu as mgt on mg.id = mgt.materials_groups_id and mgt.tu_id = ugtp.conditions_id
+            LEFT JOIN materials_groups_tu as mgt on mg.id = mgt.materials_groups_id and mgt.norm_doc_method_id = ugtp.norm_doc_method_id
             WHERE umtr.deal_id = {$dealId} AND um.is_selection <> 1 {$where} ORDER BY umtr.id, ugtp.gost_number");//, umtr.material_number, umtr.probe_number
 
         $prevMaterialNumber = 0;
@@ -693,7 +695,7 @@ class Result extends Model
             $row['protocol'] = !empty($row['protocol_id']) ? $protocolModel->getProtocolById($row['protocol_id']) : [];
             $row['measurement'] = $this->getMeasurement($row['measurement_id']);
             $row['trial_results'] = $this->getTrialResult($row['ugtp_id']);
-            $row['tech'] = $techConditionModel->get($row['conditions_id']);
+            $row['tech'] = $normDocModel->getMethod($row['norm_doc_method_id']);
 
             if (!empty($row['assigned_id'])) {
                 $row['tester'] = $user->getUserShortById($row['assigned_id']);
@@ -2929,7 +2931,7 @@ class Result extends Model
 
                 // Соответствие требованиям
                 $match = $data['match'][$umtrId][$ugtpId] ?? null;
-                $matchData= $resultModel->getMatchData($methodData, $match);
+                $matchData = $resultModel->getMatchData($methodData, $match);
                 $matchValue = $matchData['match'];
 
                 // Проверка метода и значений в аттестованном диапазоне

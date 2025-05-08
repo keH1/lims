@@ -6,8 +6,8 @@ $(function ($) {
                 type: 'POST',
                 data: function (d) {
                     d.idWhichFilter = $('#inputIdWhichFilter').val()
-                    d.dateStart = $('#inputDateStart').val()
-                    d.dateEnd = $('#inputDateEnd').val()
+                    d.dateStart = $('#inputDateStart').val() || "0001-01-01"
+                    d.dateEnd = $('#inputDateEnd').val() || "9999-12-31"
                 },
                 url: '/ulab/decontaminatorcontrol/getListProcessingAjax/',
                 dataSrc: function (json) {
@@ -104,7 +104,7 @@ $(function ($) {
         })
 
         mainTable.columns().every(function () {
-            $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
+            $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function () {
                 mainTable
                     .column($(this).parent().index())
                     .search(this.value)

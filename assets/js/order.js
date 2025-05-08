@@ -137,7 +137,10 @@ $(function ($) {
 				data: 'ACTUAL_VER',
 				orderable: false,
 				render: function (data, type, item) {
-					return `<a href="/ulab/requirement/card_new/${item['ID']}">${item['ID']}</a>`
+					if (item.hasOwnProperty('check_tz') && item['check_tz']) {
+						return `<a href="/ulab/requirement/card_new/${item['ID']}">${item['ID']}</a>`
+					}
+					return ''
 				}
 			},
 			{
@@ -282,7 +285,7 @@ $(function ($) {
 
 	let timeout
 	journalDataTable.columns().every(function () {
-		$(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('keyup change clear', function () {
+		$(this.header()).closest('thead').find('.search:eq('+ this.index() +')').on('input', function () {
 			clearTimeout(timeout)
 			const searchValue = this.value
 			timeout = setTimeout(function () {

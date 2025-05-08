@@ -366,8 +366,8 @@ $(function ($) {
         ajax: {
             type: 'POST',
             data: function (d) {
-                d.dateStart = $('#inputDateStart').val();
-                d.dateEnd = $('#inputDateEnd').val();
+                d.dateStart = $('#inputDateStart').val() || "0001-01-01";
+                d.dateEnd = $('#inputDateEnd').val() || "9999-12-31";
                 d.room = $('#selectRoom option:selected').val();
             },
             url: '/ulab/lab/getJournalConditionAjax/',
@@ -431,19 +431,7 @@ $(function ($) {
         pageLength: 25,
     });
 
-    journalDataTable.columns().every(function () {
-        let timeout
-        $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('keyup change clear', function () {
-            clearTimeout(timeout)
-            const searchValue = this.value
-            timeout = setTimeout(function () {
-                journalDataTable
-                    .column($(this).parent().index())
-                    .search(searchValue)
-                    .draw()
-            }.bind(this), 1000)
-        })
-    })
+    window.setupDataTableColumnSearch(journalDataTable)
 
     /**
      * фильтры журнала
@@ -673,4 +661,20 @@ $(function ($) {
             window.open(`/Condition/condition_doc_new.php?ID=${roomId}&year=${yearId}&month=${monthId}`);
         }
     });
+
+    // Находим все поля с type="number" внутри формы
+    const numberInputs = document.querySelectorAll('#conditionsModalForm input[type="number"]');
+    numberInputs.forEach(input => {
+        input.addEventListener('input', function () {
+            let value = this.value;
+            // Разрешаем только цифры, одну точку или запятую
+            value = value
+                .replace(/[^0-9.,]/g, '')                  // Удаляем всё кроме цифр и разделителей
+                .replace(/[.,][.,]+/g, '.')                // Только один разделитель
+                .replace(/^([0-9]*[.,]?[0-9]*)$/g, '$1')  // Корректный формат
+                .replace(',', '.');
+            this.value = value;
+        });
+    });
+
 });

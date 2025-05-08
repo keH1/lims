@@ -9,6 +9,8 @@ class RequestController extends Controller
     //ID ТЗ с которого начинается рефакторинг ТЗ (TODO: Для новых лабораторий удалить, так же убрать из карточки card.php)
     //const TZ_REFACTORING_START_ID = 7433;
 
+    const STAGE_ID_COMPLETED = 2;
+
     private $requestTypeConfig = [
         '9' => [
             'blocks' => [
@@ -112,7 +114,7 @@ class RequestController extends Controller
 
         $this->addJs('/assets/plugins/select2/dist/js/select2.min.js');
 
-        $this->addJs('/assets/js/request_new.js?v=2');
+        $this->addJs('/assets/js/request_new.js?v='. rand());
 
         $this->view('form');
     }
@@ -281,6 +283,12 @@ class RequestController extends Controller
 
         if ($_POST['REQ_TYPE'] === 'SALE') {
             $this->validationSale($_POST, $location);
+
+            // Обновление пользовательского поля Компании Должность руководителя в родительном падеже
+            $customFieldCompanyData = [
+                'PositionGenitive' => trim($_POST['PositionGenitive'])
+            ];
+            $company->setCustomFieldByCompanyId($companyId, $customFieldCompanyData);
 
             $resetId = 1;
             
@@ -656,7 +664,7 @@ class RequestController extends Controller
         }
         
         if ($config['blocks']['invoice']) {
-            $this->prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm);
+            $this->prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm, $actVr);
         }
         
         if ($config['blocks']['payment']) {
@@ -827,7 +835,7 @@ class RequestController extends Controller
         /** @var Request $request */
         $request = $this->model('Request');
 
-        $path = "request/{$idDeal}/{$file}";
+        $path = "request/{$idDeal}/files/{$file}";
 
         $request->deleteUploadedFile($path);
 
@@ -885,7 +893,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Получает данные для «Журнала заявок» [deprecated]
+     * Получает данные для «Журнала заявок» [deprecated]
      */
     public function getListAjax()
     {
@@ -1084,7 +1092,7 @@ class RequestController extends Controller
         $request = $this->model('Request');
 
         if ( isset($_FILES['file']) ) {
-            $response = $request->saveAnyFile("request/{$dealId}", $_FILES['file']);
+            $response = $request->saveAnyFile("request/{$dealId}/files", $_FILES['file']);
 
             echo json_encode($response, JSON_UNESCAPED_UNICODE);
         }
@@ -1544,17 +1552,20 @@ class RequestController extends Controller
         $this->data['is_government'] = $deal['TYPE_ID'] == '9';
         
         $this->data['stage'] = $request->getStage($requestData);
+        $this->data['stage']['id'] = $requestData['STAGE_ID'];
+        $this->data['stage_complete']['id'] = self::STAGE_ID_COMPLETED;
+
         $this->data['deal_title'] = $deal['TITLE'];
         
         $this->data['is_complete'] = !($deal['STAGE_ID'] != '2' && $deal['STAGE_ID'] != '3' && $deal['STAGE_ID'] != '4' && $deal['STAGE_ID'] != 'WON');
-        $this->data['is_may_change'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], [1, 10, 35, 62, 9, 11, 58, 34, 43, 61, 13, 7, 15]);
+        $this->data['is_may_change'] = true;//in_array($_SESSION['SESS_AUTH']['USER_ID'], [1, 10, 35, 62, 9, 11, 58, 34, 43, 61, 13, 7, 15]);
         $this->data['is_end_test'] = $deal['STAGE_ID'] == 2 || $deal['STAGE_ID'] == 4 || $deal['STAGE_ID'] == 'WON';
         
         $this->data['user']['name'] = $_SESSION['SESS_AUTH']['NAME'];
         
         $this->data['company_title'] = $deal['COMPANY_TITLE'];
         $this->data['company_id'] = $deal['COMPANY_ID'];
-        $this->data['is_managers'] = in_array($_SESSION['SESS_AUTH']['USER_ID'], [62, 83, 61, 17]);
+        $this->data['is_managers'] = true; //in_array($_SESSION['SESS_AUTH']['USER_ID'], [62, 83, 61, 17]);
         
         $this->data['is_good_company'] = $companyData[COMPANY_GOOD] == 1;
         
@@ -1582,13 +1593,13 @@ class RequestController extends Controller
         
         $this->data['comment'] = $request->getComment($dealId);
         
-        $userFiles = $request->getFilesFromDir(UPLOAD_DIR . "/request/{$dealId}");
+        $userFiles = $request->getFilesFromDir(UPLOAD_DIR . "/request/{$dealId}/files");
         $this->data['user_files'] = [];
         foreach ($userFiles as $file) {
             $imgLinc = URI.'/assets/images/unknown.png';
             $patternImg = "/\.(png|jpg|jpeg)$/i";
             if (preg_match($patternImg, $file)) {
-                $imgLinc = URI."/upload/request/{$dealId}/{$file}";
+                $imgLinc = URI."/upload/request/{$dealId}/files/{$file}";
             }
             $patternPdf = "/\.(pdf)$/i";
             if (preg_match($patternPdf, $file)) {
@@ -1678,8 +1689,7 @@ class RequestController extends Controller
         $this->data['attach']['date'] = !empty($tzDoc['DATE'])? StringHelper::dateRu($tzDoc['DATE']) : '--';
         $this->data['attach']['date_send'] = !empty($tzDoc['SEND_DATE'])? StringHelper::dateRu($tzDoc['SEND_DATE']) : 'Не отправлен';
         $this->data['attach']['actual_ver'] = $tzDoc['ACTUAL_VER'];
-        $this->data['attach']['is_disable_form'] = !$this->data['is_deal_osk'] && (
-			!$isExistTz || !empty($requestData['dateEnd']) || !$isConfirm || !empty($actVr));
+        $this->data['attach']['is_disable_form'] = !empty($actVr) || !empty($requestData['dateEnd']);
 		$this->data['attach']['is_disable_form_test'] = !$this->data['is_deal_osk'];
         $this->data['attach']['is_disable_mail'] = empty($tzDoc) || 0;
 
@@ -1695,15 +1705,14 @@ class RequestController extends Controller
     /**
      * Подготовка данных счета
      */
-    private function prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm)
+    private function prepareInvoiceData($invoiceData, $requestData, $dealId, $tzId, $isExistTz, $isConfirm, $actVr)
     {
         $this->data['invoice']['link'] = "/protocol_generator/account_new.php?ID={$dealId}&TZ_ID={$requestData['ID']}";
         $this->data['invoice']['check'] = !empty($invoiceData);
         $this->data['invoice']['number'] = !empty($invoiceData['ID']) ? $requestData['ACCOUNT'] : 'Не сформирован';
         $this->data['invoice']['date'] = !empty($invoiceData['DATE'])? StringHelper::dateRu($invoiceData['DATE']) : '--';
         $this->data['invoice']['date_send'] = !empty($invoiceData['SEND_DATE'])? StringHelper::dateRu($invoiceData['SEND_DATE']) : 'Не отправлен';
-        $this->data['invoice']['is_disable_form'] = false && !$this->data['is_deal_osk'] && (
-            !$isExistTz || empty($requestData['DOGOVOR_NUM']) || !empty($requestData['dateEnd']) || !empty($requestData['TAKEN_ID_DEAL']) || !$isConfirm);
+        $this->data['invoice']['is_disable_form'] = !empty($actVr) || !empty($requestData['dateEnd']);
         $this->data['invoice']['is_disable_mail'] = empty($invoiceData) || 0;
         $this->data['invoice']['attach'] = $invoiceData['ACTUAL_VER'];
     }
@@ -1742,7 +1751,7 @@ class RequestController extends Controller
         $this->data['sample']['link'] = "/ulab/generator/actSampleDocument/{$this->data['deal_id']}";
         $this->data['sample']['check'] = !empty($requestData['ACT_NUM']);
         $this->data['sample']['number'] = $requestData['ACT_NUM'] . "/" . date("Y", strtotime($requestData['DATE_ACT']));
-        $this->data['sample']['date'] = !empty($requestData['DATE_ACT']) ? StringHelper::dateRu($requestData['DATE_ACT']) : '';
+        $this->data['sample']['date'] = (!empty($requestData['DATE_ACT']) && $requestData['DATE_ACT'] !== '0000-00-00') ? StringHelper::dateRu($requestData['DATE_ACT']) : '';
         $this->data['sample']['date_act'] = !empty($requestData['DATE_ACT']) ? $requestData['DATE_ACT'] : '';
         $this->data['sample']['date_send'] = '--';
         $this->data['sample']['is_disable_form'] = !empty($requestData['ACT_NUM']) || !empty($requestData['dateEnd']) || !empty($actVr);
@@ -1884,8 +1893,7 @@ class RequestController extends Controller
         $this->data['act_complete']['date_send'] = !empty($actVr['SEND_DATE'])? StringHelper::dateRu($actVr['SEND_DATE']) : 'Не отправлен';
         $this->data['act_complete']['is_disable_form'] = false || 0;
         $this->data['act_complete']['is_disable_mail'] = empty($actVr) || 0;
-        //TODO: пока ид организации задано жестко 1. потом переделать на получение к какой организации принадлежит заявка
-        $this->data['act_complete']['assigned_users'] = $organizationModel->getAllLeaders(1);
+        $this->data['act_complete']['assigned_users'] = $organizationModel->getAllLeaders();
     }
 
 
