@@ -35,9 +35,11 @@ $(function () {
         url: "/ulab/gost/getLabAndUserAjax/",
         success: function (data) {
             data = JSON.parse(data);
+            console.log('data', data)
             $.each(data, function (i, val) {
 
-                if ( val.users == undefined ) { return false }
+                // Пропускаем лаборатории без пользователей
+                if (!val.users || Object.keys(val.users).length === 0) { return true }
 
                 let countUser = Object.keys(val.users).length
 
