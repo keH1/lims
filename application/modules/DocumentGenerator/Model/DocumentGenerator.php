@@ -3214,7 +3214,7 @@ class DocumentGenerator extends Model
         QRcode::png("https://niistrom.pro/check/index.php?NUMP=" . $protocolInfo['NUMBER'] . "&DATE=" . $protocolInfo['DATE'], $qrPath);
         $pathDoc = $protocolInfo['full_protocol_path'] . 'forsign.docx';
 
-        try {
+//        try {
             $template = new \PhpOffice\PhpWord\TemplateProcessor($pathDoc);
             $template->setValue('work_position', $userInfo['work_position']);
             $template->setValue('header', $userInfo['short_name']);
@@ -3231,13 +3231,13 @@ class DocumentGenerator extends Model
 //            $converter = new  OfficeConverter($protocolInfo['full_protocol_path'] . 'signed.docx', $protocolInfo['full_protocol_path']);
 //            $converter->convertTo($protocolInfo['pdf_name']); // генерирует pdf файл в том же каталоге
 
-
-         } catch (Exception $e) {
-            return [
-                'success' => false,
-                'error' => 'Не удалось изменить документ: ' . $e->getMessage()
-            ];
-         }
+//
+//         } catch (Exception $e) {
+//            return [
+//                'success' => false,
+//                'error' => 'Не удалось изменить документ: ' . $e->getMessage()
+//            ];
+//         }
 
         $docxPath = $protocolInfo['full_protocol_path'] . 'signed.docx';
         $pdfPath = $protocolInfo['full_protocol_path'] . $protocolInfo['pdf_name'];
