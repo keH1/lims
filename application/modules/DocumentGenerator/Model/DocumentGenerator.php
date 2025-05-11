@@ -3231,20 +3231,22 @@ class DocumentGenerator extends Model
 //            $converter = new  OfficeConverter($protocolInfo['full_protocol_path'] . 'signed.docx', $protocolInfo['full_protocol_path']);
 //            $converter->convertTo($protocolInfo['pdf_name']); // генерирует pdf файл в том же каталоге
 
-            $docxPath = $protocolInfo['full_protocol_path'] . 'signed.docx';
-            $pdfPath = $protocolInfo['full_protocol_path'] . $protocolInfo['pdf_name'];
 
-            // Команда для конвертации через LibreOffice
-            $command = "libreoffice --headless --convert-to pdf --outdir " . escapeshellarg(dirname($pdfPath)) . " " . escapeshellarg($docxPath);
-
-            // Выполнение команды
-            exec($command, $output, $returnCode);
          } catch (Exception $e) {
             return [
                 'success' => false,
                 'error' => 'Не удалось изменить документ: ' . $e->getMessage()
             ];
          }
+
+        $docxPath = $protocolInfo['full_protocol_path'] . 'signed.docx';
+        $pdfPath = $protocolInfo['full_protocol_path'] . $protocolInfo['pdf_name'];
+
+        // Команда для конвертации через LibreOffice
+        $command = "libreoffice --headless --convert-to pdf --outdir " . escapeshellarg(dirname($pdfPath)) . " " . escapeshellarg($docxPath);
+
+        // Выполнение команды
+        exec($command, $output, $returnCode);
 
         $tempPdfPath = $protocolInfo['full_protocol_path'] . 'signed.pdf';
 
