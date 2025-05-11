@@ -3248,6 +3248,9 @@ class DocumentGenerator extends Model
         // Выполнение команды
         exec($command, $output, $returnCode);
 
+        var_dump(exec($command, $output, $returnCode));
+        exit();
+
         $tempPdfPath = $protocolInfo['full_protocol_path'] . 'signed.pdf';
 
         // Переименовываем файл
