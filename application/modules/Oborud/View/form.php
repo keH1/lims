@@ -1225,9 +1225,8 @@
                         <?php foreach ($this->data['lab_room'] as $item): ?>
                             <?php if ($item['id'] > 0): ?>
                                 <option value="" class="fw-bold" disabled><?=$item['name']?></option>
-                            <?php else:
-                                $roomId = abs($item['id']); ?>
-                                <option value="<?=$roomId?>" <?=$this->data['oborud']['roomnumber'] == ($roomId) ? 'selected' : ''?>> -- <?=$item['name']?></option>
+                            <?php else: ?>
+                                <option value="<?=abs($item['id'])?>" <?=$this->data['oborud']['roomnumber'] == abs($item['id']) ? 'selected' : ''?>> -- <?=$item['name']?></option>
                             <?php endif; ?>
                         <?php endforeach; ?>
 <!--                        --><?php //if ($this->data['rooms']): ?>

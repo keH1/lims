@@ -11,6 +11,8 @@ class Request extends Model
     const DATE_START = '2021-01-01';
     //ID Сделки с которого начинается рефакторинг Результатов испытания (TODO: Для новых лабораторий удалить или добавить если производится рефакторинг результатов испытаний, так же убрать из карточки card.php, tz_show.php, probe.php)
     const RESULT_REFACTORING_START_ID = 8846;
+    // Тип заявки для гос. работ
+    const GOVERNMENT_TYPE = 9;
 
     // Кастомное поле в сделке, содержит ID организации
     const DEAL_CUSTOM_FIELD_ORGANIZATION_ID = "UF_CRM_1745839051";
@@ -927,7 +929,7 @@ class Request extends Model
                 if ( isset($filter['search']['lab']) ) {
                     $labId = (int)$filter['search']['lab'];
 
-                    if (isset($filter['search']['TYPE_ID']) && $filter['search']['TYPE_ID'] == 9) {
+                    if (isset($filter['search']['TYPE_ID']) && (int)$filter['search']['TYPE_ID'] === self::GOVERNMENT_TYPE) {
                         $where .= "gw.lab_id = {$labId} AND ";
                     } else {
                         $where .= "ml.lab_id = {$labId} AND ";
