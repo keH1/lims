@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Контроллер для протоколов
+ * @desc Протоколы
  * Class ProtocolController
  */
 Class ProtocolController extends Controller

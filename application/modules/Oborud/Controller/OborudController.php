@@ -1071,7 +1071,7 @@ class OborudController extends Controller
     }
 
     /**
-     * @desc Удалить данные компонента Ajax запросом
+     * @desc Получить данные компонента запросом
      */
     public function getListEquipmentAjax()
     {

@@ -1,6 +1,6 @@
 <?php
 /**
- * @desc Класс контроллер для истории
+ * @desc Журнал истории изменений
  * Class HistoryController
  */
 

@@ -6,7 +6,7 @@ use \Bitrix\Main\Loader;
 
 
 /**
- * @desc Контроллер командировок
+ * @desc Командировки
  * Class SecondmentController
  */
 class SecondmentController extends Controller
