@@ -42,13 +42,11 @@ $(function () {
             {
                 data: 'name',
                 render: function (data, type, item) {
-                    if ( item.method_id === null ) {
-                        return `Методик не добавлено`
-                    }
-                    if ( item.mp_name === null ) {
-                        return `<a href="/ulab/gost/method/${item.method_id}">${item.name}</a>`
-                    }
-                    return `<a href="/ulab/gost/method/${item.method_id}">${item.mp_name}</a>`
+                    if (!item.method_id) return ''
+
+                    const displayText = item.mp_name || item.name || ''
+
+                    return `<a href="/ulab/gost/method/${item.method_id}">${displayText}</a>`
                 }
             },
             {

@@ -865,7 +865,7 @@ class Methods extends Model
                 }
                 // Определяемая характеристика / показатель
                 if ( isset($filter['search']['name']) ) {
-                    $where .= "m.name LIKE '%{$filter['search']['name']}%' AND ";
+                    $where .= "COALESCE(p.name, m.name) LIKE '%{$filter['search']['name']}%' AND ";
                 }
                 // В области?
                 if ( isset($filter['search']['in_field']) ) {
@@ -913,7 +913,7 @@ class Methods extends Model
                     $order['by'] = 'g.materials';
                     break;
                 case 'name':
-                    $order['by'] = 'm.name';
+                    $order['by'] = 'COALESCE(p.name, m.name)';
                     break;
                 case 'clause':
                     $order['by'] = 'm.clause';
@@ -952,7 +952,7 @@ class Methods extends Model
             INNER JOIN ulab_methods AS m
             ON g.id = m.gost_id
 
-            INNER JOIN ulab_measured_properties AS p
+            LEFT JOIN ulab_measured_properties AS p
             ON p.id = m.measured_properties_id
 
             INNER JOIN ulab_methods_lab AS l
@@ -980,7 +980,7 @@ class Methods extends Model
             INNER JOIN ulab_methods AS m
             ON g.id = m.gost_id 
 
-            INNER JOIN ulab_measured_properties AS p
+            LEFT JOIN ulab_measured_properties AS p
             ON p.id = m.measured_properties_id 
 
             INNER JOIN ulab_methods_lab AS l
@@ -1007,7 +1007,7 @@ class Methods extends Model
             INNER JOIN ulab_methods AS m
             ON g.id = m.gost_id 
 
-            INNER JOIN ulab_measured_properties AS p
+            LEFT JOIN ulab_measured_properties AS p
             ON p.id = m.measured_properties_id
 
             INNER JOIN ulab_methods_lab AS l
