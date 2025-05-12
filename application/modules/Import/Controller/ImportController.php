@@ -634,7 +634,7 @@ class ImportController extends Controller
 
     /**
      * @desc Страница внесения сведений об отделах и помещениях
-     * @param $labId - id лаборатории
+     * @param $id - id лаборатории
      */
 
     public function rooms($id = null)
