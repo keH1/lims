@@ -3188,10 +3188,92 @@ class DocumentGenerator extends Model
      * @param $protocolId
      * @return array
      */
+//     public function sigProtocol($protocolId)
+//     {
+//         $protocolModel = new Protocol();
+//         $userModel = new User();
+
+//         $userId = App::getUserId();
+
+//         $protocolInfo = $protocolModel->getProtocolById($protocolId);
+//         $userInfo = $userModel->getUserShortById($userId);
+
+//         if (empty($protocolInfo)) {
+//             return [
+//                 'success' => false,
+//                 'error' => 'Не удалось получить данные о протоколе.'
+//             ];
+//         }
+
+// //		$yearProtocol = substr($protocolInformation['protocolYear'],-2);
+// //		$numDeal = str_replace('/', '.', $protocolInformation['dealNum']);
+// //		$att = !empty($protocolInformation['Attestat']) ? ' С' : '';
+// //		$nameProtocol = "ПИ {$protocolInformation['number']}.{$yearProtocol}{$att} {$numDeal}";
+
+//         $qrPath = $protocolInfo['full_protocol_path'] . 'qrNEW.png';
+//         QRcode::png("https://niistrom.pro/check/index.php?NUMP=" . $protocolInfo['NUMBER'] . "&DATE=" . $protocolInfo['DATE'], $qrPath);
+//         $pathDoc = $protocolInfo['full_protocol_path'] . 'forsign.docx';
+
+//         try {
+//             $template = new \PhpOffice\PhpWord\TemplateProcessor($pathDoc);
+//             $template->setValue('work_position', $userInfo['work_position']);
+//             $template->setValue('header', $userInfo['short_name']);
+//             $template->setValue('date_sign', date("d.m.Y"));
+//             $template->saveAs($pathDoc);
+
+//             $pathFile2 = $_SERVER['DOCUMENT_ROOT'] . "/sign_".App::getUserId().".png";
+//             $newTemplate = new \PhpOffice\PhpWord\Template($pathDoc);
+//             $newTemplate->setImageValue('image2.png', $qrPath);
+//             $newTemplate->setImageValue('image3.jpg', $pathFile2);
+//             $newTemplate->setImageValue('image3.png', $pathFile2);
+//             $newTemplate->saveAs($protocolInfo['full_protocol_path'] . 'signed.docx'); // Сохранение документа
+
+// //            $converter = new  OfficeConverter($protocolInfo['full_protocol_path'] . 'signed.docx', $protocolInfo['full_protocol_path']);
+// //            $converter->convertTo($protocolInfo['pdf_name']); // генерирует pdf файл в том же каталоге
+
+//             $docxPath = $protocolInfo['full_protocol_path'] . 'signed.docx';
+//             $pdfPath = $protocolInfo['full_protocol_path'] . $protocolInfo['pdf_name'];
+
+//             // Команда для конвертации через LibreOffice
+//             $command = "libreoffice --headless --convert-to pdf --outdir " . escapeshellarg(dirname($pdfPath)) . " " . escapeshellarg($docxPath);
+
+//             // Выполнение команды
+//             exec($command, $output, $returnCode);
+//          } catch (Exception $e) {
+//             return [
+//                 'success' => false,
+//                 'error' => 'Не удалось изменить документ: ' . $e->getMessage()
+//             ];
+//          }
+
+//         $tempPdfPath = $protocolInfo['full_protocol_path'] . 'signed.pdf';
+
+//         // Переименовываем файл
+//         if (file_exists($tempPdfPath)) {
+//             rename($tempPdfPath, $pdfPath);
+//         }
+
+//         $base64 = $protocolModel->getBase64EncodeFile($protocolInfo['full_protocol_path'], $protocolInfo['pdf_name']);
+
+//         if (empty($base64)) {
+//             return [
+//                 'success' => false,
+//                 'error' => 'Не удалось получить base64.'
+//             ];
+//         }
+
+//         return [
+//             'success' => true,
+//             'file_base64' => $base64,
+//             'url_file' => PROTOCOL_GENERATOR_URL . $protocolInfo['protocol_path'] . $protocolInfo['pdf_name'],
+//             'pdf_file_name' => $protocolInfo['pdf_name'],
+//         ];
+//     }
     public function sigProtocol($protocolId)
     {
         $protocolModel = new Protocol();
         $userModel = new User();
+        $converter = new Converter();
 
         $userId = App::getUserId();
 
@@ -3204,11 +3286,6 @@ class DocumentGenerator extends Model
                 'error' => 'Не удалось получить данные о протоколе.'
             ];
         }
-
-//		$yearProtocol = substr($protocolInformation['protocolYear'],-2);
-//		$numDeal = str_replace('/', '.', $protocolInformation['dealNum']);
-//		$att = !empty($protocolInformation['Attestat']) ? ' С' : '';
-//		$nameProtocol = "ПИ {$protocolInformation['number']}.{$yearProtocol}{$att} {$numDeal}";
 
         $qrPath = $protocolInfo['full_protocol_path'] . 'qrNEW.png';
         QRcode::png("https://niistrom.pro/check/index.php?NUMP=" . $protocolInfo['NUMBER'] . "&DATE=" . $protocolInfo['DATE'], $qrPath);
@@ -3228,35 +3305,25 @@ class DocumentGenerator extends Model
             $newTemplate->setImageValue('image3.png', $pathFile2);
             $newTemplate->saveAs($protocolInfo['full_protocol_path'] . 'signed.docx'); // Сохранение документа
 
-//            $converter = new  OfficeConverter($protocolInfo['full_protocol_path'] . 'signed.docx', $protocolInfo['full_protocol_path']);
-//            $converter->convertTo($protocolInfo['pdf_name']); // генерирует pdf файл в том же каталоге
+            $docxPath = $protocolInfo['full_protocol_path'] . 'signed.docx';
+            $pdfPath = $protocolInfo['full_protocol_path'] . $protocolInfo['pdf_name'];
 
-//
-//         } catch (Exception $e) {
-//            return [
-//                'success' => false,
-//                'error' => 'Не удалось изменить документ: ' . $e->getMessage()
-//            ];
-//         }
+            /*
+            // Команда для конвертации через LibreOffice
+            $command = "libreoffice --headless --convert-to pdf --outdir " . escapeshellarg(dirname($pdfPath)) . " " . escapeshellarg($docxPath);
 
-        $docxPath = $protocolInfo['full_protocol_path'] . 'signed.docx';
-        $pdfPath = $protocolInfo['full_protocol_path'] . $protocolInfo['pdf_name'];
+            // Выполнение команды
+            exec($command, $output, $returnCode);
+            */
 
-        // Команда для конвертации через LibreOffice
-        $command = "libreoffice --headless --convert-to pdf --outdir " . escapeshellarg(dirname($pdfPath)) . " " . escapeshellarg($docxPath);
+            $tempPdfPath = $converter->convertDocxToPdf($docxPath, pathinfo($pdfPath, PATHINFO_FILENAME), $protocolInfo['full_protocol_path']);
 
-        // Выполнение команды
-        exec($command, $output, $returnCode);
-
-        var_dump(exec($command, $output, $returnCode));
-        exit();
-
-        $tempPdfPath = $protocolInfo['full_protocol_path'] . 'signed.pdf';
-
-        // Переименовываем файл
-        if (file_exists($tempPdfPath)) {
-            rename($tempPdfPath, $pdfPath);
-        }
+         } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Не удалось изменить документ: ' . $e->getMessage()
+            ];
+         }
 
         $base64 = $protocolModel->getBase64EncodeFile($protocolInfo['full_protocol_path'], $protocolInfo['pdf_name']);
 
