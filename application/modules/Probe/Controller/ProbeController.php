@@ -337,6 +337,12 @@ class ProbeController extends Controller
 		/** @var  Probe $probeModel */
 		$probeModel = $this->model('Probe');
 
+        $validActDate = $this->validateDate($_POST['act']['ACT_DATE'], 'Дата поступления проб', true);
+        if (!$validActDate['success']) {
+            $this->showErrorMessage($validActDate['error']);
+            $this->redirect("/probe/new/{$dealId}");
+        }
+
 		$probeModel->insertUpdateActProbeNew($_POST['act']);
 
 		$this->showSuccessMessage('Акт сформирован');
