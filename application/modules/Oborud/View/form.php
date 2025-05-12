@@ -1327,7 +1327,7 @@
                     <select class="form-control select2" name="oborud[ASSIGNED]">
                         <option value="">Выберите</option>
                         <?php foreach ($this->data['users'] as $user): ?>
-                            <option value="<?=$user['ID']?>" <?=$this->data['oborud']['ASSIGNED'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+                            <option value="<?=$user['ID']?>" <?=$this->data['oborud']['ASSIGNED'] == $user['ID'] ? 'selected' : ''?>><?=$user['LAST_NAME']?> <?=$user['NAME']?> <?=$user['SECOND_NAME']?> </option>
                         <?php endforeach; ?>
                         <?php
                             if ( !empty($this->data['oborud']['ASSIGNED'])
@@ -1434,7 +1434,8 @@
                     <select class="form-control select2 equipment-assigned" name="oborud[ID_ASSIGN1]">
                         <option value="">Не указан</option>
                         <?php foreach ($this->data['users'] as $user): ?>
-                            <option value="<?=$user['ID']?>" <?=$this->data['oborud']['ID_ASSIGN1'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+                            <option value="<?=$user['ID']?>"
+                                    <?=$this->data['oborud']['ID_ASSIGN1'] == $user['ID'] ? 'selected' : ''?>><?=$user['LAST_NAME']?> <?=$user['NAME']?> <?=$user['SECOND_NAME']?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -1449,7 +1450,8 @@
                     <select class="form-control select2 add-equipment-assigned" name="oborud[ID_ASSIGN2]">
                         <option value="">Не указан</option>
                         <?php foreach ($this->data['users'] as $user): ?>
-                            <option value="<?=$user['ID']?>" <?=$this->data['oborud']['ID_ASSIGN2'] == $user['ID'] ? 'selected' : ''?>><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+                            <option value="<?=$user['ID']?>"
+                                    <?=$this->data['oborud']['ID_ASSIGN2'] == $user['ID'] ? 'selected' : ''?>><?=$user['LAST_NAME']?> <?=$user['NAME']?> <?=$user['SECOND_NAME']?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
