@@ -59,10 +59,10 @@
         <div class="col">
             <select id="selectLab" class="form-control filter filter-lab">
                 <option value="0">Все лаборатории</option>
-                <option value="-1">Вне лабораторий</option>
+                <option value="OUTSIDE_LABS">Вне лабораторий</option>
                 <?php foreach ($this->data['lab'] as $item): ?>
-                    <?php if ($item['id'] < 100): ?>
-                        <option value="<?=$item['id']?>" style="font-weight:bold"><?=$item['name']?></option>
+                    <?php if ($item['id'] > 0): ?>
+                        <option value="<?=$item['id']?>" class="fw-bold"><?=$item['name']?></option>
                     <?php else: ?>
                         <option value="<?=$item['id']?>"> -- <?=$item['name']?></option>
                     <?php endif; ?>

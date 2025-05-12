@@ -410,10 +410,13 @@ $(function () {
                     let html = ''
 
                     $.each(data, function (i, item) {
-                        if ( item.id < 100 ) {
+                        let currentId = +item.id
+
+                        if (currentId > 0) {
                             html += `<option value="" disabled>${item.name}</option>`
-                        } else {
-                            html += `<option value="${item.id - 100}">${item.name}</option>`
+                        } else if (currentId < 0) {
+                            let roomId = Math.abs(currentId)
+                            html += `<option value="${roomId}">${item.name}</option>`
                         }
                     })
 

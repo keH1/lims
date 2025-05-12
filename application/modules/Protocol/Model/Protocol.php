@@ -180,7 +180,7 @@ class Protocol extends Model
                     $where .= "b.USER_HISTORY LIKE '%{$filter['search']['USER_HISTORY']}%' AND ";
                 }
                 if ( isset($filter['search']['lab']) ) {
-                    $where .= "lab.id_dep = '{$filter['search']['lab']}' AND ";
+                    $where .= "lab.ID = '{$filter['search']['lab']}' AND ";
                 }
                 // стадии
                 if ( isset($filter['search']['stage']) ) {

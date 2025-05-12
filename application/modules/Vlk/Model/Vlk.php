@@ -39,10 +39,12 @@ class Vlk extends Model
 
                 // Лаба Комната
                 if ( isset($filter['search']['lab']) ) {
-                    if ( $filter['search']['lab'] < 100 ) {
-                        $where .= "l.`lab_id` = {$filter['search']['lab']} AND ";
-                    } else if ($filter['search']['lab'] > 100) {
-                        $roomId = (int) $filter['search']['lab'] - 100;
+                    $selectedId = (int)$filter['search']['lab'];
+
+                    if ($selectedId > 0) {
+                        $where .= "l.`lab_id` = {$selectedId} AND ";
+                    } else if ($selectedId < 0) {
+                        $roomId = abs($selectedId);
                         $where .= "r.`room_id` = {$roomId} AND ";
                     }
                 }

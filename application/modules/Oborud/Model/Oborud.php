@@ -129,12 +129,17 @@ class Oborud extends Model {
 
                 // Лаба Комната
                 if ( isset($filter['search']['lab']) ) {
-                    if ( (int)$filter['search']['lab'] == -1 ) {
+                    $selectedId = (int)$filter['search']['lab'];
+
+                    if ($filter['search']['lab'] === 'OUTSIDE_LABS') {
+                        // Вне лабораторий
                         $where .= "b.`place_of_installation_or_storage` = 0 AND ";
-                    } else if ( $filter['search']['lab'] < 100 ) {
-                        $where .= "b.`place_of_installation_or_storage` = {$filter['search']['lab']} AND ";
-                    } else if ($filter['search']['lab'] > 100) {
-                        $roomId = (int) $filter['search']['lab'] - 100;
+                    } else if ($selectedId > 0) {
+                        // Фильтр по лаборатории
+                        $where .= "b.`place_of_installation_or_storage` = {$selectedId} AND ";
+                    } else if ($selectedId < 0) {
+                        // Фильтр по помещению
+                        $roomId = abs($selectedId);
                         $where .= "b.`roomnumber` = {$roomId} AND ";
                     }
                 }
@@ -1556,12 +1561,14 @@ class Oborud extends Model {
 
                 // Лаба Комната
                 if ( isset($filter['search']['lab']) ) {
-                    if ( (int)$filter['search']['lab'] == -1 ) {
+                    $selectedId = (int)$filter['search']['lab'];
+
+                    if ($filter['search']['lab'] === 'OUTSIDE_LABS') { // Вне лабораторий
                         $where .= "ss.LAB_ID = 0 AND ";
-                    } else if ( $filter['search']['lab'] < 100 ) {
-                        $where .= "ss.LAB_ID = {$filter['search']['lab']} AND ";
-                    } else if ($filter['search']['lab'] > 100) {
-                        $roomId = (int) $filter['search']['lab'] - 100;
+                    } else if ($selectedId > 0) { // Фильтр по лаборатории
+                        $where .= "ss.LAB_ID = {$selectedId} AND ";
+                    } else if ($selectedId < 0) { // Фильтр по помещению
+                        $roomId = abs($selectedId);
                         $where .= "ss.ROOM_ID = {$roomId} AND ";
                     }
                 }
