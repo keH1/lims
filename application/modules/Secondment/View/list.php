@@ -230,76 +230,51 @@
                 </button>
             </div>
 
-            <div data-js-form-company style="margin-left: 10px; display: none; width: 90%">
-                <h6>Создать компанию</h6>
-                <div >
-                    <table id="company" style="width: 100%">
-                        <tbody id="company_body">
-
-                        <tr>
-                            <td>ИНН</td>
-                            <!--            <td><input list="gost" class="gost" name="ID_COMPANY" value=""></td>-->
-                            <td>
-                                <input id="inn" type="number" name="inn" style="width: 100%">
-                                <div id="innHelp" class="form-text"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Название</td>
-                            <td>
-                                <input class="tz" type="text" name="company_name" value="" style="width: 100%">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Полное название</td>
-                            <!--            <td><input list="gost" class="gost" name="ID_COMPANY" value=""></td>-->
-                            <td>
-                                <input class="tz" type="text" name="CompanyFullName" style="width: 100%">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Адрес</td>
-                            <td>
-                                <input class="tz" type="text" name="ADDR" style="width: 100%">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>ОГРН</td>
-                            <td>
-                                <input type="number" name="OGRN" style="width: 100%">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>КПП</td>
-                            <td>
-                                <input type="number" name="KPP" style="width: 100%">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>ФИО руководителя</td>
-                            <td>
-                                <input class="tz" type="text" name="DirectorFIO" style="width: 100%">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Должность руководителя</td>
-                            <td>
-                                <input class="tz" type="text" name="Position2" style="width: 100%">
-                            </td>
-                        </tr>
-
-
-
-                        </tbody>
-                    </table>
-                    <input type="hidden" name="ID" value="">
-                    <button type="button" class="btn btn-primary" id="saveCompany" >Сохранить</button>
+            <div class="row m-3" data-js-form-company style="display: none;">
+                <div class="col-12">
+                    <h6>Создать компанию</h6>
+                    <div class="card p-3">
+                        <input type="hidden" name="ID" value="">
+                        <div class="mb-3">
+                            <label class="form-label">ИНН</label>
+                            <input id="inn" type="number" name="inn" class="form-control">
+                            <div id="innHelp" class="form-text"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Название</label>
+                            <input class="form-control" type="text" name="company_name" value="">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Полное название</label>
+                            <input class="form-control" type="text" name="CompanyFullName">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Адрес</label>
+                            <input class="form-control" type="text" name="ADDR">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ОГРН</label>
+                            <input class="form-control" type="number" name="OGRN">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">КПП</label>
+                            <input class="form-control" type="number" name="KPP">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ФИО руководителя</label>
+                            <input class="form-control" type="text" name="DirectorFIO">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Должность руководителя</label>
+                            <input class="form-control" type="text" name="Position2">
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-primary" id="saveCompany">Сохранить</button>
+                        </div>
+                    </div>
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <div class="row mb-3">
@@ -320,58 +295,59 @@
                 <button type="button" class="btn btn-primary rounded col-sm-1 col-md-offset-2" data-js-toggle-object><i class="fa-solid fa-plus"></i></button>
             </div>
 
-            <div data-js-form-object style="display: none;" class="m-3">
-                <h6>Создать объект</h6>
-                <div>
-                    <input type="hidden" name="ID" value="">
-                    <table id="obj" class="mb-2 w-75">
-                        <tbody id="obj_body">
-                        <tr>
-                            <td>Название</td>
-                            <td>
-                                <input class="tz" type="text" name="NAME" value="" style="width: 100%">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Клиент</td>
-                            <td>
-                                <select class="form-control select2" data-js-clients name="ID_COMPANY">
-                                    <option value=""></option>
-                                    <?php foreach ($this->data["companyList"] as $company): ?>
-                                        <option value="<?= $company["id"] ?>"><?= $company["title"] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Город</td>
-                            <td>
-                                <select data-js-cities name="CITY" class="form-control" id="city"></select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Километраж</td>
-                            <td><input type="number" name="KM" min="0" step="any" style="width: 100%" value="1"></td>
-                        </tr>
-                        <tr>
-                            <td>Координаты</td>
-                            <td>
-                                <input data-js-coords class="res" type="number" step="0.000001" name="coord[0][0]" value="0" data-id="0">
-                                <input data-js-coords class="res" type="number" step="0.000001" name="coord[0][1]" value="0" data-id="0">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Координаты</td>
-                            <td>
-                                <input data-js-coords class="res" type="number" step="0.000001" name="coord[1][0]" value="0" data-id="1">
-                                <input data-js-coords class="res" type="number" step="0.000001" name="coord[1][1]" value="0" data-id="1">
-                            </td>
-                        </tr>
+            <div class="row m-3" data-js-form-object style="display: none;">
+                <div class="col-12">
+                    <h6>Создать объект</h6>
+                    <div class="card p-3">
+                        <input type="hidden" name="ID" value="">
+                        <div class="mb-3">
+                            <label class="form-label">Название</label>
+                            <input class="form-control" type="text" name="NAME" value="">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Клиент</label>
+                            <select class="form-control select2" data-js-clients name="ID_COMPANY">
+                                <option value=""></option>
+                                <?php foreach ($this->data["companyList"] as $company): ?>
+                                    <option value="<?= $company["id"] ?>"><?= $company["title"] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Город</label>
+                            <select data-js-cities name="CITY" class="form-control" id="city"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Километраж</label>
+                            <input class="form-control" type="number" name="KM" min="0" step="any" value="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Координаты 1</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input class="form-control" data-js-coords type="number" step="0.000001" name="coord[0][0]" value="0" data-id="0" placeholder="Широта">
+                                </div>
+                                <div class="col-6">
+                                    <input class="form-control" data-js-coords type="number" step="0.000001" name="coord[0][1]" value="0" data-id="0" placeholder="Долгота">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Координаты 2</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input class="form-control" data-js-coords type="number" step="0.000001" name="coord[1][0]" value="0" data-id="1" placeholder="Широта">
+                                </div>
+                                <div class="col-6">
+                                    <input class="form-control" data-js-coords type="number" step="0.000001" name="coord[1][1]" value="0" data-id="1" placeholder="Долгота">
+                                </div>
+                            </div>
+                        </div>
 
-                        </tbody>
-                    </table>
-
-                    <button type="button" class="btn btn-primary" id="save" >Сохранить</button>
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-primary" id="save">Сохранить</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
