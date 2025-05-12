@@ -39,6 +39,8 @@ class Probe extends Model
 
         while ($row = $sql->Fetch()) {
             $user = $userModel->getUserData($row['user_id']);
+
+            $row['full_name_escaped'] = htmlspecialchars($user['full_name'], ENT_QUOTES, 'UTF-8');
             $row['short_name'] =  $user['short_name'];
             $row['date'] = date('d.m.Y H:i:s', strtotime($row['date']));
 

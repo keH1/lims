@@ -236,9 +236,11 @@ $( document ).ready(function() {
                 src: '#add-entry-modal-form',
                 type: 'inline'
             },
-            fixedContentPos: false,
-            closeOnBgClick: false,
-        })
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            closeOnBgClick: false
+         })
     })
     // $('[name="add_entry"]').magnificPopup({
     //     items: {

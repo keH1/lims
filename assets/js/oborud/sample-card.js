@@ -177,7 +177,7 @@ $(function () {
         let idList = []
 
         $.each($optionList, function (i, item) {
-            idList.push($(item).val());
+            idList.push($(item).val())
         });
 
         if ( idList.length > 0 ) {
@@ -187,23 +187,26 @@ $(function () {
                 dataType: "json",
                 method: "POST",
                 success: function (data) {
-                    let html = `<option value="0">Выберите помещение</option>`;
+                    let html = `<option value="0">Выберите помещение</option>`
 
                     $.each(data, function (i, item) {
-                        if ( item.id < 100 ) {
-                            html += `<option value="" disabled>${item.name}</option>`
-                        } else {
-                            html += `<option value="${item.id - 100}">${item.name}</option>`
-                        }
-                    });
+                        let currentId = +item.id
 
-                    $('#select-room ~ .select2-container').find('#select2-select-room-container').html('');
+                        if (currentId > 0) {
+                            html += `<option value="" disabled>${item.name}</option>`
+                        } else if (currentId < 0) {
+                            let roomId = Math.abs(currentId)
+                            html += `<option value="${roomId}">${item.name}</option>`
+                        }
+                    })
+
+                    $('#select-room ~ .select2-container').find('#select2-select-room-container').html('')
                     $('#select-room').html(html);
                 }
             })
         } else {
-            $('#select-room').html('<option value="" disabled>Сначала выберите лаборатории</option>');
+            $('#select-room').html('<option value="" disabled>Сначала выберите лаборатории</option>')
         }
-    });
+    })
 
-});
+})

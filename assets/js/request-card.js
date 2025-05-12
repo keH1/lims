@@ -247,7 +247,7 @@ $(function ($) {
         $('#email-check').append(fieldsHtml)
         
         $('#ID').val(orderId)
-        $('#TYPE').val(7)
+        $('#TYPE').val(TYPE_DOCUMENT.BATCH)
         $('#TITLE').val(title)
         
         $('#email-check').data('check', check)
@@ -265,21 +265,29 @@ $(function ($) {
         let selectedEmails = $form.find('input[name="EMAIL[]"]:checked').map(function() {
             return $(this).val()
         }).get()
+        let type = parseInt($('#TYPE').val())
         
         if (selectedEmails.length === 0) {
             showErrorMessage('Пожалуйста, выберите хотя бы один адрес электронной почты', '#error-message')
             return false
         }
-        
+
         let data = {
             "ID": $('#ID').val(),
             "ID2": $form.find('input[name="DEAL_ID"]').val(),
             "TZ_ID": $form.find('input[name="TZ_ID"]').val(),
-            "TYPE": $('#TYPE').val(),
+            "TYPE": type,
             "EMAIL": selectedEmails.join(','),
             "NAME": $form.find('input[name="NAME"]').val(),
             "TITLE": $('#TITLE').val(),
             "is_ajax": 1
+        }
+
+        if (type === TYPE_DOCUMENT.PROTOCOL) {
+            data.YEAR = $('#YEAR').val()
+            data.ID_P = $('#ID_P').val()
+            data.SIG = $('#SIG').val()
+            data.PDF = $('#PDF').val()
         }
         
         if (isOverall) {

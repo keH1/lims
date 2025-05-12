@@ -4,9 +4,7 @@
             <select id="select_entities" class="form-control">
                 <?php foreach ($this->data['entities'] as $key => $entity): ?>
                     <?php 
-                        if ($key != 'request' &&
-                            $key != 'users' &&
-                            $key != 'lab') { continue; }
+                        if ($key != 'request') { continue; }
                     ?>
                     <option value="<?=$key?>"><?=$entity['title']?></option>
                 <?php endforeach; ?>

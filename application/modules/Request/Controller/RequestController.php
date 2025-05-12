@@ -11,6 +11,17 @@ class RequestController extends Controller
 
     const STAGE_ID_COMPLETED = 2;
 
+    // Тип документа
+    const TYPE_DOCUMENT = [
+        'TZ'           => 1,
+        'PROPOSAL'     => 2,
+        'ORDER'        => 3,
+        'INVOICE'      => 4,
+        'PROTOCOL'     => 5,
+        'APPLICATION'  => 6,
+        'ACT_COMPLETE' => 8
+    ];
+
     private $requestTypeConfig = [
         '9' => [
             'blocks' => [
@@ -638,8 +649,8 @@ class RequestController extends Controller
         $this->data['request'] = $requestData;
         $this->data['doc_id'] = $dogovorData['ID'] ?? '';
         $this->data['attach1'] = $dogovorData['ACTUAL_VER'] ?? '';
-        $this->data['attach2'] = $invoiceData['ACTUAL_VER'] ?? '';
-        $this->data['attach3'] = $tzDoc['ACTUAL_VER'] ?? '';
+        $this->data['attach2'] = $tzDoc['ACTUAL_VER'] ?? '';
+        $this->data['attach3'] = $invoiceData['ACTUAL_VER'] ?? '';
         $this->data['material_data'] = $requirement->getMaterialProbeGostToRequest($dealId);
         $this->data['result_refactoring_start_id'] = $request->getResultRefactoringStartId();
         $this->data['contract'] = $orderData;
@@ -700,12 +711,8 @@ class RequestController extends Controller
         $this->addJS("/assets/plugins/dropzone/dropzone3.js");
         $r = rand();
         $this->addJs("/assets/js/request-card.js?v={$r}");
-        
-        if (!empty($requestData['TAKEN_ID_DEAL'])) {
-            $this->view('card_taken');
-        } else {
-            $this->view($config['template']);
-        }
+
+        $this->view($config['template']);
     }
 
 
@@ -897,7 +904,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Получает данные для «Журнала заявок» [deprecated]
+     * Получает данные для «Журнала заявок» [deprecated]
      */
     public function getListAjax()
     {
@@ -1574,12 +1581,10 @@ class RequestController extends Controller
         $this->data['is_good_company'] = $companyData[COMPANY_GOOD] == 1;
         
         $assignedsList = $user->getAssignedByDealId($dealId, true);
-        
-        $assignedNames = [];
-        foreach ($assignedsList as $assigned) {
-            $assignedNames[] = $assigned['short_name'];
-        }
-        $this->data['assigned'] = implode(', ', $assignedNames);
+
+        $this->data['assigned'] = implode(', ',
+            array_filter(array_column($assignedsList, 'full_name'))
+        );
         $this->data['main_assigned'] = $assignedsList[0]['short_name'];
 
         $mailList = $requestData['addMail'] ?? [];
@@ -1802,6 +1807,7 @@ class RequestController extends Controller
             $yearDir = date("Y", strtotime($protocol['DATE']));
             $dir  = PROTOCOL_PATH . "archive/{$requestData['ID']}{$yearDir}/{$protocol['ID']}/";
             $link = "/ulab/generator/ProtocolDocument/{$protocol['ID']}";
+
             $this->data['protocol'][] = [
                 'id'        => $protocol['ID'],
                 'check'     => !empty($protocol['NUMBER']),
@@ -1816,13 +1822,10 @@ class RequestController extends Controller
                 'actual_version'  => $protocol['ACTUAL_VERSION']? unserialize($protocol['ACTUAL_VERSION']) : '',
                 'is_disable_form' => /*$requestData['STAGE_ID'] == '4' ||*/ $requestData['STAGE_ID'] == 'WON' || empty($protocol['NUMBER']) /*|| !empty($actVr)*/,
                 'is_disable_mail' =>
-                    empty($protocol['NUMBER'])
-                    || empty($protocol['ACTUAL_VERSION'])
-                    || (
-                        empty($requestData['OPLATA'])
-                        && empty($requestData['TAKEN_ID_DEAL'])
-                        && $_SESSION['SESS_AUTH']['USER_ID'] != 9
-                    ),
+                    empty($protocol['NUMBER']) ||
+                    empty($protocol['ACTUAL_VERSION']) || 
+                        (empty($requestData['OPLATA']) &&
+                         empty($requestData['TAKEN_ID_DEAL'])),
                 'is_enable_ecp'  =>
                     !empty($protocol['ID'])
                     && !empty($protocol['NUMBER'])

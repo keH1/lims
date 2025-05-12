@@ -142,11 +142,10 @@
                 <select name="select_room" id="selectRoom" class="form-control filter-room filter">
                     <option value="0">Выберите помещение</option>
                     <?php foreach ($this->data['rooms'] as $item): ?>
-                        <?php if ($item['id'] < 100): ?>
+                        <?php if ($item['id'] > 0): ?>
                             <option class="font-bold" value="<?= $item['id'] ?>" disabled><?= $item['name'] ?></option>
                         <?php else: ?>
-                            <option value="<?= $item['id'] ?>">
-                                -- <?= $item['name'] ?></option>
+                            <option value="<?= $item['id'] ?>"> -- <?= $item['name'] ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </select>
@@ -213,7 +212,7 @@
             <select name="form[room_id]" id="room" class="form-control room" required>
                 <option value="">Выберите помещение</option>
                 <?php foreach ($this->data['rooms'] as $item): ?>
-                    <?php if ($item['id'] < 100): ?>
+                    <?php if ($item['id'] > 0): ?>
                         <option class="font-bold"
                                 value="<?= $item['id'] ?>" disabled><?= $item['name'] ?></option>
                     <?php else: ?>

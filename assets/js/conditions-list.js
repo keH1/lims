@@ -21,10 +21,10 @@ $(function ($) {
     body.on('click', '.add-conditions', function () {
         const conditionsModalForm = $('#conditionsModalForm');
 
-        conditionsModalForm[0].reset()
+        conditionsModalForm[0].reset();
 
         let roomId = +$('#selectRoom').val();
-            roomId = roomId > 0 ? roomId : '';
+            roomId = (roomId < 0) ? roomId : '';
 
         conditionsModalForm.find('.remove-condition').remove();
         conditionsModalForm.find('#room').val(roomId);
@@ -398,14 +398,10 @@ $(function ($) {
             {
                 data: 'created_at',
                 render: function (data, type, item) {
-                    if (item.is_can_edit) {
-                        return `<span class="text-primary cursor-pointer update-conditions" 
+                    return `<span class="text-primary cursor-pointer update-conditions" 
                                 title="Редактировать показатели измерений" data-condition-id="${item.u_c_id}">
                                     ${item.ru_created_at}
                             </span>`;
-                    } else {
-                        return `<span>${item.ru_created_at}</span>`;
-                    }
                 }
             },
             {
@@ -632,17 +628,16 @@ $(function ($) {
      */
     body.on('click', '#selectRoom', function () {
         const navItemDropdown = $('#navItemDropdown');
-        let room = +$('#selectRoom').val();
+        let roomId = +$(this).val();
 
-        if (room <= 0) {
-            if (!navItemDropdown.hasClass('d-none')) {
-                navItemDropdown.removeClass('d-block');
-                navItemDropdown.addClass('d-none');
+        // Показываем только для помещений (ID < 0)
+        if (roomId < 0) {
+            if (!navItemDropdown.hasClass('d-block')) {
+                navItemDropdown.removeClass('d-none').addClass('d-block');
             }
         } else {
-            if (!navItemDropdown.hasClass('d-block')) {
-                navItemDropdown.removeClass('d-none');
-                navItemDropdown.addClass('d-block');
+            if (!navItemDropdown.hasClass('d-none')) {
+                navItemDropdown.removeClass('d-block').addClass('d-none');
             }
         }
     });
@@ -653,7 +648,7 @@ $(function ($) {
     body.on('click', '.download-report li a', function (e) {
         e.preventDefault();
 
-        let roomId = $('#selectRoom').val(),
+        let roomId = Math.abs(+$('#selectRoom').val()),
             yearId = $(this).data('yearId'),
             monthId = $(this).data('monthId');
 

@@ -33,7 +33,18 @@ class Permission extends Model
 
         $result = [];
 
+        $allowRole = [
+            'admin',
+            'head_lab',
+            'lab',
+            'registrator',
+            ];
+
         while ($row = $sql->Fetch()) {
+            if ( !in_array($row['view_name'], $allowRole) ) {
+                continue;
+            }
+
             $row['permission'] = json_decode($row['permission'], true);
             $result[] = $row;
         }
@@ -89,7 +100,52 @@ class Permission extends Model
 
         $result = [];
 
+        $allowControllers = [
+            'import',
+            'request',
+            'order',
+            'nk',
+            'protocol',
+            'probe',
+            'normDocGost',
+            'gost',
+            'oborud',
+            'material',
+            'transport',
+            'lab',
+            'reactive',
+            'electric',
+            'recipe',
+            'reactiveconsumption',
+            'disinfectionConditioners',
+            'precursor',
+            'water',
+            'grain',
+            'standarttitr',
+            'fireSafety',
+            'safetyTraining',
+            'invoice',
+            'secondment',
+            'user',
+            'history',
+            'statistic',
+            'reference',
+            'scale',
+            'coal',
+            'documentGenerator',
+            'company',
+            'result',
+            'requirement',
+            'protocol',
+            'permission'
+        ];
+
+
         foreach ($modules as $module) {
+            if (!in_array(strtolower($module), $allowControllers)) {
+                continue;
+            }
+
             $fullPathFile = APP_PATH . "/modules/{$module}/Controller/{$module}Controller.php";
 
             if ( !is_file($fullPathFile) ) {
@@ -105,6 +161,9 @@ class Permission extends Model
             $resultMethods = [];
             foreach ($methods as $method) {
                 $descMethod = $this->getDescFromDocDocumentByObject($reflector->getMethod($method));
+                if (empty($descMethod)) {
+                    continue;
+                }
                 $resultMethods[] = [
                     'name' => $method,
                     'desc' => $descMethod,

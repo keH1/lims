@@ -6,3 +6,8 @@ const REGEX = {
     // Проверяет валидный адрес электронной почты вида имя_пользователя@домен.зона
     EMAIL_PATTERN: /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
 }
+
+const TYPE_DOCUMENT = {
+    PROTOCOL: 5,
+    BATCH: 7
+}

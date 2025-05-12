@@ -160,7 +160,7 @@ class ResultController extends Controller
     /**
      * @deprecated
      * route /result/resultCard/{$dealId}
-     * @desc Карточка листа измерений [deprecated]
+     * Карточка листа измерений [deprecated]
      * @param $dealId - id сделки
      */
     public function resultCard($dealId)
@@ -176,7 +176,7 @@ class ResultController extends Controller
     /**
      * @deprecated
      * route /result/card/{$dealId}
-     * @desc Карточка листа измерений [deprecated]
+     * Карточка листа измерений [deprecated]
      * @param $dealId - id сделки
      */
     public function card($dealId)
@@ -190,7 +190,7 @@ class ResultController extends Controller
 
     /**
      * @deprecated
-     * @desc Карточка листа измерений для сотрудников лабораторий [deprecated]
+     * Карточка листа измерений для сотрудников лабораторий [deprecated]
      * @param $dealId
      */
     public function card_tester($dealId)
@@ -272,7 +272,7 @@ class ResultController extends Controller
     /**
      * @deprecated
      * route /result/insertUpdate/
-     * @desc Сохраняем, обновляем данные результов испытаний [deprecated]
+     * Сохраняем, обновляем данные результов испытаний [deprecated]
      */
     public function insertUpdate()
     {

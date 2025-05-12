@@ -279,7 +279,7 @@
 
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">
-                        Необходимые сведения и документы для проведения испытаний (см. п.2.2.4)
+                        Необходимые сведения и документы для проведения испытаний
                     </label>
                     <div class="col-sm-8 pt-2">
                         <div class="form-check form-check-inline">

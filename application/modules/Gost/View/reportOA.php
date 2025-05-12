@@ -9,7 +9,7 @@
         </div>
 
         <div class="col">
-            <select id="selectStage" class="form-control filter-stage">
+            <select id="selectStage" class="form-control filter filter-stage">
                 <option value="">Все</option>
                 <option value="2">В ОА</option>
                 <option value="3">РОА</option>
@@ -20,7 +20,7 @@
         </div>
 
         <div class="col">
-            <select id="selectLab" class="form-control filter-lab">
+            <select id="selectLab" class="form-control filter filter-lab">
                 <option value="0">Все лаборатории</option>
                 <?php foreach ($this->data['lab_list'] as $item): ?>
                     <option value="<?=$item['ID']?>"><?=$item['NAME']?></option>

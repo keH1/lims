@@ -33,8 +33,7 @@ class LabController extends Controller
 
 
         if (isset($_SESSION['room_id'])) {
-            $this->data['room'] = $_SESSION['room_id'] + 100;
-            // $this->data['room_id'] = $_SESSION['room_id'];
+            //$this->data['room_id'] = -1 * (int)$_SESSION['room_id'];
             unset($_SESSION['room_id']);
         }
 
@@ -129,14 +128,14 @@ class LabController extends Controller
 
         $location = "/lab/conditionList/";
 
-        if (empty($_POST['form']['room_id']) && (int)$_POST['form']['room_id'] < 0) {
+        if (empty($_POST['form']['room_id']) && (int)$_POST['form']['room_id'] >= 0) {
             $this->showErrorMessage('Не указан, или указан неверно ИД комнаты');
             $this->redirect($location);
         }
 
 
         $userId = App::getUserId();
-        $roomId = intval($_POST['form']['room_id']) - 100;
+        $roomId = abs(intval($_POST['form']['room_id']));
         $arrWarning = [];
         $isMethodMatch = 1;
         $isOborudMatch = 1;
@@ -417,7 +416,7 @@ class LabController extends Controller
 
 
         $condition = $labModel->getConditionById((int)$_POST['id']);
-        $roomId = intval($condition['room_id']) - 100;
+        $roomId = abs(intval($condition['room_id']));
         $methods = $methodsModel->getMethodsByRoom($roomId);
         $oboruds = $oborudModel->getOborudByRoom($roomId);
 
@@ -559,6 +558,11 @@ class LabController extends Controller
 		return $results ?? [];
 	}
 
+
+    /**
+     * @desc Получает список лабораторий Аяксом
+     * @return void
+     */
     public function getLabListAjax()
     {
         global $APPLICATION;

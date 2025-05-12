@@ -14,11 +14,11 @@
     <div class="row">
         <div class="col">
             <select id="selectLab" class="form-control filter filter-lab">
-                <option value="">Все лаборатории</option>
-                <option value="-1">Вне лабораторий</option>
+                <option value="0">Все лаборатории</option>
+                <option value="OUTSIDE_LABS">Вне лабораторий</option>
                 <?php if ($this->data['lab']): ?>
                     <?php foreach ($this->data['lab'] as $lab): ?>
-                        <option value="<?= $lab['DEPARTMENT'] ?? '' ?>"><?= $lab['NAME'] ?? '' ?></option>
+                        <option value="<?= $lab['ID'] ?? '' ?>"><?= $lab['NAME'] ?? '' ?></option>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
