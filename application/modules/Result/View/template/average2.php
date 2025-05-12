@@ -1,16 +1,16 @@
 <div class="measurement-wrapper" id="averageWrapper">
     <h3 class="mb-3">Методика с расчетом среднего значения по 2 наиб.</h3>
 
-    <!--name="method_type" наименавание для всех типов метода одинаково-->
+    <!--name="method_type" наименование для всех типов метода одинаково-->
     <!--<input type="hidden" id="methodType" name="method_type" value="TU_sred2">-->
-    <input type="hidden" id="methodType" name="type" value="sred">
+    <input type="hidden" id="methodType" name="form_data[<?=$this->data['ugtp_id']?>][type]" value="sred">
 
     <div class="form-group row">
         <div class="col-auto">
             <input class="form-check-input border-radius-0" type="checkbox" value="1" name="form_data[<?=$this->data['ugtp_id']?>][form][is_single_values]"
                 <?=$this->data['measuring']['form']['is_single_values'] == 1? 'checked' : ''?>>
         </div>
-        <label class="col col-form-label ps-0">Выводить единичные значения в протокол?</label>
+        <label class="col ps-0">Выводить единичные значения в протокол?</label>
     </div>
 
     <div class="mb-3">
