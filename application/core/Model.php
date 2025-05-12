@@ -455,7 +455,7 @@ class Model
             if (!empty($filter['search'])) {
                 $having = '1';
                 foreach ($filter['search'] as $key => $item) {
-                    $having .= " AND {$key} COLLATE utf8mb3_unicode_ci LIKE '%{$item}%'";
+                    $having .= " AND {$key} LIKE '%{$item}%'";
                 }
                 $transformedFilter['having'] = $having;
             }
