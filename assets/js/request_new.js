@@ -34,6 +34,12 @@ $(function ($) {
         initSelect2($(this))
     })
 
+    initTooltips('.assigned-select')
+    
+    $body.on('change', '.assigned-select', function() {
+        initTooltips('.assigned-select')
+    })
+
     /**
      * @desc Переключает тип заявки
      */
@@ -492,6 +498,8 @@ $(function ($) {
 
             initSelect2($select)
         })
+        
+        initTooltips('.assigned-select')
     }
 
     $body.on('change', '#assigned0', function() {
@@ -555,7 +563,9 @@ $(function ($) {
         initSelect2($newSelect)
         // Сбрасываем и показываем placeholder
         $newSelect.val(null).trigger('change')
-    });
+        
+        initTooltips('.assigned-select')
+    })
 
     $body.on('click', '.add_email', function() {
         let $formGroupContainer = $(this).parents('.form-group')
