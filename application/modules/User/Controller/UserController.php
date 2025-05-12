@@ -7,7 +7,7 @@
 class UserController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу «Формирование заявки на испытания»
+     *  Перенаправляет пользователя на страницу «Формирование заявки на испытания»
      * @return void
      * @hide true
      */
@@ -17,7 +17,7 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Получает список статусов пользователя.
+     * Получает список статусов пользователя.
      * @return void
      * @hide true
      */
@@ -87,7 +87,7 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Страница со статусами
+     *  Страница со статусами
      */
     public function status()
     {
@@ -126,7 +126,7 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Получает данные пользователей для журнала «Статусы сотрудников»
+     * @desc Получает данные сотрудников для журнала «Статусы сотрудников»
      * @return void
      * @hide true
      */
@@ -160,7 +160,7 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Получает список пользователей
+     * @desc Получает список сотрудников
      * @return void
      * @hide true
      */
@@ -177,7 +177,7 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Обновлять роль у пользователя
+     * @desc Обновлять роль у сотрудников
      * @hide true
      */
     public function updateStatus()
@@ -210,7 +210,7 @@ class UserController extends Controller
 
     /**
      * Принимает на вход массив
-     * @desc Обновлять статус у нескольких пользователей сразу
+     *  Обновлять статус у нескольких пользователей сразу
      * @hide true
      */
     public function updateUsersStatus()
@@ -230,7 +230,7 @@ class UserController extends Controller
 
     /**
      * Принимает на вход массив
-     * @desc Обновлять замены у нескольких пользователей сразу
+     *  Обновлять замены у нескольких пользователей сразу
      * @hide true
      */
     public function updateUsersReplacement()
@@ -249,7 +249,7 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Обновляет заметку пользователя
+     *  Обновляет заметку пользователя
      * @return void
      * @hide true
      */
@@ -269,7 +269,7 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Обновляет должность пользователя
+     * @desc Обновляет должность сотрудника
      * @return void
      * @hide true
      */
@@ -302,7 +302,7 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Получает данные пользователей
+     * @desc Получает данные сотрудников
      */
     public function checkUsersDataAjax()
     {

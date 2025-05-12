@@ -1,13 +1,13 @@
 <?php
 
 /**
- * @desc Работа с материалами
+ * @desc Журнал материалов
  * Class ProbeController
  */
 class MaterialController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу «Формирование заявки на испытания»
+     * Перенаправляет пользователя на страницу «Формирование заявки на испытания»
      */
     public function index()
     {
@@ -68,7 +68,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Добавляет группу для материала
+     * Добавляет группу для материала
      */
     public function addGroup()
     {
@@ -90,7 +90,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Обновляет группу для материала
+     * Обновляет группу для материала
      */
     public function updateGroups()
     {
@@ -214,7 +214,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Сохраняет или обновляет данные «Карточки материала»
+     * Сохраняет или обновляет данные «Карточки материала»
      */
     public function insertUpdate() {
         /** @var Material $material */
@@ -287,7 +287,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * @desc Удаляет материал
+     * Удаляет материал
      */
     public function deleteMaterialAjax()
     {
@@ -302,7 +302,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * @desc Обновляет данные материала
+     * Обновляет данные материала
      */
     public function updateMaterialAjax()
     {
@@ -324,7 +324,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * @desc Получает данные схемы по id материала
+     * Получает данные схемы по id материала
      * @param $materialId
      * @return array
      */
@@ -337,7 +337,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * @desc Создаёт или обновляет схему материала
+     * @desc Создаёт/обновляет схему материала
      */
     public function setSchemeAjax()
     {
@@ -372,7 +372,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * @desc Удаляет схему у материала
+     * Удаляет схему у материала
      */
     public function deleteSchemeAjax()
     {
@@ -409,7 +409,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Удаляет группу у материала
+     * Удаляет группу у материала
      */
     public function deleteGroupAjax()
     {
@@ -427,7 +427,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Получает данные группы по id материала
+     * Получает данные группы по id материала
      */
     public function getGroupByMaterialAjax()
     {
@@ -445,7 +445,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Получает данные групп материалов из списка проб
+     * Получает данные групп материалов из списка проб
      */
     public function getGroupByMaterialByUmtrIdAjax()
     {
@@ -467,7 +467,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Получает данные схемы по id материала
+     * Получает данные схемы по id материала
      */
     public function getSchemeByMaterialAjax()
     {
@@ -485,7 +485,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Получает параметры схемы
+     * Получает параметры схемы
      */
     public function getSchemeParamAjax()
     {
@@ -503,7 +503,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Меняет статус
+     * Меняет статус
      */
     public function changeActiveMaterialAjax()
     {
@@ -537,7 +537,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Получает схему
+     * Получает схему
      */
     public function getNewSchemeMethodsAjax()
     {
@@ -555,7 +555,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc Удаляет схему
+     * Удаляет схему
      */
     public function deleteNewSchemeMethodsAjax()
     {
@@ -572,7 +572,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * @desc Устанавливает новое имя материала
+     * Устанавливает новое имя материала
      */
     public function setNewNameAjax()
     {

@@ -1,13 +1,13 @@
 <?php
 
 /**
- * @desc Страница с ГОСТами
+ * @desc Журнал области аккредитации
  * Class GostController
  */
 class GostController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу «Журнал области аккредитации»
+     * Перенаправляет пользователя на страницу «Журнал области аккредитации»
      */
     public function index()
     {
@@ -55,7 +55,7 @@ class GostController extends Controller
      */
     public function report()
     {
-        $this->data['title'] = 'Отчет об использовании области аккредитации';
+        $this->data['title'] = 'Отчет по области аккредитации';
 
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');
@@ -131,7 +131,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Страница редактирования ГОСТа
+     * Страница редактирования ГОСТа
      * @param $id
      */
     public function edit($id)
@@ -153,7 +153,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Страница редактирования Методики
+     * Страница редактирования Методики
      * @param $id
      */
     public function method($id)
@@ -209,7 +209,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Сделать все методики в ГОСТе неактуальными
+     * Сделать все методики в ГОСТе неактуальными
      * @param $id
      */
     public function nonActualGost($id)
@@ -254,7 +254,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Редактирование Методики
+     * Редактирование Методики
      */
     public function updateMethod()
     {
@@ -317,7 +317,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Копирует ГОСТ
+     * Копирует ГОСТ
      * @param $gostId
      */
     public function copyGost($gostId)
@@ -340,7 +340,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Копирует Методику
+     * Копирует Методику
      */
     public function copyMethod()
     {
@@ -360,7 +360,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Удаляет СОВСЕМ Методику и все зависимые данные
+     * Удаляет СОВСЕМ Методику и все зависимые данные
      * @param $id - ид методики
      */
     public function deletePermanentlyMethod($id)
@@ -379,7 +379,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Удаляет СОВСЕМ ГОСТ, Методики и все зависимые данные
+     * Удаляет СОВСЕМ ГОСТ, Методики и все зависимые данные
      * @param $id - ГОСТ ид
      */
     public function deletePermanentlyGost($id)
@@ -396,7 +396,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Подтверждение Методики
+     * Подтверждение Методики
      * @param $id
      */
     public function confirmMethod($id)
@@ -421,7 +421,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Сделать методику не актуальной
+     * Сделать методику не актуальной
      * @param $id
      */
     public function nonActualMethod($id)
@@ -475,7 +475,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Страница журнала гостов и методик
+     * @desc Страница журнала области аккредитации
      */
     public function list()
     {
@@ -513,11 +513,11 @@ class GostController extends Controller
 
 
     /**
-     * @desc Страница Нормочасы и длительность испытаний
+     * @desc Страница журнала расчета трудозатрат
      */
     public function normtime()
     {
-        $this->data['title'] = 'Нормочасы и длительность испытаний';
+        $this->data['title'] = 'Журнал расчета трудозатрат';
 
         /** @var  Lab $lab*/
         $lab = $this->model('Lab');
@@ -547,7 +547,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Страница журнала прайса гостов и методик
+     * @desc Страница журнала цен
      */
     public function listPrice()
     {
@@ -617,7 +617,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Получение данных для журнала
+     * @desc Получение данных для журнала области аккредитации
      */
     public function getJournalAjax()
     {
@@ -722,7 +722,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Получение информации об оборудовании по ид
+     * Получение информации об оборудовании по ид
      */
     public function getOborudAjax()
     {
@@ -740,7 +740,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Получение оборудования по помещению
+     * Получение оборудования по помещению
      */
     public function getOborudByRoomAjax()
     {
@@ -758,7 +758,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Устанавливает новую цену у методики
+     * Устанавливает новую цену у методики
      */
     public function setNewPriceAjax()
     {
@@ -775,7 +775,7 @@ class GostController extends Controller
     }
 
 	/**
-	 * @desc Страница журнала гостов и методик
+	 * Страница журнала гостов и методик
 	 */
 	public function stats()
 	{
@@ -811,7 +811,7 @@ class GostController extends Controller
 
 
 	/**
-	 * @desc Получает данные для журнала статистики гостов и методик
+	 * Получает данные для журнала статистики гостов и методик
 	 */
     public function getStatsByMethodAjax()
 	{
@@ -844,7 +844,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Получает данные для таблицы, которая содержит информацию о методиках в соответствии с ГОСТом
+     * Получает данные для таблицы, которая содержит информацию о методиках в соответствии с ГОСТом
      */
 	public function getListMethodByGostAjax()
 	{
@@ -878,7 +878,7 @@ class GostController extends Controller
 	}
 
     /**
-     * @desc Получает список лабораторий и пользователей для них.
+     * Получает список лабораторий и пользователей для них.
      */
     public function getLabAndUserAjax()
     {
@@ -895,7 +895,7 @@ class GostController extends Controller
     }
 
     /**
-     * @desc Добавляет ответственных к методике с помощью Ajax-запроса.
+     * Добавляет ответственных к методике с помощью Ajax-запроса.
      */
     public function setAssignedAjax()
     {
@@ -911,7 +911,7 @@ class GostController extends Controller
 
 
     /**
-     * @desc Сохраняет нормочасы и длительность испытаний
+     * Сохраняет нормочасы и длительность испытаний
      */
     public function setDurationAjax()
     {

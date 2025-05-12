@@ -65,7 +65,7 @@ class StandarttitrController extends Controller
     }
 
     /**
-     * @desc Добавляет производителя в «Стандарт-титры»
+     *  Добавляет производителя в «Стандарт-титры»
      */
     public function addManufacturer()
     {
@@ -110,7 +110,7 @@ class StandarttitrController extends Controller
     }
 
     /**
-     * @desc Проводит стандарт-титр
+     *  Проводит стандарт-титр
      */
     public function addReceive()
     {
@@ -132,7 +132,7 @@ class StandarttitrController extends Controller
     }
 
     /**
-     * @desc Получить данные для редактирования стандарт-титр
+     *  Получить данные для редактирования стандарт-титр
      */
     public function getStandarttitrUpdate()
     {
@@ -150,7 +150,7 @@ class StandarttitrController extends Controller
     }
 
     /**
-     * @desc Редактирует стандарт-титр
+     *  Редактирует стандарт-титр
      */
     public function updateStandartTitr()
     {
@@ -169,7 +169,7 @@ class StandarttitrController extends Controller
     }
 
     /**
-     * @desc Проводит реактив
+     *  Проводит реактив
      */
     public function updateStandartTitrReceive()
     {

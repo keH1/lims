@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Транспорт
+ * @desc Журнал автотранспорта
  * Class TransportController
  */
 class TransportController extends Controller
@@ -54,7 +54,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Удаляет транспорт из справочника транспорта
+     *  Удаляет транспорт из справочника транспорта
      */
     public function deleteAjax()
     {
@@ -118,7 +118,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Справочник видов топлива
+     *  Справочник видов топлива
      * journal
      * route /transport/fuelList/
      */
@@ -154,7 +154,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Получает данные для справочника топлива
+     *  Получает данные для справочника топлива
      */
     public function getFuelListProcessingAjax()
     {
@@ -187,7 +187,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Обновляет цены для справочника топлива
+     *  Обновляет цены для справочника топлива
      */
     public function updateFuelAjax()
     {
@@ -210,7 +210,7 @@ class TransportController extends Controller
 
 
     /**
-     * @desc Справочник отчетов по бензину
+     *  Справочник отчетов по бензину
      * journal
      * route /transport/reportList/
      */
@@ -257,7 +257,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Получает данные для справочника отчетов по бензину
+     *  Получает данные для справочника отчетов по бензину
      */
     public function getReportListAjax()
     {
@@ -297,7 +297,7 @@ class TransportController extends Controller
 
 
     /**
-     * @desc Добавляет или обновляет отчёт по бензину
+     *  Добавляет или обновляет отчёт по бензину
      */
     public function addReportAjax()
     {
@@ -344,7 +344,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Добавляет или обновляет запись в отчёте
+     *  Добавляет или обновляет запись в отчёте
      */
     public function addReportRowAjax()
     {
@@ -375,7 +375,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Таблица отчёта по бензину
+     *  Таблица отчёта по бензину
      * @param int $id
      */
     public function reportTable(int $id)
@@ -437,7 +437,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Получает данные для таблицы отчёта по бензину
+     *  Получает данные для таблицы отчёта по бензину
      */
     public function getReportTableAjax()
     {
@@ -456,7 +456,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Получает данные для таблицы с чеками
+     *  Получает данные для таблицы с чеками
      */
     public function getCheckTableAjax()
     {
@@ -475,7 +475,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Добавляет или обновляет данные чека
+     *  Добавляет или обновляет данные чека
      */
     public function addReportCheckAjax()
     {
@@ -503,7 +503,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Выполняет мягкое удаление данных чеков
+     *  Выполняет мягкое удаление данных чеков
      */
     public function deleteReportCheckAjax()
     {
@@ -519,7 +519,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Формирует документ «Служебная записка»
+     *  Формирует документ «Служебная записка»
      */
     public function generateMemoDocAjax()
     {
@@ -570,7 +570,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Формирует документ «Отчёт» по бензину
+     *  Формирует документ «Отчёт» по бензину
      */
     public function generateReportDocAjax()
     {
@@ -645,7 +645,7 @@ class TransportController extends Controller
     }
 
     /**
-     * @desc Формирует документ «Компенсация» по бензину
+     *  Формирует документ «Компенсация» по бензину
      */
     public function generateCompensationDocAjax()
     {

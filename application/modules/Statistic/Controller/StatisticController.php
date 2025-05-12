@@ -36,7 +36,7 @@ class StatisticController extends Controller
     }
 
     /**
-     * @desc использование оборудования
+     *  использование оборудования
      */
     public function reportOborud()
     {
@@ -64,7 +64,7 @@ class StatisticController extends Controller
 
     
     /**
-     * @desc отчет лаба метод кол-во стоимость. завершенных работ
+     *  отчет лаба метод кол-во стоимость. завершенных работ
      */
     public function reportMethod()
     {
@@ -232,7 +232,7 @@ class StatisticController extends Controller
 
 
     /**
-     * @desc Отчет за период по сотруднику
+     *  Отчет за период по сотруднику
      * @param $user_id
      */
 	public function headerReportByUser($user_id)
@@ -287,7 +287,7 @@ class StatisticController extends Controller
 	}
 
 	/**
-	 * @desc Журнал радиологии
+	 *  Журнал радиологии
 	 */
 	public function radiologistsList()
 	{
@@ -319,7 +319,7 @@ class StatisticController extends Controller
 	}
 
 	/**
-	 * @desc Журнал минералогии
+	 *  Журнал минералогии
 	 */
 	public function mineralList()
 	{
@@ -369,7 +369,7 @@ class StatisticController extends Controller
 	}
 
 	/**
-	 * @desc Загружает PDF файл протокола по радиологии
+	 *  Загружает PDF файл протокола по радиологии
 	 */
 	public function uploadFile($id)
 	{
@@ -401,7 +401,7 @@ class StatisticController extends Controller
 	}
 
     /**
-     * @desc Сохраняет для «Журнал радиологии» дату отправки в лабораторию
+     *  Сохраняет для «Журнал радиологии» дату отправки в лабораторию
      */
 	public function setRadiologyDate()
 	{
@@ -428,7 +428,7 @@ class StatisticController extends Controller
 	}
 
     /**
-     * @desc Удаляет PDF файл протокола по радиологии
+     *  Удаляет PDF файл протокола по радиологии
      */
 	public function delRadiologyProtocol()
 	{
@@ -453,7 +453,7 @@ class StatisticController extends Controller
 
 
 	/**
-	 *  @desc Загружает PDF файл протокола по минералогии
+	 *   Загружает PDF файл протокола по минералогии
 	 */
 	public function uploadFileMineralogy($id)
 	{
@@ -485,7 +485,7 @@ class StatisticController extends Controller
 	}
 
     /**
-     * @desc Сохраняет для «Журнал минералогии» дату отправки в лабораторию
+     *  Сохраняет для «Журнал минералогии» дату отправки в лабораторию
      */
 	public function setMineralogyDate()
 	{
@@ -512,7 +512,7 @@ class StatisticController extends Controller
 	}
 
     /**
-     * @desc Удаляет PDF файл протокола по минералогии
+     *  Удаляет PDF файл протокола по минералогии
      */
 	public function delMineralogyProtocol()
 	{
@@ -537,7 +537,7 @@ class StatisticController extends Controller
 
 
     /**
-     * @desc Получает статистику персонала по месяцам для диаграммы
+     *  Получает статистику персонала по месяцам для диаграммы
      */
 	public function getChartAjax()
 	{
@@ -562,7 +562,7 @@ class StatisticController extends Controller
 
 
     /**
-     * @desc Получение данных для журнала отчет лаба метод кол-во стоимость. завершенных работ
+     *  Получение данных для журнала отчет лаба метод кол-во стоимость. завершенных работ
      */
     public function getJournalReportMethodAjax()
     {
@@ -598,7 +598,7 @@ class StatisticController extends Controller
 
 
     /**
-     * @desc Получение данных для журнала оборудования
+     *  Получение данных для журнала оборудования
      */
     public function getJournalOborudAjax()
     {
@@ -630,7 +630,7 @@ class StatisticController extends Controller
     }
 
     /**
-     * @desc Получение сущности для конструктора журнала
+     * @desc Получение сущности для конструктора отчетов
      */
     public function getStatisticEntityAjax()
     {
@@ -648,7 +648,7 @@ class StatisticController extends Controller
 
 
     /**
-     * @desc Получение колонок для конструктора журнала
+     *  Получение колонок для конструктора журнала
      */
     public function getStatisticColumnAjax()
     {
@@ -666,7 +666,7 @@ class StatisticController extends Controller
 
 
     /**
-     * @desc Получение данных для конструктора журнала
+     *  Получение данных для конструктора журнала
      */
     public function getStatisticConstructorJournal()
     {

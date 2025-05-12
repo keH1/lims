@@ -13,7 +13,7 @@ class RequirementController extends Controller
     const LABORATORY_HEAD = [11, 13, 15, 58, 43];
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Журнал заявок»
+     *  Перенаправляет пользователя на страницу «Журнал заявок»
      */
     public function index()
     {
@@ -751,7 +751,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Обновление формы. новое тз
+     *  Обновление формы. новое тз
      */
     public function updateTz()
     {
@@ -802,7 +802,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc добавление материала в новом тз
+     * добавление материала в новом тз
      */
     public function addMaterialToTz()
     {
@@ -817,7 +817,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc добавление материала в новом тз
+     * @desc добавление материала в техническое задание
      */
     public function addProbeToMaterial()
     {
@@ -832,7 +832,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc добавление методик выбранным пробам в новом тз
+     *  добавление методик выбранным пробам в новом тз
      */
     public function addMethodsToProbe()
     {
@@ -869,7 +869,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc редактирует или удаляет пробу
+     *  редактирует или удаляет пробу
      */
     public function editProbe()
     {
@@ -895,7 +895,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Отправляет ТЗ на проверку
+     *  Отправляет ТЗ на проверку
      */
     public function confirmTzSent()
     {
@@ -917,7 +917,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Отправляет ТЗ на проверку с помощью Ajax-запроса
+     *  Отправляет ТЗ на проверку с помощью Ajax-запроса
      */
     public function confirmTzSentAjax()
     {
@@ -932,7 +932,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Утверждает ТЗ
+     *  Утверждает ТЗ
      */
     public function confirmTzApproveAjax()
     {
@@ -947,7 +947,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Отправляет на проверку и утверждает ТЗ
+     *  Отправляет на проверку и утверждает ТЗ
      */
     public function confirmTzSentApproveAjax()
     {
@@ -964,7 +964,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Не утверждает ТЗ
+     *  Не утверждает ТЗ
      */
     public function confirmTzNotApproveAjax()
     {
@@ -979,7 +979,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Не одобряет ТЗ
+     *  Не одобряет ТЗ
      */
     public function confirmTzClearAjax()
     {
@@ -994,7 +994,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Получает данные методов для ГОСТа
+     *  Получает данные методов для ГОСТа
      */
     public function getMethodListAjax()
     {
@@ -1015,7 +1015,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Получает ГОСТы по id материала
+     *  Получает ГОСТы по id материала
      */
     public function getGostsGroupAjax()
     {
@@ -1036,7 +1036,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Проверяет соответствие методики и ответсвенных
+     *  Проверяет соответствие методики и ответсвенных
      */
     public function isConfirmMethodAjax()
     {
@@ -1092,7 +1092,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Получает данные ТУ по id ГОСТа
+     *  Получает данные ТУ по id ГОСТа
      */
     public function getTuForGostAjax() {
         global $APPLICATION;
@@ -1126,7 +1126,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Получает ответвенных по id ГОСТа
+     *  Получает ответвенных по id ГОСТа
      */
     public function getAssignedByGostIdAjax()
     {
@@ -1179,7 +1179,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Удаляет методику из материала
+     *  Удаляет методику из материала
      */
     public function deletePermanentMaterialGostAjax()
     {
@@ -1194,7 +1194,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Получает список методик
+     *  Получает список методик
      */
     public function getMethodsAjax()
     {
@@ -1211,7 +1211,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Получает данные методики по id
+     * @desc Получает данные методик
      */
     public function getMethodDataAjax()
     {
@@ -1263,7 +1263,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Удаляет испытание из пробы по id
+     *  Удаляет испытание из пробы по id
      */
     public function deleteProbeMethodAjax()
     {
@@ -1281,7 +1281,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Удаляет пробу и испытания
+     * Удаляет пробу и испытания
      */
     public function deleteProbeAjax()
     {
@@ -1299,7 +1299,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Удаляет материал
+     *  Удаляет материал
      */
     public function deleteMaterial()
     {
@@ -1317,7 +1317,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Получает данные проб для заявки
+     *  Получает данные проб для заявки
      */
     public function getProbeMethodsAjax()
     {
@@ -1335,7 +1335,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Получает данные материала для заявки
+     *  Получает данные материала для заявки
      */
     public function getMaterialProbesAjax()
     {
@@ -1353,7 +1353,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Получает данные материала и проб для журнала
+     *  Получает данные материала и проб для журнала
      */
     public function getMaterialProbeJournalAjax()
     {
@@ -1393,7 +1393,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Получает данные методик для отображения журнала в дочерней строке пробы
+     *  Получает данные методик для отображения журнала в дочерней строке пробы
      */
     public function getMethodJournalAjax()
     {
@@ -1431,7 +1431,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Удаляет метод
+     *  Удаляет метод
      */
     public function deleteMethodAjax()
     {
@@ -1449,7 +1449,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Передвигает строки методик
+     *  Передвигает строки методик
      */
     public function changeGostNumberAjax()
     {
@@ -1501,7 +1501,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc добавление материала запросом
+     *  добавление материала запросом
      */
     public function addMaterialToTzAjax()
     {
@@ -1516,7 +1516,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc добавление пробы для материала запросом
+     *  добавление пробы для материала запросом
      */
     public function addProbeToMaterialAjax()
     {
@@ -1531,7 +1531,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc добавление методик выбранным пробам запросом
+     *  добавление методик выбранным пробам запросом
      */
     public function addMethodsToProbeAjax()
     {
@@ -1571,7 +1571,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Добавление работы запросом
+     *  Добавление работы запросом
      */
     public function addWorkAjax()
     {
@@ -1608,7 +1608,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc Редактирование или удаление пробы
+     *  Редактирование или удаление пробы
      */
     public function editProbeAjax()
     {

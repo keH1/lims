@@ -7,7 +7,7 @@
 class OborudController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу «Формирование заявки на испытания»
+     * Перенаправляет пользователя на страницу «Формирование заявки на испытания»
      */
     public function index()
     {
@@ -75,7 +75,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Страница редактирования данных по оборудованию
+     * Страница редактирования данных по оборудованию
      * @param $oborudId
      */
     public function edit($oborudId)
@@ -102,7 +102,7 @@ class OborudController extends Controller
     }
 
     /**
-     * @desc Отображает форму для оборудования
+     *  Отображает форму для оборудования
      */
     public function form()
     {
@@ -134,7 +134,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc добавляет перемещение оборудования
+     * @desc добавляет перемещения оборудования
      */
      public function addOborudMoving()
      {
@@ -152,7 +152,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc добавляет перемещение оборудования аяксом
+     * добавляет перемещение оборудования аяксом
      */
     public function addOborudMovingAjax()
     {
@@ -431,7 +431,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc списание оборудования
+     *  списание оборудования
      */
     // public function decommissioned()
     // {
@@ -472,7 +472,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc оборудование на длительное хранение
+     *  оборудование на длительное хранение
      */
     // public function setLongStorage()
     // {
@@ -606,7 +606,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Получает историю стандартных образцов
+     *  Получает историю стандартных образцов
      */
     public function getSampleHistoryAjax()
     {
@@ -627,7 +627,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Страница создания и обновления стандартного образца
+     *  Страница создания и обновления стандартного образца
      * @param $id
      */
     public function sampleCard($id)
@@ -796,7 +796,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Сохранение/обновление данных стандартного образца
+     *  Сохранение/обновление данных стандартного образца
      */
     public function sampleInsertUpdate()
     {
@@ -897,7 +897,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Получение помещений по выбранным лабораториям
+     *  Получение помещений по выбранным лабораториям
      */
     public function getRoomByLabIdAjax()
     {
@@ -915,7 +915,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Сделать образец контроля не актуальным
+     *  Сделать образец контроля не актуальным
      * @param $id
      */
     public function nonActualSample($id)
@@ -938,7 +938,7 @@ class OborudController extends Controller
     }
 
     /**
-     * @desc валидация компонента
+     *  валидация компонента
      */
     private function validateComponent($data, $id)
     {
@@ -990,7 +990,7 @@ class OborudController extends Controller
 
 
     /**
-     * @desc Создание данных компонента
+     *  Создание данных компонента
      */
     public function componentInsert()
     {
@@ -1026,7 +1026,7 @@ class OborudController extends Controller
     }
 
     /**
-     * @desc Получает данные компонента Ajax запросом
+     *  Получает данные компонента Ajax запросом
      */
     public function getComponentAjax()
     {
@@ -1049,7 +1049,7 @@ class OborudController extends Controller
     }
 
     /**
-     * @desc Удалить данные компонента Ajax запросом
+     *  Удалить данные компонента Ajax запросом
      */
     public function removeComponentAjax()
     {
@@ -1071,7 +1071,7 @@ class OborudController extends Controller
     }
 
     /**
-     * @desc Получить данные компонента запросом
+     *  Получить данные компонента запросом
      */
     public function getListEquipmentAjax()
     {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Реактивы
+ * @desc Журнал учета реактивов
  * Class ReactiveController
  */
 class ReactiveController extends Controller
@@ -31,7 +31,7 @@ class ReactiveController extends Controller
     }
 
     /**
-     * @desc Получает данные для журнала учета реактивов
+     *  Получает данные для журнала учета реактивов
      */
     public function getListProcessingAjax()
     {
@@ -61,7 +61,7 @@ class ReactiveController extends Controller
     }
 
     /**
-     * @desc Добавляет НД и квалификацию реактива
+     *  Добавляет НД и квалификацию реактива
      */
     public function addReactive()
     {
@@ -81,7 +81,7 @@ class ReactiveController extends Controller
     }
 
     /**
-     * @desc Проводит реактив
+     *  Проводит реактив
      */
     public function addReceive()
     {
@@ -105,7 +105,7 @@ class ReactiveController extends Controller
     }
 
     /**
-     * @desc Добавляет реактив
+     *  Добавляет реактив
      */
     public function addReactiveModel()
     {
@@ -144,7 +144,7 @@ class ReactiveController extends Controller
     }
 
     /**
-     * @desc Получает данные для редактирования реактива
+     *  Получает данные для редактирования реактива
      */
     public function setReactiveUpdate()
     {
@@ -159,7 +159,7 @@ class ReactiveController extends Controller
     }
 
     /**
-     * @desc Обновляет данные реактива
+     *  Обновляет данные реактива
      */
     public function updateReactive()
     {
@@ -178,7 +178,7 @@ class ReactiveController extends Controller
     }
 
     /**
-     * @desc Редактирует проводку реактива
+     *  Редактирует проводку реактива
      */
     public function updateReceiveReactive()
     {

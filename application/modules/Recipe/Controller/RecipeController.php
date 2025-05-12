@@ -133,7 +133,7 @@ class RecipeController extends Controller
     }
 
     /**
-     * @desc Добавляет раствор как реактив
+     *  Добавляет раствор как реактив
      */
     public function addSolutionAsReactive()
     {

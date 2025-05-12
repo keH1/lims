@@ -7,7 +7,7 @@
 Class OrderController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу «Формирование заявки на испытания»
+     * Перенаправляет пользователя на страницу «Формирование заявки на испытания»
      * route /order/
      */
     public function index()
@@ -274,7 +274,7 @@ Class OrderController extends Controller
 
 
     /**
-     *  @desc Оплатить заявку из счета
+     *   Оплатить заявку из счета
      */
     public function addPayment()
     {
@@ -294,7 +294,7 @@ Class OrderController extends Controller
 
 
     /**
-     * @desc Добавить денег на счет
+     *  Добавить денег на счет
      */
     public function addFinance()
     {
@@ -310,7 +310,7 @@ Class OrderController extends Controller
 
 
     /**
-     * @desc Изменяет данные договора
+     *  Изменяет данные договора
      */
     public function changeOrder()
     {
@@ -341,7 +341,7 @@ Class OrderController extends Controller
 
 
     /**
-     * @desc Создаёт прайс для клиента
+     *  Создаёт прайс для клиента
      * @param $orderID
      */
     public function creatOrderPrice($orderID)
@@ -361,7 +361,7 @@ Class OrderController extends Controller
 
 
     /**
-     * @desc Сохраняет данные оплаты
+     *  Сохраняет данные оплаты
      */
     public function setOplata()
     {
@@ -391,7 +391,7 @@ Class OrderController extends Controller
 
 
     /**
-     * @desc Загрузить pdf ТЗ
+     *  Загрузить pdf ТЗ
      */
     public function uploadTzDocPdfAjax()
     {
@@ -440,7 +440,7 @@ Class OrderController extends Controller
 
 
     /**
-     * @desc Аннулирует или восстанавливает договор
+     *  Аннулирует или восстанавливает договор
      * @param $orderId
      */
     public function cancelOrder($orderId)
@@ -465,7 +465,7 @@ Class OrderController extends Controller
 
 
     /**
-     * @desc Удаляет PDF файл прил. к договору (тз)
+     *  Удаляет PDF файл прил. к договору (тз)
      */
     public function delTzDocAjax()
     {

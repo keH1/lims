@@ -108,7 +108,7 @@ class ElectricController extends Controller
     }
 
     /**
-     * @desc Автозаполнение данных
+     * Автозаполнение данных
      */
     public function autoFill()
     {

@@ -7,7 +7,7 @@
 class ProbeController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу «Журнал заявок»
+     *  Перенаправляет пользователя на страницу «Журнал заявок»
      */
     public function index()
     {
@@ -16,7 +16,7 @@ class ProbeController extends Controller
 
 
     /**
-     * @desc редактирует данные пробы
+     *  редактирует данные пробы
      */
     public function editProbeInfo()
     {
@@ -34,7 +34,7 @@ class ProbeController extends Controller
 
 
     /**
-     * @desc копирует информацию из пробы в пробу
+     *  копирует информацию из пробы в пробу
      */
     public function copyProbeInfo()
     {
@@ -52,7 +52,7 @@ class ProbeController extends Controller
 
 
     /**
-     * @desc передать пробу
+     *  передать пробу
      * @param $umtrId
      */
     public function transferProbe($umtrId)
@@ -71,7 +71,7 @@ class ProbeController extends Controller
 
 
     /**
-     * @desc принять пробу
+     *  принять пробу
      * @param $umtrId
      */
     public function takeProbe($umtrId)
@@ -129,7 +129,7 @@ class ProbeController extends Controller
 
 	/**
 	 * route /probe/listResearcher/
-	 * @desc Список актов приёмки проб. для лаборантов
+	 *  Список актов приёмки проб. для лаборантов
 	 */
 	public function listResearcher()
 	{
@@ -316,7 +316,7 @@ class ProbeController extends Controller
 
 
     /**
-     * @desc Создание нового акта приёмки проб
+     *  Создание нового акта приёмки проб
      */
     public function insertUpdateActProbe($dealId)
     {
@@ -344,7 +344,7 @@ class ProbeController extends Controller
 	}
 
     /**
-     * @desc Отмечает факт принятия проб
+     *  Отмечает факт принятия проб
      */
 	public function acceptProbeAjax()
 	{
@@ -371,7 +371,7 @@ class ProbeController extends Controller
 	}
 
     /**
-     * @desc Отменяет факт принятия проб
+     *  Отменяет факт принятия проб
      */
 	public function removeAcceptProbeAjax()
 	{
@@ -418,7 +418,7 @@ class ProbeController extends Controller
 
 
     /**
-     * @desc Получает историю пробы
+     *  Получает историю пробы
      */
     public function getHistoryAjax()
     {
@@ -438,7 +438,7 @@ class ProbeController extends Controller
     }
 
     /**
-     * @desc Сохраняет информацию о том, что проба отобрана не заказчиком
+     *  Сохраняет информацию о том, что проба отобрана не заказчиком
      */
     public function changeSelectionTypeAjax()
     {

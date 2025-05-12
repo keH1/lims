@@ -7,7 +7,7 @@
 Class ProtocolController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу «Формирование заявки на испытания»
+     * Перенаправляет пользователя на страницу «Формирование заявки на испытания»
      * route /protocol/
      */
     public function index()
@@ -117,7 +117,7 @@ Class ProtocolController extends Controller
 
 
     /**
-     * @desc Проверяет данные у протокола перед формированием
+     *  Проверяет данные у протокола перед формированием
      */
     public function validateProtocolAjax()
     {
@@ -135,7 +135,7 @@ Class ProtocolController extends Controller
 
 
     /**
-     * @desc сохраняет ЭЦП
+     *  сохраняет ЭЦП
      */
     public function saveSigAjax()
     {

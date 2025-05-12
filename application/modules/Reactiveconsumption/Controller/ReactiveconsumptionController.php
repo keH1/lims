@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Списание реактивов
+ * @desc Журнал списание реактивов
  * Class ReactiveconsumptionController
  */
 class ReactiveconsumptionController extends Controller

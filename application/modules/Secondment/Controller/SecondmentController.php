@@ -53,7 +53,7 @@ class SecondmentController extends Controller
 
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Журнал командировок»
+     * Перенаправляет пользователя на страницу «Журнал командировок»
      * route /secondment/
      */
     public function index()
@@ -140,7 +140,7 @@ class SecondmentController extends Controller
 
 
     /**
-     * @desc Сохраняет или изменяет данные заявки на командировку
+     *  Сохраняет или изменяет данные заявки на командировку
      * route /secondment/insertUpdateInfo/
      */
     public function insertUpdateInfo()
@@ -493,7 +493,7 @@ class SecondmentController extends Controller
 
 
     /**
-     * @desc Сохраняет и обновляет файлы приказа и служебного задания
+     *  Сохраняет и обновляет файлы приказа и служебного задания
      * route /secondment/insertUpdateFiles/
      */
     public function insertUpdateFiles()
@@ -629,7 +629,7 @@ class SecondmentController extends Controller
 
 
     /**
-     * @desc Сохраняет или обновляет данные отчёта о командировке
+     *  Сохраняет или обновляет данные отчёта о командировке
      * route /secondment/insertUpdateReport/
      */
     public function insertUpdateReport()
@@ -833,7 +833,7 @@ class SecondmentController extends Controller
 
 
     /**
-     * @desc Выполняет мягкое удаление заявки о командировке
+     *  Выполняет мягкое удаление заявки о командировке
      */
     public function deleteCardAjax()
     {
@@ -866,7 +866,7 @@ class SecondmentController extends Controller
 
 
     /**
-     * @desc Карточка командировки
+     *  Карточка командировки
      * route /secondment/card/
      * @param int $id
      * @throws DateMalformedStringException
@@ -1250,7 +1250,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Получает данные объекта по id компании
+     *  Получает данные объекта по id компании
      */
     public function getObjectsAjax()
     {
@@ -1273,7 +1273,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Изменяет статус заявки по командировке
+     *  Изменяет статус заявки по командировке
      */
     public function updateStageAjax()
     {
@@ -1510,7 +1510,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Изменяет статус
+     *  Изменяет статус
      */
     public function changeStage()
     {
@@ -1533,7 +1533,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Добавляет договор
+     *  Добавляет договор
      */
     public function addContractAjax()
     {
@@ -1561,7 +1561,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Добавляет компанию
+     *  Добавляет компанию
      */
     public function addCompanyAjax()
     {
@@ -1599,7 +1599,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Изменяет статус при отмене
+     *  Изменяет статус при отмене
      */
     public function changeStageAjax()
     {
@@ -1621,7 +1621,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Продлить командировку
+     *  Продлить командировку
      */
     public function extend()
     {
@@ -1791,7 +1791,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Журнал командировок
+     *  Журнал командировок
      * journal
      * route /secondment/list/
      */
@@ -1831,7 +1831,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Формирует документ для компенсации
+     *  Формирует документ для компенсации
      */
     public function generateCompensationAjax()
     {
@@ -1896,7 +1896,7 @@ class SecondmentController extends Controller
 
 
     /**
-     * @desc Формирует документ «Служебная записка»
+     *  Формирует документ «Служебная записка»
      */
     public function createMemoDocAjax()
     {
@@ -2017,7 +2017,7 @@ class SecondmentController extends Controller
 
 
     /**
-     * @desc Обрабатывает AJAX-запрос на сохранение PDF-файла
+     *  Обрабатывает AJAX-запрос на сохранение PDF-файла
      */
     public function bytePdfToServerAjax()
     {
@@ -2036,7 +2036,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Дашборд
+     *  Дашборд
      */
     public function dashboard()
     {
@@ -2074,7 +2074,7 @@ class SecondmentController extends Controller
     }
 
     /**
-     * @desc Сохраняет проект
+     *  Сохраняет проект
      */
     public function updateProjectAjax()
     {

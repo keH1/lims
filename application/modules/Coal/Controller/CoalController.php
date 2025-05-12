@@ -138,7 +138,7 @@ class CoalController extends Controller
 	}
 
 	/**
-	 * @desc Добавляет измерения с пустыми БДБ-13
+	 * Добавляет измерения с пустыми БДБ-13
 	 */
     public function addEmptyBdb()
 	{
@@ -163,7 +163,7 @@ class CoalController extends Controller
 	}
 
     /**
-     * @desc Добавляет измерения с загруженным БДБ-13
+     * Добавляет измерения с загруженным БДБ-13
      */
     public function addFullBdb()
 	{

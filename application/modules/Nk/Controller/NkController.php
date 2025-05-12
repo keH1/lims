@@ -2,13 +2,13 @@
 
 
 /**
- * @desc Неразрушающий контроль
+ * @desc Журнал листов измерения
  * Class NkController
  */
 class NkController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу «Журнал заявок»
+     * Перенаправляет пользователя на страницу «Журнал заявок»
      * route /nk/
      */
     public function index()
@@ -17,7 +17,7 @@ class NkController extends Controller
     }
 
     /**
-     * @desc Градуировочная зависимость
+     * Градуировочная зависимость
      */
     public function graduation($id)
     {
@@ -63,7 +63,7 @@ class NkController extends Controller
     }
 
     /**
-     * @desc Сохранить лист измерения по градуировочной зависимости
+     * Сохранить лист измерения по градуировочной зависимости
      */
     public function insertUpdateGraduation()
     {
@@ -129,7 +129,7 @@ class NkController extends Controller
     }
 
     /**
-     * @desc Журнал градуировочная зависимость
+     * @desc Журнал листов измерения градуировочной зависимости
      */
     public function graduationList()
     {
@@ -165,7 +165,7 @@ class NkController extends Controller
     }
 
     /**
-     * @desc Получить данные для журнала градуировочной зависимости Ajax запросом
+     * @desc Получить данные для журнала листов измерений градуировочной зависимости
      */
     public function getGraduationJournalAjax()
     {
@@ -197,7 +197,7 @@ class NkController extends Controller
     }
 
     /**
-     * @desc Получить список градуировочных зависимостей
+     * Получить список градуировочных зависимостей
      */
     public function getGraduationListAjax()
     {
@@ -214,7 +214,7 @@ class NkController extends Controller
     }
 
     /**
-     * @desc Получить данные листа измерения градуировочной зависимости
+     * Получить данные листа измерения градуировочной зависимости
      */
     public function getGraduationAjax()
     {
