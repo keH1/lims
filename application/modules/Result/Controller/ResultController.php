@@ -25,7 +25,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Карточка листа измерений
+     * Карточка результатов испытаний
      * route /result/card_new/{$dealId}
      * @param $dealId - id сделки
      */
@@ -40,7 +40,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Карточка листа измерений для оати
+     * @desc Карточка результатов испытаний
      * route /result/card_oati/{$dealId}
      * @param $dealId - id сделки
      */

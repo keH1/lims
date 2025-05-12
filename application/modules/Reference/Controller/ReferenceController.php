@@ -120,7 +120,7 @@ class ReferenceController extends Controller
 
 
     /**
-     * @desc Меняет статус
+     * @desc Меняет статус Определяемой характеристики
      */
     public function changeUsedMeasuredPropertiesAjax()
     {
@@ -136,7 +136,7 @@ class ReferenceController extends Controller
 
 
     /**
-     * @desc Меняет статус
+     * @desc Меняет статус единиц измерения
      */
     public function changeUsedUnitsAjax()
     {
