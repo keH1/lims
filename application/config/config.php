@@ -1,6 +1,5 @@
 <?php
 
-const TYPE_DEAL_VLK = '1'; // Тип заявки ВЛК
 const TYPE_DEAL_NK = '4'; // Тип заявки НК
 
 const LFHI = 1; // Лаборатория физико-химических испытаний
@@ -20,9 +19,10 @@ const DEAL_START_STOP_TESTS = 0; // id сделки старта начала и
 
 const DEAL_NEW_RESULT = 0; // id сделки старта обновлённой версии результатов
 const DEAL_NEW_TZ = 0; // id сделки старта новой версии ТЗ
-const DEAL_NEW_NK = 0; // id сделки старта новой версии НК
-
-const U_TOKEN = "94cc68d21383486a9bd647ab5fe50c3a781339ff0a0203617fa99366660f0015";
 
 // группа ид 23
 const GROUP_MANAGER_ID = 23;
+const MAIL_HOST = 'smtp.yandex.ru';
+const MAIL_USERNAME = 'testLimsLoki@yandex.ru';
+const MAIL_PASSWORD = 'fttfjirmcidnmrxf';
+
