@@ -500,7 +500,7 @@ class Methods extends Model
                 }
                 // Номер документа
                 if ( isset($filter['search']['reg_doc']) ) {
-                    $where .= "(g.reg_doc LIKE '%{$filter['search']['reg_doc']}%' or m.clause LIKE '%{$filter['search']['reg_doc']}%') AND ";
+                    $where .= "g.reg_doc LIKE '%{$filter['search']['reg_doc']}%' AND ";
                 }
                 // Пункт
                 if ( isset($filter['search']['clause']) ) {
