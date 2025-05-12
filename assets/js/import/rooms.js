@@ -443,13 +443,6 @@ $(function ($) {
                 $form.find('.form-button').removeClass('disabled')
                 $form.find('.form-button').text('Сохранить помещение')
                 
-                $form[0].reset()
-                $form.find('#roomId').val('')
-                
-                $form.find('select.select2').each(function() {
-                    $(this).val('').trigger('change')
-                })
-                
                 $.magnificPopup.close()
                 
                 if (data.success) {
