@@ -32,7 +32,7 @@
             </div>
             <div class="col-4">
                 <div>Ответственный</div>
-                <div><strong><?=$this->data['assigned']?></strong></div>
+                <div><strong><?=htmlspecialchars($this->data['assigned'], ENT_QUOTES, 'UTF-8')?></strong></div>
             </div>
             <div class="col-4">
                 <div>

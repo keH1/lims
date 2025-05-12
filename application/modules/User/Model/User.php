@@ -234,16 +234,19 @@ class User extends Model
         $result = [];
         while ($row = $users->Fetch()) {
             $user = CUser::GetByID($row['user_id'])->Fetch();
-            $name = trim($user['NAME']);
-            $lastName = trim($user['LAST_NAME']);
+            $name = trim($user['NAME'] ?? '');
+            $lastName = trim($user['LAST_NAME'] ?? '');
+            $secondName = trim($user['SECOND_NAME'] ?? '');
             $shortName = StringHelper::shortName($name);
+            $fullName = implode(' ', array_filter([$name, $lastName, $secondName]));
 
             $resultData = [
                 'user_id'       => $row['user_id'],
-                'name'          => trim($name),
-                'last_name'     => trim($lastName),
+                'name'          => $name,
+                'last_name'     => $lastName,
                 'user_name'     => "{$name} {$lastName}",
                 'short_name'    => "{$shortName}. {$lastName}",
+                'full_name'     => $fullName,
                 'is_main'       => $row['is_main'],
                 'department'    => $user["UF_DEPARTMENT"],
             ];
