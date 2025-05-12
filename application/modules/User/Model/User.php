@@ -278,6 +278,12 @@ class User extends Model
             global $USER;
             $shortName = StringHelper::shortName($user['NAME']);
 
+            $user['full_name'] = implode(' ', array_filter([
+                trim($user['LAST_NAME'] ?? ''),
+                trim($user['NAME'] ?? ''),
+                trim($user['SECOND_NAME'] ?? '')
+            ]));
+
             $user['short_name'] = "{$shortName}. {$user['LAST_NAME']}";
             $user['user_name'] = "{$user['NAME']} {$user['LAST_NAME']}";
             $user['groups'] = $USER->GetUserGroupArray();
