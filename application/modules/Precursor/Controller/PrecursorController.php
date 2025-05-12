@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Прекурсор
+ * @desc Журнал учета прекурсоров
  * Class PrecursorController
  */
 class PrecursorController extends Controller
@@ -81,7 +81,7 @@ class PrecursorController extends Controller
     }
 
     /**
-     * @desc Проводит остаток прекурсоров
+     *  Проводит остаток прекурсоров
      */
     public function addRemain()
     {
@@ -101,7 +101,7 @@ class PrecursorController extends Controller
     }
 
     /**
-     * @desc Проводит расход прекурсоров
+     *  Проводит расход прекурсоров
      */
     public function addConsume()
     {

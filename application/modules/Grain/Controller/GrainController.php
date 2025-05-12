@@ -8,7 +8,7 @@ class GrainController extends Controller
 {
 
     /**
-     * @desc Страница зернового состава
+     * Страница зернового состава
      */
     public function card($grainListID): void
     {
@@ -38,7 +38,7 @@ class GrainController extends Controller
     }
 
     /**
-     * @desc Сохраняет данные зернового состава
+     * Сохраняет данные зернового состава
      */
     public function updateGrainList(int $grainListID): void
     {
@@ -51,7 +51,7 @@ class GrainController extends Controller
     }
 
     /**
-     * @desc Страница журнала зернового состава
+     * @desc Страница справочника сит зерновых составов
      */
     public function list(): void
     {
@@ -63,7 +63,7 @@ class GrainController extends Controller
     }
 
     /**
-     * @desc Получает данные для журнала зернового состава
+     * @desc Получает данные для справочника сит зерновых составов
      */
     public function getListProcessingAjax(): void
     {
@@ -94,7 +94,7 @@ class GrainController extends Controller
     }
 
     /**
-     * @desc Добавляет новый зерновой состав
+     * Добавляет новый зерновой состав
      */
     public function addZern(): void
     {

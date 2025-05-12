@@ -8,7 +8,7 @@
 class ReferenceController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу «Формирование заявки на испытания»
+     * Перенаправляет пользователя на страницу «Формирование заявки на испытания»
      */
     public function index()
     {
@@ -54,7 +54,7 @@ class ReferenceController extends Controller
 
 
     /**
-     * @desc Получает данные для журнала показателей через аякс
+     * @desc Получает данные для журнала показателей
      */
     public function getDataMeasuredPropertiesListAjax()
     {
@@ -87,7 +87,7 @@ class ReferenceController extends Controller
 
 
     /**
-     * @desc Получает данные для журнала ед. измерений через аякс
+     * @desc Получает данные для журнала ед. измерений
      */
     public function getDataUnitListAjax()
     {
@@ -120,7 +120,7 @@ class ReferenceController extends Controller
 
 
     /**
-     * @desc Меняет статус Определяемой характеристики
+     *  Меняет статус Определяемой характеристики
      */
     public function changeUsedMeasuredPropertiesAjax()
     {
@@ -136,7 +136,7 @@ class ReferenceController extends Controller
 
 
     /**
-     * @desc Меняет статус единиц измерения
+     *  Меняет статус единиц измерения
      */
     public function changeUsedUnitsAjax()
     {
@@ -152,7 +152,7 @@ class ReferenceController extends Controller
 
 
     /**
-     * @desc Синхронизирует данный с фса
+     *  Синхронизирует данный с фса
      */
     public function syncMeasuredPropertiesAjax()
     {
@@ -170,7 +170,7 @@ class ReferenceController extends Controller
 
 
     /**
-     * @desc Синхронизирует данный с фса
+     *  Синхронизирует данный с фса
      */
     public function syncUnitsAjax()
     {

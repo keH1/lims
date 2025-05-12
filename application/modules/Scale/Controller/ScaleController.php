@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Юстировка
+ * @desc Журнал юстировки весов
  * Class ScaleController
  */
 class ScaleController extends Controller
@@ -114,7 +114,7 @@ class ScaleController extends Controller
     }
 
     /**
-     * @desc Автозаполнение журнала юстировки весов
+     * Автозаполнение журнала юстировки весов
      */
     public function autoFill()
     {
