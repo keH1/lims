@@ -904,13 +904,13 @@ async function addImgToPdf(filePath, imgUrl, imgParams) {
  * @returns {Function} - Функция с задержкой выполнения
  */
 function delayExecution(func, wait) {
-    let timeout;
+    let timeout
 
     return function() {
-        const context = this, args = arguments;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(context, args), wait);
-    };
+        const context = this, args = arguments
+        clearTimeout(timeout)
+        timeout = setTimeout(() => func.apply(context, args), wait)
+    }
 }
 
 /**
