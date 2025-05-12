@@ -3,7 +3,7 @@
 
     <!--name="method_type" наименование для всех типов метода одинаково-->
     <!--<input type="hidden" id="methodType" name="method_type" value="TU_sred2">-->
-    <input type="hidden" id="methodType" name="type" value="sred">
+    <input type="hidden" id="methodType" name="form_data[<?=$this->data['ugtp_id']?>][type]" value="sred">
 
     <div class="form-group row">
         <div class="col-auto">
