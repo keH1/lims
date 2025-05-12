@@ -153,7 +153,7 @@
                                 <option value="" <?= empty($this->data['request']['assign'][$i]['user_id']) ? "selected" : "" ?> disabled>Выберите ответственного</option>
                                 <?php foreach ($this->data['clients_main'] as $client): ?>
                                     <option value="<?=$client['ID']?>" <?= ((int)($this->data['request']['assign'][$i]['user_id'] ?? 0) == (int)$client['ID']) ? "selected" : ""?>>
-                                        <?=$client['LAST_NAME']?> <?=$client['NAME']?>
+                                        <?=$client['LAST_NAME']?> <?=$client['NAME']?> <?=$client['SECOND_NAME']?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
