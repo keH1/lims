@@ -616,7 +616,7 @@
         <select name="lead" class="form-control" required>
             <option value="" <?=$this->data['act_vr']['LEAD'] == '' ? 'selected' : ''?> disabled>Выберите руководителя</option>
             <?php foreach ($this->data['act_complete']['assigned_users'] as $user): ?>
-                <option <?=$this->data['act_vr']['LEAD'] == $user['id'] ? 'selected' : ''?> value="<?=$user['id']?>"><?=$user['short_name']?></option>
+                <option <?=$this->data['act_vr']['LEAD'] == $user['id'] ? 'selected' : ''?> value="<?=$user['id']?>"><?=htmlspecialchars($user['full_name'], ENT_QUOTES, 'UTF-8')?></option>
             <?php endforeach; ?>
         </select>
     </div>
