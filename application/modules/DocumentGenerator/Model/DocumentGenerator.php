@@ -3291,7 +3291,7 @@ class DocumentGenerator extends Model
         QRcode::png("https://niistrom.pro/check/index.php?NUMP=" . $protocolInfo['NUMBER'] . "&DATE=" . $protocolInfo['DATE'], $qrPath);
         $pathDoc = $protocolInfo['full_protocol_path'] . 'forsign.docx';
 
-//        try {
+        try {
             $template = new \PhpOffice\PhpWord\TemplateProcessor($pathDoc);
             $template->setValue('work_position', $userInfo['work_position']);
             $template->setValue('header', $userInfo['short_name']);
@@ -3318,12 +3318,12 @@ class DocumentGenerator extends Model
 
             $tempPdfPath = $converter->convertDocxToPdf($docxPath, pathinfo($pdfPath, PATHINFO_FILENAME), $protocolInfo['full_protocol_path']);
 
-         } catch (Exception $e) {
+        } catch (Exception $e) {
             return [
                 'success' => false,
                 'error' => 'Не удалось изменить документ: ' . $e->getMessage()
             ];
-         }
+        }
 
         $base64 = $protocolModel->getBase64EncodeFile($protocolInfo['full_protocol_path'], $protocolInfo['pdf_name']);
 
