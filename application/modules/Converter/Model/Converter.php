@@ -42,7 +42,7 @@ class Converter extends Model
         }
     }
 
-    public function convertDocxToPdf($docxPath = null, $outputFileName = null)
+    public function convertDocxToPdf($docxPath = null, $outputFileName = null, $tempDir = '')
     {
         require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
         
@@ -57,7 +57,7 @@ class Converter extends Model
                 $outputFileName = pathinfo($docxPath, PATHINFO_FILENAME);
             }
 
-            $tempDir = $_SERVER['DOCUMENT_ROOT'] . '/ulab/temp';
+            // $tempDir = $_SERVER['DOCUMENT_ROOT'] . '/ulab/temp';
 
             if (!is_dir($tempDir)) {
                 if (!mkdir($tempDir, 0755, true)) {
@@ -102,7 +102,7 @@ class Converter extends Model
             
             file_put_contents($htmlFile, $html);
             
-            $pdfFile = $tempDir . '/' . $outputFileName . '_' . time() . '.pdf';
+            $pdfFile = $tempDir . $outputFileName . '.pdf';
             $command = escapeshellcmd($wkhtmltopdfPath) . ' ' . 
                        escapeshellarg($htmlFile) . ' ' . 
                        escapeshellarg($pdfFile) . ' 2>&1';

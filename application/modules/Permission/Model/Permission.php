@@ -160,7 +160,11 @@ class Permission extends Model
 
             $resultMethods = [];
             foreach ($methods as $method) {
-                $descMethod = $this->getDescFromDocDocumentByObject($reflector->getMethod($method));
+                $descMethod = trim($this->getDescFromDocDocumentByObject($reflector->getMethod($method)));
+                $first = mb_substr($descMethod, 0, 1, "UTF-8");
+                $rest = mb_substr($descMethod, 1, null, "UTF-8");
+                $descMethod = mb_strtoupper($first, "UTF-8") . $rest;
+
                 if (empty($descMethod)) {
                     continue;
                 }

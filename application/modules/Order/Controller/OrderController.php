@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Договор контроллер
+ * @desc Договор
  * Class OrderController
  */
 Class OrderController extends Controller

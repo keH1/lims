@@ -193,7 +193,7 @@ class UserController extends Controller
     }
 
     /**
-     * @desc Обновлять роль у пользователя
+     * Обновлять роль у пользователя
      * @hide true
      */
     public function updateReplacement()

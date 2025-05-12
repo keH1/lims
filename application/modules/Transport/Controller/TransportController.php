@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Класс контроллер для Транспорта
+ * @desc Транспорт
  * Class TransportController
  */
 class TransportController extends Controller

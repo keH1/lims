@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Контроллер для заявок
+ * @desc Работа с заявкой
  * Class RequestController
  */
 class RequestController extends Controller
