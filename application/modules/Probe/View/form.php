@@ -47,8 +47,8 @@
 
 				<div class="form-group col-sm-6">
 					<div class="col">
-						<label class="form-label mb-1" for="infoDescription">Дата поступления проб (дата доставки проб)</label>
-						<input type="date" class="form-control bg-white" name="act[ACT_DATE]" value="<?=date('Y-m-d')?>">
+						<label class="form-label mb-1" for="infoDescription">Дата поступления проб (дата доставки проб) <span class="redStars">*</span></label>
+						<input type="date" class="form-control bg-white" name="act[ACT_DATE]" value="<?=date('Y-m-d')?>" required>
 					</div>
 				</div>
 			</div>

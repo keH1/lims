@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Работа с материалами
+ * @desc Работа с материалами
  * Class ProbeController
  */
 class MaterialController extends Controller
@@ -519,7 +519,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc получает схему
+     * Получает схему
      */
     public function getNewSchemeAjax()
     {
@@ -537,7 +537,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc получает схему
+     * @desc Получает схему
      */
     public function getNewSchemeMethodsAjax()
     {
@@ -555,7 +555,7 @@ class MaterialController extends Controller
 
 
     /**
-     * @desc удаляет схему
+     * @desc Удаляет схему
      */
     public function deleteNewSchemeMethodsAjax()
     {

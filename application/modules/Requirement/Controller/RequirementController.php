@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Класс контроллер для Техзадания
+ * @desc Формирование технического задания
  * Class RequirementController
  */
 class RequirementController extends Controller
@@ -1245,7 +1245,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc Получает список карьеров
+     * Получает список карьеров
      */
     public function getQuarryAjax()
     {
@@ -1501,7 +1501,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc добавление материала в новом тз аяксом
+     * @desc добавление материала запросом
      */
     public function addMaterialToTzAjax()
     {
@@ -1516,7 +1516,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc добавление материала в новом тз аяксом
+     * @desc добавление пробы для материала запросом
      */
     public function addProbeToMaterialAjax()
     {
@@ -1531,7 +1531,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * @desc добавление методик выбранным пробам в новом тз аяксом
+     * @desc добавление методик выбранным пробам запросом
      */
     public function addMethodsToProbeAjax()
     {
@@ -1571,7 +1571,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc добавление работы в тз аяксом
+     * @desc Добавление работы запросом
      */
     public function addWorkAjax()
     {
@@ -1589,7 +1589,7 @@ class RequirementController extends Controller
 
 
     /**
-     * загружает аяксом файл, обновляет запись в таблице
+     * Загрузка файла в Гос. Работы
      * @return void
      */
     public function addFileWorkAjax()
@@ -1608,7 +1608,7 @@ class RequirementController extends Controller
 
 
     /**
-     * @desc редактирует или удаляет пробу через аякс
+     * @desc Редактирование или удаление пробы
      */
     public function editProbeAjax()
     {

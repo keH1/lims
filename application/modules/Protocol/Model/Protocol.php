@@ -628,7 +628,7 @@ class Protocol extends Model
         $protocolInfo['full_protocol_path'] = PROTOCOL_GENERATOR . "archive/{$protocolInfo['ID_TZ']}{$protocolInfo['protocol_year']}/{$protocolInfo['ID']}/";
 
 //        $fileName = "Протокол №" . $protocolInfo['NUMBER'] . " от " . date("d.m.Y", strtotime($protocolInfo['DATE']));
-        $fileName = "ПИ {$protocolInfo['NUMBER']}.{$yearProtocol}{$att} {$numDeal}";
+        $fileName = "{$protocolInfo['NUMBER']}.{$yearProtocol}{$att} {$numDeal}";
 
         $protocolInfo['pdf_name'] = $fileName . '.pdf';
         $protocolInfo['doc_name'] = $fileName . '.docx';

@@ -77,7 +77,7 @@ $(function ($) {
             {
                 data: 'NAME',
                 render: function (data, type, item) {
-                    return `${item.LAST_NAME} ${item.NAME}`
+                    return `${item.LAST_NAME} ${item.NAME} ${item.SECOND_NAME}`
                 }
             },
             {

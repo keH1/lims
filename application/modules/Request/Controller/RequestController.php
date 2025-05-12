@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Контроллер для заявок
+ * @desc Работа с заявкой
  * Class RequestController
  */
 class RequestController extends Controller
@@ -1581,12 +1581,10 @@ class RequestController extends Controller
         $this->data['is_good_company'] = $companyData[COMPANY_GOOD] == 1;
         
         $assignedsList = $user->getAssignedByDealId($dealId, true);
-        
-        $assignedNames = [];
-        foreach ($assignedsList as $assigned) {
-            $assignedNames[] = $assigned['short_name'];
-        }
-        $this->data['assigned'] = implode(', ', $assignedNames);
+
+        $this->data['assigned'] = implode(', ',
+            array_filter(array_column($assignedsList, 'full_name'))
+        );
         $this->data['main_assigned'] = $assignedsList[0]['short_name'];
 
         $mailList = $requestData['addMail'] ?? [];

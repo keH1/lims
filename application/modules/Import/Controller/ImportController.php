@@ -305,7 +305,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc обновляет информацию о лаборатории
+     * @desc Обновляет информацию о лаборатории
      */
     public function labUpdate()
     {
@@ -374,7 +374,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc добавляет/обновляет информацию об отделе
+     * @desc Добавляет/обновляет информацию об отделе
      */
     public function depInsertUpdate()
     {
@@ -395,7 +395,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc добавляет/обновляет информацию об отделе
+     * @desc Добавляет/обновляет информацию о лаборатории
      */
     public function labInsertUpdate()
     {
@@ -437,7 +437,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc добавляет связь пользователя к лабе
+     * @desc Добавляет связь пользователя к лабе
      */
     public function addAffiliationUser()
     {
@@ -464,7 +464,7 @@ class ImportController extends Controller
 
     /**
      * route /import/
-     * @desc Страница профиль лаборатории (страница в левом меню)
+     * Страница профиль лаборатории (страница в левом меню)
      */
     public function list()
     {
@@ -514,7 +514,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница внесения сведений о компании (лаборатории)
+     * Страница внесения сведений о компании (лаборатории)
      * @order 2
      */
     public function companyEmployees()
@@ -548,7 +548,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница внесения сведений о компании (лаборатории)
+     * Страница внесения сведений о компании (лаборатории)
      * @order 2
      */
     public function companyInfo()
@@ -584,7 +584,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница отделов
+     * Страница отделов
      */
     public function lab()
     {
@@ -676,7 +676,7 @@ class ImportController extends Controller
      */
 
     /**
-     * @desc Страница импорта оборудования
+     * Страница импорта оборудования
      */
     public function oborud()
     {
@@ -708,7 +708,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница привязки оборудования к помещениям
+     * Страница привязки оборудования к помещениям
      */
     public function oborudToRoom()
     {
@@ -741,7 +741,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница импорта методик
+     * Страница импорта методик
      */
     public function methods()
     {
@@ -773,7 +773,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница привязки оборудования к методикам
+     * Страница привязки оборудования к методикам
      */
     public function oborudToMethod()
     {
@@ -819,7 +819,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница привязки лаборатории и сотрудников
+     * Страница привязки лаборатории и сотрудников
      */
     public function labUserToMethod()
     {
@@ -910,7 +910,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница привязки сотрудников к подразделениям
+     * Страница привязки сотрудников к подразделениям
      */
     public function department()
     {
@@ -942,7 +942,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница импорта объектов испытаний
+     * Страница импорта объектов испытаний
      */
     public function material()
     {
@@ -972,7 +972,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница внесения сведений о провайдере электронной почты
+     * Страница внесения сведений о провайдере электронной почты
      */
     public function mail()
     {
@@ -1008,7 +1008,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Страница онбординга
+     * Страница онбординга
      * @param $onboardingId
      */
     public function onboarding($onboardingId = null)
@@ -1036,7 +1036,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc загрузить CSV версию
+     * загрузить CSV версию
      * @param $name - наименование директории и файла
      * @hide true
      */
@@ -1067,7 +1067,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc CSV файл
+     * CSV файл
      * @param $name - наименование директории и файла
      * @hide true
      */
@@ -1091,7 +1091,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc импортировать CSV данные
+     * импортировать CSV данные
      * @param $name - наименование директории и файла
      * @hide true
      */
@@ -1130,7 +1130,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Создание изменение информации о компании (лаборатории)
+     * Создание изменение информации о компании (лаборатории)
      * @hide true
      */
     public function insertUpdateInfo()
@@ -1308,7 +1308,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Создание изменение информации о важных сотрудниках
+     * Создание изменение информации о важных сотрудниках
      * @hide true
      */
     public function insertUpdateEmployees()
@@ -1396,7 +1396,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Создание изменение отделение
+     * Создание изменение отделение
      * @param $deptid
      * @hide true
      */
@@ -1426,7 +1426,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Создание изменение привязки оборудования к методике
+     * Создание изменение привязки оборудования к методике
      * @hide true
      */
     public function addLabUserToMethod()
@@ -1552,7 +1552,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Создание изменение разделов онбординга
+     * Создание изменение разделов онбординга
      * @hide true
      */
     public function insertUpdateOnboarding()
@@ -1608,7 +1608,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Создание изменение сведений о провайдере электронной почты
+     * Создание изменение сведений о провайдере электронной почты
      * @hide true
      */
     public function insertUpdateMail()
@@ -1697,7 +1697,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc загрузить PNG версию
+     * загрузить PNG версию
      * @hide true
      */
     public function uploadPngAjax()
@@ -1726,7 +1726,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Удаляет сохранённый файл с помощью Ajax-запроса
+     * Удаляет сохранённый файл с помощью Ajax-запроса
      * @return void
      * @hide true
      */
@@ -1901,7 +1901,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc удалить данные помещения
+     * @desc удалить данные лаборатории
      * @hide true
      */
     public function deleteLabAjax()
@@ -2203,7 +2203,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc получить данные подразделений
+     * @desc получить данные структуры подразделений
      * @hide true
      */
     public function getDepartmentsAjax()
@@ -2405,7 +2405,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc удалить onboarding
+     * удалить onboarding
      * @hide true
      */
     public function deleteOnboardingAjax()
@@ -2465,7 +2465,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Импортирует данные ТНВЭД
+     * Импортирует данные ТНВЭД
      */
     public function importTnved()
     {
@@ -2609,7 +2609,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Получает журнал отделов
+     * @desc Получает журнал лабораторий
      */
     public function getLabNewJournalAjax()
     {
@@ -2703,7 +2703,9 @@ class ImportController extends Controller
         echo json_encode($jsonData, JSON_UNESCAPED_UNICODE);
     }
 
-
+    /**
+     * Удаление связи пользователя организации, департаменту, отделу или лаборатории
+     */
     /**
      * @desc Удаление связи пользователя организации, департаменту, отделу или лаборатории
      * @return void
