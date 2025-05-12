@@ -69,7 +69,7 @@ $(function ($) {
                         `<div class="row">
                             <div class="col">${item.date}</div>
                             <div class="col">${item.action}</div>
-                            <div class="col">${item.short_name}</div>
+                            <div class="col">${item.full_name_escaped}</div>
                         </div>`
                 })
 

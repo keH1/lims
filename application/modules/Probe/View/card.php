@@ -188,7 +188,7 @@
 </form>
 
 
-<div id="history-modal-form" class="bg-light mfp-hide col-md-4 m-auto p-3 position-relative">
+<div id="history-modal-form" class="bg-light mfp-hide col-md-6 m-auto p-3 position-relative">
     <div class="title mb-3 h-2">
         История пробы <span class="cipher"></span>
     </div>
