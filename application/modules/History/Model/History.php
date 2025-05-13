@@ -42,7 +42,7 @@ class History extends Model
                     }
                 }
 				if (isset($filter['search']['TZ_ID'])) {
-                    $where .= "h.TZ_ID = '{$filter['search']['TZ_ID']}' AND ";
+                    $where .= "h.TZ_ID LIKE '%{$filter['search']['TZ_ID']}%' AND ";
                 }
 				if (isset($filter['search']['DATE'])) {
                     $where .= "DATE_FORMAT(h.DATE, '%d.%m.%Y %H:%i:%s') LIKE '%{$filter['search']['DATE']}%' AND ";
