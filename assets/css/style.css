@@ -1940,3 +1940,21 @@ h2 .stage-block {
     font-size: 0.875rem;
     margin-bottom: 5px;
 }
+
+/*****************
+ Стили для Bootstrap tooltip 
+*****************/
+.tooltip-inner {
+    white-space: nowrap;
+    max-width: none !important;
+    text-align: left;
+    padding: 5px 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/*******************
+Предотвращение стандартных браузерных tooltip
+*******************/
+.select2-container .select2-selection {
+    pointer-events: auto !important;
+}
