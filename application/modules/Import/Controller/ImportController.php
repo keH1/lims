@@ -441,6 +441,8 @@ class ImportController extends Controller
      */
     public function addAffiliationUser()
     {
+        $userModel = new User();
+        $labModel = new Lab();
         $orgModel = new Organization();
 
         $userId = (int)$_POST['user_id'];
@@ -454,7 +456,9 @@ class ImportController extends Controller
             'replacement_user_id' => $replacementUserId
         ];
 
+        $lab = $labModel->get($labId);
         $orgModel->setAffiliationUserInfo($userId, $data);
+        $userModel->updateUserDepartment($userId, $lab['id_dep']);
 
         $this->showSuccessMessage("Данные успешно добавлены/обновлены");
 
@@ -1461,7 +1465,7 @@ class ImportController extends Controller
      */
     public function insertUpdateUser()
     {
-        /** @var User $companyModel */
+        /** @var User $userModel */
         $userModel = $this->model('User');
         /** @var Organization $organizationModel */
         $organizationModel = $this->model('Organization');
