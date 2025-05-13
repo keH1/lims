@@ -419,7 +419,7 @@ class Reference extends Model
 
             $result = json_decode($json, true);
 
-            $this->DB->Update('ulab_dimension', ['is_actual' => 0], "where fsa_id is not null");
+            // $this->DB->Update('ulab_dimension', ['is_actual' => 0], "where fsa_id is not null");
 
             $countUpdate = 0;
             $countInsert = 0;
