@@ -110,12 +110,21 @@ services:
 
   bitrix:  
     container_name: bitrix  
+    image: reg.gitlab.itnap.ru/loki/infra:main-31c0b97f
+    volumes:  
+      - bitrix_data:/target  
+    command: sh -c "cp -r /app/. /target/ && chown -R 1000:33 /target"  
+    networks:  
+      - lims-ulab
+
+  bitrix_additional_files:  
+    container_name: bitrix_add_files 
     image: ${IMAGE_TAG_BITRIX:-reg.gitlab.itnap.ru/loki/infra:main}  
     volumes:  
       - bitrix_data:/target  
     command: sh -c "cp -r /app/. /target/ && chown -R 1000:33 /target"  
     networks:  
-      - lims-ulab  
+      - lims-ulab 
 
   lims-ulab:  
     container_name: lims_ulab  
