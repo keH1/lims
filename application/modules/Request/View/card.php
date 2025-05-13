@@ -15,18 +15,6 @@
                     </svg>
                 </a>
             </li>
-            <li class="nav-item me-2">
-                <a class="disabled nav-link disable-after-click <?=empty($this->data['request']['ID'])? 'disabled' : ''?>" href="<?=URI?>/request/copy/<?=$this->data['deal_id']?>" title="Скопировать">
-                    <svg class="icon" width="20" height="20">
-                        <use xlink:href="<?=URI?>/assets/images/icons.svg#docs"/>
-                    </svg>
-                </a>
-            </li>
-            <li class="nav-item me-2">
-            	<a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Request_card/Request_card.html" title="Техническая поддержка">
-                    <i class="fa-solid fa-question"></i>
-                </a>
-            </li>
         </ul>
     </nav>
 </header>
