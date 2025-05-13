@@ -314,7 +314,54 @@ function initTableScrollNavigation(wrapperSelector = '', scrollContainerSelector
     );
 }
 
-
+/**
+ * Инициализирует блокировку специальных символов (таких как "e", "-", "+") в полях типа number
+ * @param {string} selector - CSS селектор полей ввода
+ */
+function initNumberInputRestriction(selector) {
+    $(document).on('keydown', selector, function(e) {
+        const restrictedKeys = [69, 187, 189]
+        
+        if ($(this).attr('min') >= 0 && e.keyCode === 189) {
+            e.preventDefault()
+            return false
+        }
+        
+        if (restrictedKeys.includes(e.keyCode)) {
+            e.preventDefault()
+            return false
+        }
+        
+        const step = $(this).attr('step')
+        if ((!step || parseInt(step) === step) && e.keyCode === 190) {
+            e.preventDefault()
+            return false
+        }
+    })
+    
+    $(document).on('input', selector, function() {
+        const value = $(this).val()
+        const step = $(this).attr('step')
+        const allowDecimals = step && step.toString().includes('.')
+        
+        if (value) {
+            let newValue = value
+            newValue = newValue.replace(/[eE\+]/g, '')
+            
+            if ($(this).attr('min') >= 0) {
+                newValue = newValue.replace(/-/g, '')
+            }
+            
+            if (!allowDecimals) {
+                newValue = newValue.replace(/\..*/g, '')
+            }
+            
+            if (newValue !== value) {
+                $(this).val(newValue)
+            }
+        }
+    })
+}
 
 $(function ($) {
     $('.popup-help').magnificPopup({
@@ -691,8 +738,6 @@ $(function ($) {
         window.open (url, '_blank')
         setTimeout( function() {location.reload()});
     })
-
-    // setupTableResizeHandlers()
 })
 
 /**
