@@ -20,7 +20,8 @@ deploy_bitrix:
         set -euo pipefail
         cd /opt/lims-ulab
         docker rm bitrix || true
-        COMPOSE_HTTP_TIMEOUT=360 IMAGE_TAG_BITRIX=${IMAGE_TAG_BITRIX} docker-compose up -d bitrix || { echo "Ошибка запуска docker compose"; exit 1; }
+        COMPOSE_HTTP_TIMEOUT=360 IMAGE_TAG_BITRIX=${IMAGE_TAG_BITRIX} docker-compose up -d bitrix_additional_files || { echo "Ошибка запуска docker compose"; exit 1; }
+        docker image prune --all -f
         echo "Деплой Bitrix успешно завершён"
       EOF
   tags:

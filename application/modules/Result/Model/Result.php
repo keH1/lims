@@ -3265,28 +3265,41 @@ class Result extends Model
 
         foreach ($data as $ugtpId => $item) {
             $roomId = (int)$item['room_id'];
+            $currentData = $item[$roomId];
+
             $sqlData = [
                 'ugtp_id' => $ugtpId,
                 'room_id' => $roomId,
-                'temp' => $item[$roomId]['temp'],
-                'wet' => $item[$roomId]['wet'],
-                'pressure' => $item[$roomId]['pressure'],
+                'temp' => $currentData['temp'],
+                'wet' => $currentData['wet'],
+                'pressure' => $currentData['pressure'],
             ];
+
+            $checkResult = $labModel->checkAllConditions(
+                $roomId,
+                [
+                    'temp' => (float)$currentData['temp'],
+                    'humidity' => (float)$currentData['wet'],
+                    'pressure' => (float)$currentData['pressure']
+                ]
+            );
 
             $condToday = $labModel->getConditionsRoomToday($roomId);
 
             if ( empty($condToday)
-                || $condToday['temp'] != $item[$roomId]['temp']
-                || $condToday['humidity'] != $item[$roomId]['wet']
-                || $condToday['pressure'] != $item[$roomId]['pressure']
+                || $condToday['temp'] != $currentData['temp']
+                || $condToday['humidity'] != $currentData['wet']
+                || $condToday['pressure'] != $currentData['pressure']
             ) {
                 $labModel->addConditions(
                     [
                         'room_id' => $roomId,
-                        'temp' => $item[$roomId]['temp'],
-                        'humidity' => $item[$roomId]['wet'],
-                        'pressure' => $item[$roomId]['pressure'],
+                        'temp' => $currentData['temp'],
+                        'humidity' => $currentData['wet'],
+                        'pressure' => $currentData['pressure'],
                         'user_id' => App::getUserId(),
+                        'is_method_match' => $checkResult['is_method_match'],
+                        'is_oborud_match' => $checkResult['is_oborud_match'],
                         'created_at' => date('Y-m-d H:i:s')
                     ]
                 );
