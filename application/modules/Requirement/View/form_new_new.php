@@ -395,7 +395,7 @@
                             <?php endif; ?>
 
                             <div class="col-auto mb-3">
-                                <a href="#add-probe-modal-form" class="popup-with-form btn btn-success w125 btn-sm">
+                                <a href="#add-probe-modal-form" class="btn-add-probe popup-with-form btn btn-success w125 btn-sm">
                                     <i class="fa-solid fa-plus icon-fix"></i> Пробу
                                 </a>
                             </div>
@@ -729,10 +729,9 @@
     <div class="mb-3">
         <label class="form-label">Объект испытаний (мультивыбор) <span class="redStars">*</span></label>
 
-        <?php $selected = count($this->data['tz_material_list']) == 1? 'selected': '' ?>
-        <select class="form-control select2" name="material_id[]" data-placeholder="Выбрать объект испытаний" multiple required>
+        <select class="form-control select2 select_probe" name="material_id[]" data-placeholder="Выбрать объект испытаний" multiple required>
             <?php foreach ($this->data['tz_material_list'] as $id => $materialName): ?>
-                <option value="<?=$id?>" <?=$selected?>><?=$materialName?></option>
+                <option value="<?=$id?>"><?=$materialName?></option>
             <?php endforeach; ?>
         </select>
     </div>

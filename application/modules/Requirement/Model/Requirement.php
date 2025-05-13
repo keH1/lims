@@ -18,7 +18,8 @@ class Requirement extends Model
     const GOVERNMENT_TYPE = 9;
     // Регулярное выражение для извлечения числа из строки
     const NUM_REGEX = "/(\d+)$/";
- 
+
+
     /**
      * @param int $dealId
      * @return array

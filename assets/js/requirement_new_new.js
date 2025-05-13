@@ -441,6 +441,37 @@ $(function ($) {
         })
     })
 
+    $body.on('click', '.btn-add-probe', function () {
+        let materialIdList = $(".material-check:checked").map(function(){
+            return $(this).data('material_id')
+        }).get()
+
+        const dealId = $('#deal_id').val()
+        const selectProbe = $('#add-probe-modal-form .select_probe')
+
+        $.ajax({
+            url: "/ulab/requirement/getMaterialByDealAjax/",
+            method: "POST",
+            cache: true,
+            async: false,
+            dataType: "json",
+            data: {
+                deal_id: dealId,
+            },
+            success: function (json) {
+                if ( !json?.length ) {
+                    return true
+                }
+
+                selectProbe.html(getHtmlOptions(json, materialIdList))
+
+                selectProbe.select2({
+                    theme: 'bootstrap-5',
+                })
+            }
+        })
+    })
+
     $body.on('click', '#apply-scheme', function () {
         let schemeId = $("#select-scheme").val()
         const $methodContainer = $('.method-container')
@@ -1108,13 +1139,13 @@ function getHtmlOptionsMethod(methodList, defaultMethod = 0) {
  * @param id
  * @returns {string}
  */
-function getHtmlOptions(list, id = 0) {
+function getHtmlOptions(list, id = null) {
     let optionMethod = ''
 
     $.each(list, function (i, item) {
         let selected = ``
 
-        if ( item.id == id ) {
+        if ( (Array.isArray(id) && id.includes(parseInt(item.id)) ) || item.id == id ) {
             selected = 'selected'
         }
 

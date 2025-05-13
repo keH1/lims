@@ -1636,4 +1636,21 @@ class RequirementController extends Controller
 
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
     }
+
+
+    /**
+     * Получает список материалов у заявки
+     * @return void
+     */
+    public function getMaterialByDealAjax()
+    {
+        global $APPLICATION;
+        $APPLICATION->RestartBuffer();
+
+        $requirementModel = $this->model('Requirement');
+
+        $result = $requirementModel->getMaterialFromTz((int)$_POST['deal_id']);
+
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    }
 }
