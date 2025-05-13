@@ -108,6 +108,8 @@ $(function () {
         fixedHeader:   true,
     });
 
+    initNumberInputRestriction('input.new_price')
+
     journalDataTable.columns().every(function () {
         let timeout
         $(this.header()).closest('thead').find('.search:eq(' + this.index() + ')').on('input', function () {
