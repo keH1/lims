@@ -449,8 +449,6 @@ $(function ($) {
         const dealId = $('#deal_id').val()
         const selectProbe = $('#add-probe-modal-form .select_probe')
 
-        let htmlOption = ``
-
         $.ajax({
             url: "/ulab/requirement/getMaterialByDealAjax/",
             method: "POST",
@@ -465,9 +463,7 @@ $(function ($) {
                     return true
                 }
 
-                htmlOption += getHtmlOptions(json, materialIdList)
-
-                selectProbe.html(htmlOption)
+                selectProbe.html(getHtmlOptions(json, materialIdList))
 
                 selectProbe.select2({
                     theme: 'bootstrap-5',
@@ -1143,7 +1139,7 @@ function getHtmlOptionsMethod(methodList, defaultMethod = 0) {
  * @param id
  * @returns {string}
  */
-function getHtmlOptions(list, id= null) {
+function getHtmlOptions(list, id = null) {
     let optionMethod = ''
 
     $.each(list, function (i, item) {
