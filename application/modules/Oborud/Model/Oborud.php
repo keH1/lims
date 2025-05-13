@@ -1489,7 +1489,7 @@ class Oborud extends Model {
             $data['titleStage'] = 'До истечения срока стандартного образца осталось менее 90 дней';
         } else if (!empty($data['UNLIMITED_EXPIRY']) || $beforeDate >= 5184000) {
             $data['bgStage'] = 'bg-light-green';
-            $data['titleStage'] = '';
+            $data['titleStage'] = 'Срок годности в диапазоне';
         } else {
             $data['bgStage'] = 'bg-dark-red';
             $data['titleStage'] = 'Неизвестный статус';
