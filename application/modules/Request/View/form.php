@@ -49,7 +49,7 @@
                 </label>
                 <div class="col-sm-8">
                     <?php if (!isset($this->data['request']['id'])): ?>
-                        <select class="form-control req-type-field" name="REQ_TYPE" id="req-type-select" required>
+                        <select class="form-control req-type-field" data-bs-toggle="tooltip" name="REQ_TYPE" id="req-type-select" required>
                             <option value="" selected disabled>Выберите тип заявки</option>
                             <?php foreach ($this->data['type_list'] as $type): ?>
                                 <option value="<?=$type['type_id']?>" <?=(isset($this->data['request']['REQ_TYPE']) && $this->data['request']['REQ_TYPE'] === $type['type_id']) ? 'selected': ''?>><?=$type['name']?></option>
@@ -116,6 +116,7 @@
                             id="assigned0"
                             data-placeholder="Выберите главного ответственного"
                             required
+                            data-bs-toggle="tooltip"
                             name="ASSIGNED[]"
                     >
                         <option value="" <?= empty($this->data['request']['assign'][0]['user_id']) ? "selected" : "" ?> disabled>Выберите главного ответственного</option>
@@ -148,12 +149,13 @@
                             <select class="form-control assigned-select"
                                     id="assigned<?=$i?>"
                                     name="ASSIGNED[]"
+                                    data-bs-toggle="tooltip"
                                     data-placeholder="Выберите ответственного"
                             >
                                 <option value="" <?= empty($this->data['request']['assign'][$i]['user_id']) ? "selected" : "" ?> disabled>Выберите ответственного</option>
                                 <?php foreach ($this->data['clients_main'] as $client): ?>
                                     <option value="<?=$client['ID']?>" <?= ((int)($this->data['request']['assign'][$i]['user_id'] ?? 0) == (int)$client['ID']) ? "selected" : ""?>>
-                                        <?=$client['LAST_NAME']?> <?=$client['NAME']?>
+                                        <?=$client['LAST_NAME']?> <?=$client['NAME']?> <?=$client['SECOND_NAME']?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
