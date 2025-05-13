@@ -294,7 +294,7 @@ $(function ($) {
         clearElementError($emailField)
 
         let emailVal = $emailField.val()?.toString().trim() || ''
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$/
 
         if (emailVal && !emailPattern.test(emailVal)) {
             showElementError($emailField, 'Введите корректный e-mail (например: user@example.com)')
