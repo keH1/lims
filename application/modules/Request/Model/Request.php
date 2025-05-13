@@ -1090,7 +1090,7 @@ class Request extends Model
                     LEFT JOIN DEALS_TO_CONTRACTS dtc ON dtc.ID_DEAL=b.ID_Z
                     LEFT JOIN DOGOVOR d ON d.ID=dtc.ID_CONTRACT 
                     LEFT JOIN AKT_VR act ON act.TZ_ID=b.ID 
-                    LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
+                    LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z and ass.is_main = 1
                     LEFT JOIN b_user as usr ON ass.user_id = usr.ID 
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID 
@@ -1113,7 +1113,7 @@ class Request extends Model
                     LEFT JOIN KP AS k ON b.ID=k.TZ_ID 
                     LEFT JOIN PROTOCOLS p ON p.ID_TZ=b.ID 
                     LEFT JOIN DOGOVOR d ON d.TZ_ID=b.ID
-                    LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
+                    LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z and ass.is_main = 1
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID
                     WHERE {$whereType} b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND b.organization_id = {$organizationId}
@@ -1129,7 +1129,7 @@ class Request extends Model
                     LEFT JOIN PROTOCOLS p ON p.ID_TZ=b.ID
                     LEFT JOIN DOGOVOR d ON d.TZ_ID=b.ID
                     LEFT JOIN AKT_VR act ON act.TZ_ID=b.ID 
-                    LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z
+                    LEFT JOIN assigned_to_request ass ON ass.deal_id = b.ID_Z and ass.is_main = 1
                     LEFT JOIN b_user usr ON ass.user_id = usr.ID 
                     LEFT JOIN b_crm_company bcc ON bcc.ID = b.COMPANY_ID    
                     LEFT JOIN TZ_DOC tzdoc ON tzdoc.TZ_ID = b.ID 
@@ -1695,7 +1695,7 @@ class Request extends Model
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
-                    LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
+                    LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z and ass.is_main = 1
                     LEFT JOIN b_user as u ON u.ID = ass.user_id 
                     LEFT JOIN ulab_gost_to_probe as ugtp ON ugtp.material_to_request_id = umtr.id 
                     LEFT JOIN ulab_methods_lab as ml on ugtp.method_id = ml.method_id 
@@ -1710,7 +1710,7 @@ class Request extends Model
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
-                    LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
+                    LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z and ass.is_main = 1
                     LEFT JOIN b_user as u ON u.ID = ass.user_id
                     WHERE b.TYPE_ID != '3' AND b.organization_id = {$organizationId}
                     GROUP BY b.ID"
@@ -1721,7 +1721,7 @@ class Request extends Model
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
                     LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
-                    LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z
+                    LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z and ass.is_main = 1
                     LEFT JOIN b_user as u ON u.ID = ass.user_id 
                     LEFT JOIN ulab_gost_to_probe as ugtp ON ugtp.material_to_request_id = umtr.id 
                     LEFT JOIN ulab_methods_lab as ml on ugtp.method_id = ml.method_id 
