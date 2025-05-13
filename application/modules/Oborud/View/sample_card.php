@@ -494,7 +494,7 @@
         <div class="col">
             <label class="form-label mb-1">Единица измерения <span class="redStars">*</span></label>
             <select class="form-control select2" id="certifiedUnitId" name="component[certified_unit_id]" required>
-                <option value="0">Выбрать</option>
+                <option value="">Выбрать</option>
                 <?php foreach ($this->data['unit_list'] as $unit): ?>
                     <option value="<?=$unit['id']?>" <?=$this->data['component']['certified_unit_id'] == $unit['id'] ? 'selected' : ''?>><?=htmlentities($unit['unit_rus'])?> | <?=htmlentities($unit['name'])?></option>
                 <?php endforeach; ?>
