@@ -323,7 +323,7 @@ $(function ($) {
         closeOnBgClick: false,
     })
 
-    $('body').find('.popup-with-form').magnificPopup({
+    $('body').find('.popup-with-form:not([data-custom-popup])').magnificPopup({
         type: 'inline',
         closeBtnInside: true,
         fixedContentPos: false,

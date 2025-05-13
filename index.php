@@ -25,8 +25,6 @@ const CHECK_TZ_NOT_SENT = -1; // проверка тз: не отправлен�
 const CHECK_TZ_APPROVE = 1; // проверка тз: утверждено
 const CHECK_TZ_WAIT = 0; // проверка тз: ожидает вердикт
 
-require_once(APP_PATH . 'init.php');
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isAuthRequest = 
         strpos($_SERVER['REQUEST_URI'], 'login=yes') !== false || 
@@ -82,5 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_SESSION['LAST_AUTH_REQUEST']
          (time() - $_SESSION['LAST_AUTH_REQUEST']['time']) > 3600) {
     unset($_SESSION['LAST_AUTH_REQUEST']);
 }
+
+require_once(APP_PATH . 'init.php');
 
 $app = new App;

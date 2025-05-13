@@ -384,7 +384,7 @@ class Controller
 
 
     /**
-     * @desc Выводит сообщение от ошибке или сообщение об удаче при добавлении данных
+     * Выводит сообщение от ошибке или сообщение об удаче при добавлении данных
      * @param int $isAdd
      * @param string $successMsg
      * @param string $unsuccessfulMsg

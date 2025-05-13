@@ -16,7 +16,7 @@ class ResultController extends Controller
     const HEAD_IC_PERMISSION_ID = 3; // id роли "Руководитель ИЦ"
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Журнал заявок»
+     * Перенаправляет пользователя на страницу «Журнал заявок»
      * route /results/
      */
     public function index()
@@ -1223,7 +1223,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Отмечает протокол недействительным, если соответствующий чекбокс активен
+     *  Отмечает протокол недействительным, если соответствующий чекбокс активен
      * route /result/protocolIsInvalid/{$protocolId}
      * @param $protocolId
      */
@@ -1328,7 +1328,7 @@ class ResultController extends Controller
 
     /**
      * route /result/editResults/{$protocolId}
-     * @desc Делает данные протокола доступными для редактирования
+     *  Делает данные протокола доступными для редактирования
      * @param $protocolId
      */
     public function editResults($protocolId)
@@ -1394,7 +1394,7 @@ class ResultController extends Controller
 
     /**
      * route /result/deleteProtocol/{$protocolId}
-     * @desc Удаляет протокол
+     *  Удаляет протокол
      * @param $protocolId
      */
     public function deleteProtocol($protocolId)
@@ -1464,7 +1464,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Загружает PDF версию протокола
+     *  Загружает PDF версию протокола
      * route /result/uploadPdf/{$protocolId}
      * @param $protocolId
      */
@@ -1537,7 +1537,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Удаляет PDF версию протокола
+     *  Удаляет PDF версию протокола
      * route /result/deletePdf/{$protocolId}
      * @param $protocolId
      */
@@ -1598,7 +1598,7 @@ class ResultController extends Controller
 
     /**
      * route /result/addProtocolNumber/{$protocolId}
-     * @desc Присваивает номер протоколу
+     *  Присваивает номер протоколу
      * @param $protocolId
      */
     public function addProtocolNumber($protocolId)
@@ -1760,7 +1760,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Сохраняет комнату температуру влажность и стартует испытание
+     *  Сохраняет комнату температуру влажность и стартует испытание
      */
     public function saveRoomStart()
     {
@@ -1778,7 +1778,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc сохраняем листы измерения
+     *  сохраняем листы измерения
      */
     public function saveMeasurementData()
     {
@@ -1794,7 +1794,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Проверка на соответствие выбранных и сохраненных проб
+     *  Проверка на соответствие выбранных и сохраненных проб
      * return json
      */
     public function checkingTrialResultsAjax()
@@ -1827,7 +1827,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Возвращает оборудование по умолчанию
+     *  Возвращает оборудование по умолчанию
      * return json
      */
     public function revertDefaultAjax()
@@ -1870,7 +1870,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Получает лист измерения
+     *  Получает лист измерения
      * return json
      */
     public function getMeasurementSheetAjax()
@@ -1937,7 +1937,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Начать испытание
+     *  Начать испытание
      */
     public function startTrialAjax()
     {
@@ -2011,7 +2011,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Приостановить испытание
+     *  Приостановить испытание
      */
     public function pauseTrialAjax()
     {
@@ -2058,7 +2058,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Остановить испытание
+     *  Остановить испытание
      */
     public function stopTrialAjax()
     {
@@ -2173,7 +2173,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Сохранить выбранные помещения для испытания
+     *  Сохранить выбранные помещения для испытания
      */
     public function saveSelectedRoomsAjax()
     {
@@ -2200,7 +2200,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Получить данные условий Ajax запросом
+     *  Получить данные условий Ajax запросом
      */
     public function getConditionsAjax()
     {
@@ -2233,7 +2233,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Получить данные протокола Ajax запросом
+     *  Получить данные протокола Ajax запросом
      */
     public function getProtocolAjax()
     {
@@ -2267,7 +2267,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Валидация протокола по условиям Ajax запросом
+     *  Валидация протокола по условиям Ajax запросом
      */
     public function validateProtocolAjax()
     {
@@ -2339,7 +2339,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Страница журнала статискики испытаний
+     *  Страница журнала статискики испытаний
      */
     public function trialStatistics()
     {
@@ -2362,7 +2362,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Получение данных статистики испытаний для журнала
+     *  Получение данных статистики испытаний для журнала
      */
     public function getTrialStatisticsAjax()
     {
@@ -2394,7 +2394,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Получение данные о начале и окончании испытания
+     *  Получение данные о начале и окончании испытания
      */
     public function getStartStopTrialsAjax()
     {
@@ -2430,7 +2430,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Получить информацию по протоколу Ajax запросом
+     *  Получить информацию по протоколу Ajax запросом
      */
     public function getProtocolInfoAjax()
     {
@@ -2512,7 +2512,7 @@ class ResultController extends Controller
     }
 
     /**
-     * @desc Получает данные проб и град. зависимости для НК
+     *  Получает данные проб и град. зависимости для НК
      */
     public function getUgtpAjax()
     {
@@ -2538,7 +2538,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Получает данные проб и методик для результатов испытаний
+     *  Получает данные проб и методик для результатов испытаний
      */
     public function getMethodsProbeJournalAjax()
     {
@@ -2571,7 +2571,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Начинает испытание для пробы
+     *  Начинает испытание для пробы
      */
     public function newStartTrialAjax()
     {
@@ -2589,7 +2589,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Приостанавливает испытание для пробы
+     *  Приостанавливает испытание для пробы
      */
     public function newPauseTrialAjax()
     {
@@ -2607,7 +2607,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Останавливает испытание для пробы
+     *  Останавливает испытание для пробы
      */
     public function newStopTrialAjax()
     {
@@ -2625,7 +2625,7 @@ class ResultController extends Controller
 
 
     /**
-     * @desc Получает данные о помещениях и условий окружающей среды для проб
+     *  Получает данные о помещениях и условий окружающей среды для проб
      */
     public function getRoomsConditionsAjax()
     {

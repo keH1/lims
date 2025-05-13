@@ -47,7 +47,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Профиль лаборатории»
+     * Перенаправляет пользователя на страницу «Профиль лаборатории»
      * @hide true
      */
     public function index()
@@ -71,7 +71,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Журнал организаций»
+     * Перенаправляет пользователя на страницу «Журнал организаций»
      */
     public function organizationList()
     {
@@ -105,7 +105,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Профиль организации»
+     * Перенаправляет пользователя на страницу «Профиль организации»
      */
     public function organization()
     {
@@ -139,14 +139,14 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Профиль департамента»
+     * Перенаправляет пользователя на страницу «Профиль департамента»
      */
     public function branch($id = null)
     {
         $result = $this->checkAccessAndRedirect($id);
 
         $dataUser = $result['dataUser'];
-        $isAdmin = $result['isAdmin'];
+        // $isAdmin = $result['isAdmin'];
         $orgModel = $result['orgModel'];
         $userModel = $result['userModel'];
 
@@ -169,7 +169,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Профиль отдела»
+     * Перенаправляет пользователя на страницу «Профиль отдела»
      */
     public function dep($id = null)
     {
@@ -198,7 +198,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Профиль лабооратории»
+     * Перенаправляет пользователя на страницу «Профиль лабооратории»
      */
     public function labProfile($id = null)
     {
@@ -239,7 +239,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc обновляет информацию об организации
+     * обновляет информацию об организации
      */
     public function orgUpdate()
     {
@@ -261,7 +261,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc обновляет информацию о департаменте
+     * обновляет информацию о департаменте
      */
     public function branchUpdate()
     {
@@ -283,7 +283,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc обновляет информацию об отделе
+     * обновляет информацию об отделе
      */
     public function depUpdate()
     {
@@ -305,7 +305,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Обновляет информацию о лаборатории
+     * Обновляет информацию о лаборатории
      */
     public function labUpdate()
     {
@@ -437,7 +437,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Добавляет связь пользователя к лабе
+     * Добавляет связь пользователя к лабе
      */
     public function addAffiliationUser()
     {
@@ -634,10 +634,10 @@ class ImportController extends Controller
 
     /**
      * @desc Страница внесения сведений об отделах и помещениях
-     * @param $labId - id лаборатории
+     * @param $id - id лаборатории
      */
 
-    public function rooms($labId)
+    public function rooms($id = null)
     {
         $this->model('Permission')->checkPermission(__FUNCTION__, __FILE__);
 
@@ -645,8 +645,13 @@ class ImportController extends Controller
         $labModel = $this->model('Lab');
         $oborudModel = $this->model('Oborud');
 
+        $result = $this->checkAccessAndRedirect($id);
+        $dataUser = $result['dataUser'];
+
+        $labId = empty($id) ? (int)$dataUser['lab_id'] : (int)$id;
+
         $this->data['title'] = 'Справочник помещений';
-        $this->data['lab_id'] = (int)$labId;
+        $this->data['lab_id'] = $labId;
 
         $this->data['labs'] = $labModel->getList();
 
@@ -672,7 +677,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Добавление или обновление отдела
+     * Добавление или обновление отдела
      */
 
     /**
@@ -1360,7 +1365,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Создание изменение помещений
+     * Создание изменение помещений
      * @param $roomId
      * @hide true
      */
@@ -1451,7 +1456,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Создание изменение сведений о сотрудниках
+     * Создание изменение сведений о сотрудниках
      * @hide true
      */
     public function insertUpdateUser()
@@ -1748,7 +1753,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc загрузить логотип почты
+     * загрузить логотип почты
      * @hide true
      */
     public function uploadMailLogoAjax()
@@ -1777,7 +1782,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Удаляет логотип
+     * Удаляет логотип
      * @return void
      * @hide true
      */
@@ -1799,7 +1804,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc получение данных об отделах для журнала
+     * получение данных об отделах для журнала
      * @hide true
      */
     public function getLabJournalAjax()
@@ -1832,7 +1837,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc полученние данных помещения по id
+     * полученние данных помещения по id
      * @hide true
      */
     public function getRoomAjax()
@@ -1851,7 +1856,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Получает данные лаборатории с данными роли начальника лаборатории
+     * Получает данные лаборатории с данными роли начальника лаборатории
      * @hide true
      */
     public function getLabAjax() {
@@ -1868,7 +1873,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc удалить данные помещения
+     * удалить данные помещения
      * @hide true
      */
     public function deleteRoomAjax()
@@ -1901,7 +1906,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc удалить данные лаборатории
+     * удалить данные лаборатории
      * @hide true
      */
     public function deleteLabAjax()
@@ -1934,7 +1939,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc привязка оборудования к помещению
+     * привязка оборудования к помещению
      * @hide true
      */
     public function oborudToRoomAjax()
@@ -1995,7 +2000,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc получение оборудования по помещению
+     * получение оборудования по помещению
      * @hide true
      */
     public function getOborudByRoomAjax()
@@ -2013,7 +2018,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc привязка оборудования к методике
+     * привязка оборудования к методике
      * @hide true
      */
     public function oborudToMethodAjax()
@@ -2061,7 +2066,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc получение методики по ГОСТу
+     * получение методики по ГОСТу
      * @hide true
      */
     public function getMethodsAjax()
@@ -2079,7 +2084,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc получение оборудования по методики
+     * получение оборудования по методики
      * @hide true
      */
     public function getOborudByMethodAjax()
@@ -2098,7 +2103,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Получаем свободное оборудование
+     * Получаем свободное оборудование
      */
     public function getUnboundOborudAjax()
     {
@@ -2116,7 +2121,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc полученние данных пользователя
+     * полученние данных пользователя
      * @hide true
      */
     public function getUserAjax()
@@ -2137,7 +2142,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc удаление пользователя
+     * удаление пользователя
      * @hide true
      */
     public function deleteUserAjax()
@@ -2170,7 +2175,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc получение данных пользователей для журнала
+     * получение данных пользователей для журнала
      * @hide true
      */
     public function getUserJournalAjax()
@@ -2203,7 +2208,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc получить данные структуры подразделений
+     * получить данные структуры подразделений
      * @hide true
      */
     public function getDepartmentsAjax()
@@ -2225,7 +2230,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc получить данные подразделения
+     * получить данные подразделения
      * @hide true
      */
     public function getDepartmentDataAjax()
@@ -2247,7 +2252,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc полученние данных пользователей для подразделения
+     * полученние данных пользователей для подразделения
      * @hide true
      */
     public function getUsersByDeparmentAjax()
@@ -2268,7 +2273,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc привязка оборудования к помещению
+     * привязка оборудования к помещению
      * @hide true
      */
     public function usersToDepartmentAjax()
@@ -2328,7 +2333,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc создание изменение лаборатории
+     * @desc Создание/изменение лаборатории
      * @hide true
      */
     public function insertUpdateLabAjax()
@@ -2351,7 +2356,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc получение лабораторий и пользователей по методике
+     * получение лабораторий и пользователей по методике
      * @hide true
      */
     public function getLabUserToMethodAjax()
@@ -2381,7 +2386,7 @@ class ImportController extends Controller
     }
 
     /**
-     * @desc Отправление тестового письма
+     * Отправление тестового письма
      * @hide true
      */
     public function sendTestEmailAjax()
@@ -2439,7 +2444,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Скачивает файл с данными об областях аккредитации и методиках из системы
+     * Скачивает файл с данными об областях аккредитации и методиках из системы
      * @hide true
      */
     public function exportMethods()
@@ -2452,7 +2457,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Скачивает файл с данными об оборудовании из системы
+     * Скачивает файл с данными об оборудовании из системы
      * @hide true
      */
     public function exportOborud()
@@ -2494,7 +2499,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Получает список доступов
+     * Получает список доступов
      * @return array
      */
     public function getPermission()
@@ -2707,7 +2712,7 @@ class ImportController extends Controller
      * Удаление связи пользователя организации, департаменту, отделу или лаборатории
      */
     /**
-     * @desc Удаление связи пользователя организации, департаменту, отделу или лаборатории
+     * Удаление связи пользователя организации, департаменту, отделу или лаборатории
      * @return void
      */
     public function deleteAffiliationUserAjax()
@@ -2725,7 +2730,7 @@ class ImportController extends Controller
 
 
     /**
-     * @desc Ссылка для скачивания формы №6 для помещений
+     * Ссылка для скачивания формы №6 для помещений
      */
     public function dowloadForm(int $labId)
     {

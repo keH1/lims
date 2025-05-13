@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @desc Контроль воды
+ * @desc Журнал контроля дистиллированной воды
  * Class WaterController
  */
 class WaterController extends Controller
@@ -82,7 +82,7 @@ class WaterController extends Controller
 
 
     /**
-     * @desc Автозаполнение «Журнала контроля дистиллированной воды»
+     * Автозаполнение «Журнала контроля дистиллированной воды»
      */
     public function autoFill()
     {

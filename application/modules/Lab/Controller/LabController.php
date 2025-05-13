@@ -2,7 +2,7 @@
 
 
 /**
- * @desc Лаборатории
+ * @desc Журнал условий
  * Class LabController
  */
 class LabController extends Controller
@@ -11,7 +11,7 @@ class LabController extends Controller
     const HEAD_IC_PERMISSION_ID = 3; // id роли "Руководитель ИЦ"
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Журнал заявок»
+     * Перенаправляет пользователя на страницу «Журнал заявок»
      * route /lab/
      */
     public function index()
@@ -84,7 +84,7 @@ class LabController extends Controller
     }
 
     /**
-     * @desc Получает данные для «Журнала условий» с помощью Ajax-запроса
+     * @desc Получает данные для «Журнала условий»
      */
     public function getJournalConditionAjax()
     {
@@ -269,7 +269,7 @@ class LabController extends Controller
     }
 
     /**
-     * @desc Полученние данных атмосферного давления по дате
+     * Полученние данных атмосферного давления по дате
      */
     public function getPressureByDateAjax()
     {
@@ -288,7 +288,7 @@ class LabController extends Controller
     }
 
     /**
-     * @desc Получает данных условий по id
+     * Получает данных условий по id
      */
     public function getConditionDataAjax()
     {
@@ -305,7 +305,7 @@ class LabController extends Controller
     }
 
     /**
-     * @desc Удаляет данные условий по id
+     * Удаляет данные условий по id
      */
     public function removeConditionAjax()
     {
@@ -466,7 +466,7 @@ class LabController extends Controller
 
 
     /**
-     * @desc Получает список лабораторий
+     * Получает список лабораторий
      * @return array
      */
     public function getLabList()
@@ -482,7 +482,7 @@ class LabController extends Controller
 	}
 
     /**
-     * @desc Получает список лабораторий
+     * Получает список лабораторий
      */
 	public function getListAlt($id_bitrix = true, $is_short = false): array
 	{
@@ -519,7 +519,7 @@ class LabController extends Controller
 
 
     /**
-     * @desc Получает список лабораторий Аяксом
+     * Получает список лабораторий Аяксом
      * @return void
      */
     public function getLabListAjax()
@@ -537,7 +537,7 @@ class LabController extends Controller
     }
 
     /**
-     * @desc Получает список помещений для лаборатории
+     * Получает список помещений для лаборатории
      */
     public function getRoomsListForLabAjax()
     {

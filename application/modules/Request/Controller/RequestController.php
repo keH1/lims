@@ -65,7 +65,7 @@ class RequestController extends Controller
 
 
     /**
-     * @desc Перенаправляет пользователя на страницу «Формирование заявки на испытания»
+     * Перенаправляет пользователя на страницу «Формирование заявки на испытания»
      * route /request/
      */
     public function index()
@@ -133,7 +133,7 @@ class RequestController extends Controller
 
     /**
      * route /request/edit/{$id}
-     * @desc Страница редактирования заявки
+     *  Страница редактирования заявки
      * @param $dealId - ид сделки (из битрикса)
      */
     public function edit( $dealId )
@@ -254,7 +254,7 @@ class RequestController extends Controller
 
 
     /**
-     * @desc Сохраняет или обновляет данные заявки
+     * @desc Сохраняет/обновляет данные заявки
      */
     public function insertUpdate()
     {
@@ -510,7 +510,7 @@ class RequestController extends Controller
 
 
     /**
-     * @desc Копирует заявку
+     *  Копирует заявку
      * @param $dealId
      */
     public function copy($dealId)
@@ -717,7 +717,7 @@ class RequestController extends Controller
 
 
     /**
-     * @desc Подставляет заголовок в ba_tz из битрикса
+     *  Подставляет заголовок в ba_tz из битрикса
      * @param $dealId
      */
     public function changeTitle($dealId)
@@ -753,7 +753,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Изменяет статус
+     *  Изменяет статус
      * @param $dealId
      */
     public function setStage($dealId)
@@ -788,7 +788,7 @@ class RequestController extends Controller
 
     /**
      * route /request/list/
-     * @desc Список заявок
+     * @desc Страница "Журнал заявок"
      */
     public function list()
     {
@@ -828,7 +828,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Удаляет документ клиента
+     *  Удаляет документ клиента
      * @param $idDeal
      */
     public function deleteFile($idDeal)
@@ -856,7 +856,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Добавляет комментарий к заявке
+     *  Добавляет комментарий к заявке
      * @param $idDeal
      */
     public function addComment($idDeal)
@@ -876,7 +876,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Записывает данные оплаты
+     *  Записывает данные оплаты
      */
     public function setOplata()
     {
@@ -973,7 +973,7 @@ class RequestController extends Controller
 
 
     /**
-     * @desc Получает заявки отправленные на проверку
+     *  Получает заявки отправленные на проверку
      *  возвращает json
      */
     public function getCheckTzAjax()
@@ -1000,7 +1000,7 @@ class RequestController extends Controller
 
 
     /**
-     * @desc Получает данные компании
+     *  Получает данные компании
      * передается ид компании через POST
      * возвращается json
      */
@@ -1050,7 +1050,7 @@ class RequestController extends Controller
 
 
     /**
-     * @desc Сохраняет картинку с росписью
+     *  Сохраняет картинку с росписью
      * получает POST с картинкой в base64
      * возвращает json с результатом операции
      * @param $dealId
@@ -1090,7 +1090,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Сохраняет документы клиента
+     *  Сохраняет документы клиента
      * @param $dealId
      */
     public function uploadUserFileAjax($dealId)
@@ -1125,7 +1125,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Сохраняет фото испытаний
+     *  Сохраняет фото испытаний
      * @param $dealId
      */
     public function dwnImage($dealId)
@@ -1147,7 +1147,7 @@ class RequestController extends Controller
 	}
 
     /**
-     * @desc Выполняет проверку существования компании по ИНН
+     *  Выполняет проверку существования компании по ИНН
      */
 	public function checkCompanyByInnAjax()
     {
@@ -1167,7 +1167,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Получает данные компании по ИНН
+     *  Получает данные компании по ИНН
      */
 	public function getCompanyByInnAjax()
 	{
@@ -1187,7 +1187,7 @@ class RequestController extends Controller
 	}
 
     /**
-     * @desc Получает все данные компании по ИНН из «Битрикс»
+     *  Получает все данные компании по ИНН из «Битрикс»
      */
     public function getCompanyByInnFromBxAjax()
     {
@@ -1207,7 +1207,7 @@ class RequestController extends Controller
     }
     
     /**
-     * @desc Получает дополнительных пользователей для выбора ответственного
+     *  Получает дополнительных пользователей для выбора ответственного
      * в request/new и request/edit
      */
     public function getAssignedUserListAjax()
@@ -1223,7 +1223,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Обрабатывает материалы
+     *  Обрабатывает материалы
      * @param $materialPost
      * @param $material
      * @param $location
@@ -1256,7 +1256,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Валидация общих полей для всех заявок
+     *  Валидация общих полей для всех заявок
      * @param $post
      * @param $location
      */
@@ -1292,7 +1292,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Валидация для заявок SALE
+     *  Валидация для заявок SALE
      * @param $post
      * @param $location
      */
@@ -1448,7 +1448,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Валидация для заявок гос. работа
+     *  Валидация для заявок гос. работа
      * @param $post
      * @param $location
      */
@@ -1507,7 +1507,7 @@ class RequestController extends Controller
     }
 
     /**
-     * @desc Возвращает классы для отображения блоков в зависимости от типа заявки
+     *  Возвращает классы для отображения блоков в зависимости от типа заявки
      * @return array Массив с классами для каждого типа блока
      */
     private function getDisplayClass(): array

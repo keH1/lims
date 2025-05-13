@@ -8,7 +8,7 @@ class HistoryController extends Controller
 {
 
     /**
-     * @desc Страница журнала истории
+     * @desc Страница журнала истории изменений
      */
     public function list()
     {

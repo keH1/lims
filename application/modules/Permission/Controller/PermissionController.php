@@ -7,7 +7,7 @@
 class PermissionController extends Controller
 {
     /**
-     * @desc Перенаправляет пользователя на страницу со списком пользователей
+     *  Перенаправляет пользователя на страницу со списком пользователей
      */
     public function index()
     {
@@ -66,7 +66,7 @@ class PermissionController extends Controller
 
 
     /**
-     * @desc Управление доступами
+     *  Управление доступами
      * @param int|string $roleId - выбранна роль
      */
     public function list($roleId = 2)
@@ -95,7 +95,7 @@ class PermissionController extends Controller
 
 
     /**
-     * @desc Обновляет данные доступов у роли
+     *  Обновляет данные доступов у роли
      */
     public function updateRole()
     {
@@ -133,7 +133,7 @@ class PermissionController extends Controller
 
 
     /**
-     * @desc Получает для аякса информацию о выбранной роли
+     *  Получает для аякса информацию о выбранной роли
      */
     public function getRoleInfoAjax()
     {
@@ -153,7 +153,7 @@ class PermissionController extends Controller
 
 
     /**
-     * @desc Получает данные ролей
+     *  Получает данные ролей
      */
     public function getPermissionListAjax()
     {
@@ -171,7 +171,7 @@ class PermissionController extends Controller
 
 
     /**
-     * @desc Получает список лабораторий
+     *  Получает список лабораторий
      * @hide true
      */
     public function getDepartmentsListAjax()
@@ -190,7 +190,7 @@ class PermissionController extends Controller
 
 
     /**
-     * @desc Получает доступы текущего пользователя
+     *  Получает доступы текущего пользователя
      * @return void
      * @hide true
      */
@@ -226,7 +226,7 @@ class PermissionController extends Controller
 
 
     /**
-     * @desc Получает данные для журнала «Пользователи»
+     *  Получает данные для журнала «Пользователи»
      * @return void
      * @hide true
      */
@@ -261,7 +261,7 @@ class PermissionController extends Controller
 
 
     /**
-     * @desc Обновляет роль пользователю
+     *  Обновляет роль пользователю
      */
     public function updateUsersRole()
     {
@@ -280,7 +280,7 @@ class PermissionController extends Controller
 
 
     /**
-     * @desc Обновляет лабораторию для пользователей
+     *  Обновляет лабораторию для пользователей
      * @return void
      * @hide true
      */

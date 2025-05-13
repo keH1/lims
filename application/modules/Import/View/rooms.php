@@ -46,6 +46,7 @@
                                 type="button"
                                 title="Добавить новое помещение"
                                 data-bs-toggle="tooltip"
+                                data-custom-popup
                                 style="text-transform: none;">
                             Добавить помещение
                         </button>
