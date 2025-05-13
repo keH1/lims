@@ -19,7 +19,7 @@ deploy_bitrix:
       ssh support@"${INSTANCE_IP}" bash -s << EOF
         set -euo pipefail
         cd /opt/lims-ulab
-        docker rm bitrix || true
+        docker rm bitrix_additional_files || true
         COMPOSE_HTTP_TIMEOUT=360 IMAGE_TAG_BITRIX=${IMAGE_TAG_BITRIX} docker-compose up -d bitrix_additional_files || { echo "Ошибка запуска docker compose"; exit 1; }
         docker image prune --all -f
         echo "Деплой Bitrix успешно завершён"
