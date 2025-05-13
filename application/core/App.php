@@ -36,10 +36,11 @@ class App
             $this->id = $tmp[0] ?? '';
         }
 
-        // костыль для extranet
-
-
         // если нет доступа
+        if ( empty($_SESSION['SESS_AUTH']['USER_ID']) ) {
+            header("Location: /");
+        }
+
         $homePage = '';
         if ( !$this->checkPermission($_SESSION['SESS_AUTH']['USER_ID'], $controllerName, $this->method, $homePage) ) {
             $_SESSION['message_danger'] = "Недостаточно прав для просмотра или действия";
@@ -147,6 +148,7 @@ class App
         return $organizationId;
     }
 
+
     /**
      * @return array
      * @throws Exception
@@ -156,6 +158,7 @@ class App
     {
         return self::bitrixUser()->GetUserGroupArray();
     }
+
 
     /**
      * @param $userId - ид текущего пользователя
