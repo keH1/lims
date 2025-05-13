@@ -167,7 +167,7 @@ class App
     protected function checkPermission($userId, $controller, $method, &$homePage)
     {
         if ( empty($userId) ) {
-            return false;
+            return true;
         }
 
         global $DB;
