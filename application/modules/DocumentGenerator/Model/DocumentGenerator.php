@@ -3290,7 +3290,7 @@ class DocumentGenerator extends Model
         $qrPath = $protocolInfo['full_protocol_path'] . 'qrNEW.png';
         QRcode::png("https://niistrom.pro/check/index.php?NUMP=" . $protocolInfo['NUMBER'] . "&DATE=" . $protocolInfo['DATE'], $qrPath);
         $pathDoc = $protocolInfo['full_protocol_path'] . 'forsign.docx';
-
+                
         try {
             $template = new \PhpOffice\PhpWord\TemplateProcessor($pathDoc);
             $template->setValue('work_position', $userInfo['work_position']);
@@ -3308,15 +3308,85 @@ class DocumentGenerator extends Model
             $docxPath = $protocolInfo['full_protocol_path'] . 'signed.docx';
             $pdfPath = $protocolInfo['full_protocol_path'] . $protocolInfo['pdf_name'];
 
-            /*
-            // Команда для конвертации через LibreOffice
-            $command = "libreoffice --headless --convert-to pdf --outdir " . escapeshellarg(dirname($pdfPath)) . " " . escapeshellarg($docxPath);
-
-            // Выполнение команды
-            exec($command, $output, $returnCode);
-            */
-
-            $tempPdfPath = $converter->convertDocxToPdf($docxPath, pathinfo($pdfPath, PATHINFO_FILENAME), $protocolInfo['full_protocol_path']);
+            $checkToolAvailability = function($paths, $command) {
+                foreach ($paths as $path) {
+                    if (file_exists($path) && is_executable($path)) {
+                        return true;
+                    }
+                }
+                
+                $output = [];
+                $returnCode = null;
+                @exec("which {$command} 2>/dev/null", $output, $returnCode);
+                if ($returnCode === 0 && !empty($output[0])) {
+                    $path = $output[0];
+                    if (file_exists($path) && is_executable($path)) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            };
+            
+            $libreOfficeInstalled = $checkToolAvailability(
+                ['/usr/bin/libreoffice', '/usr/local/bin/libreoffice', '/bin/libreoffice'],
+                'libreoffice'
+            );
+            
+            $wkhtmltopdfInstalled = $checkToolAvailability(
+                ['/usr/bin/wkhtmltopdf', '/usr/local/bin/wkhtmltopdf', '/bin/wkhtmltopdf'],
+                'wkhtmltopdf'
+            );
+            
+            $handleConversionResult = function($tempPdfPath, $pdfPath, $method) use (&$conversionSuccess, &$conversionMethod) {
+                if ($tempPdfPath && file_exists($tempPdfPath)) {
+                    if ($tempPdfPath !== $pdfPath) {
+                        rename($tempPdfPath, $pdfPath);
+                    }
+                    $conversionSuccess = true;
+                    $conversionMethod = $method;
+                    return true;
+                }
+                return false;
+            };
+            
+            $conversionSuccess = false;
+            $conversionMethod = '';
+            
+            // LibreOffice
+            if ($libreOfficeInstalled && file_exists($docxPath)) {
+                $docxFullPath = realpath($docxPath);
+                $outputDir = realpath(dirname($pdfPath)) ?: dirname($pdfPath);
+                
+                if (!is_dir($outputDir)) {
+                    mkdir($outputDir, 0755, true);
+                }
+                
+                $command = "HOME=/tmp XDG_CONFIG_HOME=/tmp/.config libreoffice --headless --convert-to pdf --outdir " 
+                        . escapeshellarg($outputDir) . " " . escapeshellarg($docxFullPath);
+                
+                exec($command . " 2>&1", $output, $returnCode);
+                
+                $baseFileName = pathinfo($docxFullPath, PATHINFO_FILENAME);
+                $tempPdfPath = $outputDir . '/' . $baseFileName . '.pdf';
+                
+                $handleConversionResult($tempPdfPath, $pdfPath, 'libreoffice');
+            }
+            
+            // wkhtmltopdf
+            if (!$conversionSuccess && $wkhtmltopdfInstalled) {
+                $tempPdfPath = $converter->convertDocxToPdf(
+                    $docxPath, 
+                    pathinfo($pdfPath, PATHINFO_FILENAME), 
+                    $protocolInfo['full_protocol_path']
+                );
+                
+                $handleConversionResult($tempPdfPath, $pdfPath, 'wkhtmltopdf');
+            }
+            
+            if (!$conversionSuccess) {
+                throw new Exception('Не удалось конвертировать DOCX в PDF. Убедитесь, что установлен LibreOffice или wkhtmltopdf.');
+            }
 
         } catch (Exception $e) {
             return [
@@ -3339,6 +3409,7 @@ class DocumentGenerator extends Model
             'file_base64' => $base64,
             'url_file' => PROTOCOL_GENERATOR_URL . $protocolInfo['protocol_path'] . $protocolInfo['pdf_name'],
             'pdf_file_name' => $protocolInfo['pdf_name'],
+            'conversion_method' => $conversionMethod
         ];
     }
 }
