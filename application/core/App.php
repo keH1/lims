@@ -166,6 +166,10 @@ class App
      */
     protected function checkPermission($userId, $controller, $method, &$homePage)
     {
+        if ( empty($userId) ) {
+            return true;
+        }
+
         global $DB;
 
         $row = $DB->Query(
