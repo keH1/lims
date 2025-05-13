@@ -12,7 +12,6 @@ class Reference extends Model
      */
     public function getDataToJournalMeasuredProperties($filter)
     {
-        $organizationId = App::getOrganizationId();
         $result = [];
 
         $where = "";
@@ -73,7 +72,7 @@ class Reference extends Model
                 }
             }
         }
-        $where .= "organization_id = {$organizationId}";
+        $where .= " 1";
 
 
         $data = $this->DB->Query(
@@ -85,8 +84,7 @@ class Reference extends Model
 
         $dataTotal = $this->DB->Query(
             "SELECT count(*) val
-                    FROM ulab_measured_properties
-                    WHERE organization_id = {$organizationId}"
+                    FROM ulab_measured_properties"
         )->Fetch();
         $dataFiltered = $this->DB->Query(
             "SELECT count(*) val
@@ -290,12 +288,11 @@ class Reference extends Model
     public function syncMeasuredProperties()
     {
         try {
-            $organizationId = App::getOrganizationId();
             $json = '/ulab/api/measuringProperties.json';
 
             $result = json_decode($json, true);
 
-            $this->DB->Update('ulab_measured_properties', ['is_actual' => 0], "where fsa_id is not null");
+            // $this->DB->Update('ulab_measured_properties', ['is_actual' => 0], "where fsa_id is not null");
 
             $countUpdate = 0;
             $countInsert = 0;
@@ -305,11 +302,11 @@ class Reference extends Model
                 }
                 $name = $this->quoteStr($this->DB->ForSql(trim($item['name'])));
                 $isActual = $item['is_actual']? 1 : 0;
-                $updateAffected = $this->DB->Update('ulab_measured_properties', ['is_actual' => $isActual, 'name' => $name,'organization_id' => $organizationId], "where fsa_id = {$item['fsa_id']}");
+                $updateAffected = $this->DB->Update('ulab_measured_properties', ['is_actual' => $isActual, 'name' => $name], "where fsa_id = {$item['fsa_id']}");
 
                 if ( !$updateAffected ) {
                     $countInsert++;
-                    $this->DB->Insert('ulab_measured_properties', ['fsa_id' => $item['fsa_id'], 'name' => $name, 'is_actual' => $isActual,'organization_id' => $organizationId]);
+                    $this->DB->Insert('ulab_measured_properties', ['fsa_id' => $item['fsa_id'], 'name' => $name, 'is_actual' => $isActual]);
                 } else {
                     $countUpdate++;
                 }
@@ -318,7 +315,7 @@ class Reference extends Model
             $nonActualTotal = $this->DB->Query(
                 "SELECT count(*) val
                         FROM ulab_measured_properties
-                        WHERE is_actual = 0 and organization_id = {$organizationId}"
+                        WHERE is_actual = 0"
             )->Fetch();
         } catch (Exception $e) {
             return [
