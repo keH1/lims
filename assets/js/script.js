@@ -905,9 +905,85 @@ async function addImgToPdf(filePath, imgUrl, imgParams) {
  */
 function delayExecution(func, wait) {
     let timeout
+
     return function() {
         const context = this, args = arguments
         clearTimeout(timeout)
         timeout = setTimeout(() => func.apply(context, args), wait)
     }
+}
+
+/**
+ * Инициализирует Bootstrap tooltips для селектов и инпутов
+ * Показывает подсказку с текстом выбранной опции или значения при наведении
+ * @param {string} selector - CSS селектор для выбора элементов 
+ */
+function initTooltips(selector = '') {
+    let $elements = selector ? $(selector) : $('select, input')
+    
+    function initTooltip($target, tooltipText) {
+        if (!tooltipText || tooltipText.trim() === '') return
+        
+        $target.removeAttr('data-bs-original-title')
+            .removeAttr('aria-describedby')
+        
+        $target.attr('data-bs-toggle', 'tooltip')
+            .attr('data-bs-title', tooltipText)
+        
+        const tooltipConfig = {
+            placement: 'top',
+            trigger: 'hover',
+            delay: { show: 1000, hide: 0 },
+            template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner" style="white-space: nowrap; max-width: none;"></div></div>'
+        }
+        
+        if (typeof bootstrap !== 'undefined') {
+            const tooltipInstance = bootstrap.Tooltip.getInstance($target[0])
+            if (tooltipInstance) {
+                tooltipInstance.dispose()
+            }
+            
+            new bootstrap.Tooltip($target[0], tooltipConfig)
+        } else if (typeof $.fn.tooltip === 'function') {
+            $target.tooltip('dispose')
+            $target.tooltip(tooltipConfig)
+        }
+    }
+    
+    $elements.each(function() {
+        const $element = $(this)
+        
+        if ($element.attr('title')) {
+            $element.attr('data-original-title', $element.attr('title')).removeAttr('title')
+        }
+        
+        if ($element.is('select') && $element.next('.select2-container').length > 0) {
+            const $container = $element.next('.select2-container')
+            $container.find('*').removeAttr('title')
+            
+            if ($container.attr('title')) {
+                $container.attr('data-original-title', $container.attr('title')).removeAttr('title')
+            }
+        }
+    })
+    
+    $elements.each(function() {
+        const $element = $(this)
+        let tooltipText = ''
+        let $targetElement = $element
+        
+        if ($element.is('select') && $element.next('.select2-container').length > 0) {
+            tooltipText = $element.find('option:selected').text() || ''
+            if ($element.attr('data-original-title')) {
+                tooltipText = $element.attr('data-original-title')
+            }
+            $targetElement = $element.next('.select2-container').find('.select2-selection')
+        } else if ($element.is('select')) {
+            tooltipText = $element.attr('data-original-title') || $element.find('option:selected').text() || ''
+        } else if ($element.is('input')) {
+            tooltipText = $element.attr('data-original-title') || $element.val() || ''
+        }
+        
+        initTooltip($targetElement, tooltipText)
+    })
 }
