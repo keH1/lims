@@ -441,7 +441,7 @@ class ImportController extends Controller
      */
     public function addAffiliationUser()
     {
-        $userModel = new User;
+        $userModel = new User();
         $labModel = new Lab();
         $orgModel = new Organization();
 
