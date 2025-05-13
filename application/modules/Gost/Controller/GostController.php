@@ -28,25 +28,9 @@ class GostController extends Controller
         $this->data['lab_user_list'] = $labModel->getLabAndUser();
         $this->data['lab_list'] = $labModel->getList();
 
-
-        $this->addCSS("/assets/plugins/DataTables/datatables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/ColReorder-1.5.5/css/colReorder.dataTables.min.css");
-        $this->addCSS("/assets/plugins/DataTables/Buttons-2.0.1/css/buttons.dataTables.min.css");
-
-        $this->addJS("/assets/plugins/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js");
-        $this->addJS("/assets/plugins/DataTables/ColReorder-1.5.5/js/dataTables.colReorder.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/dataTables.buttons.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.colVis.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.print.min.js");
-        $this->addJS("/assets/plugins/DataTables/Buttons-2.0.1/js/buttons.html5.min.js");
-        $this->addJS("/assets/plugins/DataTables/JSZip-2.5.0/jszip.min.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/ellipsis.js");
-        $this->addJS("/assets/plugins/DataTables/dataRender/intl.js");
-        $this->addJS("/assets/plugins/DataTables/FixedHeader-3.2.0/js/dataTables.fixedHeader.min.js");
-
         $this->addJS("/assets/js/gost-matrix.js");
 
-        $this->view('matrix');
+        $this->view('matrix', '', 'template_journal');
     }
 
 

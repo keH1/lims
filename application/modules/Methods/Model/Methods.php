@@ -1194,43 +1194,36 @@ class Methods extends Model
 
         $result = [];
 
-        $data = $this->DB->Query(
-           "SELECT DISTINCT 
-                m.*, m.id method_id,
-                g.*, g.id gost_id,
-                p.fsa_id mp_fsa_id, p.name mp_name
-            FROM ulab_gost g
+        $sqlBody = "FROM ulab_gost as g
 
-            LEFT JOIN ulab_methods AS m
+            inner JOIN ulab_methods AS m
             ON g.id = m.gost_id
 
             LEFT JOIN ulab_measured_properties AS p
             ON p.id = m.measured_properties_id
             
             LEFT JOIN ulab_methods_lab AS l 
-            ON l.method_id = m.id
+            ON l.method_id = m.id";
 
+        $data = $this->DB->Query(
+           "SELECT 
+                SQL_CALC_FOUND_ROWS  
+                m.*, m.id method_id,
+                g.*, g.id gost_id,
+                p.fsa_id mp_fsa_id, p.name mp_name
+            {$sqlBody}
             WHERE {$where}
+            group by m.id
             ORDER BY {$order['by']} {$order['dir']} {$limit}
         ");
 
-        $dataTotal = $this->DB->Query(
-            "SELECT DISTINCT *
-                FROM ulab_gost g
-                LEFT JOIN ulab_methods m ON g.id = m.gost_id 
-                LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id
-                LEFT JOIN ulab_methods_lab AS l ON l.method_id = m.id
-                WHERE g.organization_id = {$organizationId}
-        ")->SelectedRowsCount();
-
-        $dataFiltered = $this->DB->Query(
-            "SELECT DISTINCT *
-                FROM ulab_gost g
-                LEFT JOIN ulab_methods m ON g.id = m.gost_id 
-                LEFT JOIN ulab_measured_properties AS p ON p.id = m.measured_properties_id 
-                LEFT JOIN ulab_methods_lab AS l ON l.method_id = m.id
-                WHERE {$where}"
-        )->SelectedRowsCount();
+        $counts = $this->DB->Query(
+            "select found_rows() as filtered,
+            (SELECT 
+                count(distinct m.id)
+            {$sqlBody}
+            WHERE g.organization_id = {$organizationId}) as total"
+        )->Fetch();
 
         while ($row = $data->Fetch()) {
             $row['assigned'] = $this->getAssigned($row['method_id']);
@@ -1238,8 +1231,8 @@ class Methods extends Model
             $result[] = $row;
         }
 
-        $result['recordsTotal'] = $dataTotal;
-        $result['recordsFiltered'] = $dataFiltered;
+        $result['recordsTotal'] = $counts['total'];
+        $result['recordsFiltered'] = $counts['filtered'];
         $result['columns'] = $labModel->getLabAndUser($labId);
 
         return $result;
@@ -2069,6 +2062,7 @@ class Methods extends Model
 
     public function methodsJournal($filter)
     {
+        $lab = new Lab();
         $where = "";
         $limit = "";
         $order = [
