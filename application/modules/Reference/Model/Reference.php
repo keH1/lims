@@ -222,7 +222,7 @@ class Reference extends Model
     public function changeUsedUnits($id)
     {
         $organizationId = App::getOrganizationId();
-        $this->DB->Query("update `ulab_dimension` set `is_used` = ! `is_used` where id = {$id} and organization_id = {$organizationId}");
+        $this->DB->Query("update `ulab_dimension` set `is_used` = ! `is_used` where id = {$id}");
     }
 
 
