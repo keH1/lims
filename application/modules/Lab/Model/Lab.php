@@ -1597,4 +1597,82 @@ class Lab extends Model
 
         return $result;
     }
+
+    public function checkAllConditions(int $roomId, array $conditions, bool $needWarnings = false): array
+    {
+        $methodsModel = new Methods;
+        $oborudModel = new Oborud;
+
+        $result = [
+            'is_method_match' => 1,
+            'is_oborud_match' => 1,
+            'warnings' => []
+        ];
+
+        $methods = $methodsModel->getMethodsByRoom($roomId);
+        $oboruds = $oborudModel->getOborudByRoom($roomId);
+
+        //Проверка соответствия текущих условий и условий методик
+        foreach ($methods as $data) {
+            if (($conditions['temp'] < $data['cond_temp_1'] || $conditions['temp'] > $data['cond_temp_2']) &&
+                empty($data['is_not_cond_temp'])) {
+                $result['is_method_match'] = 0;
+                if ($needWarnings) {
+                    $result['warnings']['method_temp'][] =
+                        "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
+                }
+            }
+
+            if (($conditions['humidity'] < $data['cond_wet_1'] || $conditions['humidity'] > $data['cond_wet_2']) &&
+                empty($data['is_not_cond_wet'])) {
+                $result['is_method_match'] = 0;
+                if ($needWarnings) {
+                    $result['warnings']['method_humidity'][] =
+                        "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
+                }
+            }
+
+            //if (($conditions['pressure'] < $data['cond_pressure_1'] || $conditions['pressure'] > $data['cond_pressure_2']) &&
+            //    empty($data['is_not_cond_pressure'])) {
+            //    $result['is_method_match'] = 0;
+            //    if ($needWarnings) {
+            //      $result['warnings']['method_pressure'][] =
+            //          "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
+            //    }
+            //}
+        }
+
+        //Проверка соответствия текущих условий и условий эксплуатации оборудования
+        foreach ($oboruds as $data) {
+            if (($conditions['temp'] < $data['TOO_EX'] || $conditions['temp'] > $data['TOO_EX2']) &&
+                empty($data['TEMPERATURE'])) {
+                $result['is_oborud_match'] = 0;
+                if ($needWarnings) {
+                    $result['warnings']['oborud_temp'][] =
+                        "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
+                }
+            }
+
+            if (($conditions['humidity'] < $data['OVV_EX'] || $conditions['humidity'] > $data['OVV_EX2']) &&
+                empty($data['HUMIDITY'])) {
+                $result['is_oborud_match'] = 0;
+                if ($needWarnings) {
+                    $result['warnings']['oborud_humidity'][] =
+                        "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
+                }
+            }
+
+            //if (($conditions['pressure'] < $data['AD_EX'] || $conditions['pressure'] > $data['AD_EX2']) &&
+            //    empty($data['PRESSURE'])) {
+            //    $result['is_oborud_match'] = 0;
+            //    if ($needWarnings) {
+            //      $result['warnings']['oborud_pressure'][] =
+            //          "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
+            //    }
+            //}
+        }
+
+        return $result;
+    }
+
 }

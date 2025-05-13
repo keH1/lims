@@ -136,65 +136,24 @@ class LabController extends Controller
 
         $userId = App::getUserId();
         $roomId = abs(intval($_POST['form']['room_id']));
-        $arrWarning = [];
-        $isMethodMatch = 1;
-        $isOborudMatch = 1;
+        $formData = $_POST['form'];
 
         $_SESSION['conditions_post'] = $_POST;
         $_SESSION['room_id'] = $roomId;
 
+        $checkResult = $labModel->checkAllConditions(
+            $roomId,
+            [
+                'temp' => (float)$formData['temp'],
+                'humidity' => (float)$formData['humidity'],
+                'pressure' => (float)($formData['pressure'] ?? 0)
+            ],
+            true // Сбор предупреждений
+        );
 
-        $methods = $methodsModel->getMethodsByRoom($roomId);
-        $oboruds = $oborudModel->getOborudByRoom($roomId);
-
-
-        //Проверка соответствия текущих условий и условий методик
-        foreach ($methods as $data) {
-            if (($_POST['form']['temp'] < $data['cond_temp_1'] || $_POST['form']['temp'] > $data['cond_temp_2']) &&
-                empty($data['is_not_cond_temp'])) {
-                $isMethodMatch = 0;
-                $arrWarning['method_temp'][] =
-                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
-            }
-
-            if (($_POST['form']['humidity'] < $data['cond_wet_1'] || $_POST['form']['humidity'] > $data['cond_wet_2']) &&
-                empty($data['is_not_cond_wet'])) {
-                $isMethodMatch = 0;
-                $arrWarning['method_humidity'][] =
-                    "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
-            }
-
-            //if (($_POST['form']['pressure'] < $data['cond_pressure_1'] || $_POST['form']['pressure'] > $data['cond_pressure_2']) &&
-            //    empty($data['is_not_cond_pressure'])) {
-            //    $isMethodMatch = 0;
-            //    $arrWarning['method_pressure'][] =
-            //        "&bull; <a href='" . URI . "/gost/method/{$data['id']}' >{$data['reg_doc']} {$data['name']}</a>";
-            //}
-        }
-
-        //Проверка соответствия текущих условий и условий эксплуатации оборудования
-        foreach ($oboruds as $data) {
-            if (($_POST['form']['temp'] < $data['TOO_EX'] || $_POST['form']['temp'] > $data['TOO_EX2']) &&
-                empty($data['TEMPERATURE'])) {
-                $isOborudMatch = 0;
-                $arrWarning['oborud_temp'][] =
-                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
-            }
-
-            if (($_POST['form']['humidity'] < $data['OVV_EX'] || $_POST['form']['humidity'] > $data['OVV_EX2']) &&
-                empty($data['HUMIDITY'])) {
-                $isOborudMatch = 0;
-                $arrWarning['oborud_humidity'][] =
-                    "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
-            }
-
-            //if (($_POST['form']['pressure'] < $data['AD_EX'] || $_POST['form']['pressure'] > $data['AD_EX2']) &&
-            //    empty($data['PRESSURE'])) {
-            //    $isOborudMatch = 0;
-            //    $arrWarning['oborud_pressure'][] =
-            //        "&bull; <a href='" . URI . "/oborud/edit/{$data['ID']}' >{$data['OBJECT']} {$data['TYPE_OBORUD']} {$data['REG_NUM']}</a>";
-            //}
-        }
+        $arrWarning = $checkResult['warnings'];
+        $isMethodMatch = $checkResult['is_method_match'];
+        $isOborudMatch = $checkResult['is_oborud_match'];
 
         if (!empty($arrWarning)) {
             $msgWarning = '';
