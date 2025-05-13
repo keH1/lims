@@ -175,7 +175,7 @@ $(function ($) {
         }
     })
 
-    body.on('click', '.popup-with-form', function () {
+    body.on('click', '.popup-with-form[data-custom-popup]', function() {
         const labId = parseInt($('#labs').val())
 
         $.magnificPopup.open({
@@ -188,34 +188,23 @@ $(function ($) {
             closeOnBgClick: false,
             callbacks: {
                 open: function() {
-                    const roomModalForm = $('#room-modal-form');
-                    roomModalForm.find('.form-button').text('Добавить помещение');
-                    roomModalForm.find('#title-type').text('Добавить помещение');
+                    const roomModalForm = $('#room-modal-form')
+                    
+                    roomModalForm[0].reset()
+                    roomModalForm.find('#roomId').val('')
+                    roomModalForm.find('.form-button').removeClass('disabled')
+                    roomModalForm.find('.room-delete').remove()
+                    
+                    roomModalForm.find('.form-button').text('Добавить помещение')
+                    roomModalForm.find('#title-type').text('Добавить помещение')
 
-                    if ( labId > 0 ) {
+                    if (labId > 0) {
                         roomModalForm.find('#labId').val(labId)
                         roomModalForm.find('.select_lab_block').hide()
                         roomModalForm.find('#select_lab').prop('disabled', true)
                     } else {
                         roomModalForm.find('.select_lab_block').show()
                         roomModalForm.find('#select_lab').prop('disabled', false)
-                    }
-
-                    if (roomModalForm.find('#roomId').val() != '')
-                    {
-                        roomModalForm.find('#roomId').val('');
-                        roomModalForm.find('#number').val('');
-                        roomModalForm.find('#name').val('');
-                        roomModalForm.find('#spec').val('');
-                        roomModalForm.find('#purpose').val('');
-                        roomModalForm.find('#area').val('');
-                        roomModalForm.find('#params').val('');
-                        // roomModalForm.find('#specEquip').val('');
-                        roomModalForm.find('#docs').val('');
-                        roomModalForm.find('#placement').val('');
-                        roomModalForm.find('#comment').val('');
-
-                        roomModalForm.find('.room-delete').remove();
                     }
 
                     $.ajax({
@@ -244,7 +233,25 @@ $(function ($) {
                             }
                             console.log(msg)
                         }
-                    });
+                    })
+                },
+                close: function() {
+                    const roomModalForm = $('#room-modal-form')
+                    roomModalForm[0].reset()
+                    roomModalForm.find('#roomId').val('')
+                    roomModalForm.find('.form-button').removeClass('disabled')
+                    roomModalForm.find('.room-delete').remove()
+                    
+                    roomModalForm.find('select.select2').each(function() {
+                        $(this).val('').trigger('change')
+                    })
+                    
+                    const labId = parseInt($('#labs').val())
+                    if (labId > 0) {
+                        roomModalForm.find('#labId').val(labId)
+                        roomModalForm.find('.select_lab_block').hide()
+                        roomModalForm.find('#select_lab').prop('disabled', true)
+                    }
                 }
             }
         })
@@ -415,15 +422,16 @@ $(function ($) {
     $('#room-modal-form').on('submit', function(e) {
         e.preventDefault()
         
-        $(this).find('.form-button').text('Пожалуйста подождите');
-        $(this).find('.form-button').addClass('disabled');
+        const $form = $(this)
+        $form.find('.form-button').text('Пожалуйста подождите')
+        $form.find('.form-button').addClass('disabled')
 
-        let roomDeleteButton = $(this).find('.room-delete');
+        let roomDeleteButton = $form.find('.room-delete')
         if (roomDeleteButton.length) {
-            roomDeleteButton.remove();
+            roomDeleteButton.remove()
         }
         
-        let formData = $(this).serialize()
+        let formData = $form.serialize()
         let roomId = $('#roomId').val()
         
         $.ajax({
@@ -432,9 +440,9 @@ $(function ($) {
             data: formData,
             dataType: "json",
             success: function(data) {
-                $(this).find('.form-button').removeClass('disabled');
-                $(this).find('.form-button').text('Сохранить помещение');
-
+                $form.find('.form-button').removeClass('disabled')
+                $form.find('.form-button').text('Сохранить помещение')
+                
                 $.magnificPopup.close()
                 
                 if (data.success) {
@@ -444,6 +452,8 @@ $(function ($) {
                 }
             },
             error: function(xhr, status, error) {
+                $form.find('.form-button').removeClass('disabled')
+                $form.find('.form-button').text('Сохранить помещение')
                 console.error('Ошибка при сохранении: ' + error)
             }
         })
