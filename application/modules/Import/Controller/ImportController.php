@@ -146,7 +146,7 @@ class ImportController extends Controller
         $result = $this->checkAccessAndRedirect($id);
 
         $dataUser = $result['dataUser'];
-        $isAdmin = $result['isAdmin'];
+        // $isAdmin = $result['isAdmin'];
         $orgModel = $result['orgModel'];
         $userModel = $result['userModel'];
 
@@ -634,10 +634,10 @@ class ImportController extends Controller
 
     /**
      * @desc Страница внесения сведений об отделах и помещениях
-     * @param $labId - id лаборатории
+     * @param $id - id лаборатории
      */
 
-    public function rooms($labId)
+    public function rooms($id = null)
     {
         $this->model('Permission')->checkPermission(__FUNCTION__, __FILE__);
 
@@ -645,8 +645,13 @@ class ImportController extends Controller
         $labModel = $this->model('Lab');
         $oborudModel = $this->model('Oborud');
 
+        $result = $this->checkAccessAndRedirect($id);
+        $dataUser = $result['dataUser'];
+
+        $labId = empty($id) ? (int)$dataUser['lab_id'] : (int)$id;
+
         $this->data['title'] = 'Справочник помещений';
-        $this->data['lab_id'] = (int)$labId;
+        $this->data['lab_id'] = $labId;
 
         $this->data['labs'] = $labModel->getList();
 
