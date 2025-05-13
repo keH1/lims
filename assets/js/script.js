@@ -346,14 +346,15 @@ function initNumberInputRestriction(selector) {
         
         if (value) {
             let newValue = value
-            newValue = newValue.replace(/[eE\+]/g, '')
+            
+            newValue = newValue.replace(REGEX.REMOVE_EXPONENTIAL, '')
             
             if ($(this).attr('min') >= 0) {
-                newValue = newValue.replace(/-/g, '')
+                newValue = newValue.replace(REGEX.REMOVE_MINUS, '')
             }
             
             if (!allowDecimals) {
-                newValue = newValue.replace(/\..*/g, '')
+                newValue = newValue.replace(REGEX.REMOVE_DECIMAL, '')
             }
             
             if (newValue !== value) {
