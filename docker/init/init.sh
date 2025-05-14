@@ -32,12 +32,10 @@ else
   echo "Действия с контейнером $WEB_CONTAINER пропущены."
 fi
 
-
 read -p "Выполнить подключение к MariaDB в контейнере $DB_CONTAINER? [y/N]: " db_confirm
 if [[ "$db_confirm" == "y" || "$db_confirm" == "Y" ]]; then
-  # 4. Выполнение команды в контейнере db
-  echo "Подключение к MariaDB в контейнере $DB_CONTAINER..."
-  docker exec -it "$DB_CONTAINER" mariadb -u ulab -D ulab -p'ulab < /tmp/dump_w_journal.sql'
+  # 4. Выполнение команды в контейнере db  echo "Подключение к MariaDB в контейнере $DB_CONTAINER..."
+  docker exec -it "$DB_CONTAINER" mariadb -u ulab -D ulab -p'ulab' < /tmp/dump_w_journal.sql
 else
   echo "Подключение к MariaDB в контейнере $DB_CONTAINER пропущено."
 fi

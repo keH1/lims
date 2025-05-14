@@ -6,6 +6,6 @@ COPY docker/nginx/upstream.conf /etc/nginx/conf.d/
 
 RUN adduser -D -u 1000 -G www-data www-data
 
-CMD ["nginx"]
+CMD ["nginx", "-g", "daemon off;"]
 
 EXPOSE 80 443

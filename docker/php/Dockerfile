@@ -28,6 +28,7 @@ RUN apt-get update \
 
 COPY docker/php/php.ini /etc/php/8.3/fpm/conf.d/90-php.ini
 COPY docker/php/php.ini /etc/php/8.3/cli/conf.d/90-php.ini
+COPY docker/php/www.conf /etc/php/8.3/fpm/pool.d/www.conf
 
 RUN usermod -u 1000 www-data
 
