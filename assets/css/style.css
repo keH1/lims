@@ -1967,3 +1967,11 @@ h2 .stage-block {
 .im-bar-mode.start-page table.bx-layout-inner-inner-table td.bx-layout-inner-inner-cont {
     padding-right: 0;
 }
+
+#header-inner {
+    padding-right: 0;
+}
+
+.im-bar-mode .page-header {
+    max-width: calc(100vw - 240px - 27px);
+}
