@@ -1706,6 +1706,7 @@ class Statistic extends Model
     {
         $organizationId = App::getOrganizationId();
         $month = date('m', strtotime($dataReport));
+        $monthNum = date('n', strtotime($dataReport));
         $year = date('Y', strtotime($dataReport));
 
         $result = [];
@@ -1754,6 +1755,7 @@ class Statistic extends Model
 
             while ($departmentRow = $departmentIdSql->Fetch()) {
                 $departmentId = $departmentRow['id_dep'];
+
                 if ( !isset($result['dep'][$departmentId]['year_price_new']) ) {
                     $result['dep'][$departmentId]['year_price_new'] = 0;
                 }
@@ -1781,7 +1783,7 @@ class Statistic extends Model
 
                 $result['dep'][$departmentId]['year_price_new'] += $row['price_discount'];
 
-                if ( $row['month'] == "'{$month}'") {
+                if ( $row['month'] == $monthNum) {
                     $result['dep'][$departmentId]['month_price_new'] += $row['price_discount'];
 
                     if ( $row['OPLATA'] >= $row['price_discount'] && $row['price_discount'] > 0 ) {
