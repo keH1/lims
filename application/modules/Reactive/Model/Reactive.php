@@ -115,19 +115,19 @@ class Reactive extends Model
         if ($typeName == 'getList') {
 
             $request = "
-                SELECT CONCAT(reactive.number,IFNULL(CONCAT('-',reactive_receive.number),'' )) AS number, 
+                SELECT CONCAT(IFNULL(reactive.number,''),IFNULL(CONCAT('-',reactive_receive.number),'' )) AS number, 
                         reactive_model.name, reactive_model.organization_id,                       
-                        CONCAT( aggregate_state.name,' (',unit_of_quantity.name,')  ') as aggregate_name,
-                        reactive_pure.short_name,
-                        reactive.doc_name,
-                        CONCAT ('№ ', reactive_receive.doc_receive_name,' от ',DATE_FORMAT(reactive_receive.doc_receive_date,'%d.%m.%Y' )) as doc_receive_full_name,
-                        DATE_FORMAT(reactive_receive.date_receive,'%d.%m.%Y') as date_receive_dateformat,
-                        reactive_receive.number_batch,
-                        CONCAT( reactive_receive.quantity,' ',unit_of_quantity.name) as full_quantity,
-                        DATE_FORMAT(reactive_receive.date_production,'%d.%m.%Y') as date_production_dateformat,
-                        DATE_FORMAT(reactive_receive.date_expired,'%d.%m.%Y') as date_expired_dateformat,
-                        TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)) as global_assigned_name,
-                        reactive.id,
+                        CONCAT( IFNULL(aggregate_state.name,''),' (',IFNULL(unit_of_quantity.name,''),')  ') as aggregate_name,
+                        IFNULL(reactive_pure.short_name,'') as short_name,
+                        IFNULL(reactive.doc_name,'') as doc_name,
+                        IFNULL(CONCAT ('№ ', reactive_receive.doc_receive_name,' от ',DATE_FORMAT(reactive_receive.doc_receive_date,'%d.%m.%Y' )),'') as doc_receive_full_name,
+                        IFNULL(DATE_FORMAT(reactive_receive.date_receive,'%d.%m.%Y'),'') as date_receive_dateformat,
+                        IFNULL(reactive_receive.number_batch,'') as number_batch,
+                        IFNULL(CONCAT( reactive_receive.quantity,' ',unit_of_quantity.name),'') as full_quantity,
+                        IFNULL(DATE_FORMAT(reactive_receive.date_production,'%d.%m.%Y'),'') as date_production_dateformat,
+                        IFNULL(DATE_FORMAT(reactive_receive.date_expired,'%d.%m.%Y'),'') as date_expired_dateformat,
+                        IFNULL(TRIM(CONCAT_WS(' ', b_user.NAME, b_user.LAST_NAME)),'') as global_assigned_name,
+                        reactive_model.id,
                         reactive_model.is_precursor,
                         IF(reactive_receive.date_expired<CURDATE(),1,0) AS is_expired
             FROM reactive_model 
@@ -136,12 +136,12 @@ class Reactive extends Model
             LEFT JOIN reactive_receive ON reactive_receive.id_reactive = reactive.id AND reactive_receive.organization_id = {$organizationId}
             LEFT JOIN unit_of_quantity ON reactive_model.id_unit_of_quantity= unit_of_quantity.id
             LEFT JOIN aggregate_state ON reactive_model.id_aggregate_state = aggregate_state.id
-            LEFT JOIN b_user ON  reactive_receive.global_assigned =b_user.ID 
+            LEFT JOIN b_user ON reactive_receive.global_assigned = b_user.ID 
             WHERE reactive_model.organization_id = {$organizationId} 
             HAVING id {$filters['idWhichFilter']}     
                  AND {$filters['having']} 
                 ORDER BY {$filters['order']} 
-                {$filters['limit']}    
+                {$filters['limit']}
         ";
 
             // AND  (date_receive >= {$filters['dateStart']} AND date_receive <= {$filters['dateEnd']} OR date_receive IS NULL)
