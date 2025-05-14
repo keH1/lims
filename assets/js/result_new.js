@@ -699,6 +699,16 @@ $(function ($) {
                                     })
                                 })
 
+                                $('#gost_room_form [data-js-close-modal]').remove()
+
+                                if (html === '') {
+                                    html += `<p>Методика не привязана ни к одному помещению</p>`
+
+                                    $('#gost_room_form button[type="submit"]')
+                                        .after(`<button type="button" data-js-close-modal class="btn btn-primary">Закрыть</button>`)
+                                        .hide()
+                                }
+
                                 $contentBlock.append(html)
                             }
                         },
@@ -724,6 +734,10 @@ $(function ($) {
             $(`${selector}[data-room_id="${roomId}"]`).removeClass('is-invalid bg-img-none')
         }
     }
+
+    $body.on('click', '[data-js-close-modal]', function () {
+        $.magnificPopup.close()
+    })
 
     $body.on('change', '.check_room', function () {
         let $block = $(this).closest('.room_block')
