@@ -37,7 +37,6 @@
             <select class="form-select bg-white search">
                 <option value="" selected>Все</option>
                 <option value="Договор">Договор</option>
-                <option value="Счет-оферта">Счет-оферта</option>
             </select>
         </th>
         <th scope="col">
