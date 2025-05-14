@@ -891,13 +891,13 @@ class RequestController extends Controller
             $this->redirect("/request/list/");
         }
 
-		if ( !in_array(App::getUserId(), [25, 88, 61]) && ($pay <= 0) ) {
+		if ( $pay <= 0 ) {
             $this->showErrorMessage('Оплата не может быть меньше или равна нулю');
             $this->redirect("/request/card/{$idDeal}");
         }
 
         $request->addPay($idDeal, $pay, "'" . date("d.m.Y", strtotime($_POST['payDate'])) . "'");
-        $request->addMessage($idDeal, $pay);
+//        $request->addMessage($idDeal, $pay);
 
         $this->showSuccessMessage('Оплата прошла успешно');
         $this->redirect("/request/card/{$idDeal}");
