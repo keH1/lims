@@ -1962,6 +1962,7 @@ h2 .stage-block {
 #protocolInformation .custom-equipment-list {
     --bs-form-select-bg-img: none;
     background-image: none;
+}
 
 #bx-im-bar {
     display: none;
