@@ -542,7 +542,7 @@ class Methods extends Model
                 // Цена
                 if ( isset($filter['search']['price']) && is_numeric($filter['search']['price']) ) {
                     $price = floatval($filter['search']['price']);
-                    $where .= "m.price = {$price} AND ";
+                    $where .= "m.price LIKE '%{$price}%' AND ";
                 }
 
                 // Лаба Комната
@@ -579,10 +579,7 @@ class Methods extends Model
                     if ( $filter['search']['stage'] == 8 ) { // Незаполненные
                         $where .= "m.gost_id IS NULL AND ";
                     }
-                } else {
-                    $where .= "m.is_actual = 1 AND ";
-                }
-
+                } 
             }
         }
 
