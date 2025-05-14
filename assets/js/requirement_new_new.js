@@ -578,7 +578,7 @@ $(function ($) {
 
         let options = `<option value="">Исполнитель</option>`
         $.each(data.assigned, function (i, item) {
-            options += `<option value="${item.user_id}">${item.short_name}</option>`
+            options += `<option value="${item.user_id}">${item.full_name}</option>`
         })
 
         $parent.find('.user-select').html(options)
@@ -1181,7 +1181,7 @@ function getHtmlOptionAssignedByMethod(methodId, defaultUserId = 0) {
                 if ( item.user_id == defaultUserId ) {
                     selected = 'selected'
                 }
-                htmlOption += `<option value="${item.user_id}" ${selected}>${item.short_name}</option>`
+                htmlOption += `<option value="${item.user_id}" ${selected}>${item.full_name}</option>`
             })
         }
     })
