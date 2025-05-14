@@ -428,12 +428,15 @@ $(function ($) {
             const fileType = selectedProtocols.first().data('file-type')
             
             if (fileType === 'pdf') {
-                window.open(filePath, '_blank');
+                window.open(filePath, '_blank')
             } else {
-                $('<a>', {
+                const $link = $('<a>', {
                     href: filePath,
                     download: ''
-                }).appendTo('body').get(0).click().remove();
+                }).appendTo('body')
+
+                $link[0].click()
+                $link.remove()
             }
         } else {
             const filePaths = []
@@ -468,6 +471,7 @@ $(function ($) {
             success: function() {
                 $protocolRow.addClass('table-green')
                 $protocolRow.find('td:nth-child(2)').text('Сформирован')
+                $.magnificPopup.close()
             }
         })
     })
