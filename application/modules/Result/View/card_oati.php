@@ -274,7 +274,7 @@
                                                 <?php else: ?>
                                                     <a class="no-decoration me-1 <?= $val['validation_class'] ?>"
                                                        data-protocol_id="<?=$val['ID']?>"
-                                                       href="/ulab/generator/ProtocolDocument/<?= $val['ID'] ?>"
+                                                       data-href="/ulab/generator/ProtocolDocument/<?= $val['ID'] ?>"
                                                        title="Сформировать">
                                                         <svg class="icon" width="35" height="35">
                                                             <use xlink:href="<?= URI ?>/assets/images/icons.svg#form"/>

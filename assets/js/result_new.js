@@ -1389,7 +1389,10 @@ $(function ($) {
         let success = true
         let protocolId = $(this).data('protocol_id')
 
-        $('.messages').empty();
+        const $btn = $(this)
+        const downloadUrl = $btn.data('href')
+
+        $('.messages').empty()
 
         $.ajax({
             method: 'POST',
@@ -1410,6 +1413,21 @@ $(function ($) {
                     })
                     window.scrollTo(0,0)
                 }
+
+                const downloadWindow = window.open(downloadUrl, '_blank')
+                const startTime = Date.now()
+
+                const intervalId = setInterval(() => {
+                    if (downloadWindow && downloadWindow.closed) {
+                        clearInterval(intervalId)
+                        showSuccessMessage('Протокол сформирован')
+                        return
+                    }
+
+                    if (Date.now() - startTime >= PROTOCOL_WINDOW_MAX_WAIT_MS) {
+                        clearInterval(intervalId)
+                    }
+                }, 1500)
             }
         })
 
