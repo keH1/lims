@@ -1248,9 +1248,8 @@ $(function ($) {
 
                     $.each(data['oboruds'], function(key, value) {
                         equipment.append(
-                            `<option value="${value['o_id']}" data-gost="${value['g_id']}">
-                                ${value['TYPE_OBORUD']} ${value['OBJECT']}
-                                , инв. номер ${value['REG_NUM']} ${value['reg_doc']}, ${value['clause']}
+                            `<option value="${value['o_id']}">
+                                ${value['TYPE_OBORUD']} ${value['OBJECT']}, инв. номер ${value['REG_NUM']}
                             </option>`
                         )
                     })

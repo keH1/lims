@@ -1984,7 +1984,7 @@ class Statistic extends Model
                 sum(dog.PDF is not null) as contracts_signed,
                 sum(dog.PDF is null) as contracts_unsigned
             FROM DOGOVOR as dog
-            JOIN ba_tz as tz ON dog.DEAL_ID = tz.ID_Z
+            JOIN ba_tz as tz ON dog.TZ_ID = tz.ID
             WHERE 
                 tz.organization_id = {$organizationId}
                 and dog.DATE >= '{$year}-{$month}-01' 

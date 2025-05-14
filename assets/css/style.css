@@ -1959,6 +1959,10 @@ h2 .stage-block {
     pointer-events: auto !important;
 }
 
+#protocolInformation .custom-equipment-list {
+    --bs-form-select-bg-img: none;
+    background-image: none;
+
 #bx-im-bar {
     display: none;
 }
@@ -1966,4 +1970,12 @@ h2 .stage-block {
 .im-bar-mode table.bx-layout-inner-inner-table td.bx-layout-inner-inner-cont,
 .im-bar-mode.start-page table.bx-layout-inner-inner-table td.bx-layout-inner-inner-cont {
     padding-right: 0;
+}
+
+#header-inner {
+    padding-right: 0;
+}
+
+.im-bar-mode .page-header {
+    max-width: calc(100vw - 240px - 27px);
 }

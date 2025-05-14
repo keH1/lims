@@ -3345,9 +3345,7 @@ class DocumentGenerator extends Model
                     }
                     $conversionSuccess = true;
                     $conversionMethod = $method;
-                    return true;
                 }
-                return false;
             };
             
             $conversionSuccess = false;
