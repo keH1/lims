@@ -1653,7 +1653,7 @@ class Request extends Model
                         $order['by'] = 'b.MATERIAL';
                         break;
                     case 'ASSIGNED':
-                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.NAME, u.LAST_NAME)) SEPARATOR ', '), 1)";
+                        $order['by'] = "LEFT(GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)) SEPARATOR ', '), 1)";
                         break;
                     case 'REQUEST_TITLE':
                         $order['by'] = 'b.REQUEST_TITLE';
@@ -1688,7 +1688,7 @@ class Request extends Model
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
                         b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, a.ACT_NUM, 
-                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.NAME, u.LAST_NAME)) SEPARATOR ', ') as ASSIGNED, 
+                        GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED, 
                         GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER,
                         GROUP_CONCAT(distinct IF(prtcl.NUMBER_AND_YEAR='', null, prtcl.NUMBER_AND_YEAR) SEPARATOR ', ') as PROTOCOLS
                     FROM ba_tz b
@@ -1716,7 +1716,7 @@ class Request extends Model
                     GROUP BY b.ID"
         )->SelectedRowsCount();
         $dataFiltered = $this->DB->Query(
-            "SELECT b.ID val, GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.NAME, u.LAST_NAME)) SEPARATOR ', ') as ASSIGNED 
+            "SELECT b.ID val, GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED 
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
