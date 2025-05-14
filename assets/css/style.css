@@ -1958,3 +1958,12 @@ h2 .stage-block {
 .select2-container .select2-selection {
     pointer-events: auto !important;
 }
+
+#bx-im-bar {
+    display: none;
+}
+
+.im-bar-mode table.bx-layout-inner-inner-table td.bx-layout-inner-inner-cont,
+.im-bar-mode.start-page table.bx-layout-inner-inner-table td.bx-layout-inner-inner-cont {
+    padding-right: 0;
+}
