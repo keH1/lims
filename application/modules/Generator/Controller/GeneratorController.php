@@ -57,8 +57,6 @@ class GeneratorController extends Controller
         $generator = $this->model('DocumentGenerator');
 
         $generator->protocolGenerator($protocolID);
-
-        $this->showSuccessMessage("Протокол сформирован");
     }
 
 

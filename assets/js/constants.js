@@ -17,3 +17,5 @@ const TYPE_DOCUMENT = {
     PROTOCOL: 5,
     BATCH: 7
 }
+
+const PROTOCOL_WINDOW_MAX_WAIT_MS = 10000
