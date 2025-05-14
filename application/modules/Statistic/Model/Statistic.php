@@ -1737,68 +1737,74 @@ class Statistic extends Model
         $result['all_year_part_paid_price'] = $sql['year_part_paid_price'];
 
         $sql2 = $this->DB->Query(
-            "select price_discount, OPLATA, LABA_ID, month(DATE_CREATE_TIMESTAMP) as `month` 
+            "select ID_Z, price_discount, OPLATA, LABA_ID, month(DATE_CREATE_TIMESTAMP) as `month` 
             from ba_tz where organization_id = {$organizationId} AND year(DATE_CREATE_TIMESTAMP) = {$year}"
         );
 
         while ($row = $sql2->Fetch()) {
-            if ( empty($row['LABA_ID']) ) {
-                continue;
-            }
+            $departmentIdSql = $this->DB->Query(
+                "SELECT lab.id_dep 
+                FROM `ulab_material_to_request` as umtr
+                join `ulab_gost_to_probe` as ugtp on ugtp.material_to_request_id = umtr.id
+                join ulab_methods_lab as m_lab on m_lab.method_id = ugtp.new_method_id
+                join ba_laba as lab on lab.ID = m_lab.lab_id
+                WHERE umtr.deal_id = {$row['ID_Z']} and lab.id_dep is not null
+                group by lab.id_dep"
+            );
 
-            $depId = explode(',', $row['LABA_ID']);
-            foreach ($depId as $id) {
-                if ( !isset($result['dep'][$id]['year_price_new']) ) {
-                    $result['dep'][$id]['year_price_new'] = 0;
+            while ($departmentRow = $departmentIdSql->Fetch()) {
+                $departmentId = $departmentRow['id_dep'];
+                if ( !isset($result['dep'][$departmentId]['year_price_new']) ) {
+                    $result['dep'][$departmentId]['year_price_new'] = 0;
                 }
-                if ( !isset($result['dep'][$id]['month_price_new']) ) {
-                    $result['dep'][$id]['month_price_new'] = 0;
+                if ( !isset($result['dep'][$departmentId]['month_price_new']) ) {
+                    $result['dep'][$departmentId]['month_price_new'] = 0;
                 }
-                if ( !isset($result['dep'][$id]['month_full_paid']) ) {
-                    $result['dep'][$id]['month_full_paid'] = 0;
+                if ( !isset($result['dep'][$departmentId]['month_full_paid']) ) {
+                    $result['dep'][$departmentId]['month_full_paid'] = 0;
                 }
-                if ( !isset($result['dep'][$id]['month_no_paid_count']) ) {
-                    $result['dep'][$id]['month_no_paid_count'] = 0;
+                if ( !isset($result['dep'][$departmentId]['month_no_paid_count']) ) {
+                    $result['dep'][$departmentId]['month_no_paid_count'] = 0;
                 }
-                if ( !isset($result['dep'][$id]['month_no_paid_price']) ) {
-                    $result['dep'][$id]['month_no_paid_price'] = 0;
+                if ( !isset($result['dep'][$departmentId]['month_no_paid_price']) ) {
+                    $result['dep'][$departmentId]['month_no_paid_price'] = 0;
                 }
-                if ( !isset($result['dep'][$id]['month_part_paid_count']) ) {
-                    $result['dep'][$id]['month_part_paid_count'] = 0;
+                if ( !isset($result['dep'][$departmentId]['month_part_paid_count']) ) {
+                    $result['dep'][$departmentId]['month_part_paid_count'] = 0;
                 }
-                if ( !isset($result['dep'][$id]['month_part_paid_price']) ) {
-                    $result['dep'][$id]['month_part_paid_price'] = 0;
+                if ( !isset($result['dep'][$departmentId]['month_part_paid_price']) ) {
+                    $result['dep'][$departmentId]['month_part_paid_price'] = 0;
                 }
-                if ( !isset($result['dep'][$id]['year_part_paid_price']) ) {
-                    $result['dep'][$id]['year_part_paid_price'] = 0;
+                if ( !isset($result['dep'][$departmentId]['year_part_paid_price']) ) {
+                    $result['dep'][$departmentId]['year_part_paid_price'] = 0;
                 }
 
-                $result['dep'][$id]['year_price_new'] += $row['price_discount'];
+                $result['dep'][$departmentId]['year_price_new'] += $row['price_discount'];
 
                 if ( $row['month'] == "'{$month}'") {
-                    $result['dep'][$id]['month_price_new'] += $row['price_discount'];
+                    $result['dep'][$departmentId]['month_price_new'] += $row['price_discount'];
 
                     if ( $row['OPLATA'] >= $row['price_discount'] && $row['price_discount'] > 0 ) {
-                        $result['dep'][$id]['month_full_paid'] += $row['OPLATA'];
+                        $result['dep'][$departmentId]['month_full_paid'] += $row['OPLATA'];
                     }
 
                     if ( $row['OPLATA'] == 0 && $row['price_discount'] > 0 ) {
-                        $result['dep'][$id]['month_no_paid_count']++;
-                        $result['dep'][$id]['month_no_paid_price'] += $row['price_discount'];
+                        $result['dep'][$departmentId]['month_no_paid_count']++;
+                        $result['dep'][$departmentId]['month_no_paid_price'] += $row['price_discount'];
                     }
 
                     if ( $row['OPLATA'] > 0 && $row['price_discount'] > 0 && $row['OPLATA'] < $row['price_discount'] ) {
-                        $result['dep'][$id]['month_part_paid_count']++;
-                        $result['dep'][$id]['month_part_paid_price'] += $row['price_discount'];
+                        $result['dep'][$departmentId]['month_part_paid_count']++;
+                        $result['dep'][$departmentId]['month_part_paid_price'] += $row['price_discount'];
                     }
                 }
 
                 if ( $row['OPLATA'] == 0 && $row['price_discount'] > 0 ) {
-                    $result['dep'][$id]['year_no_paid_price'] += $row['price_discount'];
+                    $result['dep'][$departmentId]['year_no_paid_price'] += $row['price_discount'];
                 }
 
                 if ( $row['OPLATA'] > 0 && $row['price_discount'] > 0 && $row['OPLATA'] < $row['price_discount'] ) {
-                    $result['dep'][$id]['year_part_paid_price'] += $row['price_discount'];
+                    $result['dep'][$departmentId]['year_part_paid_price'] += $row['price_discount'];
                 }
             }
         }
