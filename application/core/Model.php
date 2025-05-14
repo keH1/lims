@@ -429,6 +429,7 @@ class Model
 		if (App::isAdmin()) {
 			echo '<pre>';
 			print_r($text);
+            echo '</pre>';
 			if ($exit) {
 				exit();
 			}

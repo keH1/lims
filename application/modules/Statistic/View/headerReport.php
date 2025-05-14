@@ -63,6 +63,7 @@
 		</table>
 	</div>
 </div>
+
 <div class="panel panel-default">
 	<header class="panel-heading">
 		Отчет по сотрудникам ИЦ
@@ -142,6 +143,7 @@
 		</div>
 	</div>
 </div>
+
 <div class="panel panel-default">
 	<header class="panel-heading">
 		Финансовый Отчет ИЦ
@@ -187,6 +189,7 @@
 		</table>
 	</div>
 </div>
+
 <div class="panel panel-default">
 	<header class="panel-heading">
 		Отчет по МФЦ ИЦ
