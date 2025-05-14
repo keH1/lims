@@ -142,7 +142,7 @@ class Protocol extends Model
                 }
                 // Объект испытаний
                 if ( isset($filter['search']['MATERIAL']) ) {
-                    $where .= "m.NAME LIKE '%{$filter['search']['MATERIAL']}%' AND ";
+                    $having .= "GROUP_CONCAT(DISTINCT m.NAME SEPARATOR ', ') LIKE '%{$filter['search']['MATERIAL']}%' AND ";
                 }
                 // Ответственный
                 if (isset($filter['search']['ASSIGNED'])) {
