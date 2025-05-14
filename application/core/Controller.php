@@ -303,6 +303,11 @@ class Controller
 
     protected function addHashToPath($path)
     {
+        // Если это абсолютный URL (CDN) - не добавляем hash
+        if (preg_match('#^(https?:)?//#i', $path)) {
+            return $path;
+        }
+
         $parsedUrl = parse_url($path);
         $queryParams = [];
         if (isset($parsedUrl['query'])) {
