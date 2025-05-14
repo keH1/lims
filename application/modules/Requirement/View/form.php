@@ -42,7 +42,7 @@
                         </svg>
                     </a>
                 </li>
-                <li class="nav-item me-2">
+                <li class="nav-item me-2 d-none">
                     <a class="nav-link popup-help" href="/ulab/help/LIMS_Manual_Stand/Technical_spec_int/Tec_spec_int.html" title="Техническая поддержка">
                     <i class="fa-solid fa-question"></i>
                 </a>
