@@ -1268,17 +1268,23 @@ class Oborud extends Model {
     }
 
     /**
-     * ???
+     * Получает список оборудования, привязанного к методикам
      * @return array
      */
-    public function getOboruds()
+    public function getOboruds() : array
     {
         $organizationId = App::getOrganizationId();
+
         $sql = $this->DB->Query(
-            "SELECT mo.method_id, o.id o_id, o.IDENT, o.REG_NUM, o.OBJECT, o.TYPE_OBORUD, m.clause, g.id g_id, g.reg_doc   
-                FROM ba_oborud o, ulab_methods_oborud mo, ulab_methods m, ulab_gost g 
-                WHERE o.IDENT NOT IN ('KO', 'SO', 'TS', 'REACT') AND o.ID = mo.id_oborud AND mo.method_id = m.id 
-                AND m.gost_id = g.id AND o.organization_id = {$organizationId} ORDER BY o.OBJECT"
+           "SELECT DISTINCT o.id o_id, o.IDENT,
+                   o.REG_NUM, o.OBJECT,
+                   o.TYPE_OBORUD
+            FROM ba_oborud o
+            INNER JOIN ulab_methods_oborud mo ON o.ID = mo.id_oborud
+            WHERE o.IDENT NOT IN ('KO', 'SO', 'TS', 'REACT')
+                AND o.organization_id = {$organizationId}
+            GROUP BY o.id
+            ORDER BY o.OBJECT"
         );
 
         $result = [];
@@ -1294,15 +1300,6 @@ class Oborud extends Model {
                     break;
                 case 'VO':
                     $ident = "ВО";
-                    break;
-                case 'TS':
-                    $ident = "ТС";
-                    break;
-                case 'SO':
-                    $ident = "ТС";
-                    break;
-                case 'REACT':
-                    $ident = "Реактивы";
                     break;
                 case 'OOPP':
                     $ident = "ООПП";
