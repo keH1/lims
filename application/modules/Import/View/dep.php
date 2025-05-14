@@ -103,7 +103,7 @@
         <select id="form_entity_head" class="form-control select2" name="form[HEAD_ID]">
             <option value="-1">Не выбран</option>
             <?php foreach ($this->data['users'] as $user): ?>
-                <option value="<?=$user['ID']?>"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+                <option value="<?=$user['ID']?>"><?=$user['LAST_NAME']?> <?=$user['NAME']?> <?=$user['SECOND_NAME']?></option>
             <?php endforeach; ?>
         </select>
     </div>
