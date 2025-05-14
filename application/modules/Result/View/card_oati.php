@@ -332,7 +332,7 @@
                                                         <?php endif; ?>
 
                                                         <button type="submit"
-                                                                class="btn btn-primary add-protocol-number text-nowrap mt-0 <?= $val['validation_class'] ?>"
+                                                                class="btn btn-primary add-protocol-number text-nowrap mt-0"
                                                                 data-protocol_id="<?=$val['ID']?>"
                                                                 name="add_protocol_number">
                                                             Присвоить номер
