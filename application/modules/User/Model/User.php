@@ -576,8 +576,10 @@ class User extends Model
         if (!empty($name) && empty($secondName) && empty($lastName)) {
             $shortName = rtrim($shortName, '.');
         }
-        // $shortName = StringHelper::getInitials($name).' '. StringHelper::getInitials($secondName).' '.$lastName;
+
         $work_position = trim($res['WORK_POSITION']);
+
+        $fullName = implode(' ', array_filter([$name, $lastName, $secondName]));
 
         $result = [
             'user_id'       => $res['ID'],
@@ -585,6 +587,7 @@ class User extends Model
             'last_name'     => trim($res['LAST_NAME']),
             'user_name'     => "{$name} {$lastName}",
             'short_name'    => $shortName,
+            'full_name'     => $fullName,
             'work_position' => $work_position,
             'department'    => $res['UF_DEPARTMENT'][0],
             'department_name'    => $this->getDepartmentName($res['UF_DEPARTMENT'][0])

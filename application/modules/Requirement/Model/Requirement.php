@@ -422,7 +422,7 @@ class Requirement extends Model
             if ( !empty($row['assigned_id']) ) {
                 $user = $userModel->getUserData($row['assigned_id']);
 
-                $row['assigned_name'] = $user['short_name'];
+                $row['assigned_name'] = $user['full_name'];
             }
 
             $result[] = $row;
