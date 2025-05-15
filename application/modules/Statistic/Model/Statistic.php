@@ -1982,14 +1982,14 @@ class Statistic extends Model
         // Договоры
         $contractSql = $this->DB->Query(
             "SELECT 
-                count(distinct dtc.ID_CONTRACT) as contracts_total,
+                count(distinct dog.ID) as contracts_total,
                 sum(dog.PDF is not null) as contracts_signed,
                 sum(dog.PDF is null) as contracts_unsigned
-            FROM DOGOVOR as dog
-            JOIN ba_tz as tz ON dog.TZ_ID = tz.ID
-			join DEALS_TO_CONTRACTS as dtc on tz.ID_Z = dtc.`ID_DEAL`
+            FROM ba_tz as tz
+            INNER JOIN DOGOVOR as dog on tz.TZ_ID = dog.ID
             WHERE 
-                tz.organization_id = {$organizationId}
+                tz.TYPE_ID != '3' AND tz.REQUEST_TITLE <> '' AND dog.NUMBER <> '' AND dog.NUMBER IS NOT NULL 
+                and tz.organization_id = {$organizationId}
                 and dog.DATE >= '{$year}-{$month}-01' 
                 and dog.DATE < '{$year}-{$month}-01' + INTERVAL 1 MONTH"
         )->Fetch();

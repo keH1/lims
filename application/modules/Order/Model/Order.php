@@ -113,30 +113,28 @@ class Order extends Model {
 
         $whereBase = "b.TYPE_ID != '3' AND b.REQUEST_TITLE <> '' AND d.NUMBER <> '' AND d.NUMBER IS NOT NULL";
 
+        $sqlBody = "
+            FROM ba_tz as b
+            INNER JOIN DOGOVOR as d on d.TZ_ID = b.ID
+        ";
+
         $data = $this->DB->Query(
-            "SELECT b.ID b_id, b.STAGE_ID, b.ID_Z, b.COMPANY_TITLE, b.DOGOVOR_TABLE, 
-                        d.ID d_id, d.NUMBER, d.DATE, d.PDF, d.ACTUAL_VER, d.IS_ACTION, d.CONTRACT_TYPE 
-                    FROM ba_tz b
-                    INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE {$whereBase} 
-                    AND {$where}
-                    ORDER BY {$order['by']} {$order['dir']} {$limit}"
+            "SELECT 
+                SQL_CALC_FOUND_ROWS 
+                b.ID b_id, b.STAGE_ID, b.ID_Z, b.COMPANY_TITLE, b.DOGOVOR_TABLE, 
+                d.ID d_id, d.NUMBER, d.DATE, d.PDF, d.ACTUAL_VER, d.IS_ACTION, d.CONTRACT_TYPE 
+            {$sqlBody}
+            WHERE {$whereBase} 
+            AND {$where}
+            ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
-        $dataTotal = $this->DB->Query(
-            "SELECT count(*) val
-                    FROM ba_tz b
-                    INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE {$whereBase} 
-                    AND b.organization_id = {$organizationId}"
-        )->Fetch();
-
-        $dataFiltered = $this->DB->Query(
-            "SELECT count(*) val
-                    FROM ba_tz b
-                    INNER JOIN DOGOVOR d on d.TZ_ID = b.ID 
-                    WHERE {$whereBase} 
-                    AND {$where}"
+        $counts = $this->DB->Query(
+            "select found_rows() as filtered,
+            (SELECT 
+                count(distinct d.ID)
+            {$sqlBody}
+            WHERE {$whereBase} and b.organization_id = {$organizationId}) as total"
         )->Fetch();
 
         $result = [];
@@ -165,15 +163,14 @@ class Order extends Model {
                 $row['order_pdf'] = '';
             }
 
-
             $row['b_tz_id'] = $row['b_id'];
             $row['DATE'] = date("d.m.Y", strtotime($row['DATE']));
 
             $result[] = $row;
         }
 
-        $result['recordsTotal'] = $dataTotal['val'];
-        $result['recordsFiltered'] = $dataFiltered['val'];
+        $result['recordsTotal'] = $counts['total'];
+        $result['recordsFiltered'] = $counts['filtered'];
 
         return $result;
     }
@@ -667,7 +664,7 @@ class Order extends Model {
         $sqlBody = "
             FROM DOGOVOR as dog
 			JOIN ba_tz as b ON dog.TZ_ID = b.ID
-			join DEALS_TO_CONTRACTS as dtc on tz.ID_Z = dtc.`ID_DEAL`
+			join DEALS_TO_CONTRACTS as dtc on b.ID_Z = dtc.`ID_DEAL` and dtc.`ID_CONTRACT` = '{$filter['search']['order_id']}'
             LEFT JOIN TZ_DOC as tz ON b.ID = tz.TZ_ID
         ";
 
