@@ -404,7 +404,7 @@
                 <div class="col-sm-8">
                     <select id="select-assigned" class="form-control select2" name="form[assigned][]" multiple="multiple">
                         <?php foreach ($this->data['user_list'] as $user): ?>
-                            <option value="<?=$user['user_id']?>" <?=in_array($user['user_id'], $this->data['assigned'])? 'selected' : ''?>><?=$user['last_name']?> <?=$user['name']?></option>
+                            <option value="<?=$user['user_id']?>" <?=in_array($user['user_id'], $this->data['assigned'])? 'selected' : ''?>><?=$user['user_name']?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

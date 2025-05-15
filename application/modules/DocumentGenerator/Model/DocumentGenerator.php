@@ -1511,8 +1511,8 @@ class DocumentGenerator extends Model
         $section = $phpWord->addSection();
         $table_oborud = $section->addTable($styleTable);
         $table_oborud->addRow(null, array('tblHeader' => true));
-        $table_oborud->addCell(3000, $cellRowSpan)->addText('Наименование, марка, заводской и инвентарный №', array('size' => 10), $cellHCentered);
-        $table_oborud->addCell(100, $cellRowSpan)->addText('Сведения о поверке/калибровке/аттестации', array('size' => 10), $cellHCentered);
+        $table_oborud->addCell(self::percentToTwips(40), $cellRowSpan)->addText('Наименование, тип (марка), заводской и инвентарный №', array('size' => 10), $cellHCentered);
+        $table_oborud->addCell(self::percentToTwips(59), $cellRowSpan)->addText('Сведения о поверке/калибровке/аттестации', array('size' => 10), $cellHCentered);
         foreach ($table_ob as $itemMater) {
             $table_oborud->addRow();
             $table_oborud->addCell(null, $cellRowSpan)->addText($itemMater['Name'], array('size' => 10), $cellHCentered);
@@ -2394,7 +2394,7 @@ class DocumentGenerator extends Model
 
         $template->saveAs($pathDocCurdate);
 
-        if ( $protocolInformation['protocol_type'] == 34 || $protocolInformation['protocol_type'] == 33 || $protocolInformation['protocol_type'] == 1  ) {
+        if ($protocolInformation['protocol_type'] == 34 || $protocolInformation['protocol_type'] == 33 || $protocolInformation['protocol_type'] == 1) {
 
             $fileDoc = new Bitrix\Main\IO\File($pathDocCurdate);
 
@@ -3298,11 +3298,11 @@ class DocumentGenerator extends Model
             $template->setValue('date_sign', date("d.m.Y"));
             $template->saveAs($pathDoc);
 
-            $pathFile2 = $_SERVER['DOCUMENT_ROOT'] . "/sign_".App::getUserId().".png";
+            // $pathFile2 = $_SERVER['DOCUMENT_ROOT'] . "/sign_".App::getUserId().".png";
             $newTemplate = new \PhpOffice\PhpWord\Template($pathDoc);
             $newTemplate->setImageValue('image2.png', $qrPath);
-            $newTemplate->setImageValue('image3.jpg', $pathFile2);
-            $newTemplate->setImageValue('image3.png', $pathFile2);
+            // $newTemplate->setImageValue('image3.jpg', $pathFile2);
+            // $newTemplate->setImageValue('image3.png', $pathFile2);
             $newTemplate->saveAs($protocolInfo['full_protocol_path'] . 'signed.docx'); // Сохранение документа
 
             $docxPath = $protocolInfo['full_protocol_path'] . 'signed.docx';
