@@ -662,9 +662,8 @@ class Order extends Model {
         $result = [];
 
         $sqlBody = "
-            FROM DOGOVOR as dog
-			JOIN ba_tz as b ON dog.TZ_ID = b.ID
-			join DEALS_TO_CONTRACTS as dtc on b.ID_Z = dtc.`ID_DEAL` and dtc.`ID_CONTRACT` = '{$filter['search']['order_id']}'
+            FROM DEALS_TO_CONTRACTS as dtc
+			JOIN ba_tz as b ON b.ID_Z = dtc.`ID_DEAL`
             LEFT JOIN TZ_DOC as tz ON b.ID = tz.TZ_ID
         ";
 
@@ -684,7 +683,7 @@ class Order extends Model {
             (SELECT 
                 count(distinct dtc.ID_CONTRACT)
             {$sqlBody}
-            WHERE b.organization_id = {$organizationId}) as total"
+            WHERE dtc.`ID_CONTRACT` = '{$filter['search']['order_id']}' and b.organization_id = {$organizationId}) as total"
         )->Fetch();
 
         $i = 0;
