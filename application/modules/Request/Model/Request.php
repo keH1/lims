@@ -1690,7 +1690,7 @@ class Request extends Model
                         b.DATE_ACT, b.COMPANY_TITLE, a.ACT_NUM, 
                         GROUP_CONCAT(DISTINCT mater.NAME SEPARATOR ', ') as MATERIAL, 
                         GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED, 
-                        GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER,
+                        GROUP_CONCAT(DISTINCT IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER,
                         GROUP_CONCAT(distinct IF(prtcl.NUMBER_AND_YEAR='', null, prtcl.NUMBER_AND_YEAR) SEPARATOR ', ') as PROTOCOLS
                     FROM ba_tz b
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
