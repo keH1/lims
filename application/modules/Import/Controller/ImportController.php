@@ -33,7 +33,7 @@ class ImportController extends Controller
             if (!$isAdmin && empty($dataUser['lab_id'])) {
                 $this->redirectToAccessDenied();
             } else if ($isAdmin && empty($dataUser['lab_id'])) {
-                $this->redirect('/import/organization/' . $dataUser['org_id']);
+                $this->redirect('/import/organization/');
             }
         }
 
@@ -52,6 +52,8 @@ class ImportController extends Controller
      */
     public function index()
     {
+        $organizationId = App::getOrganizationId();
+
         // если админ, то перенаправляем в журнал организации
         if ( App::isAdmin()) {
             $this->redirect('/import/organizationList/');
@@ -62,8 +64,8 @@ class ImportController extends Controller
         $data = $orgModel->getAffiliationUserInfo(App::getUserId());
 
         // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
-        if ( !empty($data['org_id']) ) {
-            $this->redirect("/import/organization/{$data['org_id']}");
+        if ( !empty($organizationId) ) {
+            $this->redirect("/import/organization/");
         }
 
         $this->redirect('/request/list/');
@@ -76,13 +78,10 @@ class ImportController extends Controller
     public function organizationList()
     {
         if ( !App::isAdmin()) {
-            $orgModel = new Organization();
-
-            $data = $orgModel->getAffiliationUserInfo(App::getUserId());
-
+            $organizationId = App::getOrganizationId();
             // если пользователь не админ, но входит в организацию, то перенаправляем в профиль организации
-            if ( !empty($data['org_id']) ) {
-                $this->redirect("/import/organization/{$data['org_id']}");
+            if ( !empty($organizationId) ) {
+                $this->redirect("/import/organization/");
             } else {
                 $this->redirect('/request/list/');
             }
@@ -112,7 +111,7 @@ class ImportController extends Controller
         $orgModel = new Organization();
         $userModel = new User();
 
-        $id = App::getOrganizationId();
+        $organizationId = App::getOrganizationId();
 
         if ( !App::isAdmin()) {
             $data = $orgModel->getAffiliationUserInfo(App::getUserId());
@@ -121,12 +120,10 @@ class ImportController extends Controller
             $this->data['is_show_btn'] = true;
         }
 
-        $orgId = (int)$id;
-
         $this->data['title'] = 'Профиль организации';
 
         $this->data['users'] = $userModel->getUsers();
-        $this->data['info'] = $orgModel->getOrgInfo($orgId);
+        $this->data['info'] = $orgModel->getOrgInfo($organizationId);
 
         $this->addCSS("/assets/plugins/select2/dist/css/select2.min.css");
         $this->addCSS("/assets/plugins/select2/dist/css/select2-bootstrap-5-theme.min.css");
