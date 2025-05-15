@@ -233,7 +233,7 @@
             <div class="row m-3" data-js-form-company style="display: none;">
                 <div class="col-12">
                     <h6>Создать компанию</h6>
-                    <div class="card p-3">
+                    <div class="p-3">
                         <input type="hidden" name="ID" value="">
                         <div class="mb-3">
                             <label class="form-label">ИНН</label>
@@ -280,7 +280,7 @@
     <div class="row mb-3">
         <div class="col">
             <label for="object">Объект</label>
-            <div class="row" style="min-width: 100%">
+            <div class="row">
                 <div class="col-sm-10">
                     <select name="object_id" class="form-control select2 object" id="object" aria-hidden="true">
                         <option value="" selected disabled></option>
@@ -298,7 +298,7 @@
             <div class="row m-3" data-js-form-object style="display: none;">
                 <div class="col-12">
                     <h6>Создать объект</h6>
-                    <div class="card p-3">
+                    <div class="p-3">
                         <input type="hidden" name="ID" value="">
                         <div class="mb-3">
                             <label class="form-label">Название</label>
