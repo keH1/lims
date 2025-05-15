@@ -1586,7 +1586,7 @@ class Request extends Model
                 }
                 // Объект испытаний
                 if ( isset($filter['search']['MATERIAL']) ) {
-                    $where .= "b.MATERIAL LIKE '%{$filter['search']['MATERIAL']}%' AND ";
+                    $where .= "mater.NAME LIKE '%{$filter['search']['MATERIAL']}%' AND ";
                 }
                 // Ответственный
                 if (isset($filter['search']['ASSIGNED'])) {
@@ -1687,13 +1687,15 @@ class Request extends Model
 
         $data = $this->DB->Query(
             "SELECT b.ID b_id, b.NUM_ACT_TABLE, b.ID_Z, b.DOGOVOR_TABLE, b.REQUEST_TITLE, b.LABA_ID,  
-                        b.DATE_ACT, b.COMPANY_TITLE, b.MATERIAL, a.ACT_NUM, 
+                        b.DATE_ACT, b.COMPANY_TITLE, a.ACT_NUM, 
+                        GROUP_CONCAT(DISTINCT mater.NAME SEPARATOR ', ') as MATERIAL, 
                         GROUP_CONCAT(DISTINCT TRIM(CONCAT_WS(' ', u.LAST_NAME, u.NAME, u.SECOND_NAME)) SEPARATOR ', ') as ASSIGNED, 
                         GROUP_CONCAT(IF(umtr.cipher='', null, umtr.cipher) SEPARATOR ', ') as CIPHER,
                         GROUP_CONCAT(distinct IF(prtcl.NUMBER_AND_YEAR='', null, prtcl.NUMBER_AND_YEAR) SEPARATOR ', ') as PROTOCOLS
                     FROM ba_tz b
-                    LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
+                    inner JOIN MATERIALS as mater ON mater.ID = umtr.material_id
+                    LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z and ass.is_main = 1
                     LEFT JOIN b_user as u ON u.ID = ass.user_id 
@@ -1720,6 +1722,7 @@ class Request extends Model
                     FROM ba_tz AS b
                     LEFT JOIN ACT_BASE a ON a.ID_TZ = b.ID
                     inner JOIN ulab_material_to_request as umtr ON umtr.deal_id = b.ID_Z
+                    inner JOIN MATERIALS as mater ON mater.ID = umtr.material_id
                     LEFT JOIN PROTOCOLS as prtcl ON prtcl.ID_TZ = b.ID
                     LEFT JOIN assigned_to_request as ass ON ass.deal_id = b.ID_Z and ass.is_main = 1
                     LEFT JOIN b_user as u ON u.ID = ass.user_id 
