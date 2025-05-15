@@ -41,7 +41,7 @@ Class OrderController extends Controller
      */
     public function reviseList()
     {
-        $this->data['title'] = 'Журнал Сверки';
+        $this->data['title'] = 'Журнала актов сверки взаимных расчетов';
 
         $this->addJs('/assets/js/order-revise-list.js');
 

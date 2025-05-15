@@ -24,7 +24,7 @@ class LabController extends Controller
      */
     public function conditionList()
     {
-        $this->data['title'] = 'Журнал условий';
+        $this->data['title'] = 'Журнал контроля условий окружающей среды';
 
         /** @var Lab $labModel */
         $labModel = $this->model('Lab');

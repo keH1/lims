@@ -1265,8 +1265,11 @@ class Requirement extends Model
                 }
             }
         }
-        $strMaterial = implode(', ', $arrMaterial);
-        $requestModel->updateTz($dealId, ['MATERIAL' => "'{$strMaterial}'"]);
+
+        if (!empty($arrMaterial)) {
+            $strMaterial = implode(', ', $arrMaterial);
+            $requestModel->updateTz($dealId, ['MATERIAL' => "'{$strMaterial}'"]);
+        }
     }
 
 

@@ -258,7 +258,7 @@
 
         <div class="line-dashed-small"></div>
 
-        <button type="submit" class="btn btn-primary">Отправить</button>
+        <button type="submit" class="btn btn-primary">Добавить</button>
     </form>
     <!--./condition-modal-form-->
 
