@@ -29,7 +29,7 @@ Class OrderController extends Controller
 
         $this->data['date_start'] = $request->getDateStart();
 
-        $this->addJs('/assets/js/order-list.js', '', 'template_journal');
+        $this->addJs('/assets/js/order-list.js');
 
         $this->view('list', '', 'template_journal');
     }
