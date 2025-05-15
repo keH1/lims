@@ -65,8 +65,13 @@ $(function ($) {
             $('#contract-select').addClass('visually-hidden').prop('disabled', true)
             $('#contract-input').removeClass('visually-hidden').prop('disabled', false)
 
-            //Скрываем кнопку добавления пользователей
+            // Скрываем кнопку добавления пользователей
             $('.add_assigned').addClass('visually-hidden')
+            
+            // Удаляем дополнительные строки с ответственными
+            if ($('.added_assigned').length > 0) {
+                $('.added_assigned').remove()
+            }
             
             $('.type-gov-block').removeClass('visually-hidden')
             
