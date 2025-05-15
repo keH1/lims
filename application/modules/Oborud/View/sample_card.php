@@ -382,9 +382,9 @@
                     <select id="select-assigned" class="form-control select2" name="sample[ASSIGNED_ID]">
                         <option value="0">Выберите ответственного</option>
                         <?php foreach ($this->data['lab_user_list'] as $lab): ?>
-                            <option value="" disabled><strong><?=$lab['short_name']?></strong></option>
+                            <option value="" disabled><strong><?=$lab['full_name']?></strong></option>
                             <?php foreach ($lab['users'] as $user): ?>
-                                <option value="<?=$user['id']?>" <?=$user['id'] == $this->data['sample']['ASSIGNED_ID']? 'selected' : ''?>><?=$user['last_name']?> <?=$user['name']?></option>
+                                <option value="<?=$user['id']?>" <?=$user['id'] == $this->data['sample']['ASSIGNED_ID']? 'selected' : ''?>><?=$user['full_name']?></option>
                             <?php endforeach; ?>
                         <?php endforeach; ?>
                     </select>
