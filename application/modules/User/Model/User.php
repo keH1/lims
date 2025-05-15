@@ -620,7 +620,7 @@ class User extends Model
                 'user_id'       => $row['ID'],
                 'name'          => trim($row['NAME']),
                 'last_name'     => trim($row['LAST_NAME']),
-                'user_name'     => "{$name} {$lastName}",
+                'user_name'     => "{$lastName} {$name} {$secondName}",
                 'short_name'    => $shortName,
                 'work_position' => $work_position
             ];
