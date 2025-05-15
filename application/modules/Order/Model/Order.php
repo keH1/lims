@@ -681,7 +681,7 @@ class Order extends Model {
         $counts = $this->DB->Query(
             "select found_rows() as filtered,
             (SELECT 
-                count(distinct dtc.ID_CONTRACT)
+                count(b.ID)
             {$sqlBody}
             WHERE dtc.`ID_CONTRACT` = '{$filter['search']['order_id']}' and b.organization_id = {$organizationId}) as total"
         )->Fetch();
