@@ -278,6 +278,7 @@ $(function ($) {
             "TZ_ID": $form.find('input[name="TZ_ID"]').val(),
             "TYPE": type,
             "EMAIL": selectedEmails.join(','),
+            "ATTACH": $('#ATTACH').val(),
             "NAME": $form.find('input[name="NAME"]').val(),
             "TITLE": $('#TITLE').val(),
             "is_ajax": 1
