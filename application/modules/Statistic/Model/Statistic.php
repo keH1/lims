@@ -1986,7 +1986,7 @@ class Statistic extends Model
                 sum(dog.PDF is not null) as contracts_signed,
                 sum(dog.PDF is null) as contracts_unsigned
             FROM ba_tz as tz
-            INNER JOIN DOGOVOR as dog on tz.TZ_ID = dog.ID
+            INNER JOIN DOGOVOR as dog on dog.TZ_ID = tz.ID
             WHERE 
                 tz.TYPE_ID != '3' AND tz.REQUEST_TITLE <> '' AND dog.NUMBER <> '' AND dog.NUMBER IS NOT NULL 
                 and tz.organization_id = {$organizationId}
