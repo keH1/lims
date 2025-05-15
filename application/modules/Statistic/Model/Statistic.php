@@ -1982,11 +1982,12 @@ class Statistic extends Model
         // Договоры
         $contractSql = $this->DB->Query(
             "SELECT 
-                count(dog.ID) as contracts_total,
+                count(distinct dtc.ID_CONTRACT) as contracts_total,
                 sum(dog.PDF is not null) as contracts_signed,
                 sum(dog.PDF is null) as contracts_unsigned
             FROM DOGOVOR as dog
             JOIN ba_tz as tz ON dog.TZ_ID = tz.ID
+			join DEALS_TO_CONTRACTS as dtc on tz.ID_Z = dtc.`ID_DEAL`
             WHERE 
                 tz.organization_id = {$organizationId}
                 and dog.DATE >= '{$year}-{$month}-01' 

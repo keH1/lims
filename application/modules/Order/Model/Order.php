@@ -593,6 +593,7 @@ class Order extends Model {
      */
     public function getDataJournalRequest(array $filter = [])
     {
+        $organizationId = App::getOrganizationId();
         $where = "";
         $limit = "";
         $order = [
@@ -659,34 +660,35 @@ class Order extends Model {
                 }
             }
         }
-        $where .= "1 ";
+        $where .= "b.organization_id = {$organizationId} ";
 
         $result = [];
 
+        $sqlBody = "
+            FROM DOGOVOR as dog
+			JOIN ba_tz as b ON dog.TZ_ID = b.ID
+			join DEALS_TO_CONTRACTS as dtc on tz.ID_Z = dtc.`ID_DEAL`
+            LEFT JOIN TZ_DOC as tz ON b.ID = tz.TZ_ID
+        ";
+
         $data = $this->DB->Query(
             "SELECT 
-                        dtc.`ID_DEAL`, dtc.ID_CONTRACT, 
-                        b.`REQUEST_TITLE`, b.`DATE_CREATE`, b.`PRICE`, b.ACCOUNT, b.DISCOUNT, b.price_discount, b.OPLATA, b.STAGE_ID, b.`ID`, b.discount_type, b.ID_Z,
-                        tz.ACTUAL_VER, tz.ID as tz_doc_id, tz.pdf as tz_pdf
-                    FROM `DEALS_TO_CONTRACTS` dtc, `ba_tz` b
-                    LEFT JOIN TZ_DOC tz ON b.ID = tz.TZ_ID
-                    WHERE b.ID_Z = dtc.`ID_DEAL` and {$where}
-                    ORDER BY {$order['by']} {$order['dir']} {$limit}"
+                SQL_CALC_FOUND_ROWS 
+                dtc.`ID_DEAL`, dtc.ID_CONTRACT, 
+                b.`REQUEST_TITLE`, b.`DATE_CREATE`, b.`PRICE`, b.ACCOUNT, b.DISCOUNT, b.price_discount, b.OPLATA, b.STAGE_ID, b.`ID`, b.discount_type, b.ID_Z,
+                tz.ACTUAL_VER, tz.ID as tz_doc_id, tz.pdf as tz_pdf
+            {$sqlBody}
+            WHERE {$where}
+            ORDER BY {$order['by']} {$order['dir']} {$limit}"
         );
 
-        $dataTotal = $this->DB->Query(
-            "SELECT b.ID val
-                    FROM `DEALS_TO_CONTRACTS` dtc, `ba_tz` b
-                    LEFT JOIN TZ_DOC tz ON b.ID = tz.TZ_ID
-                    WHERE b.ID_Z = dtc.`ID_DEAL` AND dtc.`ID_CONTRACT` = '{$filter['search']['order_id']}'"
-        )->SelectedRowsCount();
-
-        $dataFiltered = $this->DB->Query(
-            "SELECT b.ID val
-                    FROM `DEALS_TO_CONTRACTS` dtc, `ba_tz` b
-                    LEFT JOIN TZ_DOC tz ON b.ID = tz.TZ_ID
-                    WHERE b.ID_Z = dtc.`ID_DEAL` AND {$where}"
-        )->SelectedRowsCount();
+        $counts = $this->DB->Query(
+            "select found_rows() as filtered,
+            (SELECT 
+                count(distinct dtc.ID_CONTRACT)
+            {$sqlBody}
+            WHERE b.organization_id = {$organizationId}) as total"
+        )->Fetch();
 
         $i = 0;
         while ($row = $data->Fetch()) {
@@ -701,8 +703,8 @@ class Order extends Model {
             $result[] = $row;
         }
 
-        $result['recordsTotal'] = $dataTotal;
-        $result['recordsFiltered'] = $dataFiltered;
+        $result['recordsTotal'] = $counts['total'];
+        $result['recordsFiltered'] = $counts['filtered'];
 
         return $result;
     }
