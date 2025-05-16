@@ -794,7 +794,7 @@
                                 value="<?=$this->data['method_oborud_list'][0]['gost'] ?? ''?>"
                         >
                     </td>
-                    <td>
+                    <td class="td-select-oborud">
                         <select class="form-control select2 oborud-select" name="oborud[0][id_oborud]">
                             <option value="">Выбрать оборудование</option>
                             <option value="0">Нет оборудования</option>
