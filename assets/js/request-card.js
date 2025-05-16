@@ -318,8 +318,6 @@ $(function ($) {
             },
             complete: function () {
                 $form.find('button[type="submit"]').removeClass('disabled')
-
-                location.reload()
             }
         })
         
