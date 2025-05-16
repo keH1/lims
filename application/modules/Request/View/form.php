@@ -647,7 +647,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Наименование банка</label>
                 <div class="col-sm-8">
-                    <input type="text" name="BankName" class="form-control clearable" value="<?= htmlentities($this->data['request']['BankName'] ?? '') ?>">
+                    <input type="text" name="BankName" class="form-control clearable" value="<?= $this->data['request']['BankName'] ?? '' ?>">
                 </div>
                 <div class="col-sm-2"></div>
             </div>

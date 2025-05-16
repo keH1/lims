@@ -90,6 +90,7 @@ class Lab extends Model
                         'last_name' => $user['LAST_NAME'],
                         'user_name' => $user['user_name'],
                         'short_name' => $user['short_name'],
+                        'full_name' => $user['full_name'],
                     ];
 
                     $result[$row['id_dep']]['users'][$rowUser['VALUE_ID']] = $userData;

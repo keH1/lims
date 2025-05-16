@@ -103,7 +103,7 @@
                     <?=$this->data['tz']['date']?>
                 </td>
                 <td>
-                    <?=$this->data['tz']['date_send']?>
+                    --
                 </td>
                 <td class="w30">
                     <?php if ( $this->data['tz']['check'] ): ?>

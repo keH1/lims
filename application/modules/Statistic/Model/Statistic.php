@@ -2052,11 +2052,15 @@ class Statistic extends Model
 
         $queryOrders = "SELECT d.ID FROM DOGOVOR as d 
                JOIN ba_tz as tz ON d.TZ_ID = tz.ID
-               WHERE d.`DATE` BETWEEN {$startDate} AND {$endDate} AND tz.organization_id = {$organizationId}";
+               WHERE 
+                   tz.TYPE_ID != '3' AND tz.REQUEST_TITLE <> '' AND d.NUMBER <> '' AND d.NUMBER IS NOT NULL
+                   and d.`DATE` BETWEEN {$startDate} AND {$endDate} AND tz.organization_id = {$organizationId}";
 
         $queryOrdersAbonent = "SELECT d.ID FROM DOGOVOR as d 
                JOIN ba_tz as tz ON d.TZ_ID = tz.ID
-               WHERE d.`DATE` BETWEEN {$startDate} AND {$endDate} AND d.LONGTERM = 1 and tz.organization_id = {$organizationId}";
+               WHERE 
+                   tz.TYPE_ID != '3' AND tz.REQUEST_TITLE <> '' AND d.NUMBER <> '' AND d.NUMBER IS NOT NULL 
+                   and d.`DATE` BETWEEN {$startDate} AND {$endDate} AND d.LONGTERM = 1 and tz.organization_id = {$organizationId}";
 
         $queryTests = "SELECT ugtp.id FROM ulab_gost_to_probe as ugtp 
               JOIN ulab_material_to_request as umtr ON umtr.id = ugtp.material_to_request_id

@@ -236,7 +236,8 @@ $(function ($) {
 
         let length = inn.length
 
-        if ( length === 10 || length === 12 ) {
+        // false - закрыт поиск компаний по ИНН
+        if ( false && (length === 10 || length === 12) ) {
             $innHelp.html(
                 `Идет поиск по ИНН. Подождите...
                 <div class="spinner-border spinner-border-sm" role="status">
