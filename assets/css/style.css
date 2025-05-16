@@ -1980,3 +1980,7 @@ h2 .stage-block {
 .im-bar-mode .page-header {
     max-width: calc(100vw - 240px - 27px);
 }
+
+.td-select-oborud {
+    max-width: 280px;
+}
