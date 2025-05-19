@@ -127,57 +127,62 @@ class ScaleCalibration extends Model
 			$requestFromSQL = $this->DB->Query("SELECT * from $namesTable[$name]");
 		}
 
-		if ($name == 'getList') {
-			$requestFromSQL = $this->DB->Query(
-				"SELECT sc.*, bs.ID,                            
-                            CONCAT(bs.TYPE_OBORUD, ', Зав №',bs.FACTORY_NUMBER) AS scale_name,
-                            CONCAT(bw.TYPE_OBORUD, ', Зав №',bw.FACTORY_NUMBER) AS weight_name,
+        if ($name == 'getList') {
+            $requestFromSQL = $this->DB->Query(
+                "SELECT sc.*, sc.id_weight, sc.id_scale,
                             CONCAT (IFNULL(bu.LAST_NAME,'-'),' ',IFNULL(bu.NAME,'')) as global_assigned_name
                     FROM scale_calibration as sc
-                    LEFT JOIN ba_oborud as bs ON sc.id_scale = bs.ID
-                    LEFT JOIN ba_oborud as bw ON sc.id_weight = bw.ID
                     LEFT JOIN b_user as bu ON  sc.global_assigned = bu.ID
-                    WHERE sc.organization_id = {$organizationId}
-                    HAVING bs.ID {$filters['idScale']}
+                    HAVING sc.id_scale {$filters['idScale']}
                            {$filters['month']} and {$filters['having']}
                     ORDER BY {$filters['order']}
                     {$filters['limit']}"
-			);
-		}
-		if ($name == 'scale') {
-			$requestFromSQL = $this->DB->Query("SELECT ID as id,
- 												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
- 												FROM ba_oborud WHERE ID IN (235, 237, 239) AND organization_id = {$organizationId}");
-		}
-		if ($name == 'weight') {
-			$requestFromSQL = $this->DB->Query("SELECT ID as id,
- 												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
- 												FROM ba_oborud WHERE ID IN (279)  AND organization_id = {$organizationId}");
-		}
+            );
+        }
+//		if ($name == 'scale') {
+//			$requestFromSQL = $this->DB->Query("SELECT ID as id,
+// 												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
+// 												FROM ba_oborud WHERE ID IN (235, 237, 239) AND organization_id = {$organizationId}");
+//		}
+//		if ($name == 'weight') {
+//			$requestFromSQL = $this->DB->Query("SELECT ID as id,
+// 												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
+// 												FROM ba_oborud WHERE ID IN (279)  AND organization_id = {$organizationId}");
+//		}
 
-		$i = 1;
+        $scale = [
+            '235' => ['name' => 'GX-6100, Зав №14594617'],
+            '237' => ['name' => 'GX-6100, Зав №14574512'],
+            '239' => ['name' => 'GX-6100, Зав №14574507']
+        ];
 
-		while ($row = $requestFromSQL->Fetch()) {
+        $weight = [
+            '279' => ['name' => 'Калибратор давления, Зав №SN-2024-279']
+        ];
 
-			if ($name == 'getList') {
-				$row['number'] = $i;
-				$round = strlen(explode('.', $row['scale_error'])[1]);
-				$result = round($row['weight_result'] - $row['mass_weight'], $round);
-				$row['results'] = $row['scale_error'] >= abs($result);
-				$row['scale_error'] =  str_replace('.', ',', $row['scale_error']);
-				$row['date_calibration'] = date('d.m.Y', strtotime($row['date_calibration']));
+        while ($row = $requestFromSQL->Fetch()) {
+
+            if ($name == 'getList') {
+                $row['number'] = $i;
+                $round = strlen(explode('.', $row['scale_error'])[1]);
+                $result = round($row['weight_result'] - $row['mass_weight'], $round);
+                $row['results'] = $row['scale_error'] >= abs($result);
+                $row['scale_error'] =  str_replace('.', ',', $row['scale_error']);
+                $row['date_calibration'] = date('d.m.Y', strtotime($row['date_calibration']));
+                $row['weight_name'] = $weight[$row['id_weight']]['name'];
+                $row['scale_name'] = $scale[$row['id_scale']]['name'];
 //				$row['weight_result'] =  str_replace('.', ',', $row['weight_result']);
 
 
-				$row['weight_result'] =  number_format($row['weight_result'], $round, ',', '');
+                $row['weight_result'] =  number_format($row['weight_result'], $round, ',', '');
 //				$row['mass_weight'] =  str_replace('.', ',', $row['mass_weight']);
-				$row['mass_weight'] =  number_format($row['mass_weight'], $round, ',', '');
-				$i++;
-			}
+                $row['mass_weight'] =  number_format($row['mass_weight'], $round, ',', '');
+                $i++;
+            }
 
-			$response[] = $row;
+            $response[] = $row;
 
-		}
+        }
 
 		return $response;
 	}
