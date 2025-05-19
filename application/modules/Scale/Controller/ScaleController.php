@@ -18,8 +18,28 @@ class ScaleController extends Controller
 		/** @var  ScaleCalibration $usedModel*/
         $usedModel = $this->model($this->nameModel);
 
-        $this->data['scale'] = $usedModel->getFromSQL('scale');
-        $this->data['weight'] = $usedModel->getFromSQL('weight');
+//        $this->data['scale'] = $usedModel->getFromSQL('scale');
+        $this->data['scale'] = [
+            [
+                'id' => 235,
+                'name' => 'GX-6100, Зав №14594617'
+            ],
+            [
+                'id' => 237,
+                'name' => 'GX-6100, Зав №14574512'
+            ],
+            [
+                'id' => 239,
+                'name' => 'GX-6100, Зав №14574507'
+            ]
+        ];
+//        $this->data['weight'] = $usedModel->getFromSQL('weight');
+        $this->data['weight'] = [
+            [
+                'id' => 279,
+                'name' => 'Калибратор давления, Зав №SN-2024-279'
+            ]
+        ];
         $maxMinDate = $usedModel->getMinMaxDateFridgeControl();
 
         $this->data['max_date'] = date('Y-m', strtotime($maxMinDate['max_date']));
