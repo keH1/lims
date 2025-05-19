@@ -66,7 +66,8 @@
                     <li class="list-group-item" data-user-department><?=$user['department']?></li>
                     <li class="list-group-item" data-user-position><?=$user['position']?></li>
                     <li class="list-group-item">
-                        <select name="role_id" id="role_id" class="form-control" data-user-role>
+                        <select name="role_id" id="role_id" class="form-control" data-user-role required>
+                            <option value="">Роль не указана</option>
                             <?php foreach ($this->data['role_list'] as $permission): ?>
                                 <option value="<?=$permission['id']?>" <?=$permission['id'] == $user['role']? 'selected': ''?>><?=$permission['name']?></option>
                             <?php endforeach; ?>
