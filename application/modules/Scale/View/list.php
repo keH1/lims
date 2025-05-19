@@ -85,8 +85,9 @@
 			<label class="form-label">Дата измерения</label>
 			<input name="scale_calibration[date_calibration]" type="date"
 				   class="form-control "
-				   value="<?= $this->data['current_date'] ?>"
+				   value="<?= date('Y-m-d') ?>"
                    max="<?= date('Y-m-d') ?>"
+                   required
             >
 		</div>
 	</div>

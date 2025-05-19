@@ -3,6 +3,15 @@ $(function ($) {
         $journal = $('#scales_journal')
 
     let precursorJournal = $journal.DataTable({
+        bAutoWidth: false,
+        autoWidth: false,
+        fixedColumns: false,
+        processing: true,
+        serverSide: true,
+        bSortCellsTop: true,
+        scrollX: true,
+        fixedHeader: false,
+        colReorder: true,
         ajax: {
             type: 'POST',
             data: function (d) {
@@ -82,15 +91,11 @@ $(function ($) {
         //     'orderable': false,
         // }],
         language: dataTablesSettings.language,
-        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
+        lengthMenu: [[10, 25, 50, 100, -1], [10,25, 50, 100, "Все"]],
         pageLength: 25,
-        order: [],
-        colReorder: true,
+        order: [[ 1, "desc" ]],
         dom: 'frtB<"bottom"lip>',
         buttons: dataTablesSettings.buttonPrint,
-        bSortCellsTop: true,
-        scrollX: true,
-        fixedHeader: false,
     })
 
     precursorJournal
@@ -118,13 +123,6 @@ $(function ($) {
         },
         fixedContentPos: false,
         closeOnBgClick: false,
-    })
-
-
-    /** journal filters */
-    $('.filter-btn-search').on('click', function () {
-        $('#journal_requests_filter').addClass('is-open')
-        $('.filter-btn-search').hide()
     })
 
     $('.filter').on('change', function () {
