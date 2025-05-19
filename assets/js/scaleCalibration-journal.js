@@ -22,7 +22,6 @@ $(function ($) {
             },
             url: '/ulab/scale/getListProcessingAjax/',
             dataSrc: function (json) {
-                console.log(json)
                 return json.data
             },
         },
