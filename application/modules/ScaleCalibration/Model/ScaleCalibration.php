@@ -62,10 +62,10 @@ class ScaleCalibration extends Model
 
         $filters['order'] = "{$orderFilter['by']} {$orderFilter['dir']} ";
 
-        if ( $filter['idScale'] > 0 ) {
-            $filters['idScale'] = "bs.ID = {$filters['idScale']}";
+        if ( (int)$filter['idScale'] > 0 ) {
+            $filters['idScale'] = "bs.ID = {$filter['idScale']}";
         } else {
-            $filters['idScale']= '1';
+            $filters['idScale'] = '1';
         }
 
         $filters['month'] = '';
