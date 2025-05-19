@@ -45,7 +45,7 @@ class ScaleCalibration extends Model
                     if (isset($filter['paginate']['start']) && $filter['paginate']['start'] > 0) {
                         $offset = $filter['paginate']['start'];
                     }
-                    $filters['limit'] = "LIMIT $offset, $length";
+                    $filters['limit'] = "LIMIT {$offset}, {$length}";
                 }
             }
         }
@@ -63,9 +63,9 @@ class ScaleCalibration extends Model
         $filters['order'] = "{$orderFilter['by']} {$orderFilter['dir']} ";
 
         if ( $filter['idScale'] != null ) {
-            $filters['idScale'] = '="' . $filter['idScale'] . '"';
+            $filters['idScale'] = "bs.ID = {$filters['idScale']}";//'="' . $filter['idScale'] . '"';
         } else {
-            $filters['idScale']= '>0';
+            $filters['idScale']= '1';
         }
 
         $filters['month'] = '';
@@ -81,10 +81,11 @@ class ScaleCalibration extends Model
         }
 
 
-
+        $userModel = new User();
         // Затычка, что бы не было пустого WHERE в SQL запросе
         $filters['having'] .= "1 ";
         $result = $this->getFromSQL('getList', $filters);
+//        $userModel->pre(count($this->getFromSQL('allRecord')));
         $dataTotal = count($this->getFromSQL('allRecord'));
         $dataFiltered = count($result);
 
@@ -117,15 +118,8 @@ class ScaleCalibration extends Model
 	public function getFromSQL(string $name, array $filters = null): array
 	{
         $organizationId = App::getOrganizationId();
-		$namesTable = [
-			'allRecord' => 'scale_calibration'
-		];
 
 		$response = [];
-
-		if (isset($namesTable[$name])) {
-			$requestFromSQL = $this->DB->Query("SELECT * from $namesTable[$name]");
-		}
 
 		if ($name == 'getList') {
 			$requestFromSQL = $this->DB->Query(
@@ -138,18 +132,28 @@ class ScaleCalibration extends Model
                     LEFT JOIN ba_oborud as bw ON sc.id_weight = bw.ID
                     LEFT JOIN b_user as bu ON  sc.global_assigned = bu.ID
                     WHERE sc.organization_id = {$organizationId}
-                    HAVING bs.ID {$filters['idScale']}
+                    HAVING {$filters['idScale']}
                            {$filters['month']} and {$filters['having']}
                     ORDER BY {$filters['order']}
                     {$filters['limit']}"
 			);
-		}
-		if ($name == 'scale') {
+		} elseif ($name == 'allRecord') {
+            $requestFromSQL = $this->DB->Query(
+                "SELECT sc.*, bs.ID,                            
+                                CONCAT(bs.TYPE_OBORUD, ', Зав №',bs.FACTORY_NUMBER) AS scale_name,
+                                CONCAT(bw.TYPE_OBORUD, ', Зав №',bw.FACTORY_NUMBER) AS weight_name,
+                                CONCAT (IFNULL(bu.LAST_NAME,'-'),' ',IFNULL(bu.NAME,'')) as global_assigned_name
+                        FROM scale_calibration as sc
+                        LEFT JOIN ba_oborud as bs ON sc.id_scale = bs.ID
+                        LEFT JOIN ba_oborud as bw ON sc.id_weight = bw.ID
+                        LEFT JOIN b_user as bu ON  sc.global_assigned = bu.ID
+                        WHERE sc.organization_id = {$organizationId}"
+            );
+        } elseif ($name == 'scale') {
 			$requestFromSQL = $this->DB->Query("SELECT ID as id,
  												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
  												FROM ba_oborud WHERE ID IN (235, 237, 239) AND organization_id = {$organizationId}");
-		}
-		if ($name == 'weight') {
+		} elseif ($name == 'weight') {
 			$requestFromSQL = $this->DB->Query("SELECT ID as id,
  												CONCAT(TYPE_OBORUD, ', Зав №',FACTORY_NUMBER) AS name
  												FROM ba_oborud WHERE ID IN (279)  AND organization_id = {$organizationId}");
@@ -176,7 +180,6 @@ class ScaleCalibration extends Model
 			}
 
 			$response[] = $row;
-
 		}
 
 		return $response;
