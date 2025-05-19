@@ -63,7 +63,7 @@ class ScaleCalibration extends Model
         $filters['order'] = "{$orderFilter['by']} {$orderFilter['dir']} ";
 
         if ( (int)$filter['idScale'] > 0 ) {
-            $filters['idScale'] = "bs.ID = {$filter['idScale']}";
+            $filters['idScale'] = "sc.id_scale = {$filter['idScale']}";
         } else {
             $filters['idScale'] = '1';
         }
@@ -124,7 +124,7 @@ class ScaleCalibration extends Model
                             CONCAT (IFNULL(bu.LAST_NAME,'-'),' ',IFNULL(bu.NAME,'')) as global_assigned_name
                     FROM scale_calibration as sc
                     LEFT JOIN b_user as bu ON  sc.global_assigned = bu.ID
-                    HAVING sc.id_scale {$filters['idScale']}
+                    HAVING {$filters['idScale']}
                            {$filters['month']} and {$filters['having']}
                     ORDER BY {$filters['order']}
                     {$filters['limit']}"
