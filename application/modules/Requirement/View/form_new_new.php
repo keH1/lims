@@ -217,19 +217,19 @@
                 </div>
                 <!--./wrapper-info-header-->
 
-                <div class="form-group row">
+                <div class="form-group row tests_own_certification">
                     <label class="col-sm-2 col-form-label">
                         Испытания проводятся
                     </label>
                     <div class="col-2 pt-2">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tz[tests_for]" id="inlineRadio1" value="own" <?=$this->data['tz']['tests_for'] == 'own' || empty($this->data['tz']['tests_for']) ? 'checked' : ''?>>
+                            <input class="form-check-input" type="radio" name="tz[tests_for]" id="inlineRadio1" value="own" <?= !$this->data['tz']['TAKEN_SERT_ISP'] ? 'checked' : ''?>>
                             <label class="form-check-label" for="inlineRadio1">для собственных нужд</label>
                         </div>
                     </div>
                     <div class="col-6 pt-2">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tz[tests_for]" id="inlineRadio3" value="certification" <?=$this->data['tz']['tests_for'] == 'certification' ? 'checked' : ''?>>
+                            <input class="form-check-input" type="radio" name="tz[tests_for]" id="inlineRadio3" value="certification" <?=$this->data['tz']['TAKEN_SERT_ISP'] ? 'checked' : ''?>>
                             <label class="form-check-label" for="inlineRadio3">для предоставления в орган по сертификации (сертификация, декларация продукции)</label>
                         </div>
                     </div>
@@ -355,7 +355,7 @@
                                     <div class="d-flex align-items-center taken-request-wrapper">
                                         <div>
                                             <label class="switch">
-                                                <input class="form-check-input clear_confirm_change" name="tz[TAKEN_SERT_ISP]" type="checkbox" value="1"
+                                                <input class="form-check-input clear_confirm_change taken_sert_isp" name="tz[TAKEN_SERT_ISP]" type="checkbox" value="1"
                                                     <?= $this->data['tz']['TAKEN_SERT_ISP'] == 1 ? 'checked' : '' ?>>
                                                 <span class="slider"></span>
                                             </label>
