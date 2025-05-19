@@ -297,9 +297,6 @@ class Reference extends Model
             $countUpdate = 0;
             $countInsert = 0;
             foreach ($result['data'] as $item) {
-                if ( empty($item['fsa_id']) ) {
-                    continue;
-                }
                 $name = $this->quoteStr($this->DB->ForSql(trim($item['name'])));
                 $isActual = $item['is_actual']? 1 : 0;
                 $updateAffected = $this->DB->Update('ulab_measured_properties', ['is_actual' => $isActual, 'name' => $name], "where fsa_id = {$item['fsa_id']}");
@@ -324,7 +321,7 @@ class Reference extends Model
             ];
         }
 
-        return ['success' => true, 'msg' => "Синхронизация прошла успешно. Обновлено: {$countUpdate}. Добавлено: {$countInsert}. Неактуально: {$nonActualTotal['val']}"];
+        return ['success' => true, 'msg' => "Синхронизация прошла успешно."];
     }
 
 
@@ -421,9 +418,7 @@ class Reference extends Model
             $countUpdate = 0;
             $countInsert = 0;
             foreach ($result['data'] as $item) {
-                if ( empty($item['fsa_id']) ) {
-                    continue;
-                }
+
                 $name = $this->quoteStr($this->DB->ForSql(trim($item['name'])));
                 $unitRu = $this->quoteStr($this->DB->ForSql(trim($item['unit_rus'])));
                 $unitEn = $this->quoteStr($this->DB->ForSql(trim($item['unit_eng'])));
@@ -468,6 +463,6 @@ class Reference extends Model
             ];
         }
 
-        return ['success' => true, 'msg' => "Синхронизация прошла успешно. Обновлено: {$countUpdate}. Добавлено: {$countInsert}. Неактуально: {$nonActualTotal['val']}"];
+        return ['success' => true, 'msg' => "Синхронизация прошла успешно."];
     }
 }

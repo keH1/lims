@@ -997,6 +997,19 @@ $(function ($) {
 
         return false
     })
+
+    $('.tests_own_certification input[type="radio"]').on('change', function () {
+        const value = $(this).val()
+        $('.taken_sert_isp').prop('checked', value === 'certification')
+    })
+
+    $('.taken_sert_isp').on('change', function () {
+        if ( $(this).prop('checked') ) {
+            $('#inlineRadio3').prop('checked', true)
+        } else {
+            $('#inlineRadio1').prop('checked', true)
+        }
+    })
 })
 
 
