@@ -80,12 +80,9 @@ class ScaleCalibration extends Model
             $filters['month'] .= " and sc.{$tableColumnForFilter[0]} <= LAST_DAY('{$filter['date_end']}-01') ";
         }
 
-
-        $userModel = new User();
         // Затычка, что бы не было пустого WHERE в SQL запросе
         $filters['having'] .= "1 ";
         $result = $this->getFromSQL('getList', $filters);
-//        $userModel->pre(count($this->getFromSQL('allRecord')));
         $dataTotal = count($this->getFromSQL('allRecord'));
         $dataFiltered = count($result);
 
