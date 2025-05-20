@@ -112,4 +112,5 @@ cleanup_and_push_job:
   rules:
     - if: $CI_PIPELINE_SOURCE == "pipeline"
       when: never
-    - when: manual
+    - if: $CI_COMMIT_REF_NAME == 'main'
+      when: manual
