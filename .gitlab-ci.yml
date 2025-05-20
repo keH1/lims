@@ -1,58 +1,27 @@
+stages:
+  - version
+  - ai-review 
+  - code-quality
+  - test
+  - scanning-repo
+  - build
+  - scanning-image
+  - sonarqube-check
+  - deploy
+  - cleanup-and-push
+  - notify
+  - dast-scanning
+
 include:
   - project: 'devops/gitlab/template-cicd'
     ref: '${CICDREF}'
     file: 'php-pipeline.yml'
-
-calc-version:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
-    - when: always
-
-set-version:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
-    - when: always
-
-lint:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
-    - when: always
-
-trivy-repo:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
-    - when: always
-
-build:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
-    - when: always
-
-trivy-image:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
-    - when: always
-
-deploy:dev:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
-    - when: manual
-
-dast:dev:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline"
-      when: never
-    - when: manual
-
-notify_success:
-  when: manual
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "pipeline"
+        when: never
+      - if: $CI_COMMIT_REF_NAME == 'main'
+        when: never
+      - when: always
 
 deploy_bitrix:
   image: reg.gitlab.itnap.ru/devops/gitlab/template-cicd:${CICDREF}
@@ -79,9 +48,6 @@ deploy_bitrix:
 
 cleanup_and_push_job:
   stage: cleanup-and-push
-  needs:
-    - job: deploy:dev
-      optional: true
   before_script:
     - cd /opt/forticlient/forticlientsslvpn/64bit
     - tmux kill-session -t vpn_session || true
