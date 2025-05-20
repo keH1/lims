@@ -310,7 +310,7 @@
                 <label class="col-sm-2 col-form-label">Наименование банка</label>
                 <div class="col-sm-8">
                     <input type="text" name="form[bank_name]" class="form-control clearable" placeholder="Введите наименование банка"
-                           value="<?= $this->data['info']['bank_name'] ?? '' ?>">
+                           value="<?= htmlentities($this->data['info']['bank_name'] ?? '') ?>">
                 </div>
                 <div class="col-sm-2"></div>
             </div>
