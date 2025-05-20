@@ -209,8 +209,7 @@ class Reference extends Model
      */
     public function changeUsedMeasuredProperties($id)
     {
-        $organizationId = App::getOrganizationId();
-        $this->DB->Query("update `ulab_measured_properties` set `is_used` = ! `is_used` where id = {$id} and organization_id = {$organizationId}");
+        $this->DB->Query("update `ulab_measured_properties` set `is_used` = ! `is_used` where id = {$id}");
     }
 
 
@@ -219,7 +218,6 @@ class Reference extends Model
      */
     public function changeUsedUnits($id)
     {
-        $organizationId = App::getOrganizationId();
         $this->DB->Query("update `ulab_dimension` set `is_used` = ! `is_used` where id = {$id}");
     }
 
@@ -229,7 +227,6 @@ class Reference extends Model
      */
     public function syncMeasuredPropertiesFsa()
     {
-        $organizationId = App::getOrganizationId();
         $array = array(
             'pageSize'   => 100000,
         );
@@ -275,7 +272,7 @@ class Reference extends Model
         $nonActualTotal = $this->DB->Query(
             "SELECT count(*) val
                     FROM ulab_measured_properties
-                    WHERE is_actual = 0 and organization_id = {$organizationId}"
+                    WHERE is_actual = 0"
         )->Fetch();
 
         return ['success' => true, 'msg' => "Синхронизация прошла успешно. Обновлено: {$countUpdate}. Добавлено: {$countInsert}. Неактуально: {$nonActualTotal['val']}"];
