@@ -482,8 +482,6 @@ class Material extends Model
 
         $m_number = 1;
         foreach ($dataList as $key => $material) {
-            $k = 1;
-
             $data = [
                 'ID_DEAL' => $dealId,
                 'ID_MATERIAL' => $material['id'],
@@ -495,9 +493,8 @@ class Material extends Model
             $mtrId = $this->DB->Insert('MATERIALS_TO_REQUESTS', $sqlData);
             $mtrArrayId[] = $mtrId;
 
+            $workId = 0;
             if ($additionalData) {
-                $workId = 0;
-                
                 if (!empty($additionalData[$key]['id'])) {
                     $workId = $additionalData[$key]['id'];
                     $additionalData[$key]['deal_id'] = $dealId;
@@ -525,10 +522,9 @@ class Material extends Model
             ];
 
             for ($i = 0; $i < $material['count']; $i++) {
-                $dataProbe['probe_number'] = $k;
+                $dataProbe['probe_number'] = $i;
                 $sqlDataProbe = $this->prepearTableData('ulab_material_to_request', $dataProbe);
                 $this->DB->Insert('ulab_material_to_request', $sqlDataProbe);
-                $k++;
             }
 
             $m_number++;
