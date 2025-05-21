@@ -2353,6 +2353,11 @@ class Request extends Model
             'STAGE_ID' => $stageId,
             'STAGE_NUMBER' => $stageNumber
         ];
+
+        if ( in_array($stageId, ['4', 'WON', 'LOSE', '5', '6', '7', '8', '9', '10', '11', '12', '13']) ) {
+            $data['dateEnd'] = date('Y-m-d');
+        }
+
         $sqlData = $this->prepearTableData('ba_tz', $data);
         $this->DB->Update('ba_tz', $sqlData, "WHERE ID = {$tzId}");
 
