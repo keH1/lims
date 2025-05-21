@@ -136,6 +136,10 @@ class Methods extends Model
 
             $result['laba'] = $this->getLab($result['id']);
 
+            foreach ($result['laba'] as $laba) {
+                $result['lab_info'][] = $labModel->get($laba);
+            }
+
             $strYear = !empty($result['year']) ? "-{$result['year']}" : '';
             $strClause = !empty($result['clause']) ? " {$result['clause']}" : '';
 

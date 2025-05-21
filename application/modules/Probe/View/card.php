@@ -124,7 +124,7 @@
                         </td>
                         <td class="text-center"><?= $item['name_for_protocol'] ?? '-' ?></td>
                         <td class="text-center">
-                            <?=implode(', ', array_column($item['lab_info'] ?? [], 'short_name'))?>
+                            <?=implode(', ', array_column($item['lab_info'] ?? [], 'NAME'))?>
                         </td>
                         <td class="text-center">
                             <?php if ( $item['is_in_act'] == 1 ): ?>
